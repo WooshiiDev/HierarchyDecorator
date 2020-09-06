@@ -47,5 +47,5 @@ There are 4 sections to the settings:
  
  - **Styles** - Change the `GUIStyle` settings for each style ![](https://i.imgur.com/JqPw9Hx.png?1)
  
- - **Shown Components** - Toggle on/off the components you wish to see appear beside GameObjects if they exist on them. ![](https://i.imgur.com/QRMhsGU.png?1)
+ - **Shown Components** - Toggle on/off the components you wish to see appear beside GameObjects if they exist on them.   ![](https://i.imgur.com/QRMhsGU.png?1)
 
