@@ -41,11 +41,19 @@ There is a scriptable object that is required for hierarchy decorator to run. If
 
 There are 4 sections to the settings:
 
- - **Global Settings** - will show the general toggles for showing and hiding features ![](https://i.imgur.com/TKMe0kO.png)
+ - **Global Settings** - will show the general toggles for showing and hiding features 
  
- - **Prefixes** - Showing the settings for all prefixes ![](https://i.imgur.com/GSiP5so.png)
+ ![](https://i.imgur.com/TKMe0kO.png)
  
- - **Styles** - Change the `GUIStyle` settings for each style ![](https://i.imgur.com/JqPw9Hx.png?1)
+ - **Prefixes** - Showing the settings for all prefixes 
  
- - **Shown Components** - Toggle on/off the components you wish to see appear beside GameObjects if they exist on them.   ![](https://i.imgur.com/QRMhsGU.png?1)
+ ![](https://i.imgur.com/GSiP5so.png)
+ 
+ - **Styles** - Change the `GUIStyle` settings for each style 
+ 
+ ![](https://i.imgur.com/JqPw9Hx.png?1)
+ 
+ - **Shown Components** - Toggle on/off the components you wish to see appear beside GameObjects if they exist on them.   
+ 
+ ![](https://i.imgur.com/QRMhsGU.png?1)
 
