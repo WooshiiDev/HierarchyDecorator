@@ -21,14 +21,14 @@ HierarchyDecorator will be and always has been developed in my free time, and th
 
 [PayPal](https://paypal.me/Wooshii?locale.x=en_GB)
 
-Development will be continued with this and wil forever stay public and free.
+Development will be continued with this and will forever stay public and free.
 
 # Overview 
-Currently the features added are:
+Currently the features included are:
 
- - Custom hierarchy GameObject styling for better seperators or headers. 
+ - Custom hierarchy GameObject styling for better seperators and headers
  - Showing the current GameObject layer
- - Icon visualisation for components that are on each GameObject 
+ - Icon visualisation for components that are on GameObjects
  - Custom settings with interchangable style and icon selections
  - Light/Dark mode toggle for styles
  
@@ -37,7 +37,7 @@ The custom hierarchy styling is capable through prefixes added to the start of G
 ### Settings
 ![](https://i.imgur.com/E36wayq.png)
 
-There is a scriptable object that is required for hierarchy decorator to run. If it is deleted another will be created in the base of your asset folder in `Assets/HierarchyDecorator/`. These settings are also accessible from the `Preference` window.
+There is a scriptable object that is required for hierarchy decorator to run. If it is deleted, another will be created in the base of your asset folder in `Assets/HierarchyDecorator/`. These settings are also accessible from the `Preference` window.
 
 There are 4 sections to the settings:
 
