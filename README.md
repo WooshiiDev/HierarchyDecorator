@@ -14,15 +14,21 @@ Please make sure you have Net 4.0 selected in the **Player Settings** to use thi
 
 2. HierarchyDecorator can also be installed directly through the git url
 
-`https://github.com/WooshiiDev/HierarchyDecorator.git`
+```
+https://github.com/WooshiiDev/HierarchyDecorator.git
+```
 
 3. You can also install it via [upm](https://openupm.com/)
 
-`openupm add com.wooshii.hierarchydecorator`
+```
+openupm add com.wooshii.hierarchydecorator
+```
 
 4. You can also install this via git by adding the following to your **manifest.json**
 
-`"com.wooshii.hierarchydecorator" : "https://github.com/WooshiiDev/HierarchyDecorator.git#upm"`
+```
+"com.wooshii.hierarchydecorator" : "https://github.com/WooshiiDev/HierarchyDecorator.git#upm"
+```
 
 **Note (Current Issue)**
 
