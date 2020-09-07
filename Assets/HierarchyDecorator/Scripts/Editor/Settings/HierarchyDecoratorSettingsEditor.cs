@@ -89,7 +89,7 @@ namespace HierarchyDecorator
 
             EditorGUILayout.BeginVertical (verticalStyle);
                 {
-                tabSelection = GUILayout.SelectionGrid (tabSelection, tabNames, tabNames.Length, greyMid);
+                tabSelection = GUILayout.SelectionGrid (tabSelection, tabNames, tabNames.Length/2, greyMid);
 
                 if (tabSelection != 4)
                     {

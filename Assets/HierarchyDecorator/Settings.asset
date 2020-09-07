@@ -14,7 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   showComponents: 1
   showLayers: 1
-  showActiveToggles: 1
+  showActiveToggles: 0
+  globalStyle:
+    twoToneBackground: 0
   prefixes:
   - prefix: =
     guiStyle: Header
@@ -25,7 +27,7 @@ MonoBehaviour:
       fontStyle: 1
       fontColor: {r: 1, g: 1, b: 1, a: 1}
       backgroundColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-      displayedLine: 2
+      displayedLine: 0
       lineHeight: 1
       lineColor: {r: 0, g: 0, b: 0, a: 1}
     darkMode:
@@ -34,8 +36,8 @@ MonoBehaviour:
       fontAlignment: 4
       fontStyle: 1
       fontColor: {r: 1, g: 1, b: 1, a: 1}
-      backgroundColor: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 1}
-      displayedLine: 2
+      backgroundColor: {r: 0.1764706, g: 0.1764706, b: 0.1764706, a: 1}
+      displayedLine: 0
       lineHeight: 1
       lineColor: {r: 0, g: 0, b: 0, a: 1}
   - prefix: '-'
@@ -46,8 +48,8 @@ MonoBehaviour:
       fontAlignment: 3
       fontStyle: 0
       fontColor: {r: 0.24528301, g: 0.24528301, b: 0.24528301, a: 1}
-      backgroundColor: {r: 0, g: 0, b: 0, a: 1}
-      displayedLine: 2
+      backgroundColor: {r: 0.7960785, g: 0.7960785, b: 0.7960785, a: 1}
+      displayedLine: 0
       lineHeight: 1
       lineColor: {r: 0, g: 0, b: 0, a: 1}
     darkMode:
@@ -57,7 +59,7 @@ MonoBehaviour:
       fontStyle: 0
       fontColor: {r: 0.8584906, g: 0.8584906, b: 0.8584906, a: 1}
       backgroundColor: {r: 0.23529413, g: 0.23529413, b: 0.23529413, a: 1}
-      displayedLine: 2
+      displayedLine: 0
       lineHeight: 1
       lineColor: {r: 0, g: 0, b: 0, a: 1}
   - prefix: +
@@ -69,7 +71,7 @@ MonoBehaviour:
       fontStyle: 1
       fontColor: {r: 1, g: 0.8066038, b: 0.98256075, a: 1}
       backgroundColor: {r: 0.26666668, g: 0.44705886, b: 0.6509804, a: 1}
-      displayedLine: 2
+      displayedLine: 0
       lineHeight: 1
       lineColor: {r: 0, g: 0, b: 0, a: 1}
     darkMode:
@@ -79,7 +81,7 @@ MonoBehaviour:
       fontStyle: 1
       fontColor: {r: 0.9433962, g: 0.9433962, b: 0.9433962, a: 1}
       backgroundColor: {r: 0.26713246, g: 0.4473481, b: 0.6509434, a: 1}
-      displayedLine: 3
+      displayedLine: 0
       lineHeight: 1
       lineColor: {r: 0, g: 0, b: 0, a: 1}
   styles:

@@ -10,10 +10,24 @@ namespace HierarchyDecorator
     [InitializeOnLoad]
     internal static class HierarchyDecorator
         {
-        //GameObject ID
-        private static int currentID;
-        private static GameObject currentObject;
-        private static bool isPrefab;
+        internal class InstanceInfo
+            {
+            public readonly int instanceID;
+            public readonly GameObject gameObject;
+            public readonly Rect selectionRect;
+            public readonly bool isPrefab;
+
+            public InstanceInfo(int ID, GameObject gameObject, Rect selectionRect, bool isPrefab)
+                {
+                this.instanceID = ID;
+                this.gameObject = gameObject;
+                this.selectionRect = selectionRect;
+                this.isPrefab = isPrefab;
+                }
+            }
+
+        private static InstanceInfo currentInstance;
+        private static InstanceInfo previousInstance;
 
         //Component Info
         private static List<Type> returnedComponents;
@@ -30,7 +44,6 @@ namespace HierarchyDecorator
         static HierarchyDecorator()
             {
             //Initalize
-            currentID = 0;
             returnedComponents = new List<Type> ();
 
             //Add to delegateO h 
@@ -45,22 +58,31 @@ namespace HierarchyDecorator
         /// <param name="selectionRect">Rect area on the inspector</param>
         private static void HandleObject(int instanceID, Rect selectionRect)
             {
+            GameObject gameObject = EditorUtility.InstanceIDToObject (instanceID) as GameObject;
+
+            if (gameObject == null)
+                return;
+
+            currentInstance = new InstanceInfo (
+                instanceID,
+                gameObject,
+                selectionRect,
+                PrefabUtility.GetPrefabInstanceStatus (gameObject) != PrefabInstanceStatus.NotAPrefab
+                );
+
             //Call it here to allow editor scripts to load
             //A lot of pain to work around
             if (settings == null)
                 GetSettings ();
 
-            currentID = instanceID;
-            currentObject = EditorUtility.InstanceIDToObject (currentID) as GameObject;
-
             //Make sure the object isn't null for whatever reason
-            if (currentObject != null)
+            if (gameObject != null)
                 {
                 //Style
-                DrawElementStyle (currentObject, selectionRect);
+                DrawElementStyle (gameObject, selectionRect);
 
                 if (settings.showActiveToggles)
-                    DrawToggles (currentObject, selectionRect);
+                    DrawToggles (gameObject, selectionRect);
                     
                 }
             }
@@ -69,37 +91,37 @@ namespace HierarchyDecorator
 
         private static void ShowChildFoldout(Rect selectionRect, GameObject obj, bool showBack)
             {
-            Transform t = obj.transform;
+            //If there is no previous instance, ignore
+            if (previousInstance == null)
+                return;
 
-            //Draw child potential first...
-            if (t.childCount > 0)
+            Transform prevTransform = previousInstance.gameObject.transform;
+
+            //Return if no point to check 
+            if (prevTransform.childCount == 0)
+                return;
+
+            Transform transform = currentInstance.gameObject.transform;
+            bool isParent = currentInstance.gameObject.transform.parent == prevTransform;
+
+            Rect toggleRect = selectionRect;
+
+            if (isParent)
                 {
-                Rect toggleRect = selectionRect;
+                toggleRect.y -= toggleRect.height;
+                toggleRect.x -= 28;
+                }
+            else
+                {
+                toggleRect = previousInstance.selectionRect;
                 toggleRect.x -= 14;
-
-                EditorGUI.Foldout (toggleRect, false, "");
                 }
 
-            //Draw override from child if expanded
-            if (t.parent != null)
-                {
-                if (t == t.parent.GetChild (0))
-                    {
-                    Rect toggleRect = selectionRect;
 
-                    toggleRect.x -= 28;
-                    toggleRect.y -= toggleRect.height;
+            toggleRect.width = toggleRect.height - 1;
+            toggleRect.height--;
 
-                    toggleRect.width = toggleRect.height - 1;
-                    toggleRect.height--;
-
-
-                    if (showBack)
-                        EditorGUI.DrawRect (toggleRect, settings.globalStyle.GetTwoToneColour (toggleRect));
-
-                    EditorGUI.Foldout (toggleRect, true, "");
-                    }
-                }
+            EditorGUI.Foldout (toggleRect, isParent, "");
             }
 
         private static void DisplayGameObjectStatus(Rect selectionRect, GameObject obj)
@@ -110,9 +132,8 @@ namespace HierarchyDecorator
                 };
 
             Object prefabObj = PrefabUtility.GetPrefabInstanceHandle (obj);
-            isPrefab = PrefabUtility.GetPrefabInstanceStatus (obj) != PrefabInstanceStatus.NotAPrefab;
 
-            if (isPrefab)
+            if (currentInstance.isPrefab)
                 {
                 if (PrefabUtility.GetNearestPrefabInstanceRoot(obj) == obj)
                     {
@@ -134,7 +155,7 @@ namespace HierarchyDecorator
 
             GUIStyle style = new GUIStyle (EditorStyles.label);
             
-            if (isPrefab)
+            if (currentInstance.isPrefab)
                 {
                 if (EditorGUIUtility.isProSkin)
                     style.normal.textColor = new Color (0.48f, 0.67f, 0.95f, 1f);
@@ -142,10 +163,18 @@ namespace HierarchyDecorator
                     style.normal.textColor = new Color (0.1f, 0.3f, 0.7f, 1f);
                 }
 
-            if (!obj.activeInHierarchy)
-                style.normal.textColor = Constants.UnactivePrefabColor;
+            if (!obj.activeInHierarchy )
+                style.normal.textColor = (currentInstance.isPrefab) 
+                    ? Constants.UnactivePrefabColor : Color.gray;
+
+            if (Selection.Contains (obj))
+                {
+                EditorGUI.DrawRect (GetActualHierarchyWidth(selectionRect), new Color (0.2f, 0.4f, 0.6f, 0.5f));
+                }
 
             EditorGUI.LabelField (selectionRect, content, style);
+
+        
             }
 
         #endregion
@@ -185,14 +214,12 @@ namespace HierarchyDecorator
                         elementRect.width -= 28f * 1.73f;
 
                         ApplyElementStyle (elementRect, obj.name, style);
-                        ShowChildFoldout (selectionRect, obj, false);
                         break;
                         }
                     }
                 }
 
-            if (obj.transform.parent != null)
-                ShowChildFoldout (selectionRect, obj, styles.Any (p => obj.transform.parent.name.StartsWith (p.prefix)));
+            ShowChildFoldout (selectionRect, obj, false);
 
 
             if (!hasStyle)
@@ -201,7 +228,7 @@ namespace HierarchyDecorator
                     return;
 
                 if (settings.showComponents)
-                    DrawComponentData (currentObject, selectionRect);
+                    DrawComponentData (currentInstance.gameObject, selectionRect);
 
                 if (currentLayer >= 0 && settings.showLayers)
                     {
@@ -214,6 +241,7 @@ namespace HierarchyDecorator
                 }
 
             //EditorGUI.DrawRect (selectionRect, obj.activeSelf ? Color.clear : Constants.UnactiveColor);
+            previousInstance = currentInstance;
             }
 
         private static void ApplyElementStyle(Rect selectionRect, string name, HierarchyStyle prefix)
@@ -241,7 +269,7 @@ namespace HierarchyDecorator
             Rect backgroundRect = GetActualHierarchyWidth (selectionRect);
             Rect labelRect = selectionRect = GetHierarchyStyleSize (selectionRect);
 
-            if (currentObject.transform.parent != null)
+            if (currentInstance.gameObject.transform.parent != null)
                 {
                 backgroundRect = selectionRect;
                 labelRect = selectionRect;
@@ -249,6 +277,10 @@ namespace HierarchyDecorator
 
             //Draw background and label
             EditorGUI.DrawRect(backgroundRect, backgroundColor);
+
+            //Draw twice to take into account full width draw
+            //TODO: Consider looking into content offset, draw texture may be a future option
+            EditorGUI.LabelField (GetActualHierarchyWidth (selectionRect), "", style);
             EditorGUI.LabelField (labelRect, name.ToUpper (), style);
 
             //Apply overlay line
@@ -300,7 +332,6 @@ namespace HierarchyDecorator
                 if (component == null || !IsAllowedType(component))
                     continue;
 
-
                 //Do not need duplicates
                 if (returnedComponents.Contains (component))
                     continue;
@@ -351,11 +382,6 @@ namespace HierarchyDecorator
 
             return rect;
             }
-
-        //private static Rect GetActualParentWidth(Rect rect)
-        //    {
-            
-        //    }
 
         private static Rect GetHierarchyStyleSize(Rect rect)
             {

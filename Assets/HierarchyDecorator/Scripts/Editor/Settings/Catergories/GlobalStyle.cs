@@ -3,6 +3,7 @@ using UnityEditor;
 
 namespace HierarchyDecorator
     {
+    [System.Serializable]
     internal class GlobalStyle
         {
         public bool twoToneBackground;
