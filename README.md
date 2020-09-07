@@ -10,10 +10,19 @@ Hierarchy Decorator is an extension for Unity 2019.1 and higher to support custo
 
 Please make sure you have Net 4.0 selected in the **Player Settings** to use this
 
-You can install this by downloading the .unitypackage that is provided in this repository. In the UnityPackage there are preset settings provided if you would like a basic system but it can be extended with your own ones.
+1. You can install this by downloading the .unitypackage that is provided in this repository. In the UnityPackage there are preset settings provided if you would like a basic system but it can be extended with your own ones.
 
-HierarchyDecorator can also be installed directly through the git url:
+2. HierarchyDecorator can also be installed directly through the git url
+
 `https://github.com/WooshiiDev/HierarchyDecorator.git`
+
+3. You can also install it via [upm](https://openupm.com/)
+
+`openupm add com.wooshii.hierarchydecorator`
+
+4. You can also install this via git by adding the following to your **manifest.json**
+
+`"com.wooshii.hierarchydecorator" : "https://github.com/WooshiiDev/HierarchyDecorator.git#upm"`
 
 **Note (Current Issue)**
 
