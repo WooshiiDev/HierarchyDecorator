@@ -1,8 +1,6 @@
 {
     "name": "Wooshii.HierarchyDecorator",
-    "references": [
-        "GUID:237f74189eca3a947818695a4b738d98"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

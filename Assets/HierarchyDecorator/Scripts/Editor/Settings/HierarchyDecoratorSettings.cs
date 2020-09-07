@@ -153,16 +153,7 @@ namespace HierarchyDecorator
             foreach (HierarchyStyle prefix in prefixes)
                 prefix.SetLineStyle (LineStyle.BOTTOM);
 
-            if (allTypes == null)
-                allTypes = ReflectionUtility.GetTypesFromAllAssemblies (typeof (Component));
-
-            components = new List<ComponentType> ();
-
-            for (int i = 0; i < allTypes.Length; i++)
-                {
-                var type = allTypes[i];
-                components.Add (new ComponentType (type));
-                }
+            UpdateSettings ();
             }
 
         #endregion
@@ -225,20 +216,26 @@ namespace HierarchyDecorator
             if (allTypes == null)
                 allTypes = ReflectionUtility.GetTypesFromAllAssemblies (typeof (Component));
 
-            if (components == null)
+            bool hasMissing = (components == null) || (components.Count < allTypes.Length);
+
+            //Quick fix for now to stop duplication issues
+            if (components.Count > allTypes.Length)
                 {
                 components = new List<ComponentType> ();
-
-                for (int i = 0; i < allTypes.Length; i++)
-                    {
-                    var type = allTypes[i];
-                    components.Add (new ComponentType (type));
-                    }
+                hasMissing = true;
                 }
 
             for (int i = 0; i < allTypes.Length; i++)
                 {
                 var type = allTypes[i];
+
+                if (hasMissing)
+                    {
+                    if (components == null)
+                        components = new List<ComponentType> ();
+
+                    components.Add (new ComponentType (type));
+                    }
 
                 if (components[i].type == null)
                     components[i].UpdateType (type);

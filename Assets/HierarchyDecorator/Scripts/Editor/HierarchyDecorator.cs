@@ -219,7 +219,14 @@ namespace HierarchyDecorator
                 ? Icons.Checked
                 : Icons.Checkbox;
 
-            obj.SetActive (EditorGUI.Toggle (selectionRect, obj.activeSelf, style));
+            //obj.SetActive (EditorGUI.Toggle (selectionRect, obj.activeSelf, style));
+            bool active = obj.activeInHierarchy;
+
+            GUIStyle toggleStyle = active
+              ? "OL Toggle"
+              : "OL ToggleMixed";
+
+            obj.SetActive (EditorGUI.Toggle (selectionRect, obj.activeSelf, toggleStyle));
             }
 
         #endregion

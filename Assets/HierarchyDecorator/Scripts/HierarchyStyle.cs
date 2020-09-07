@@ -36,8 +36,8 @@ namespace HierarchyDecorator
         public string prefix;
         public string guiStyle = "Header";
 
-        public StyleSettings lightMode;
-        public StyleSettings darkMode;
+        public StyleSettings lightMode = new StyleSettings();
+        public StyleSettings darkMode = new StyleSettings();
 
         public HierarchyStyle(string prefix, string name = "Header")
             {

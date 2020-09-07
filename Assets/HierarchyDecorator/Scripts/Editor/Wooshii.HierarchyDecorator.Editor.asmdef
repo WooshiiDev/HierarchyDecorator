@@ -1,8 +1,7 @@
 {
     "name": "Wooshii.HierarchyDecorator.Editor",
     "references": [
-        "GUID:cf0fe5fdb6e31b84ea35fb4ddc265b8c",
-        "GUID:237f74189eca3a947818695a4b738d98"
+        "GUID:cf0fe5fdb6e31b84ea35fb4ddc265b8c"
     ],
     "includePlatforms": [
         "Editor"

@@ -304,7 +304,10 @@ namespace HierarchyDecorator
                 bool isContained = false;
                 for (int i = 0; i < componentKeywords.Length; i++)
                     {
-                    String keyword = componentKeywords[i];
+                    string keyword = componentKeywords[i];
+
+                    if (item.type == null)
+                        continue;
 
                     if (item.type.FullName.Contains (keyword))
                         {
