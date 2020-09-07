@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.Callbacks;
-using UnityEditorInternal;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace HierarchyDecorator
     {
@@ -14,6 +13,7 @@ namespace HierarchyDecorator
         //GameObject ID
         private static int currentID;
         private static GameObject currentObject;
+        private static bool isPrefab;
 
         //Component Info
         private static List<Type> returnedComponents;
@@ -65,10 +65,111 @@ namespace HierarchyDecorator
                 }
             }
 
+        #region Unity Prequisites
+
+        private static void ShowChildFoldout(Rect selectionRect, GameObject obj, bool showBack)
+            {
+            Transform t = obj.transform;
+
+            //Draw child potential first...
+            if (t.childCount > 0)
+                {
+                Rect toggleRect = selectionRect;
+                toggleRect.x -= 14;
+
+                EditorGUI.Foldout (toggleRect, false, "");
+                }
+
+            //Draw override from child if expanded
+            if (t.parent != null)
+                {
+                if (t == t.parent.GetChild (0))
+                    {
+                    Rect toggleRect = selectionRect;
+
+                    toggleRect.x -= 28;
+                    toggleRect.y -= toggleRect.height;
+
+                    toggleRect.width = toggleRect.height - 1;
+                    toggleRect.height--;
+
+
+                    if (showBack)
+                        EditorGUI.DrawRect (toggleRect, settings.globalStyle.GetTwoToneColour (toggleRect));
+
+                    EditorGUI.Foldout (toggleRect, true, "");
+                    }
+                }
+            }
+
+        private static void DisplayGameObjectStatus(Rect selectionRect, GameObject obj)
+            {
+            GUIContent content = new GUIContent ()
+                {
+                text = obj.name
+                };
+
+            Object prefabObj = PrefabUtility.GetPrefabInstanceHandle (obj);
+            isPrefab = PrefabUtility.GetPrefabInstanceStatus (obj) != PrefabInstanceStatus.NotAPrefab;
+
+            if (isPrefab)
+                {
+                if (PrefabUtility.GetNearestPrefabInstanceRoot(obj) == obj)
+                    {
+                    content.image = EditorGUIUtility.IconContent ("Prefab Icon").image;
+
+                    Rect selectorRect = selectionRect;
+                    selectorRect.x = selectionRect.width + selectionRect.x;
+                    selectorRect.width = selectionRect.height;
+
+                    GUI.DrawTexture (selectorRect, EditorGUIUtility.IconContent ("tab_next").image, ScaleMode.ScaleToFit);
+                    }
+                else
+                    {
+                    content.image = EditorGUIUtility.IconContent ("GameObject Icon").image;
+                    }
+                }
+            else
+                content.image = EditorGUIUtility.IconContent ("GameObject Icon").image;
+
+            GUIStyle style = new GUIStyle (EditorStyles.label);
+            
+            if (isPrefab)
+                {
+                if (EditorGUIUtility.isProSkin)
+                    style.normal.textColor = new Color (0.48f, 0.67f, 0.95f, 1f);
+                else
+                    style.normal.textColor = new Color (0.1f, 0.3f, 0.7f, 1f);
+                }
+
+            if (!obj.activeInHierarchy)
+                style.normal.textColor = Constants.UnactivePrefabColor;
+
+            EditorGUI.LabelField (selectionRect, content, style);
+            }
+
+        #endregion
+
         #region Draw
 
         private static void DrawElementStyle(GameObject obj, Rect selectionRect)
             {
+            //Draw background of default first
+            if (settings.globalStyle.twoToneBackground)
+                {
+                Rect backRect = GetActualHierarchyWidth (selectionRect);
+                EditorGUI.DrawRect (backRect, settings.globalStyle.GetTwoToneColour (selectionRect));
+
+                //Apply draw of geneal unity icons
+                DisplayGameObjectStatus (selectionRect, obj);
+                }
+
+
+            //Draw prefix styling
+
+            //Final Touches/Fixes etc
+
+            //Everything else as an overlay on top
             bool hasStyle = styles.Any (p => obj.name.StartsWith (p.prefix));
 
             if (hasStyle)
@@ -79,20 +180,28 @@ namespace HierarchyDecorator
 
                     if (obj.name.StartsWith (style.prefix))
                         {
-                        selectionRect.x += 28f;
-                        selectionRect.width -= 28f * 1.73f;
+                        Rect elementRect = selectionRect;
+                        elementRect.x += 28f;
+                        elementRect.width -= 28f * 1.73f;
 
-                        ApplyElementStyle (selectionRect, obj.name, style);
-
-                        return;
+                        ApplyElementStyle (elementRect, obj.name, style);
+                        ShowChildFoldout (selectionRect, obj, false);
+                        break;
                         }
                     }
                 }
-            else
-            //Draw normal data
+
+            if (obj.transform.parent != null)
+                ShowChildFoldout (selectionRect, obj, styles.Any (p => obj.transform.parent.name.StartsWith (p.prefix)));
+
+
+            if (!hasStyle)
                 {
                 if (selectionRect.width < 160f)
                     return;
+
+                if (settings.showComponents)
+                    DrawComponentData (currentObject, selectionRect);
 
                 if (currentLayer >= 0 && settings.showLayers)
                     {
@@ -102,10 +211,9 @@ namespace HierarchyDecorator
                     Rect rect = GetRightLayerMaskRect (selectionRect, indentIndex);
                     EditorGUI.LabelField (rect, LayerMask.LayerToName (currentLayer), EditorStyles.centeredGreyMiniLabel);
                     }
-
-                if (settings.showComponents)
-                    DrawComponentData (currentObject, selectionRect);
                 }
+
+            //EditorGUI.DrawRect (selectionRect, obj.activeSelf ? Color.clear : Constants.UnactiveColor);
             }
 
         private static void ApplyElementStyle(Rect selectionRect, string name, HierarchyStyle prefix)
@@ -129,14 +237,22 @@ namespace HierarchyDecorator
                 };
 
             style.normal.textColor = fontCol;
-            selectionRect = GetHierarchyStyleSize (selectionRect);
+
+            Rect backgroundRect = GetActualHierarchyWidth (selectionRect);
+            Rect labelRect = selectionRect = GetHierarchyStyleSize (selectionRect);
+
+            if (currentObject.transform.parent != null)
+                {
+                backgroundRect = selectionRect;
+                labelRect = selectionRect;
+                }
 
             //Draw background and label
-            EditorGUI.DrawRect(selectionRect, backgroundColor);
-            EditorGUI.LabelField (selectionRect, name.ToUpper (), style);
+            EditorGUI.DrawRect(backgroundRect, backgroundColor);
+            EditorGUI.LabelField (labelRect, name.ToUpper (), style);
 
             //Apply overlay line
-            DrawLineStyle (selectionRect, prefix);
+            DrawLineStyle (backgroundRect, prefix);
             }
 
         private static void DrawLineStyle(Rect selectionRect, HierarchyStyle style)
@@ -173,11 +289,6 @@ namespace HierarchyDecorator
             //Space for layer
             indentIndex = 3;
 
-            //Get Tint
-            Color tint = Color.white;
-
-            if (!obj.activeSelf)
-                tint = new Color (0.9f, 0.9f, 0.9f, 0.4f);
 
             //Iterate over all components that exist on the current instance
             Component[] components = obj.GetComponents<Component> ();
@@ -199,7 +310,7 @@ namespace HierarchyDecorator
                 //Get correct positioning and icon
                 Rect drawRect = GetRightRectWithOffset (selectionRect, indentIndex);
                 GUIContent content = EditorGUIUtility.ObjectContent (null, component);
-                GUI.DrawTexture (drawRect, content.image, ScaleMode.ScaleToFit, true, 0, obj.activeSelf ? Color.white : Constants.UnactiveColor, 0, 0);
+                GUI.DrawTexture (drawRect, content.image, ScaleMode.ScaleToFit, true, 0, obj.activeInHierarchy ? Color.white : Constants.UnactiveColor, 0, 0);
 
                 //Increment indent for correct display
                 indentIndex++;
@@ -216,8 +327,8 @@ namespace HierarchyDecorator
 
             GUIStyle style = new GUIStyle ();
             style.normal.background = (obj.activeSelf)
-                ? Icons.Checked
-                : Icons.Checkbox;
+                ? Textures.Checked
+                : Textures.Checkbox;
 
             //obj.SetActive (EditorGUI.Toggle (selectionRect, obj.activeSelf, style));
             bool active = obj.activeInHierarchy;
@@ -232,6 +343,19 @@ namespace HierarchyDecorator
         #endregion
 
         #region Rect Helpers
+
+        private static Rect GetActualHierarchyWidth(Rect rect)
+            {
+            rect.width += rect.x + 4f;
+            rect.x = 32f;
+
+            return rect;
+            }
+
+        //private static Rect GetActualParentWidth(Rect rect)
+        //    {
+            
+        //    }
 
         private static Rect GetHierarchyStyleSize(Rect rect)
             {
@@ -316,6 +440,20 @@ namespace HierarchyDecorator
             GUI.color = color;
             EditorGUI.DrawRect (rect, color);
             GUI.color = c;
+            }
+
+        private static int GetParentRecursiveCount(GameObject obj)
+            {
+            Transform t = obj.transform;
+            int count = 0;
+
+            while (t != null)
+                {
+                count++;
+                t = t.parent;
+                }
+
+            return count;
             }
 
         #endregion

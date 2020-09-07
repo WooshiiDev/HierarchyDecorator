@@ -44,6 +44,8 @@ namespace HierarchyDecorator
         public bool showLayers = true;
         public bool showActiveToggles = true;
 
+        public GlobalStyle globalStyle;
+
         #region Collections
 
         /// <summary>
@@ -150,8 +152,8 @@ namespace HierarchyDecorator
             grid.stretchWidth = true;
 
             //Apply final settings to all styles
-            foreach (HierarchyStyle prefix in prefixes)
-                prefix.SetLineStyle (LineStyle.BOTTOM);
+            //foreach (HierarchyStyle prefix in prefixes)
+            //    prefix.SetLineStyle (LineStyle.BOTTOM);
 
             UpdateSettings ();
             }
@@ -213,6 +215,10 @@ namespace HierarchyDecorator
 
         public void UpdateSettings()
             {
+            if (globalStyle == null)
+                globalStyle = new GlobalStyle ();
+
+            //Reflection for component types
             if (allTypes == null)
                 allTypes = ReflectionUtility.GetTypesFromAllAssemblies (typeof (Component));
 

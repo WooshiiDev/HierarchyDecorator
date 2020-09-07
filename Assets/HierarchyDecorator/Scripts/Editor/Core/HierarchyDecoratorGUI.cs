@@ -37,11 +37,11 @@ public static class HierarchyDecoratorGUI
 
         EditorGUILayout.BeginHorizontal ();
             {
-            EditorGUIUtility.labelWidth = 0;
-            value = EditorGUILayout.Toggle (value);
-
             EditorGUIUtility.labelWidth = 0;//style.CalcSize (new GUIContent (label)).x;
             EditorGUILayout.LabelField (label);
+
+            EditorGUIUtility.labelWidth = 0;
+            value = EditorGUILayout.Toggle (value);
             }
         EditorGUILayout.EndHorizontal ();
         }

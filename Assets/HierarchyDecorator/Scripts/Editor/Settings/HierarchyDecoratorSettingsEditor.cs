@@ -24,7 +24,7 @@ namespace HierarchyDecorator
         private List<string> styleNames = new List<string> ();
         private int styleSelection;
 
-        private string[] tabNames = { "Global Settings", "Prefixes", "Styles", "Shown Components" };
+        private string[] tabNames = { "Global Settings", "Prefixes", "Styles", "Shown Components", "About"};
         private int tabSelection;
 
         private Vector2 scrollView;
@@ -73,6 +73,7 @@ namespace HierarchyDecorator
 
             serializedObject.UpdateIfRequiredOrScript ();
 
+
             verticalStyle = new GUIStyle (GUI.skin.window)
                 {
                 padding = new RectOffset (0, 0, 10, 10),
@@ -90,17 +91,18 @@ namespace HierarchyDecorator
                 {
                 tabSelection = GUILayout.SelectionGrid (tabSelection, tabNames, tabNames.Length, greyMid);
 
-                if (tabSelection > 0)
+                if (tabSelection != 4)
                     {
                     EditorGUILayout.Space ();
                     HierarchyDecoratorGUI.LineSpacer ();
                     EditorGUILayout.Space ();
+
                     }
 
                 switch (tabSelection)
                     {
                     case 0:
-
+                        DrawGlobalSettings ();
                         break;
 
                     case 1:
@@ -116,51 +118,50 @@ namespace HierarchyDecorator
                         catSelection = GUILayout.SelectionGrid (catSelection, catergories, 4, EditorStyles.centeredGreyMiniLabel);
                         currentComponents = componentCatergories[catergories[catSelection]];
                         break;
+                    case 4:
+                        break;
                     }
                 }
             EditorGUILayout.EndVertical ();
 
             EditorGUILayout.Space ();
 
-            EditorGUILayout.BeginVertical (GUI.skin.box);
+            EditorGUI.indentLevel++;
+            switch (tabSelection)
                 {
-                EditorGUI.indentLevel++;
-                switch (tabSelection)
-                    {
-                    case 0:
-                        {
-                        EditorGUI.BeginChangeCheck ();
-                            {
-                            HierarchyDecoratorGUI.ToggleAuto (ref t.showActiveToggles, "Show GameObject Toggles");
-                            HierarchyDecoratorGUI.ToggleAuto (ref t.showComponents, "Show Common Components");
-                            HierarchyDecoratorGUI.ToggleAuto (ref t.showLayers, "Show Current Layer");
-                            }
-                        if (EditorGUI.EndChangeCheck ())
-                            {
-                            EditorApplication.RepaintHierarchyWindow ();
-                            }
-                        }
+                case 0:
+                       
+                break;
+
+                case 1:
+                    DrawSetting ("Prefix Selection", ref prefixSelection, prefixNames.ToArray (), prefixes);
                     break;
 
-                    case 1:
-                        DrawSetting ("Prefix Selection", ref prefixSelection, prefixNames.ToArray (), prefixes);
-                        break;
+                case 2:
+                    DrawSetting ("Style Selection", ref styleSelection, styleNames.ToArray (), styles);
+                    break;
 
-                    case 2:
-                        DrawSetting ("Style Selection", ref styleSelection, styleNames.ToArray (), styles);
-                        break;
+                case 3:
+                    DrawComponentSelection ();
+                    break;
 
-                    case 3:
-                        DrawComponentSelection ();
-                        break;
+                case 4:
+                    Texture banner = Textures.Banner;
+                    GUIStyle style = new GUIStyle ();
 
-                    default:
-                        break;
-                    }
-                EditorGUI.indentLevel--;
+                    if (GUILayout.Button ("GitHub Repository", EditorStyles.miniButtonMid))
+                        Application.OpenURL ("https://github.com/WooshiiDev/HierarchyDecorator/");
+
+                    if (GUILayout.Button ("Twitter", EditorStyles.miniButtonMid))
+                        Application.OpenURL ("https://twitter.com/DaamiaanS");
+                    
+                    GUILayout.Box (banner, style);
+                    break;
+
+                default:
+                    break;
                 }
-            EditorGUILayout.EndVertical ();
-
+            EditorGUI.indentLevel--;
             }
 
         private void DrawSetting(string label, ref int selection, string[] selectionArray, SerializedProperty property)
@@ -185,61 +186,64 @@ namespace HierarchyDecorator
                 selection = localSelection;
                 }
 
-            //Draw buttons
-            EditorGUILayout.BeginHorizontal ();
+            EditorGUILayout.BeginVertical (GUI.skin.box);
                 {
-                EditorGUILayout.LabelField (label, EditorStyles.largeLabel);
+                //Draw buttons
+                EditorGUILayout.BeginHorizontal ();
+                    {
+                    EditorGUILayout.LabelField (label, EditorStyles.largeLabel);
 
 
+                    EditorGUI.BeginChangeCheck ();
+                        {
+                        HierarchyDecoratorGUI.ButtonAction ("Add New", EditorStyles.miniButton, () =>
+                            {
+                                property.InsertArrayElementAtIndex (property.arraySize);
+
+                                serializedObject.ApplyModifiedProperties ();
+                                serializedObject.Update ();
+
+                                GetSettingNames ();
+                                HierarchyDecorator.GetSettings ();
+
+                                localSelection = property.arraySize - 1;
+                            });
+
+                        HierarchyDecoratorGUI.ButtonAction ("Remove Current", EditorStyles.miniButton, () =>
+                            {
+                                property.DeleteArrayElementAtIndex (localSelection);
+
+                                serializedObject.ApplyModifiedProperties ();
+                                serializedObject.Update ();
+
+                                GetSettingNames ();
+                                HierarchyDecorator.GetSettings ();
+
+                                localSelection--;
+                            });
+                        }
+                    if (EditorGUI.EndChangeCheck ())
+                        selection = localSelection;
+                    }
+                EditorGUILayout.EndHorizontal ();
+
+                //Draw current setting, and update when changed
                 EditorGUI.BeginChangeCheck ();
                     {
-                    HierarchyDecoratorGUI.ButtonAction ("Add New", EditorStyles.miniButton, () =>
-                        {
-                            property.InsertArrayElementAtIndex (property.arraySize);
-
-                            serializedObject.ApplyModifiedProperties ();
-                            serializedObject.Update ();
-
-                            GetSettingNames ();
-                            HierarchyDecorator.GetSettings ();
-
-                            localSelection = property.arraySize - 1;
-                        });
-
-                    HierarchyDecoratorGUI.ButtonAction ("Remove Current", EditorStyles.miniButton, () =>
-                        {
-                            property.DeleteArrayElementAtIndex (localSelection);
-
-                            serializedObject.ApplyModifiedProperties ();
-                            serializedObject.Update ();
-
-                            GetSettingNames ();
-                            HierarchyDecorator.GetSettings ();
-
-                            localSelection--;
-                        });
+                    EditorGUILayout.PropertyField (property.GetArrayElementAtIndex (selection));
                     }
                 if (EditorGUI.EndChangeCheck ())
-                    selection = localSelection;
+                    {
+                    EditorApplication.RepaintHierarchyWindow ();
+                    property.serializedObject.ApplyModifiedProperties ();
+                    }
                 }
-            EditorGUILayout.EndHorizontal ();
-
-            //Draw current setting, and update when changed
-            EditorGUI.BeginChangeCheck ();
-                {
-                EditorGUILayout.PropertyField (property.GetArrayElementAtIndex (selection));
-                }
-            if (EditorGUI.EndChangeCheck ())
-                {
-                EditorApplication.RepaintHierarchyWindow ();
-                property.serializedObject.ApplyModifiedProperties ();
-                }
+            EditorGUILayout.EndVertical ();
             }
 
         private void DrawComponentSelection()
             {
-
-            EditorGUILayout.BeginVertical ();
+            EditorGUILayout.BeginVertical (GUI.skin.box);
                 {
                 //Draw all components for the catergory
                 foreach (ComponentType component in currentComponents)
@@ -349,6 +353,29 @@ namespace HierarchyDecorator
                 {
                 item.Sort ();
                 }
+            }
+
+        private void DrawGlobalSettings()
+            {
+            EditorGUILayout.Space ();
+
+            EditorGUI.BeginChangeCheck ();
+                {
+                EditorGUILayout.LabelField ("Features", EditorStyles.boldLabel);
+
+                HierarchyDecoratorGUI.ToggleAuto (ref t.showActiveToggles, "Show GameObject Toggles");
+                HierarchyDecoratorGUI.ToggleAuto (ref t.showComponents, "Show Common Components");
+                HierarchyDecoratorGUI.ToggleAuto (ref t.showLayers, "Show Current Layer");
+
+                EditorGUILayout.LabelField ("Style", EditorStyles.boldLabel);
+
+                t.globalStyle.OnDraw ();
+                }
+            if (EditorGUI.EndChangeCheck ())
+                {
+                EditorApplication.RepaintHierarchyWindow ();
+                }
+
             }
         }
     }
