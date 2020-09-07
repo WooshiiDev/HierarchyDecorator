@@ -1,5 +1,5 @@
 # Hierarchy Decorator
-[![Unity 2018.3+](https://img.shields.io/badge/unity-2019.1%2B-blue.svg)](https://unity3d.com/get-unity/download)
+[![Unity 2018.3+](https://img.shields.io/badge/unity-2018.4%2B-blue.svg)](https://unity3d.com/get-unity/download)
 [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/WooshiiDev/HierarchyDecorator/blob/master/LICENSE)
 
 Hierarchy Decorator is an extension for Unity 2019.1 and higher to support custom drawing within the Hierarchy window, and add extra information functionality. This provides easier and helpful structure to the Hierarchy without getting overly noisy or messy. 
@@ -8,10 +8,17 @@ Hierarchy Decorator is an extension for Unity 2019.1 and higher to support custo
 
 ### Installation
 
+Please make sure you have Net 4.0 selected in the **Player Settings** to use this
+
 You can install this by downloading the .unitypackage that is provided in this repository. In the UnityPackage there are preset settings provided if you would like a basic system but it can be extended with your own ones.
 
 HierarchyDecorator can also be installed directly through the git url:
 `https://github.com/WooshiiDev/HierarchyDecorator.git`
+
+**Note (Current Issue)**
+
+When using 2018.4 it will remove assembly references when the package is brought into your project. 
+Please go to **Hierarchy Decorator** -> **Scripts** -> **Editor** -> **Wooshii.HierarchyDecorator.Editor** and add **Wooshii.HierarchyDecorator** to the assembly list
 
 ### Feedback
 Please submit any queries, bugs or issues, to the issues page on this repository. All feedback is appreciated as it not just helps myself find problems I didn't otherwise see, but also helps improve the project. 
