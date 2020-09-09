@@ -28,6 +28,7 @@ namespace HierarchyDecorator
 
         private static InstanceInfo currentInstance;
         private static InstanceInfo previousInstance;
+        private static Transform finalInstance;
 
         //Component Info
         private static List<Type> returnedComponents;
@@ -91,11 +92,56 @@ namespace HierarchyDecorator
 
         private static void ShowChildFoldout(Rect selectionRect, GameObject obj, bool showBack)
             {
-            ////If there is no previous instance, ignore
+            //If there is no previous instance, ignore
             if (previousInstance == null)
                 return;
 
             Transform prevTransform = previousInstance.gameObject.transform;
+            Transform transform = obj.transform;
+
+            int prevIndex = prevTransform.GetSiblingIndex ();
+            int siblingIndex = transform.GetSiblingIndex ();
+
+            if (prevTransform.childCount == 0 && finalInstance != transform)
+                {
+                if (siblingIndex == 0 && transform.parent == null)
+                    finalInstance = null;
+
+                return;
+                }
+
+
+            //Special use case for the previous transform
+            if (siblingIndex == 0 && transform.parent == null)
+                {
+                finalInstance = prevTransform;
+                return;
+                }
+
+            int index = siblingIndex - prevIndex;
+
+
+            Rect toggleRect = selectionRect;
+            bool showingChildren = false;
+
+            //Not a parent
+            if (index != 0 || prevIndex > siblingIndex && finalInstance != transform)
+                {
+                toggleRect = previousInstance.selectionRect;
+                toggleRect.x -= 14;
+
+                showingChildren = prevIndex > siblingIndex;
+                }
+
+            if (finalInstance == transform)
+                {
+                toggleRect = currentInstance.selectionRect;
+                toggleRect.x -= 14;
+
+                showingChildren = false;
+                }
+
+            EditorGUI.Foldout (toggleRect, showingChildren, "");
 
             //Debug.Log (prevTransform.name + " | " + prevTransform.GetSiblingIndex());
 
