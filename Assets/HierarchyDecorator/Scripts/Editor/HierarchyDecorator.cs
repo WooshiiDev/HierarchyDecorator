@@ -110,7 +110,6 @@ namespace HierarchyDecorator
                 return;
                 }
 
-
             //Special use case for the previous transform
             if (siblingIndex == 0 && transform.parent == null)
                 {
@@ -120,60 +119,15 @@ namespace HierarchyDecorator
 
             int index = siblingIndex - prevIndex;
 
-
             Rect toggleRect = selectionRect;
             bool showingChildren = false;
 
-            //Not a parent
-            if (index != 0 || prevIndex > siblingIndex && finalInstance != transform)
-                {
-                toggleRect = previousInstance.selectionRect;
-                toggleRect.x -= 14;
+            toggleRect = (finalInstance == transform) ? currentInstance.selectionRect : previousInstance.selectionRect;
+            toggleRect.x -= 14;
 
-                showingChildren = prevIndex > siblingIndex;
-                }
-
-            if (finalInstance == transform)
-                {
-                toggleRect = currentInstance.selectionRect;
-                toggleRect.x -= 14;
-
-                showingChildren = false;
-                }
+            showingChildren = prevTransform == transform.parent;
 
             EditorGUI.Foldout (toggleRect, showingChildren, "");
-
-            //Debug.Log (prevTransform.name + " | " + prevTransform.GetSiblingIndex());
-
-
-
-            ////Return if no point to check 
-            //if (prevTransform.childCount == 0)
-            //    return;
-
-            //Transform transform = currentInstance.gameObject.transform;
-            //bool isParent = currentInstance.gameObject.transform.parent == prevTransform;
-
-            //Rect toggleRect = selectionRect;
-
-            //if (isParent)
-            //    {
-            //    toggleRect.y -= toggleRect.height;
-            //    toggleRect.x -= 28;
-            //    }
-            //else
-            //    {
-
-            //    toggleRect = previousInstance.selectionRect;
-            //    toggleRect.x -= 14;
-            //    }
-
-
-            //toggleRect.width = toggleRect.height - 1;
-            //toggleRect.height--;
-
-            //EditorGUI.Foldout (toggleRect, isParent, "");
-
             }
 
         private static void DisplayGameObjectStatus(Rect selectionRect, GameObject obj)
