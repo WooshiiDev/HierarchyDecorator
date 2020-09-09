@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   showComponents: 1
   showLayers: 1
-  showActiveToggles: 0
+  showActiveToggles: 1
   globalStyle:
-    twoToneBackground: 0
+    twoToneBackground: 1
   prefixes:
   - prefix: =
     guiStyle: Header
@@ -294,7 +294,7 @@ MonoBehaviour:
     name: NavMeshObstacle
   - shown: 0
     name: OffMeshLink
-  - shown: 1
+  - shown: 0
     name: Animator
   - shown: 0
     name: Animation
@@ -310,7 +310,7 @@ MonoBehaviour:
     name: LookAtConstraint
   - shown: 0
     name: ParentConstraint
-  - shown: 1
+  - shown: 0
     name: AudioSource
   - shown: 0
     name: AudioLowPassFilter
@@ -320,7 +320,7 @@ MonoBehaviour:
     name: AudioReverbFilter
   - shown: 0
     name: AudioBehaviour
-  - shown: 1
+  - shown: 0
     name: AudioListener
   - shown: 0
     name: AudioReverbZone
@@ -332,7 +332,7 @@ MonoBehaviour:
     name: AudioChorusFilter
   - shown: 0
     name: Cloth
-  - shown: 1
+  - shown: 0
     name: Camera
   - shown: 0
     name: FlareLayer
@@ -354,11 +354,11 @@ MonoBehaviour:
     name: OcclusionArea
   - shown: 0
     name: LensFlare
-  - shown: 1
+  - shown: 0
     name: Light
   - shown: 0
     name: Skybox
-  - shown: 1
+  - shown: 0
     name: MeshFilter
   - shown: 0
     name: Halo
@@ -366,7 +366,7 @@ MonoBehaviour:
     name: LightProbeProxyVolume
   - shown: 0
     name: SkinnedMeshRenderer
-  - shown: 1
+  - shown: 0
     name: MeshRenderer
   - shown: 0
     name: LightProbeGroup
@@ -378,9 +378,9 @@ MonoBehaviour:
     name: Behaviour
   - shown: 0
     name: MonoBehaviour
-  - shown: 1
+  - shown: 0
     name: RectTransform
-  - shown: 1
+  - shown: 0
     name: Transform
   - shown: 0
     name: SpriteRenderer
@@ -398,19 +398,19 @@ MonoBehaviour:
     name: ParticleSystemRenderer
   - shown: 0
     name: ParticleSystemForceField
-  - shown: 1
+  - shown: 0
     name: Rigidbody
   - shown: 0
     name: Collider
   - shown: 0
     name: CharacterController
-  - shown: 1
+  - shown: 0
     name: MeshCollider
-  - shown: 1
+  - shown: 0
     name: CapsuleCollider
-  - shown: 1
+  - shown: 0
     name: BoxCollider
-  - shown: 1
+  - shown: 0
     name: SphereCollider
   - shown: 0
     name: ConstantForce
@@ -426,17 +426,17 @@ MonoBehaviour:
     name: CharacterJoint
   - shown: 0
     name: ConfigurableJoint
-  - shown: 1
+  - shown: 0
     name: Rigidbody2D
   - shown: 0
     name: Collider2D
-  - shown: 1
+  - shown: 0
     name: CircleCollider2D
-  - shown: 1
+  - shown: 0
     name: CapsuleCollider2D
-  - shown: 1
+  - shown: 0
     name: EdgeCollider2D
-  - shown: 1
+  - shown: 0
     name: BoxCollider2D
   - shown: 0
     name: PolygonCollider2D
@@ -492,7 +492,7 @@ MonoBehaviour:
     name: Tree
   - shown: 0
     name: TerrainCollider
-  - shown: 1
+  - shown: 0
     name: TextMesh
   - shown: 0
     name: Tilemap
@@ -502,7 +502,7 @@ MonoBehaviour:
     name: TilemapCollider2D
   - shown: 0
     name: CanvasGroup
-  - shown: 1
+  - shown: 0
     name: CanvasRenderer
   - shown: 0
     name: Canvas
@@ -520,6 +520,8 @@ MonoBehaviour:
     name: VideoPlayer
   - shown: 0
     name: WindZone
+  - shown: 0
+    name: NetworkScenePostProcess
   - shown: 0
     name: Button
   - shown: 0
@@ -605,38 +607,32 @@ MonoBehaviour:
   - shown: 0
     name: DropdownItem
   - shown: 0
-    name: SignalReceiver
+    name: NetworkAnimator
   - shown: 0
-    name: PlaymodeTestsController
+    name: NetworkBehaviour
   - shown: 0
-    name: PlayModeRunnerCallback
+    name: NetworkCallbacks
   - shown: 0
-    name: PlayerQuitHandler
+    name: NetworkDiscovery
   - shown: 0
-    name: RemoteTestResultSender
+    name: NetworkIdentity
   - shown: 0
-    name: TestResultRendererCallback
+    name: NetworkLobbyManager
   - shown: 0
-    name: TMP_Dropdown
+    name: NetworkLobbyPlayer
   - shown: 0
-    name: TMP_InputField
+    name: NetworkManager
   - shown: 0
-    name: TMP_ScrollbarEventHandler
+    name: NetworkManagerHUD
   - shown: 0
-    name: TMP_SelectionCaret
+    name: NetworkMigrationManager
   - shown: 0
-    name: TMP_SpriteAnimator
+    name: NetworkProximityChecker
   - shown: 0
-    name: TMP_SubMesh
+    name: NetworkStartPosition
   - shown: 0
-    name: TMP_SubMeshUI
+    name: NetworkTransform
   - shown: 0
-    name: TMP_Text
+    name: NetworkTransformChild
   - shown: 0
-    name: TextMeshPro
-  - shown: 0
-    name: TextMeshProUGUI
-  - shown: 0
-    name: TextContainer
-  - shown: 0
-    name: DropdownItem
+    name: NetworkTransformVisualizer

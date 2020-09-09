@@ -91,37 +91,43 @@ namespace HierarchyDecorator
 
         private static void ShowChildFoldout(Rect selectionRect, GameObject obj, bool showBack)
             {
-            //If there is no previous instance, ignore
+            ////If there is no previous instance, ignore
             if (previousInstance == null)
                 return;
 
             Transform prevTransform = previousInstance.gameObject.transform;
 
-            //Return if no point to check 
-            if (prevTransform.childCount == 0)
-                return;
-
-            Transform transform = currentInstance.gameObject.transform;
-            bool isParent = currentInstance.gameObject.transform.parent == prevTransform;
-
-            Rect toggleRect = selectionRect;
-
-            if (isParent)
-                {
-                toggleRect.y -= toggleRect.height;
-                toggleRect.x -= 28;
-                }
-            else
-                {
-                toggleRect = previousInstance.selectionRect;
-                toggleRect.x -= 14;
-                }
+            //Debug.Log (prevTransform.name + " | " + prevTransform.GetSiblingIndex());
 
 
-            toggleRect.width = toggleRect.height - 1;
-            toggleRect.height--;
 
-            EditorGUI.Foldout (toggleRect, isParent, "");
+            ////Return if no point to check 
+            //if (prevTransform.childCount == 0)
+            //    return;
+
+            //Transform transform = currentInstance.gameObject.transform;
+            //bool isParent = currentInstance.gameObject.transform.parent == prevTransform;
+
+            //Rect toggleRect = selectionRect;
+
+            //if (isParent)
+            //    {
+            //    toggleRect.y -= toggleRect.height;
+            //    toggleRect.x -= 28;
+            //    }
+            //else
+            //    {
+
+            //    toggleRect = previousInstance.selectionRect;
+            //    toggleRect.x -= 14;
+            //    }
+
+
+            //toggleRect.width = toggleRect.height - 1;
+            //toggleRect.height--;
+
+            //EditorGUI.Foldout (toggleRect, isParent, "");
+
             }
 
         private static void DisplayGameObjectStatus(Rect selectionRect, GameObject obj)
@@ -183,7 +189,13 @@ namespace HierarchyDecorator
 
         private static void DrawElementStyle(GameObject obj, Rect selectionRect)
             {
-            //Draw background of default first
+            //============================
+            //=========BACK LAYER=========
+            //============================
+
+            //Draw background requirements of two tone
+            //Due to this draw any other requirements
+            //i.e. GameObject name style, icon (prefab, object etc)
             if (settings.globalStyle.twoToneBackground)
                 {
                 Rect backRect = GetActualHierarchyWidth (selectionRect);
@@ -193,12 +205,11 @@ namespace HierarchyDecorator
                 DisplayGameObjectStatus (selectionRect, obj);
                 }
 
+            //=============================
+            //========CONTENT LAYER========
+            //=============================
 
-            //Draw prefix styling
-
-            //Final Touches/Fixes etc
-
-            //Everything else as an overlay on top
+            //Does the object have a prefix to define the style
             bool hasStyle = styles.Any (p => obj.name.StartsWith (p.prefix));
 
             if (hasStyle)
@@ -220,6 +231,13 @@ namespace HierarchyDecorator
                 }
 
             ShowChildFoldout (selectionRect, obj, false);
+
+
+            //=============================
+            //========OVERLAY LAYER========
+            //=============================
+
+            //Everything else as an overlay on top
 
 
             if (!hasStyle)

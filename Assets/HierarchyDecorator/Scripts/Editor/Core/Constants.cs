@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace HierarchyDecorator
     {
@@ -22,49 +20,6 @@ namespace HierarchyDecorator
         internal readonly static Color UnactiveColor = new Color (0.9f, 0.9f, 0.9f, 0.4f);
         internal readonly static Color UnactivePrefabColor = new Color (0.48f, 0.67f, 0.95f, 0.5f);
 
-        //Collections
-        public readonly static List<Type> CommonComponents = new List<Type>
-            {
-            // -- Animation --
-            typeof(Animation),
-            typeof(Animator),
-
-            // -- Audio --
-            typeof(AudioListener),
-            typeof(AudioSource),
-
-            //-- Coll --
-            typeof(BoxCollider),
-            typeof(SphereCollider),
-            typeof(CapsuleCollider),
-            typeof(MeshCollider),
-
-            // -- Camera --
-            typeof(Camera),
-
-            // -- Lighting --
-            typeof(Light),
-
-            // -- Mesh --
-            typeof(MeshRenderer),
-
-            // -- Particle --
-            typeof(ParticleSystem),
-            typeof(Projector),
-
-            // -- Physics --
-            typeof(Rigidbody),
-                
-            // --- Terrain ---
-            typeof(Terrain),
-
-            // --- UI ---
-            typeof(RectTransform),
-
-            typeof(Image),
-            typeof(RawImage),
-            };
-
         internal static HierarchyDecoratorSettings Settings => HierarchyDecoratorSettings.GetOrCreateSettings ();
         internal static List<HierarchyStyle> prefixes => Settings.prefixes;
 
@@ -76,7 +31,7 @@ namespace HierarchyDecorator
 
     internal static class Textures
         {
-        #region Icons
+#region Icons
 
         internal readonly static Texture2D CheckboxEmpty = Resources.Load<Texture2D> ("Icons/checkbox_filled");
         internal readonly static Texture2D CheckboxFilled = Resources.Load<Texture2D> ("Icons/checkbox_empty");
@@ -85,7 +40,7 @@ namespace HierarchyDecorator
         internal readonly static Texture2D Checkbox = Resources.Load<Texture2D> ("Icons/checkBox");
 
         internal readonly static Texture2D Checkmark = Resources.Load<Texture2D> ("Icons/checkmark");
-        #endregion
+#endregion
 
         internal readonly static Texture2D Banner = Resources.Load<Texture2D> ("HierarchyDecoratorLogo");
         }

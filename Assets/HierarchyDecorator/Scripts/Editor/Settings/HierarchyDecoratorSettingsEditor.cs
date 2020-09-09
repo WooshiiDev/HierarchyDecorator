@@ -20,11 +20,12 @@ namespace HierarchyDecorator
         // --- GUI ---
         private List<string> prefixNames = new List<string> ();
         private int prefixSelection;
+        private int modeSelection;
 
         private List<string> styleNames = new List<string> ();
         private int styleSelection;
 
-        private string[] tabNames = { "Global Settings", "Prefixes", "Styles", "Shown Components", "About"};
+        private string[] tabNames = { "Global", "Prefixes", "Styles", "Icons", "About"};
         private int tabSelection;
 
         private Vector2 scrollView;
@@ -46,11 +47,14 @@ namespace HierarchyDecorator
 
             "Collider",
 
+            "Joint",
+
             "Nav",
+            "Network",
+
             "Mesh",
 
             "Renderer",
-
             };
 
         private void OnEnable()
@@ -89,7 +93,7 @@ namespace HierarchyDecorator
 
             EditorGUILayout.BeginVertical (verticalStyle);
                 {
-                tabSelection = GUILayout.SelectionGrid (tabSelection, tabNames, tabNames.Length/2, greyMid);
+                tabSelection = GUILayout.SelectionGrid (tabSelection, tabNames, tabNames.Length, greyMid);
 
                 if (tabSelection != 4)
                     {
@@ -133,12 +137,57 @@ namespace HierarchyDecorator
                        
                 break;
 
+                //PREFIX SELECTION
                 case 1:
-                    DrawSetting ("Prefix Selection", ref prefixSelection, prefixNames.ToArray (), prefixes);
+                    EditorGUILayout.BeginVertical (GUI.skin.box);
+                        {
+                        DrawSetting ("Prefix Selection", ref prefixSelection, prefixNames.ToArray (), prefixes);
+
+                        var prefix = prefixes.GetArrayElementAtIndex (prefixSelection);
+                        var mode = (modeSelection == 0) ? prefix.FindPropertyRelative ("lightMode") : prefix.FindPropertyRelative ("darkMode");
+                        mode.isExpanded = true;
+
+                        var prefixString = prefix.FindPropertyRelative ("prefix");
+                        var guiStyle = prefix.FindPropertyRelative ("guiStyle");
+
+                        EditorGUI.BeginChangeCheck ();
+                            {
+                            EditorGUILayout.PropertyField (prefixString);
+                            EditorGUILayout.PropertyField (guiStyle);
+
+                            modeSelection = GUILayout.SelectionGrid (modeSelection, new[] { "Light", "Dark" }, 2,EditorStyles.centeredGreyMiniLabel);
+
+                            EditorGUILayout.PropertyField (mode);
+                            }
+                        if (EditorGUI.EndChangeCheck ())
+                            {
+                            EditorApplication.RepaintHierarchyWindow ();
+                            prefixes.serializedObject.ApplyModifiedProperties ();
+                            }
+                        }
+                    EditorGUILayout.EndVertical ();
                     break;
 
+                //STYLES
                 case 2:
-                    DrawSetting ("Style Selection", ref styleSelection, styleNames.ToArray (), styles);
+                    EditorGUILayout.BeginVertical (GUI.skin.box);
+                        {
+                        DrawSetting ("Style Selection", ref styleSelection, styleNames.ToArray (), styles);
+
+                        var styleSelected = styles.GetArrayElementAtIndex (styleSelection);
+                        styleSelected.isExpanded = true;
+
+                        EditorGUI.BeginChangeCheck ();
+                            {
+                            EditorGUILayout.PropertyField (styleSelected);
+                            }
+                        if (EditorGUI.EndChangeCheck ())
+                            {
+                            EditorApplication.RepaintHierarchyWindow ();
+                            prefixes.serializedObject.ApplyModifiedProperties ();
+                            }
+                        }
+                    EditorGUILayout.EndVertical ();
                     break;
 
                 case 3:
@@ -186,59 +235,47 @@ namespace HierarchyDecorator
                 selection = localSelection;
                 }
 
-            EditorGUILayout.BeginVertical (GUI.skin.box);
+            //Draw buttons
+            EditorGUILayout.BeginHorizontal ();
                 {
-                //Draw buttons
-                EditorGUILayout.BeginHorizontal ();
-                    {
-                    EditorGUILayout.LabelField (label, EditorStyles.largeLabel);
+                EditorGUILayout.LabelField (label, EditorStyles.largeLabel);
 
 
-                    EditorGUI.BeginChangeCheck ();
-                        {
-                        HierarchyDecoratorGUI.ButtonAction ("Add New", EditorStyles.miniButton, () =>
-                            {
-                                property.InsertArrayElementAtIndex (property.arraySize);
-
-                                serializedObject.ApplyModifiedProperties ();
-                                serializedObject.Update ();
-
-                                GetSettingNames ();
-                                HierarchyDecorator.GetSettings ();
-
-                                localSelection = property.arraySize - 1;
-                            });
-
-                        HierarchyDecoratorGUI.ButtonAction ("Remove Current", EditorStyles.miniButton, () =>
-                            {
-                                property.DeleteArrayElementAtIndex (localSelection);
-
-                                serializedObject.ApplyModifiedProperties ();
-                                serializedObject.Update ();
-
-                                GetSettingNames ();
-                                HierarchyDecorator.GetSettings ();
-
-                                localSelection--;
-                            });
-                        }
-                    if (EditorGUI.EndChangeCheck ())
-                        selection = localSelection;
-                    }
-                EditorGUILayout.EndHorizontal ();
-
-                //Draw current setting, and update when changed
                 EditorGUI.BeginChangeCheck ();
                     {
-                    EditorGUILayout.PropertyField (property.GetArrayElementAtIndex (selection));
+                    HierarchyDecoratorGUI.ButtonAction ("Add New", EditorStyles.miniButton, () =>
+                        {
+                            property.InsertArrayElementAtIndex (property.arraySize);
+
+                            serializedObject.ApplyModifiedProperties ();
+                            serializedObject.Update ();
+
+                            GetSettingNames ();
+                            HierarchyDecorator.GetSettings ();
+
+                            localSelection = property.arraySize - 1;
+                        });
+
+                    HierarchyDecoratorGUI.ButtonAction ("Remove Current", EditorStyles.miniButton, () =>
+                        {
+                            property.DeleteArrayElementAtIndex (localSelection);
+
+                            serializedObject.ApplyModifiedProperties ();
+                            serializedObject.Update ();
+
+                            GetSettingNames ();
+                            HierarchyDecorator.GetSettings ();
+
+                            localSelection--;
+                        });
                     }
                 if (EditorGUI.EndChangeCheck ())
-                    {
-                    EditorApplication.RepaintHierarchyWindow ();
-                    property.serializedObject.ApplyModifiedProperties ();
-                    }
+                    selection = localSelection;
                 }
-            EditorGUILayout.EndVertical ();
+            EditorGUILayout.EndHorizontal ();
+
+
+
             }
 
         private void DrawComponentSelection()
