@@ -59,6 +59,11 @@ namespace HierarchyDecorator
         /// <param name="selectionRect">Rect area on the inspector</param>
         private static void HandleObject(int instanceID, Rect selectionRect)
             {
+            //Call it here to allow editor scripts to load
+            //A lot of pain to work around
+            if (settings == null)
+                GetSettings ();
+
             GameObject gameObject = EditorUtility.InstanceIDToObject (instanceID) as GameObject;
 
             if (gameObject == null)
@@ -70,12 +75,7 @@ namespace HierarchyDecorator
                 selectionRect,
                 PrefabUtility.GetPrefabInstanceStatus (gameObject) != PrefabInstanceStatus.NotAPrefab
                 );
-
-            //Call it here to allow editor scripts to load
-            //A lot of pain to work around
-            if (settings == null)
-                GetSettings ();
-
+          
             //Make sure the object isn't null for whatever reason
             if (gameObject != null)
                 {
@@ -128,6 +128,17 @@ namespace HierarchyDecorator
             showingChildren = prevTransform == transform.parent;
 
             EditorGUI.Foldout (toggleRect, showingChildren, "");
+
+            if (finalInstance == transform)
+                {
+                if (prevTransform.childCount > 0)
+                    {
+                    toggleRect = previousInstance.selectionRect;
+                    toggleRect.x -= 14;
+
+                    EditorGUI.Foldout (toggleRect, showingChildren, "");
+                    }
+                }
             }
 
         private static void DisplayGameObjectStatus(Rect selectionRect, GameObject obj)
@@ -338,27 +349,31 @@ namespace HierarchyDecorator
 
             //Space for layer
             indentIndex = 3;
-
-
+        
             //Iterate over all components that exist on the current instance
             Component[] components = obj.GetComponents<Component> ();
             for (int i = 0; i < components.Length; i++)
                 {
-                var component = components[i].GetType ();
+                Component component = components[i];
+
+                if (component == null)
+                    continue;
+
+                var type = component.GetType ();
 
                 //Make sure it's allowed to be displayed
-                if (component == null || !IsAllowedType(component))
+                if (type == null || !IsAllowedType(type))
                     continue;
 
                 //Do not need duplicates
-                if (returnedComponents.Contains (component))
+                if (returnedComponents.Contains (type))
                     continue;
 
-                returnedComponents.Add (component);
+                returnedComponents.Add (type);
 
                 //Get correct positioning and icon
                 Rect drawRect = GetRightRectWithOffset (selectionRect, indentIndex);
-                GUIContent content = EditorGUIUtility.ObjectContent (null, component);
+                GUIContent content = EditorGUIUtility.ObjectContent (null, type);
                 GUI.DrawTexture (drawRect, content.image, ScaleMode.ScaleToFit, true, 0, obj.activeInHierarchy ? Color.white : Constants.UnactiveColor, 0, 0);
 
                 //Increment indent for correct display
