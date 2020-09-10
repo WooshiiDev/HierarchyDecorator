@@ -96,6 +96,10 @@ namespace HierarchyDecorator
             if (previousInstance == null)
                 return;
 
+            //Deleted
+            if (previousInstance.gameObject == null)
+                return;
+
             Transform prevTransform = previousInstance.gameObject.transform;
             Transform transform = obj.transform;
 

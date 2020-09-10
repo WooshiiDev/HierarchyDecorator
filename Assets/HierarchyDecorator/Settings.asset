@@ -320,7 +320,7 @@ MonoBehaviour:
     name: AudioReverbFilter
   - shown: 0
     name: AudioBehaviour
-  - shown: 0
+  - shown: 1
     name: AudioListener
   - shown: 0
     name: AudioReverbZone
@@ -354,7 +354,7 @@ MonoBehaviour:
     name: OcclusionArea
   - shown: 0
     name: LensFlare
-  - shown: 0
+  - shown: 1
     name: Light
   - shown: 0
     name: Skybox
@@ -404,13 +404,13 @@ MonoBehaviour:
     name: Collider
   - shown: 0
     name: CharacterController
-  - shown: 0
+  - shown: 1
     name: MeshCollider
-  - shown: 0
+  - shown: 1
     name: CapsuleCollider
-  - shown: 0
+  - shown: 1
     name: BoxCollider
-  - shown: 0
+  - shown: 1
     name: SphereCollider
   - shown: 0
     name: ConstantForce
@@ -490,7 +490,7 @@ MonoBehaviour:
     name: Terrain
   - shown: 0
     name: Tree
-  - shown: 0
+  - shown: 1
     name: TerrainCollider
   - shown: 0
     name: TextMesh
