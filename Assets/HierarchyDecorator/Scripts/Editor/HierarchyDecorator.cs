@@ -82,7 +82,7 @@ namespace HierarchyDecorator
                 //Style
                 DrawElementStyle (gameObject, selectionRect);
 
-                if (settings.showActiveToggles)
+                if (settings.globalStyle.showActiveToggles)
                     DrawToggles (gameObject, selectionRect);
                     
                 }
@@ -260,10 +260,10 @@ namespace HierarchyDecorator
                 if (selectionRect.width < 160f)
                     return;
 
-                if (settings.showComponents)
+                if (settings.globalStyle.showComponents)
                     DrawComponentData (currentInstance.gameObject, selectionRect);
 
-                if (currentLayer >= 0 && settings.showLayers)
+                if (currentLayer >= 0 && settings.globalStyle.showLayers)
                     {
                     currentLayer = obj.layer;
 
@@ -442,7 +442,6 @@ namespace HierarchyDecorator
             rect = GetRightRectWithOffset (rect, offset);
 
             rect.x -= 4;
-            rect.y -= 2;
             rect.width += 48;
 
             return rect;

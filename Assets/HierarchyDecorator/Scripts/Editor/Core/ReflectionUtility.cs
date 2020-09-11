@@ -13,7 +13,7 @@ namespace HierarchyDecorator
             var assem = Assembly.GetAssembly (type);
 
             if (assem == null)
-                Debug.Log ("Cannot find assembly of " + type + "!");
+                Debug.LogError ("Cannot find assembly of " + type + "!");
 
             return assem.GetTypes ().Where (t => t.IsSubclassOf (type)).ToArray ();
             }
@@ -21,14 +21,16 @@ namespace HierarchyDecorator
         public static Type[] GetTypesFromAllAssemblies(Type type)
             {
             List<Type> types = new List<Type> ();
-            var assem = AppDomain.CurrentDomain.GetAssemblies ();
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies ();
 
-            if (assem == null)
-                Debug.Log ("Cannot find assembly of " + type + "!");
+            if (assemblies == null)
+                Debug.LogError ("Cannot find assembly of " + type + "!");
 
-            foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies ())
+            for (int i = 0; i < assemblies.Length; i++)
                 {
-                foreach (Type t in a.GetTypes ())
+                Assembly assembly = assemblies[i];
+
+                foreach (Type t in assembly.GetTypes())
                     {
                     if (t.IsSubclassOf (type))
                         types.Add (t);

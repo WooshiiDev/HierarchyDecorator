@@ -39,12 +39,7 @@ namespace HierarchyDecorator
     // Create a new type of Settings Asset.
     internal class HierarchyDecoratorSettings : ScriptableObject, ISerializationCallbackReceiver
         {
-        // --- Global Settings ---
-        public bool showComponents = true;
-        public bool showLayers = true;
-        public bool showActiveToggles = true;
-
-        public GlobalStyle globalStyle;
+        public GlobalSettings globalStyle;
 
         #region Collections
 
@@ -56,15 +51,7 @@ namespace HierarchyDecorator
         /// <summary>
         /// Collection of custom <see cref="GUIStyle"/>'s used for the hierarchy designs
         /// </summary>
-        public List<GUIStyle> styles = new List<GUIStyle> ();
-
-        ////Default prefixes. Add or remove any that you dislike or want
-        //private readonly List<HierarchyStyle> importantPrefixes = new List<HierarchyStyle> ()
-        //    {
-        //    new HierarchyStyle ("=",  new Color (150f / 255f, 150f / 255f, 150f / 255f, 1), "Header"),
-        //    new HierarchyStyle ("-" , new Color (178f / 255f, 178f / 255f, 178f / 255f, 1), "Toolbar"),
-        //    new HierarchyStyle ("+" , new Color (63f / 255f, 188f / 255f, 200f / 255f, 1)),
-        //    };
+        public List<GUIStyle> styles;
 
         private readonly List<HierarchyStyle> importantPrefixes = new List<HierarchyStyle> ()
             {
@@ -84,6 +71,7 @@ namespace HierarchyDecorator
         /// </summary>
         public List<ComponentType> components;
 
+        //Collection of every component type unity has 
         private static Type[] allTypes;
         #endregion
 
@@ -105,6 +93,7 @@ namespace HierarchyDecorator
                 settings = CreateInstance<HierarchyDecoratorSettings> ();
                 settings.SetDefaults ();
 
+                //Create folder
                 if (!Directory.Exists (Constants.SETTINGS_ASSET_FOLDER))
                     Directory.CreateDirectory (Constants.SETTINGS_ASSET_FOLDER);
 
@@ -114,6 +103,7 @@ namespace HierarchyDecorator
 
                 Debug.Log ($"Hiearchy Decorator found no previous settings, creating one at {Constants.SETTINGS_ASSET_PATH}.");
                 }
+
             return settings;
             }
 
@@ -131,8 +121,12 @@ namespace HierarchyDecorator
         /// </summary>
         internal void SetDefaults()
             {
-            //Setup styles
+            //Settings
+            globalStyle = new GlobalSettings ();
+
+            //Collections
             prefixes = importantPrefixes;
+            components = new List<ComponentType> ();
             styles = new List<GUIStyle> ()
                 {
                 CreateGUIStyle ("Header",       EditorStyles.boldLabel),
@@ -151,10 +145,6 @@ namespace HierarchyDecorator
             grid.border = new RectOffset (15, 15, 15, 15);
             grid.stretchWidth = true;
 
-            //Apply final settings to all styles
-            //foreach (HierarchyStyle prefix in prefixes)
-            //    prefix.SetLineStyle (LineStyle.BOTTOM);
-
             UpdateSettings ();
             }
 
@@ -169,7 +159,7 @@ namespace HierarchyDecorator
         /// <returns>Returns the gui style found, or the bold label as default if one is not</returns>
         public GUIStyle GetGUIStyle(string name)
             {
-            GUIStyle style = styles.SingleOrDefault (s => s.name == name);
+            GUIStyle style = styles.FirstOrDefault (s => s.name == name);
             return style ?? EditorStyles.boldLabel;
             }
 
@@ -189,7 +179,7 @@ namespace HierarchyDecorator
                 fixedHeight = 0,
                 fixedWidth = 0,
 
-                alignment = TextAnchor.MiddleLeft,
+                alignment = TextAnchor.MiddleCenter,
                 };
             }
 
@@ -215,33 +205,21 @@ namespace HierarchyDecorator
 
         public void UpdateSettings()
             {
-            if (globalStyle == null)
-                globalStyle = new GlobalStyle ();
-
             //Reflection for component types
             if (allTypes == null)
                 allTypes = ReflectionUtility.GetTypesFromAllAssemblies (typeof (Component));
 
-            bool hasMissing = (components == null) || (components.Count < allTypes.Length);
+            bool hasMissing = components.Count != allTypes.Length;
 
-            //Quick fix for now to stop duplication issues
-            if (components.Count > allTypes.Length)
-                {
-                components = new List<ComponentType> ();
-                hasMissing = true;
-                }
+            if (hasMissing)
+                components.Clear ();
 
             for (int i = 0; i < allTypes.Length; i++)
                 {
                 var type = allTypes[i];
 
                 if (hasMissing)
-                    {
-                    if (components == null)
-                        components = new List<ComponentType> ();
-
                     components.Add (new ComponentType (type));
-                    }
 
                 if (components[i].type == null)
                     components[i].UpdateType (type);

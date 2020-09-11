@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67172295637c1814b94b633e438f84ff, type: 3}
   m_Name: Settings
   m_EditorClassIdentifier: 
-  showComponents: 1
-  showLayers: 1
-  showActiveToggles: 1
   globalStyle:
+    showComponents: 1
+    showLayers: 1
+    showActiveToggles: 1
     twoToneBackground: 1
   prefixes:
   - prefix: =
@@ -380,7 +380,7 @@ MonoBehaviour:
     name: MonoBehaviour
   - shown: 0
     name: RectTransform
-  - shown: 0
+  - shown: 1
     name: Transform
   - shown: 0
     name: SpriteRenderer

@@ -25,14 +25,33 @@ namespace HierarchyDecorator
 
         //Layer Masks
         internal static string[] LayerMasks => UnityEditorInternal.InternalEditorUtility.layers;
-        internal readonly static LayerMask AllLayers = ~0;  
+        internal readonly static LayerMask AllLayers = ~0;
+
+        //Editor Settings
+        public readonly static string[] componentKeywords =
+            {   
+            "2D",
+
+            "Anim",
+            "Audio",
+
+            "Collider",
+
+            "Joint",
+
+            "Nav",
+            "Network",
+
+            "Mesh",
+
+            "Renderer",
+            };
 
         }
 
     internal static class Textures
         {
-#region Icons
-
+        #region Icons
         internal readonly static Texture2D CheckboxEmpty = Resources.Load<Texture2D> ("Icons/checkbox_filled");
         internal readonly static Texture2D CheckboxFilled = Resources.Load<Texture2D> ("Icons/checkbox_empty");
 
@@ -40,7 +59,7 @@ namespace HierarchyDecorator
         internal readonly static Texture2D Checkbox = Resources.Load<Texture2D> ("Icons/checkBox");
 
         internal readonly static Texture2D Checkmark = Resources.Load<Texture2D> ("Icons/checkmark");
-#endregion
+        #endregion
 
         internal readonly static Texture2D Banner = Resources.Load<Texture2D> ("HierarchyDecoratorLogo");
         }

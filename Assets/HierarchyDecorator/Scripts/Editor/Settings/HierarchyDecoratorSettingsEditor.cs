@@ -32,77 +32,68 @@ namespace HierarchyDecorator
 
         // --- Others ---
         private GUIStyle verticalStyle;
+        private GUIStyle greyMidStyle;
 
         // --- Component View ---
         private int catSelection;
-        private Dictionary<string, List<ComponentType>> componentCatergories = new Dictionary<string, List<ComponentType>> ();
-        private List<ComponentType> currentComponents;
-
-        private readonly string[] componentKeywords =
+        private Dictionary<string, List<ComponentType>> componentCatergories = new Dictionary<string, List<ComponentType>> ()
             {
-            "2D",
-
-            "Anim",
-            "Audio",
-
-            "Collider",
-
-            "Joint",
-
-            "Nav",
-            "Network",
-
-            "Mesh",
-
-            "Renderer",
+                {"General", new List<ComponentType>() }
             };
+
+        private List<ComponentType> currentComponents;
 
         private void OnEnable()
             {
             t = target as HierarchyDecoratorSettings;
+
+            //Setup catergories 
+            string[] keywords = Constants.componentKeywords;
+            for (int i = 0; i < keywords.Length; i++)
+                {
+                string keyword = keywords[i];
+
+                if (!componentCatergories.ContainsKey (keyword))
+                    componentCatergories.Add (keyword, new List<ComponentType> ());
+                }
             }
 
         public override void OnInspectorGUI()
             {
+            if (serializedObject == null)
+                return;
+
+            serializedObject.UpdateIfRequiredOrScript ();
+
             if (prefixes == null)
                 {
                 prefixes = serializedObject.FindProperty ("prefixes");
                 styles = serializedObject.FindProperty ("styles");
 
                 GetSettingNames ();
+
+                verticalStyle = new GUIStyle (GUI.skin.window)
+                    {
+                    padding = new RectOffset (0, 0, 10, 10),
+
+                    fontSize = 10
+                    };
+
+                greyMidStyle = new GUIStyle (EditorStyles.centeredGreyMiniLabel)
+                    {
+                    fontSize = 12,
+                    fontStyle = FontStyle.Bold,
+                    };
                 }
-
-            if (serializedObject == null)
-                return;
-
-            serializedObject.UpdateIfRequiredOrScript ();
-
-
-            verticalStyle = new GUIStyle (GUI.skin.window)
-                {
-                padding = new RectOffset (0, 0, 10, 10),
-
-                fontSize = 10
-                };
-
-            GUIStyle greyMid = new GUIStyle (EditorStyles.centeredGreyMiniLabel)
-                {
-                fontSize = 12,
-                fontStyle = FontStyle.Bold,
-                };
 
             EditorGUILayout.BeginVertical (verticalStyle);
                 {
-                tabSelection = GUILayout.SelectionGrid (tabSelection, tabNames, tabNames.Length, greyMid);
+                tabSelection = GUILayout.SelectionGrid (tabSelection, tabNames, tabNames.Length, greyMidStyle);
 
-                if (tabSelection != 4)
-                    {
-                    EditorGUILayout.Space ();
-                    HierarchyDecoratorGUI.LineSpacer ();
-                    EditorGUILayout.Space ();
-
-                    }
-
+                EditorGUILayout.Space ();
+                HierarchyDecoratorGUI.LineSpacer ();
+                EditorGUILayout.Space ();
+                    
                 switch (tabSelection)
                     {
                     case 0:
@@ -118,11 +109,9 @@ namespace HierarchyDecorator
                         break;
 
                     case 3:
-                        String[] catergories = componentCatergories.Keys.ToArray ();
+                        string[] catergories = componentCatergories.Keys.ToArray ();
                         catSelection = GUILayout.SelectionGrid (catSelection, catergories, 4, EditorStyles.centeredGreyMiniLabel);
                         currentComponents = componentCatergories[catergories[catSelection]];
-                        break;
-                    case 4:
                         break;
                     }
                 }
@@ -130,88 +119,159 @@ namespace HierarchyDecorator
 
             EditorGUILayout.Space ();
 
-            EditorGUI.indentLevel++;
-            switch (tabSelection)
+            EditorGUI.BeginChangeCheck ();
                 {
-                case 0:
-                       
-                break;
-
-                //PREFIX SELECTION
-                case 1:
-                    EditorGUILayout.BeginVertical (GUI.skin.box);
+                EditorGUI.indentLevel++;
+                    {
+                    switch (tabSelection)
                         {
-                        DrawSetting ("Prefix Selection", ref prefixSelection, prefixNames.ToArray (), prefixes);
+                        //PREFIX SELECTION
+                        case 1:
+                            EditorGUI.indentLevel++;
+                            DrawPrefixBody ();
+                            EditorGUI.indentLevel--;
+                            break;
 
-                        var prefix = prefixes.GetArrayElementAtIndex (prefixSelection);
-                        var mode = (modeSelection == 0) ? prefix.FindPropertyRelative ("lightMode") : prefix.FindPropertyRelative ("darkMode");
-                        mode.isExpanded = true;
+                        //STYLES
+                        case 2:
+                            DrawStyleBody ();
+                            break;
 
-                        var prefixString = prefix.FindPropertyRelative ("prefix");
-                        var guiStyle = prefix.FindPropertyRelative ("guiStyle");
+                        case 3:
+                            DrawComponentBody ();
+                            break;
 
-                        EditorGUI.BeginChangeCheck ();
-                            {
-                            EditorGUILayout.PropertyField (prefixString);
-                            EditorGUILayout.PropertyField (guiStyle);
-
-                            modeSelection = GUILayout.SelectionGrid (modeSelection, new[] { "Light", "Dark" }, 2,EditorStyles.centeredGreyMiniLabel);
-
-                            EditorGUILayout.PropertyField (mode);
-                            }
-                        if (EditorGUI.EndChangeCheck ())
-                            {
-                            EditorApplication.RepaintHierarchyWindow ();
-                            prefixes.serializedObject.ApplyModifiedProperties ();
-                            }
+                        case 4:
+                            DrawAboutBody ();
+                            break;
                         }
-                    EditorGUILayout.EndVertical ();
-                    break;
-
-                //STYLES
-                case 2:
-                    EditorGUILayout.BeginVertical (GUI.skin.box);
-                        {
-                        DrawSetting ("Style Selection", ref styleSelection, styleNames.ToArray (), styles);
-
-                        var styleSelected = styles.GetArrayElementAtIndex (styleSelection);
-                        styleSelected.isExpanded = true;
-
-                        EditorGUI.BeginChangeCheck ();
-                            {
-                            EditorGUILayout.PropertyField (styleSelected);
-                            }
-                        if (EditorGUI.EndChangeCheck ())
-                            {
-                            EditorApplication.RepaintHierarchyWindow ();
-                            prefixes.serializedObject.ApplyModifiedProperties ();
-                            }
-                        }
-                    EditorGUILayout.EndVertical ();
-                    break;
-
-                case 3:
-                    DrawComponentSelection ();
-                    break;
-
-                case 4:
-                    Texture banner = Textures.Banner;
-                    GUIStyle style = new GUIStyle ();
-
-                    if (GUILayout.Button ("GitHub Repository", EditorStyles.miniButtonMid))
-                        Application.OpenURL ("https://github.com/WooshiiDev/HierarchyDecorator/");
-
-                    if (GUILayout.Button ("Twitter", EditorStyles.miniButtonMid))
-                        Application.OpenURL ("https://twitter.com/DaamiaanS");
-                    
-                    GUILayout.Box (banner, style);
-                    break;
-
-                default:
-                    break;
+                    }
+                EditorGUI.indentLevel--;
                 }
-            EditorGUI.indentLevel--;
+            if (EditorGUI.EndChangeCheck())
+                {
+                EditorApplication.RepaintHierarchyWindow ();
+                }
             }
+
+        #region Settings Body 
+
+        private void DrawGlobalSettings()
+            {
+            EditorGUI.BeginChangeCheck ();
+                {
+                t.globalStyle.OnDraw ();
+                }
+            if (EditorGUI.EndChangeCheck())
+                EditorApplication.RepaintHierarchyWindow ();
+            }
+
+        private void DrawPrefixBody()
+            {
+            EditorGUILayout.BeginVertical (verticalStyle);
+                {
+                DrawSetting ("Prefix Selection", ref prefixSelection, prefixNames.ToArray (), prefixes);
+
+                if (prefixes.arraySize == 0)
+                    {
+                    EditorGUILayout.EndVertical ();
+                    return;
+                    }
+
+                var prefix = prefixes.GetArrayElementAtIndex (prefixSelection);
+                var mode = (modeSelection == 0) ? prefix.FindPropertyRelative ("lightMode") : prefix.FindPropertyRelative ("darkMode");
+                mode.isExpanded = true;
+
+                var prefixString = prefix.FindPropertyRelative ("prefix");
+                var guiStyle = prefix.FindPropertyRelative ("guiStyle");
+
+                EditorGUI.BeginChangeCheck ();
+                    {
+                    EditorGUILayout.PropertyField (prefixString);
+                    EditorGUILayout.PropertyField (guiStyle);
+
+                    modeSelection = GUILayout.SelectionGrid (modeSelection, new[] { "Light", "Dark" }, 2, greyMidStyle);
+                    EditorGUILayout.PropertyField (mode);
+                    }
+                if (EditorGUI.EndChangeCheck ())
+                    {
+                    GetSettingNames ();
+                    prefixes.serializedObject.ApplyModifiedProperties ();
+                    }
+                }
+            EditorGUILayout.EndVertical ();
+            }
+
+        private void DrawStyleBody()
+            {
+            EditorGUILayout.BeginVertical (verticalStyle);
+                {
+                DrawSetting ("Style Selection", ref styleSelection, styleNames.ToArray (), styles);
+
+                if (styles.arraySize == 0)
+                    {
+                    EditorGUILayout.EndVertical ();
+                    return;
+                    }
+
+                var styleSelected = styles.GetArrayElementAtIndex (styleSelection);
+                styleSelected.isExpanded = true;
+
+                EditorGUI.BeginChangeCheck ();
+                    {
+                    EditorGUILayout.PropertyField (styleSelected);
+                    }
+                if (EditorGUI.EndChangeCheck ())
+                    {
+                    GetSettingNames ();
+                    prefixes.serializedObject.ApplyModifiedProperties ();
+                    }
+                }
+            EditorGUILayout.EndVertical ();
+            }
+
+        private void DrawAboutBody()
+            {
+            Texture banner = Textures.Banner;
+            GUIStyle style = new GUIStyle ();
+
+            if (GUILayout.Button ("GitHub Repository", EditorStyles.miniButtonMid))
+                Application.OpenURL ("https://github.com/WooshiiDev/HierarchyDecorator/");
+
+            if (GUILayout.Button ("Twitter", EditorStyles.miniButtonMid))
+                Application.OpenURL ("https://twitter.com/DaamiaanS");
+
+            GUILayout.Box (banner, style);
+            }
+
+        private void DrawComponentBody()
+            {
+            EditorGUILayout.BeginVertical (verticalStyle);
+                {
+                //Draw all components for the catergory
+                foreach (ComponentType component in currentComponents)
+                    {
+                    GUIContent content = EditorGUIUtility.ObjectContent (null, component.type);
+
+                    //Do not display if it's irrelevant in the first place
+                    if (content.image == null || content.image.name == "d_DefaultAsset Icon")
+                        continue;
+
+                    content.text = component.name;
+  
+                    EditorGUILayout.BeginHorizontal ();
+                        {
+                        component.shown = EditorGUILayout.Toggle (component.shown);
+                        EditorGUILayout.LabelField (content);
+                        }
+                    EditorGUILayout.EndHorizontal ();
+                    }
+
+                }
+            EditorGUILayout.EndVertical ();
+            }
+
+        #endregion
 
         private void DrawSetting(string label, ref int selection, string[] selectionArray, SerializedProperty property)
             {
@@ -233,6 +293,7 @@ namespace HierarchyDecorator
                     });
 
                 selection = localSelection;
+                return;
                 }
 
             //Draw buttons
@@ -240,80 +301,36 @@ namespace HierarchyDecorator
                 {
                 EditorGUILayout.LabelField (label, EditorStyles.largeLabel);
 
-
                 EditorGUI.BeginChangeCheck ();
                     {
                     HierarchyDecoratorGUI.ButtonAction ("Add New", EditorStyles.miniButton, () =>
                         {
-                            property.InsertArrayElementAtIndex (property.arraySize);
-
-                            serializedObject.ApplyModifiedProperties ();
-                            serializedObject.Update ();
-
-                            GetSettingNames ();
-                            HierarchyDecorator.GetSettings ();
-
-                            localSelection = property.arraySize - 1;
+                        property.InsertArrayElementAtIndex (property.arraySize);
+                        localSelection = property.arraySize - 1;
                         });
 
                     HierarchyDecoratorGUI.ButtonAction ("Remove Current", EditorStyles.miniButton, () =>
                         {
-                            property.DeleteArrayElementAtIndex (localSelection);
+                        property.DeleteArrayElementAtIndex (localSelection);
+                        localSelection--;
 
-                            serializedObject.ApplyModifiedProperties ();
-                            serializedObject.Update ();
-
-                            GetSettingNames ();
-                            HierarchyDecorator.GetSettings ();
-
-                            localSelection--;
+                        if (localSelection < 0)
+                            localSelection = 0;
                         });
                     }
                 if (EditorGUI.EndChangeCheck ())
+                    {
                     selection = localSelection;
+
+                    serializedObject.ApplyModifiedProperties ();
+                    serializedObject.Update ();
+
+                    GetSettingNames ();
+                    HierarchyDecorator.GetSettings ();
+                    }
+
                 }
             EditorGUILayout.EndHorizontal ();
-
-
-
-            }
-
-        private void DrawComponentSelection()
-            {
-            EditorGUILayout.BeginVertical (GUI.skin.box);
-                {
-                //Draw all components for the catergory
-                foreach (ComponentType component in currentComponents)
-                    {
-                    GUIContent content = new GUIContent ()
-                        {
-                        text = component.name,
-                        image = EditorGUIUtility.ObjectContent (null, component.type).image
-                        };
-
-                    //Do not display if it's irrelevant in the first place
-                    if (content.image == null || content.image.name == "d_DefaultAsset Icon")
-                        {
-                        continue;
-                        }
-
-                    EditorGUILayout.BeginHorizontal ();
-                        {
-                        EditorGUI.BeginChangeCheck ();
-                            {
-                            component.shown = EditorGUILayout.Toggle (component.shown);
-                            EditorGUILayout.LabelField (content);
-                            }
-                        if (EditorGUI.EndChangeCheck ())
-                            {
-                            EditorApplication.RepaintHierarchyWindow (); //Froce to make sure that the changes apply to the hierarchy instantly
-                            }
-                        }
-                    EditorGUILayout.EndHorizontal ();
-                    }
-    
-                }
-            EditorGUILayout.EndVertical ();
             }
 
         private void GetSettingNames()
@@ -338,51 +355,30 @@ namespace HierarchyDecorator
                 }
 
             List<string> catergories = new List<string> ();
+            string[] keywords = Constants.componentKeywords;
 
-            //foreach (var item in t.shownComponents)
-            foreach (ComponentType item in t.components)
+            for (int i = 0; i < t.components.Count; i++)
                 {
-                bool isContained = false;
-                for (int i = 0; i < componentKeywords.Length; i++)
-                    {
-                    string keyword = componentKeywords[i];
+                ComponentType component = t.components[i];
 
-                    if (item.type == null)
+                bool isContained = false;
+                for (int j = 0; j < keywords.Length; j++)
+                    {
+                    string keyword = keywords[j];
+
+                    if (component.type == null)
                         continue;
 
-                    if (item.type.FullName.Contains (keyword))
+                    if (component.type.FullName.Contains (keyword))
                         {
-                        if (componentCatergories.ContainsKey (keyword))
-                            {
-                            componentCatergories[keyword].Add (item);
-                            }
-                        else
-                            {
-                            componentCatergories.Add (keyword, new List<ComponentType> ()
-                                {
-                                item
-                                });
-                            }
-
+                        componentCatergories[keyword].Add (component);
                         isContained = true;
                         break;
                         }
                     }
 
                 if (!isContained)
-                    {
-                    if (componentCatergories.ContainsKey ("General"))
-                        {
-                        componentCatergories["General"].Add (item);
-                        }
-                    else
-                        {
-                        componentCatergories.Add ("General", new List<ComponentType> ()
-                            {
-                            item
-                            });
-                        }
-                    }
+                    componentCatergories["General"].Add (component);
                 }
 
             //Sort just for nicer viewing
@@ -390,29 +386,6 @@ namespace HierarchyDecorator
                 {
                 item.Sort ();
                 }
-            }
-
-        private void DrawGlobalSettings()
-            {
-            EditorGUILayout.Space ();
-
-            EditorGUI.BeginChangeCheck ();
-                {
-                EditorGUILayout.LabelField ("Features", EditorStyles.boldLabel);
-
-                HierarchyDecoratorGUI.ToggleAuto (ref t.showActiveToggles, "Show GameObject Toggles");
-                HierarchyDecoratorGUI.ToggleAuto (ref t.showComponents, "Show Common Components");
-                HierarchyDecoratorGUI.ToggleAuto (ref t.showLayers, "Show Current Layer");
-
-                EditorGUILayout.LabelField ("Style", EditorStyles.boldLabel);
-
-                t.globalStyle.OnDraw ();
-                }
-            if (EditorGUI.EndChangeCheck ())
-                {
-                EditorApplication.RepaintHierarchyWindow ();
-                }
-
             }
         }
     }
