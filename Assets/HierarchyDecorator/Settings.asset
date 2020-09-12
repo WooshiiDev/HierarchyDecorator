@@ -14,9 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   globalStyle:
     showComponents: 1
-    showLayers: 1
     showActiveToggles: 1
     twoToneBackground: 1
+    showLayers: 1
+    editableLayers: 1
+    applyChildLayers: 1
   prefixes:
   - prefix: =
     guiStyle: Header

@@ -1,3 +1,9 @@
+#### v0.4.5
+- Setting tabs are now setup in their own individual classes
+- Improved caching throughout due to this
+- LayerMasks can now be changed from the Hierarchy (multi or single select)
+- LayerMask display now has it's own settings catergory in the global settings tab
+
 #### v0.4.4
 - Added changelog to GitHub
 

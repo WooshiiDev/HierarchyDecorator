@@ -9,7 +9,7 @@ namespace HierarchyDecorator
         {
         public static SettingsProvider[] tabs =
             {
-            new SettingsTab (Constants.SETTINGS_PATH, SettingsScope.User),
+            new SettingsPreferences (Constants.SETTINGS_PATH, SettingsScope.User),
             };
 
         private static bool SettingsExist()

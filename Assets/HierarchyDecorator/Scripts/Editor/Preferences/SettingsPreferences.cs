@@ -11,7 +11,7 @@ using UnityEditor;
 
 namespace HierarchyDecorator
     {
-    internal class SettingsTab : SettingsProvider
+    internal class SettingsPreferences : SettingsProvider
         {
 
         //--- Settings ---
@@ -20,7 +20,7 @@ namespace HierarchyDecorator
         private static Editor settingsEditor;
 
         //Constructor
-        public SettingsTab(string path, SettingsScope scope = SettingsScope.User) : base (path, scope) { }
+        public SettingsPreferences(string path, SettingsScope scope = SettingsScope.User) : base (path, scope) { }
 
         //Activate and Deactivate for saving/loading
         public override void OnDeactivate()

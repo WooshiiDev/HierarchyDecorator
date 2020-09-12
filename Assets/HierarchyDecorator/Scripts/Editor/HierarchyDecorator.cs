@@ -28,6 +28,8 @@ namespace HierarchyDecorator
 
         private static InstanceInfo currentInstance;
         private static InstanceInfo previousInstance;
+        private static SerializedObject serializedObject;
+
         private static Transform finalInstance;
 
         //Component Info
@@ -52,6 +54,8 @@ namespace HierarchyDecorator
             EditorApplication.hierarchyWindowItemOnGUI += HandleObject;
             }
 
+        private static bool a;
+
         /// <summary>
         /// Main method called for each GameObject element
         /// </summary>
@@ -65,9 +69,10 @@ namespace HierarchyDecorator
                 GetSettings ();
 
             GameObject gameObject = EditorUtility.InstanceIDToObject (instanceID) as GameObject;
-
             if (gameObject == null)
                 return;
+
+            serializedObject = new SerializedObject (gameObject);
 
             currentInstance = new InstanceInfo (
                 instanceID,
@@ -247,30 +252,21 @@ namespace HierarchyDecorator
 
             ShowChildFoldout (selectionRect, obj, false);
 
-
             //=============================
             //========OVERLAY LAYER========
             //=============================
 
             //Everything else as an overlay on top
-
-
             if (!hasStyle)
                 {
                 if (selectionRect.width < 160f)
                     return;
 
                 if (settings.globalStyle.showComponents)
-                    DrawComponentData (currentInstance.gameObject, selectionRect);
+                    DrawComponentData (selectionRect, currentInstance.gameObject);
 
-                if (currentLayer >= 0 && settings.globalStyle.showLayers)
-                    {
-                    currentLayer = obj.layer;
-
-                    indentIndex = 2;
-                    Rect rect = GetRightLayerMaskRect (selectionRect, indentIndex);
-                    EditorGUI.LabelField (rect, LayerMask.LayerToName (currentLayer), EditorStyles.centeredGreyMiniLabel);
-                    }
+                if (settings.globalStyle.showLayers)
+                    LayerMaskMenu (selectionRect, currentInstance.gameObject);
                 }
 
             //EditorGUI.DrawRect (selectionRect, obj.activeSelf ? Color.clear : Constants.UnactiveColor);
@@ -346,7 +342,7 @@ namespace HierarchyDecorator
                 }
             }
 
-        private static void DrawComponentData(GameObject obj, Rect selectionRect)
+        private static void DrawComponentData(Rect selectionRect, GameObject obj)
             {
             //Clear cached components
             returnedComponents.Clear ();
@@ -406,6 +402,63 @@ namespace HierarchyDecorator
               : "OL ToggleMixed";
 
             obj.SetActive (EditorGUI.Toggle (selectionRect, obj.activeSelf, toggleStyle));
+            }
+
+        private static void LayerMaskMenu(Rect selectionRect, GameObject obj)
+            {
+            indentIndex = 2;
+            Rect rect = GetRightLayerMaskRect (selectionRect, indentIndex);
+
+            currentLayer = obj.layer;
+
+            EditorGUI.LabelField (rect, LayerMask.LayerToName (currentLayer), EditorStyles.centeredGreyMiniLabel);
+
+            if (settings.globalStyle.editableLayers)
+                {
+                var m = new GenericMenu ();
+
+                Event e = Event.current;
+
+                if (e.type == EventType.MouseDown)
+                    {
+                    if (rect.Contains (Event.current.mousePosition) && Event.current.button == 0)
+                        {
+                        //Only select the one we click if there are no others
+                        if (Selection.gameObjects.Length == 0)
+                            Selection.SetActiveObjectWithContext (currentInstance.gameObject, null);
+
+                        string[] layers = Constants.LayerMasks;
+                        for (int i = 0; i < layers.Length; i++)
+                            {
+                            var layer = layers[i];
+                            int layerIndex = LayerMask.NameToLayer (layer);
+
+                            m.AddItem (new GUIContent (layer), false, () =>
+                                {
+                                Undo.RecordObjects (Selection.gameObjects, "Layer Changed");
+
+                                foreach (GameObject go in Selection.gameObjects)
+                                    {
+                                    go.layer = layerIndex;
+
+                                    if (settings.globalStyle.applyChildLayers)
+                                        {
+                                        foreach (Transform child in go.transform)
+                                            child.gameObject.layer = layerIndex;
+                                        }
+                                    }
+
+                                if (Selection.gameObjects.Length == 1)
+                                    Selection.SetActiveObjectWithContext (null, null);
+                                });
+                            }
+
+                        m.ShowAsContext ();
+
+                        e.Use ();
+                        }
+                    }
+                }
             }
 
         #endregion

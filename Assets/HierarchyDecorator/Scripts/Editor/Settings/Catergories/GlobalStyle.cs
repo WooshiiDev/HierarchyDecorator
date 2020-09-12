@@ -6,11 +6,17 @@ namespace HierarchyDecorator
     [System.Serializable]
     internal class GlobalSettings
         {   
+        //Toggle
         public bool showComponents = true;
-        public bool showLayers = true;
         public bool showActiveToggles = true;
 
+        //Style
         public bool twoToneBackground;
+
+        //Layer Mask
+        public bool showLayers = true;
+        public bool editableLayers = true;
+        public bool applyChildLayers = true;
 
         public Color GetTwoToneColour(Rect selectionRect)
             {
@@ -32,29 +38,46 @@ namespace HierarchyDecorator
 
         public void OnDraw()
             {
+            // === ======== ====
+            // === Features ====
+            // === ======== ====
+            EditorGUILayout.LabelField ("Features", EditorStyles.boldLabel);
+
             EditorGUI.indentLevel++;
                 {
-                EditorGUILayout.LabelField ("Features", EditorStyles.boldLabel);
-
-                EditorGUI.indentLevel++;
-                    {
-                    HierarchyDecoratorGUI.ToggleAuto (ref showActiveToggles, "Show GameObject Toggles");
-                    HierarchyDecoratorGUI.ToggleAuto (ref showComponents, "Show Common Components");
-                    HierarchyDecoratorGUI.ToggleAuto (ref showLayers, "Show Current Layer");
-                    }
-                EditorGUI.indentLevel--;
-
-                EditorGUILayout.Space ();
-
-                EditorGUILayout.LabelField ("Style", EditorStyles.boldLabel);
-
-                EditorGUI.indentLevel++;
-                    {
-                    HierarchyDecoratorGUI.ToggleAuto (ref twoToneBackground, "Show Two Tone Background");
-                    }
-                EditorGUI.indentLevel--;
+                GUIHelper.ToggleAuto (ref showActiveToggles, "Show GameObject Toggles");
+                GUIHelper.ToggleAuto (ref showComponents, "Show Common Components");
                 }
             EditorGUI.indentLevel--;
+
+            EditorGUILayout.Space ();
+
+            // ==============
+            // ====Style=====
+            // ==============
+            EditorGUILayout.LabelField ("Style", EditorStyles.boldLabel);
+
+            EditorGUI.indentLevel++;
+                {
+                GUIHelper.ToggleAuto (ref twoToneBackground, "Show Two Tone Background");
+                }
+            EditorGUI.indentLevel--;
+
+            EditorGUILayout.Space ();
+
+            // ==============
+            // ====Layers====
+            // ==============
+            EditorGUILayout.LabelField ("Layer Display", EditorStyles.boldLabel);
+
+            EditorGUI.indentLevel++;
+                {
+                GUIHelper.ToggleAuto (ref showLayers, "Show Layers");
+                GUIHelper.ToggleAuto (ref editableLayers, "Show layer selection on click");
+                GUIHelper.ToggleAuto (ref applyChildLayers, "Update layer on children");
+                }
+            EditorGUI.indentLevel--;
+                
             }
         }
     }
