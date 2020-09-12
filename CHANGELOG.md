@@ -1,3 +1,6 @@
+#### v0.4.5.1
+- Custom GUIStyles now appear as a dropdown in the prefix style selection for easier switching
+
 #### v0.4.5
 - Setting tabs are now setup in their own individual classes
 - Improved caching throughout due to this

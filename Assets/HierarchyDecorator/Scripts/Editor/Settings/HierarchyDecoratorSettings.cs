@@ -183,6 +183,15 @@ namespace HierarchyDecorator
                 };
             }
 
+        public string[] GetStyleNames()
+            {
+            string[] names = new string[styles.Count];
+
+            for (int i = 0; i < names.Length; i++)
+                names[i] = styles[i].name;
+
+            return names;
+            }
         #endregion
 
         //This is just to get psudeo-type selection working

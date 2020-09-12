@@ -15,7 +15,7 @@ MonoBehaviour:
   globalStyle:
     showComponents: 1
     showActiveToggles: 1
-    twoToneBackground: 1
+    twoToneBackground: 0
     showLayers: 1
     editableLayers: 1
     applyChildLayers: 1
@@ -29,7 +29,7 @@ MonoBehaviour:
       fontStyle: 1
       fontColor: {r: 0.20754719, g: 0.20754719, b: 0.20754719, a: 1}
       backgroundColor: {r: 0.6666667, g: 0.6666667, b: 0.6666667, a: 1}
-      displayedLine: 0
+      displayedLine: 3
       lineHeight: 1
       lineColor: {r: 0, g: 0, b: 0, a: 1}
     darkMode:
@@ -292,7 +292,7 @@ MonoBehaviour:
   components:
   - shown: 0
     name: NavMeshAgent
-  - shown: 0
+  - shown: 1
     name: NavMeshObstacle
   - shown: 0
     name: OffMeshLink

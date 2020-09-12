@@ -69,6 +69,7 @@ namespace HierarchyDecorator
                 GetSettings ();
 
             GameObject gameObject = EditorUtility.InstanceIDToObject (instanceID) as GameObject;
+
             if (gameObject == null)
                 return;
 
@@ -81,16 +82,7 @@ namespace HierarchyDecorator
                 PrefabUtility.GetPrefabInstanceStatus (gameObject) != PrefabInstanceStatus.NotAPrefab
                 );
           
-            //Make sure the object isn't null for whatever reason
-            if (gameObject != null)
-                {
-                //Style
-                DrawElementStyle (gameObject, selectionRect);
-
-                if (settings.globalStyle.showActiveToggles)
-                    DrawToggles (gameObject, selectionRect);
-                    
-                }
+            DrawElementStyle (gameObject, selectionRect);
             }
 
         #region Unity Prequisites
@@ -268,6 +260,9 @@ namespace HierarchyDecorator
                 if (settings.globalStyle.showLayers)
                     LayerMaskMenu (selectionRect, currentInstance.gameObject);
                 }
+
+            if (settings.globalStyle.showActiveToggles)
+                DrawToggles (obj, selectionRect);
 
             //EditorGUI.DrawRect (selectionRect, obj.activeSelf ? Color.clear : Constants.UnactiveColor);
             previousInstance = currentInstance;
