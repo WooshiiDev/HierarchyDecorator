@@ -2,15 +2,21 @@
 [![Unity 2018.3+](https://img.shields.io/badge/unity-2018.4%2B-blue.svg)](https://unity3d.com/get-unity/download)
 [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/WooshiiDev/HierarchyDecorator/blob/master/LICENSE)
 
+**Downloads:**
+
+[UnityPackage](https://github.com/WooshiiDev/HierarchyDecorator/raw/master/Assets/HierarchyDecorator/HierarchyDecoratorPackage.unitypackage) | [Zip File](https://github.com/WooshiiDev/HierarchyDecorator/archive/master.zip)
+
 Hierarchy Decorator is an extension for Unity 2019.1 and higher to support custom drawing within the Hierarchy window, and add extra information functionality. This provides easier and helpful structure to the Hierarchy without getting overly noisy or messy. 
 
-![](https://i.imgur.com/ohTbb0t.gif)
+![](https://i.imgur.com/ATzBDoO.gif)
 
 ### Installation
 
 Please make sure you have Net 4.0 selected in the **Player Settings** to use this
 
 1. You can install this by downloading the .unitypackage that is provided in this repository. In the UnityPackage there are preset settings provided if you would like a basic system but it can be extended with your own ones.
+
+**Below options are not currently working, will be fixed soon, apolagies for any problems this causes**
 
 2. HierarchyDecorator can also be installed directly through the git url
 
@@ -57,19 +63,17 @@ Currently the features included are:
 The custom hierarchy styling is capable through prefixes added to the start of GameObjects. After added, they will instantly change to the styling the related prefix provides.
 
 ### Settings
-![](https://i.imgur.com/E36wayq.png)
+![](https://i.imgur.com/Uop5ZEv.png)
 
 There is a scriptable object that is required for hierarchy decorator to run. If it is deleted, another will be created in the base of your asset folder in `Assets/HierarchyDecorator/`. These settings are also accessible from the `Preference` window.
 
-There are 4 sections to the settings:
-
- - **Global Settings** - will show the general toggles for showing and hiding features 
+ - **Global Settings** - will show the general toggles for showing/hiding features, and toggling general Hierarchy behaviour.
  
- ![](https://i.imgur.com/TKMe0kO.png)
+ ![](https://i.imgur.com/u917C3Y.png)
  
  - **Prefixes** - Showing the settings for all prefixes 
  
- ![](https://i.imgur.com/GSiP5so.png)
+ ![](https://i.imgur.com/Ns0BAed.png)
  
  - **Styles** - Change the `GUIStyle` settings for each style 
  
@@ -77,5 +81,5 @@ There are 4 sections to the settings:
  
  - **Shown Components** - Toggle on/off the components you wish to see appear beside GameObjects if they exist on them.   
  
- ![](https://i.imgur.com/QRMhsGU.png?1)
+ ![](https://i.imgur.com/LkvajCw.png)
 
