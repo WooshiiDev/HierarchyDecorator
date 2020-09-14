@@ -49,6 +49,8 @@ HierarchyDecorator will be and always has been developed in my free time, and th
 
 [PayPal](https://paypal.me/Wooshii?locale.x=en_GB)
 
+[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/L3L026UOE)
+
 Development will be continued with this and will forever stay public and free.
 
 # Overview 
