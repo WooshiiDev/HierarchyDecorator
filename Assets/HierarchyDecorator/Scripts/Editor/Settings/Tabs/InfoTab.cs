@@ -5,8 +5,6 @@ namespace HierarchyDecorator
     {
     internal class InfoTab : SettingsTab
         {
-        private static Texture banner = Textures.Banner;
-
         public override void OnTitleHeaderGUI()
             {
 
@@ -28,7 +26,7 @@ namespace HierarchyDecorator
 
         public override void OnBodyContentGUI()
             {
-            GUILayout.Box (banner, new GUIStyle());
+            GUILayout.Box (Textures.Banner, new GUIStyle());
             }
         }
     }

@@ -79,7 +79,7 @@ public static class GUIHelper
             {
             EditorGUI.BeginChangeCheck ();
                 {
-                if (property.arraySize == 0)
+                if (arraySize == 0)
                     {
                     ButtonAction ("Add New", EditorStyles.toolbarButton, () =>
                         {
@@ -121,10 +121,12 @@ public static class GUIHelper
         EditorGUILayout.EndHorizontal ();
         }
 
-    public static bool GetSerializedFoldout(SerializedProperty property)
+    public static bool GetSerializedFoldout(SerializedProperty property, string nameOverride = null)
         {
+        nameOverride = nameOverride ?? property.displayName;
+
         EditorGUI.BeginChangeCheck ();
-        property.isExpanded = EditorGUILayout.Foldout (property.isExpanded, property.displayName, true);
+        property.isExpanded = EditorGUILayout.Foldout (property.isExpanded, nameOverride, true);
         if (EditorGUI.EndChangeCheck ())
             property.serializedObject.ApplyModifiedProperties ();
 

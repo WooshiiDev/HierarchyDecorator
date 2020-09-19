@@ -36,12 +36,30 @@ namespace HierarchyDecorator
             }
         }
 
+    [System.Serializable]
+    internal class CustomComponentType : ComponentType
+        {
+        public MonoScript script;
+
+        public CustomComponentType(Type type) : base(type)
+            {
+            
+            }
+
+        public void UpdateScriptType()
+            {
+            this.type = script.GetType();
+            this.name = script.name;
+            }
+        }
+
     // Create a new type of Settings Asset.
     internal class HierarchyDecoratorSettings : ScriptableObject, ISerializationCallbackReceiver
         {
         public GlobalSettings globalStyle;
 
         #region Collections
+
 
         /// <summary>
         /// Collection of all prefixes used for custom hierarchy overlays
@@ -64,6 +82,8 @@ namespace HierarchyDecorator
         /// Components shown in the inspector
         /// </summary>
         public Dictionary<string, ComponentType> shownComponents = new Dictionary<string, ComponentType> ();
+
+        public List<CustomComponentType> customTypes = new List<CustomComponentType> ();
 
         /// <summary>
         /// List of all components

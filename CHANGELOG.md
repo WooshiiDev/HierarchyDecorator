@@ -1,3 +1,9 @@
+#### v0.4.6
+- Fixed a bug where the bottom-most instance in the hierarchy could not be occasionally selected
+- Added MonoBehaviour Icon Support. This can be toggled on/off to show all MonoBehaviour types as icons.
+- Added Custom MonoBehaviour icons support. Within the Icon Tab, there is now a Custom Icon Catergory, that will allow users to select MonoBehaviours Directly. This will not only display the script if it's an existing component, 
+but the custom icon for them too.
+
 #### v0.4.5.1
 - Custom GUIStyles now appear as a dropdown in the prefix style selection for easier switching
 

@@ -565,6 +565,8 @@ GameObject:
   - component: {fileID: 424389153}
   - component: {fileID: 424389154}
   - component: {fileID: 424389155}
+  - component: {fileID: 424389156}
+  - component: {fileID: 424389157}
   m_Layer: 0
   m_Name: GoomJect
   m_TagString: Untagged
@@ -630,6 +632,30 @@ Terrain:
   m_GroupingID: 0
   m_RenderingLayerMask: 1
   m_AllowAutoConnect: 0
+--- !u!114 &424389156
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 424389152}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b771461054cbabe4ca2e59ef99138806, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &424389157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 424389152}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48d79846ffc2eb54ab2549c7da0a1c35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &465628528
 GameObject:
   m_ObjectHideFlags: 0

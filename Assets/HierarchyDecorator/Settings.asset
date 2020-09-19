@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   globalStyle:
     showComponents: 1
+    showMonoBehaviours: 0
     showActiveToggles: 1
     twoToneBackground: 0
     showLayers: 1
@@ -289,10 +290,14 @@ MonoBehaviour:
     m_FixedHeight: 0
     m_StretchWidth: 1
     m_StretchHeight: 0
+  customTypes:
+  - shown: 1
+    name: ExampleScriptWithIcon
+    script: {fileID: 11500000, guid: 48d79846ffc2eb54ab2549c7da0a1c35, type: 3}
   components:
   - shown: 0
     name: NavMeshAgent
-  - shown: 1
+  - shown: 0
     name: NavMeshObstacle
   - shown: 0
     name: OffMeshLink
@@ -322,7 +327,7 @@ MonoBehaviour:
     name: AudioReverbFilter
   - shown: 0
     name: AudioBehaviour
-  - shown: 1
+  - shown: 0
     name: AudioListener
   - shown: 0
     name: AudioReverbZone
@@ -356,7 +361,7 @@ MonoBehaviour:
     name: OcclusionArea
   - shown: 0
     name: LensFlare
-  - shown: 1
+  - shown: 0
     name: Light
   - shown: 0
     name: Skybox
@@ -382,7 +387,7 @@ MonoBehaviour:
     name: MonoBehaviour
   - shown: 0
     name: RectTransform
-  - shown: 1
+  - shown: 0
     name: Transform
   - shown: 0
     name: SpriteRenderer
@@ -406,13 +411,13 @@ MonoBehaviour:
     name: Collider
   - shown: 0
     name: CharacterController
-  - shown: 1
+  - shown: 0
     name: MeshCollider
-  - shown: 1
+  - shown: 0
     name: CapsuleCollider
-  - shown: 1
+  - shown: 0
     name: BoxCollider
-  - shown: 1
+  - shown: 0
     name: SphereCollider
   - shown: 0
     name: ConstantForce
@@ -492,7 +497,7 @@ MonoBehaviour:
     name: Terrain
   - shown: 0
     name: Tree
-  - shown: 1
+  - shown: 0
     name: TerrainCollider
   - shown: 0
     name: TextMesh
@@ -608,6 +613,10 @@ MonoBehaviour:
     name: UIBehaviour
   - shown: 0
     name: DropdownItem
+  - shown: 0
+    name: ExampleScript
+  - shown: 0
+    name: ExampleScriptWithIcon
   - shown: 0
     name: NetworkAnimator
   - shown: 0

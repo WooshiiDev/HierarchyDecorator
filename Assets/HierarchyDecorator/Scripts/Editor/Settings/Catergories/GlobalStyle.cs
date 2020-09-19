@@ -8,6 +8,7 @@ namespace HierarchyDecorator
         {   
         //Toggle
         public bool showComponents = true;
+        public bool showMonoBehaviours = true;
         public bool showActiveToggles = true;
 
         //Style
@@ -47,6 +48,9 @@ namespace HierarchyDecorator
                 {
                 GUIHelper.ToggleAuto (ref showActiveToggles, "Show GameObject Toggles");
                 GUIHelper.ToggleAuto (ref showComponents, "Show Common Components");
+                GUIHelper.ToggleAuto (ref showMonoBehaviours, "Show All MonoBehaviour Icons");
+
+                EditorGUILayout.HelpBox ("This will display all MonoBehaviour derived types that exist, with their custom icon. When enabled, using the custom icons will not be needed.", MessageType.Info);
                 }
             EditorGUI.indentLevel--;
 

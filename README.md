@@ -2,7 +2,9 @@
 [![Unity 2018.3+](https://img.shields.io/badge/unity-2018.4%2B-blue.svg)](https://unity3d.com/get-unity/download)
 [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/WooshiiDev/HierarchyDecorator/blob/master/LICENSE)
 
-**Downloads:**
+__Please note that this is still in development, and features may be removed and versions may not always be stable.__
+
+**Downloads**
 
 [UnityPackage](https://github.com/WooshiiDev/HierarchyDecorator/raw/master/Assets/HierarchyDecorator/HierarchyDecoratorPackage.unitypackage) | [Zip File](https://github.com/WooshiiDev/HierarchyDecorator/archive/master.zip)
 
