@@ -44,9 +44,9 @@ namespace HierarchyDecorator
                 }
             EditorGUILayout.EndHorizontal ();
 
-            }
+            
             prefixIndex = GUILayout.SelectionGrid (prefixIndex, prefixNames.ToArray (), 4, EditorStyles.centeredGreyMiniLabel);
-
+            }
         public override void OnBodyContentGUI()
             {
             if (prefixes.arraySize == 0)

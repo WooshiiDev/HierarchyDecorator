@@ -124,7 +124,7 @@ namespace HierarchyDecorator
                 EditorGUILayout.EndHorizontal ();
                 }
             }
-        }
+        
 
         private void SetVisibilityForAll(bool visible)
         {
