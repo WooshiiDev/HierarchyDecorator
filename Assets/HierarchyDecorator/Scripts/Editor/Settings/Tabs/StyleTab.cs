@@ -26,13 +26,17 @@ namespace HierarchyDecorator
             //EditorGUILayout.LabelField ("Prefix Settings");
             }
 
-        public override void OnTitleContentGUI()
-            {
+        public override void OnBodyHeaderGUI()
+        {
            
             }
 
-        public override void OnBodyHeaderGUI()
-            {
+        public override void OnTitleContentGUI()
+    {
+            EditorGUILayout.Space();
+            GUIHelper.LineSpacer();
+            EditorGUILayout.Space();
+
             EditorGUILayout.BeginHorizontal ();
                 {
                 EditorGUILayout.LabelField ("Style Settings");
@@ -40,8 +44,8 @@ namespace HierarchyDecorator
                 }
             EditorGUILayout.EndHorizontal ();
 
-            styleIndex = GUILayout.SelectionGrid (styleIndex, styleNames.ToArray (), 3, EditorStyles.centeredGreyMiniLabel);
             }
+            styleIndex = GUILayout.SelectionGrid (styleIndex, styleNames.ToArray (), 4, EditorStyles.centeredGreyMiniLabel);
 
         public override void OnBodyContentGUI()
             {
@@ -52,6 +56,7 @@ namespace HierarchyDecorator
                 }
 
             var style = styles.GetArrayElementAtIndex (styleIndex);
+            style.isExpanded = true;
 
             EditorGUI.BeginChangeCheck ();
                 {

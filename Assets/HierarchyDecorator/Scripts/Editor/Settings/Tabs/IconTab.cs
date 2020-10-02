@@ -94,6 +94,16 @@ namespace HierarchyDecorator
                 DrawCustoms ();
                 return;
                 }
+            EditorGUILayout.BeginHorizontal();
+            {
+                if (GUILayout.Button("Enable All"))
+                    SetVisibilityForAll(true);
+                if (GUILayout.Button("Disable All"))
+                    SetVisibilityForAll(false);
+            }
+            EditorGUILayout.EndHorizontal();
+            GUIHelper.LineSpacer();
+            EditorGUILayout.Space();
 
             //Draw all components for the catergory
             foreach (ComponentType component in currentComponents)
@@ -114,6 +124,13 @@ namespace HierarchyDecorator
                 EditorGUILayout.EndHorizontal ();
                 }
             }
+        }
+
+        private void SetVisibilityForAll(bool visible)
+        {
+            foreach (ComponentType component in currentComponents)
+                component.shown = visible;
+        }
 
         private void DrawCustoms()
             {
