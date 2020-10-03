@@ -67,7 +67,7 @@ namespace HierarchyDecorator
 
         private void DrawHeaderContent()
             {
-            EditorGUILayout.BeginVertical (verticalStyle);
+            EditorGUILayout.BeginVertical (verticalStyle, GUILayout.Height(30));
                 {
                 tabSelection = GUILayout.SelectionGrid (tabSelection, tabNames, tabNames.Length, greyMidStyle);
 
