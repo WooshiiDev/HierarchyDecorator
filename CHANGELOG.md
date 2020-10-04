@@ -1,3 +1,13 @@
+#### v0.4.6.1
+Restructure of hierarchy decorator calls for correct two tone display
+
+ - Seperated label GUI into it's own method
+ - Darkened the selection and added a white tint when selected with two tone on
+ - Fixed a bug that stopped the foldouts appearing correctly
+ - Added padding to about tab
+ - Tweaked some colours in default prefixes
+ - Pull Request from @KreliStudio to add Enable/Disable buttons for all icon catergories
+
 #### v0.4.6
 - Fixed a bug where the bottom-most instance in the hierarchy could not be occasionally selected
 - Added MonoBehaviour Icon Support. This can be toggled on/off to show all MonoBehaviour types as icons.
