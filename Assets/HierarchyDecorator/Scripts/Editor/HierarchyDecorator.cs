@@ -42,7 +42,9 @@ namespace HierarchyDecorator
         private static HierarchyDecoratorSettings settings;
         private static HierarchyStyle[] styles;
 
-        //// ==== Constructor ====
+        private static bool IsTwoTone => (settings != null) ? settings.globalStyle.twoToneBackground : false;
+
+        // ==== Constructor ====
         static HierarchyDecorator()
             {
             //Initalize
@@ -53,11 +55,6 @@ namespace HierarchyDecorator
             EditorApplication.hierarchyWindowItemOnGUI += HandleObject;
             }
 
-        /// <summary>
-        /// Main method called for each GameObject element
-        /// </summary>
-        /// <param name="instanceID">GameObject ID</param>
-        /// <param name="selectionRect">Rect area on the inspector</param>
         private static void HandleObject(int instanceID, Rect selectionRect)
             {
             //Call it here to allow editor scripts to load
@@ -80,16 +77,7 @@ namespace HierarchyDecorator
             DrawElementStyle (gameObject, selectionRect);
             }
 
-        public static void GetSettings()
-            {
-            //Cache Styles
-            settings = Constants.Settings;
-            styles = Constants.Settings.prefixes.ToArray ();
-
-            //Call to make sure it updates without requiring the SO to be opened
-            settings.UpdateSettings ();
-            }
-
+    
 
         #region Unity Prequisites
 
@@ -149,7 +137,7 @@ namespace HierarchyDecorator
                 }
             }
 
-        private static void DisplayGameObjectStatus(Rect selectionRect, GameObject obj)
+        private static void DrawStandardContent(Rect selectionRect, GameObject obj)
             {
             GUIContent content = new GUIContent ()
                 {
@@ -164,11 +152,11 @@ namespace HierarchyDecorator
                     {
                     content.image = EditorGUIUtility.IconContent ("Prefab Icon").image;
 
-                    Rect selectorRect = selectionRect;
-                    selectorRect.x = selectionRect.width + selectionRect.x;
-                    selectorRect.width = selectionRect.height;
+                    Rect iconRect = selectionRect;
+                    iconRect.x = selectionRect.width + selectionRect.x;
+                    iconRect.width = selectionRect.height;
 
-                    GUI.DrawTexture (selectorRect, EditorGUIUtility.IconContent ("tab_next").image, ScaleMode.ScaleToFit);
+                    GUI.DrawTexture (iconRect, EditorGUIUtility.IconContent ("tab_next").image, ScaleMode.ScaleToFit);
                     }
                 else
                     {
@@ -188,48 +176,52 @@ namespace HierarchyDecorator
                     style.normal.textColor = new Color (0.1f, 0.3f, 0.7f, 1f);
                 }
 
-            if (!obj.activeInHierarchy)
-                style.normal.textColor = (currentInstance.isPrefab)
-                    ? Constants.UnactivePrefabColor : Color.gray;
-
             if (Selection.Contains (obj))
-                {
-                EditorGUI.DrawRect (GetActualHierarchyWidth (selectionRect), new Color (0.2f, 0.4f, 0.6f, 0.5f));
-                }
+                style.normal.textColor = Color.white;
+
+            if (!obj.activeInHierarchy)
+                style.normal.textColor = (currentInstance.isPrefab) ? Constants.UnactivePrefabColor : Color.gray;
 
             EditorGUI.LabelField (selectionRect, content, style);
-
             }
 
+        private static void DrawStandardSelection(Rect selectionRect, GameObject obj)
+            {
+            Vector2 mousePos = Event.current.mousePosition;
+             
+            if (Selection.Contains (obj))
+                EditorGUI.DrawRect (GetActualHierarchyWidth (selectionRect), new Color (0.214f, 0.42f, 0.76f, 1f));
+            else
+            if (selectionRect.Contains(mousePos))
+                EditorGUI.DrawRect (GetActualHierarchyWidth (selectionRect), new Color (0.3f, 0.3f, 0.3f, 0.2f));
+            }
+   
         #endregion
 
         #region Draw Style
 
         private static void DrawElementStyle(GameObject obj, Rect selectionRect)
             {
-            //============================
-            //=========BACK LAYER=========
-            //============================
 
-            //Draw background requirements of two tone
-            //Due to this draw any other requirements
-            //i.e. GameObject name style, icon (prefab, object etc)
-            if (settings.globalStyle.twoToneBackground)
-                {
-                Rect backRect = GetActualHierarchyWidth (selectionRect);
-                EditorGUI.DrawRect (backRect, settings.globalStyle.GetTwoToneColour (selectionRect));
+            // ============================
+            // =========BACK LAYER=========
+            // ============================
+            // Here are overridden backgrounds, and any other prerequired data
 
-                //Apply draw of geneal unity icons
-                DisplayGameObjectStatus (selectionRect, obj);
-                }
+            if (IsTwoTone)
+                EditorGUI.DrawRect (GetActualHierarchyWidth (selectionRect), settings.globalStyle.GetTwoToneColour (selectionRect));
 
-            //=============================
-            //========CONTENT LAYER========
-            //=============================
+            // =============================
+            // ========CONTENT LAYER========
+            // =============================
+            // Drawing icons, styles and any custom GUI content
 
-            //Does the object have a prefix to define the style
+            // Draw selection backgrounds first to make sure no icons or content get into conflict with it
             bool hasStyle = styles.Any (p => obj.name.StartsWith (p.prefix));
 
+            if (hasStyle || !hasStyle && IsTwoTone)
+                DrawStandardSelection (selectionRect, obj);
+                
             if (hasStyle)
                 {
                 for (int i = 0; i < styles.Length; i++)
@@ -246,29 +238,37 @@ namespace HierarchyDecorator
                         break;
                         }
                     }
+
                 }
 
             ShowChildFoldout (selectionRect, obj, false);
 
-            //=============================
-            //========OVERLAY LAYER========
-            //=============================
-
-            //Everything else, which is generally custom stuffs 
-            if (!hasStyle)
-                {
-                if (selectionRect.width < 160f)
-                    return;
-
-                if (settings.globalStyle.showComponents)
-                    DrawComponentData (selectionRect, currentInstance.gameObject);
-
-                if (settings.globalStyle.showLayers)
-                    LayerMaskMenu (selectionRect, currentInstance.gameObject);
-                }
-
             if (settings.globalStyle.showActiveToggles)
                 DrawToggles (obj, selectionRect);
+
+            //Everything else, which is generally custom stuffs 
+            if (!hasStyle && selectionRect.width > 160f)
+                {
+                if (settings.globalStyle.showComponents)
+                    DrawComponentData (selectionRect, obj);
+
+                if (settings.globalStyle.showLayers)
+                    LayerMaskMenu (selectionRect, obj);
+                }
+
+            // =============================
+            // ========OVERLAY LAYER========
+            // =============================
+
+            //Draw selection, status etc
+            if (IsTwoTone)
+                {
+                if (!hasStyle)
+                    DrawStandardContent (selectionRect, obj);
+                }
+
+            //Anything further will be on top of text, so beware of that
+
 
             //EditorGUI.DrawRect (selectionRect, obj.activeSelf ? Color.clear : Constants.UnactiveColor);
             previousInstance = currentInstance;
@@ -327,18 +327,18 @@ namespace HierarchyDecorator
                     break;
 
                 case LineStyle.TOP:
-                    CreateLineSpacer (selectionRect, setting.lineColor, setting.lineHeight);
+                    CreateLineSpacer (selectionRect, setting.lineColor);
                     break;
 
                 case LineStyle.BOTTOM:
                     selectionRect.y += EditorGUIUtility.singleLineHeight * 0.85f;
-                    CreateLineSpacer (selectionRect, setting.lineColor, setting.lineHeight);
+                    CreateLineSpacer (selectionRect, setting.lineColor);
                     break;
 
                 case LineStyle.BOTH:
-                    CreateLineSpacer (selectionRect, setting.lineColor, setting.lineHeight);
+                    CreateLineSpacer (selectionRect, setting.lineColor);
                     selectionRect.y += EditorGUIUtility.singleLineHeight * 0.85f;
-                    CreateLineSpacer (selectionRect, setting.lineColor, setting.lineHeight);
+                    CreateLineSpacer (selectionRect, setting.lineColor);
                     break;
                 }
             }
@@ -618,15 +618,25 @@ namespace HierarchyDecorator
             }
 
         //TODO: [Reorganisation] Move CreateLineSpacer out of the HierarchyDecorator class
-        private static void CreateLineSpacer(Rect rect, Color color, float height = 2)
+        private static void CreateLineSpacer(Rect rect, Color color)
             {
-            rect.height = height;
+            rect.height = 1;
 
             Color c = GUI.color;
 
             GUI.color = color;
             EditorGUI.DrawRect (rect, color);
             GUI.color = c;
+            }
+
+        private static void GetSettings()
+            {
+            //Cache Styles
+            settings = Constants.Settings;
+            styles = Constants.Settings.prefixes.ToArray ();
+
+            //Call to make sure it updates without requiring the SO to be opened
+            settings.UpdateSettings ();
             }
 
         #endregion

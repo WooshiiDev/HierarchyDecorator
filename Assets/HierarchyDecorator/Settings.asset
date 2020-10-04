@@ -16,7 +16,7 @@ MonoBehaviour:
     showComponents: 1
     showMonoBehaviours: 0
     showActiveToggles: 1
-    twoToneBackground: 0
+    twoToneBackground: 1
     showLayers: 1
     editableLayers: 1
     applyChildLayers: 1
@@ -31,7 +31,6 @@ MonoBehaviour:
       fontColor: {r: 0.20754719, g: 0.20754719, b: 0.20754719, a: 1}
       backgroundColor: {r: 0.6666667, g: 0.6666667, b: 0.6666667, a: 1}
       displayedLine: 3
-      lineHeight: 1
       lineColor: {r: 0, g: 0, b: 0, a: 1}
     darkMode:
       font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
@@ -41,7 +40,6 @@ MonoBehaviour:
       fontColor: {r: 1, g: 1, b: 1, a: 1}
       backgroundColor: {r: 0.1764706, g: 0.1764706, b: 0.1764706, a: 1}
       displayedLine: 0
-      lineHeight: 1
       lineColor: {r: 0, g: 0, b: 0, a: 1}
   - prefix: '-'
     guiStyle: Toolbar
@@ -52,8 +50,7 @@ MonoBehaviour:
       fontStyle: 0
       fontColor: {r: 0.24528301, g: 0.24528301, b: 0.24528301, a: 1}
       backgroundColor: {r: 0.7960785, g: 0.7960785, b: 0.7960785, a: 1}
-      displayedLine: 0
-      lineHeight: 1
+      displayedLine: 2
       lineColor: {r: 0, g: 0, b: 0, a: 1}
     darkMode:
       font: {fileID: 0}
@@ -63,7 +60,6 @@ MonoBehaviour:
       fontColor: {r: 0.8584906, g: 0.8584906, b: 0.8584906, a: 1}
       backgroundColor: {r: 0.23529413, g: 0.23529413, b: 0.23529413, a: 1}
       displayedLine: 0
-      lineHeight: 1
       lineColor: {r: 0, g: 0, b: 0, a: 1}
   - prefix: +
     guiStyle: Header
@@ -72,10 +68,9 @@ MonoBehaviour:
       fontSize: 10
       fontAlignment: 4
       fontStyle: 1
-      fontColor: {r: 1, g: 0.8066038, b: 0.98256075, a: 1}
-      backgroundColor: {r: 0.26666668, g: 0.44705886, b: 0.6509804, a: 1}
+      fontColor: {r: 1, g: 1, b: 1, a: 1}
+      backgroundColor: {r: 0.38568, g: 0.63357466, b: 0.764151, a: 1}
       displayedLine: 0
-      lineHeight: 1
       lineColor: {r: 0, g: 0, b: 0, a: 1}
     darkMode:
       font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
@@ -85,7 +80,6 @@ MonoBehaviour:
       fontColor: {r: 0.9433962, g: 0.9433962, b: 0.9433962, a: 1}
       backgroundColor: {r: 0.26713246, g: 0.4473481, b: 0.6509434, a: 1}
       displayedLine: 0
-      lineHeight: 1
       lineColor: {r: 0, g: 0, b: 0, a: 1}
   styles:
   - m_Name: Header
@@ -104,7 +98,7 @@ MonoBehaviour:
     m_Focused:
       m_Background: {fileID: 0}
       m_ScaledBackgrounds: []
-      m_TextColor: {r: 0.5058824, g: 0.7058824, b: 1, a: 1}
+      m_TextColor: {r: 0.4532307, g: 0.67027205, b: 0.990566, a: 1}
     m_OnNormal:
       m_Background: {fileID: 0}
       m_ScaledBackgrounds: []
@@ -127,13 +121,13 @@ MonoBehaviour:
       m_Top: 0
       m_Bottom: 0
     m_Margin:
-      m_Left: 3
-      m_Right: 3
-      m_Top: 2
-      m_Bottom: 2
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
     m_Padding:
-      m_Left: 1
-      m_Right: 1
+      m_Left: 0
+      m_Right: 0
       m_Top: 0
       m_Bottom: 0
     m_Overflow:
@@ -295,355 +289,357 @@ MonoBehaviour:
     name: ExampleScriptWithIcon
     script: {fileID: 11500000, guid: 48d79846ffc2eb54ab2549c7da0a1c35, type: 3}
   components:
-  - shown: 0
+  - shown: 1
     name: NavMeshAgent
-  - shown: 0
+  - shown: 1
     name: NavMeshObstacle
-  - shown: 0
+  - shown: 1
     name: OffMeshLink
-  - shown: 0
+  - shown: 1
     name: Animator
-  - shown: 0
+  - shown: 1
     name: Animation
-  - shown: 0
+  - shown: 1
     name: AimConstraint
-  - shown: 0
+  - shown: 1
     name: PositionConstraint
-  - shown: 0
+  - shown: 1
     name: RotationConstraint
-  - shown: 0
+  - shown: 1
     name: ScaleConstraint
-  - shown: 0
+  - shown: 1
     name: LookAtConstraint
-  - shown: 0
+  - shown: 1
     name: ParentConstraint
-  - shown: 0
+  - shown: 1
     name: AudioSource
-  - shown: 0
+  - shown: 1
     name: AudioLowPassFilter
-  - shown: 0
+  - shown: 1
     name: AudioHighPassFilter
-  - shown: 0
+  - shown: 1
     name: AudioReverbFilter
-  - shown: 0
+  - shown: 1
     name: AudioBehaviour
-  - shown: 0
+  - shown: 1
     name: AudioListener
-  - shown: 0
+  - shown: 1
     name: AudioReverbZone
-  - shown: 0
+  - shown: 1
     name: AudioDistortionFilter
-  - shown: 0
+  - shown: 1
     name: AudioEchoFilter
-  - shown: 0
+  - shown: 1
     name: AudioChorusFilter
-  - shown: 0
+  - shown: 1
     name: Cloth
-  - shown: 0
+  - shown: 1
     name: Camera
-  - shown: 0
+  - shown: 1
     name: FlareLayer
-  - shown: 0
+  - shown: 1
     name: ReflectionProbe
-  - shown: 0
+  - shown: 1
     name: BillboardRenderer
-  - shown: 0
+  - shown: 1
     name: Renderer
-  - shown: 0
+  - shown: 1
     name: Projector
-  - shown: 0
+  - shown: 1
     name: TrailRenderer
-  - shown: 0
+  - shown: 1
     name: LineRenderer
-  - shown: 0
+  - shown: 1
     name: OcclusionPortal
-  - shown: 0
+  - shown: 1
     name: OcclusionArea
-  - shown: 0
+  - shown: 1
     name: LensFlare
-  - shown: 0
+  - shown: 1
     name: Light
-  - shown: 0
+  - shown: 1
     name: Skybox
-  - shown: 0
+  - shown: 1
     name: MeshFilter
-  - shown: 0
+  - shown: 1
     name: Halo
-  - shown: 0
+  - shown: 1
     name: LightProbeProxyVolume
-  - shown: 0
+  - shown: 1
     name: SkinnedMeshRenderer
-  - shown: 0
+  - shown: 1
     name: MeshRenderer
-  - shown: 0
+  - shown: 1
     name: LightProbeGroup
-  - shown: 0
+  - shown: 1
     name: LODGroup
-  - shown: 0
+  - shown: 1
     name: NetworkView
-  - shown: 0
+  - shown: 1
     name: Behaviour
-  - shown: 0
+  - shown: 1
     name: MonoBehaviour
-  - shown: 0
+  - shown: 1
     name: RectTransform
-  - shown: 0
+  - shown: 1
     name: Transform
-  - shown: 0
+  - shown: 1
     name: SpriteRenderer
-  - shown: 0
+  - shown: 1
     name: SortingGroup
-  - shown: 0
+  - shown: 1
     name: PlayableDirector
-  - shown: 0
+  - shown: 1
     name: Grid
-  - shown: 0
+  - shown: 1
     name: GridLayout
-  - shown: 0
+  - shown: 1
     name: ParticleSystem
-  - shown: 0
+  - shown: 1
     name: ParticleSystemRenderer
-  - shown: 0
+  - shown: 1
     name: ParticleSystemForceField
-  - shown: 0
+  - shown: 1
     name: Rigidbody
-  - shown: 0
+  - shown: 1
     name: Collider
-  - shown: 0
+  - shown: 1
     name: CharacterController
-  - shown: 0
+  - shown: 1
     name: MeshCollider
-  - shown: 0
+  - shown: 1
     name: CapsuleCollider
-  - shown: 0
+  - shown: 1
     name: BoxCollider
-  - shown: 0
+  - shown: 1
     name: SphereCollider
-  - shown: 0
+  - shown: 1
     name: ConstantForce
-  - shown: 0
+  - shown: 1
     name: Joint
-  - shown: 0
+  - shown: 1
     name: HingeJoint
-  - shown: 0
+  - shown: 1
     name: SpringJoint
-  - shown: 0
+  - shown: 1
     name: FixedJoint
-  - shown: 0
+  - shown: 1
     name: CharacterJoint
-  - shown: 0
+  - shown: 1
     name: ConfigurableJoint
-  - shown: 0
+  - shown: 1
     name: Rigidbody2D
-  - shown: 0
+  - shown: 1
     name: Collider2D
-  - shown: 0
+  - shown: 1
     name: CircleCollider2D
-  - shown: 0
+  - shown: 1
     name: CapsuleCollider2D
-  - shown: 0
+  - shown: 1
     name: EdgeCollider2D
-  - shown: 0
+  - shown: 1
     name: BoxCollider2D
-  - shown: 0
+  - shown: 1
     name: PolygonCollider2D
-  - shown: 0
+  - shown: 1
     name: CompositeCollider2D
-  - shown: 0
+  - shown: 1
     name: Joint2D
-  - shown: 0
+  - shown: 1
     name: AnchoredJoint2D
-  - shown: 0
+  - shown: 1
     name: SpringJoint2D
-  - shown: 0
+  - shown: 1
     name: DistanceJoint2D
-  - shown: 0
+  - shown: 1
     name: FrictionJoint2D
-  - shown: 0
+  - shown: 1
     name: HingeJoint2D
-  - shown: 0
+  - shown: 1
     name: RelativeJoint2D
-  - shown: 0
+  - shown: 1
     name: SliderJoint2D
-  - shown: 0
+  - shown: 1
     name: TargetJoint2D
-  - shown: 0
+  - shown: 1
     name: FixedJoint2D
-  - shown: 0
+  - shown: 1
     name: WheelJoint2D
-  - shown: 0
+  - shown: 1
     name: Effector2D
-  - shown: 0
+  - shown: 1
     name: AreaEffector2D
-  - shown: 0
+  - shown: 1
     name: BuoyancyEffector2D
-  - shown: 0
+  - shown: 1
     name: PointEffector2D
-  - shown: 0
+  - shown: 1
     name: PlatformEffector2D
-  - shown: 0
+  - shown: 1
     name: SurfaceEffector2D
-  - shown: 0
+  - shown: 1
     name: PhysicsUpdateBehaviour2D
-  - shown: 0
+  - shown: 1
     name: ConstantForce2D
-  - shown: 0
+  - shown: 1
     name: SpriteMask
-  - shown: 0
+  - shown: 1
     name: SpriteShapeRenderer
-  - shown: 0
+  - shown: 1
     name: StreamingController
-  - shown: 0
+  - shown: 1
     name: Terrain
-  - shown: 0
+  - shown: 1
     name: Tree
-  - shown: 0
+  - shown: 1
     name: TerrainCollider
-  - shown: 0
+  - shown: 1
     name: TextMesh
-  - shown: 0
+  - shown: 1
     name: Tilemap
-  - shown: 0
+  - shown: 1
     name: TilemapRenderer
-  - shown: 0
+  - shown: 1
     name: TilemapCollider2D
-  - shown: 0
+  - shown: 1
     name: CanvasGroup
-  - shown: 0
+  - shown: 1
     name: CanvasRenderer
-  - shown: 0
+  - shown: 1
     name: Canvas
-  - shown: 0
+  - shown: 1
     name: NetworkMatch
-  - shown: 0
+  - shown: 1
     name: VisualEffect
-  - shown: 0
+  - shown: 1
     name: VFXRenderer
-  - shown: 0
+  - shown: 1
     name: WorldAnchor
-  - shown: 0
+  - shown: 1
     name: WheelCollider
-  - shown: 0
+  - shown: 1
     name: VideoPlayer
-  - shown: 0
+  - shown: 1
     name: WindZone
-  - shown: 0
+  - shown: 1
     name: NetworkScenePostProcess
-  - shown: 0
+  - shown: 1
     name: Button
-  - shown: 0
+  - shown: 1
     name: Dropdown
-  - shown: 0
+  - shown: 1
     name: Graphic
-  - shown: 0
+  - shown: 1
     name: GraphicRaycaster
-  - shown: 0
+  - shown: 1
     name: Image
-  - shown: 0
+  - shown: 1
     name: InputField
-  - shown: 0
+  - shown: 1
     name: AspectRatioFitter
-  - shown: 0
+  - shown: 1
     name: CanvasScaler
-  - shown: 0
+  - shown: 1
     name: ContentSizeFitter
-  - shown: 0
+  - shown: 1
     name: GridLayoutGroup
-  - shown: 0
+  - shown: 1
     name: HorizontalLayoutGroup
-  - shown: 0
+  - shown: 1
     name: HorizontalOrVerticalLayoutGroup
-  - shown: 0
+  - shown: 1
     name: LayoutElement
-  - shown: 0
+  - shown: 1
     name: LayoutGroup
-  - shown: 0
+  - shown: 1
     name: VerticalLayoutGroup
-  - shown: 0
+  - shown: 1
     name: Mask
-  - shown: 0
+  - shown: 1
     name: MaskableGraphic
-  - shown: 0
+  - shown: 1
     name: RawImage
-  - shown: 0
+  - shown: 1
     name: RectMask2D
-  - shown: 0
+  - shown: 1
     name: ScrollRect
-  - shown: 0
+  - shown: 1
     name: Scrollbar
-  - shown: 0
+  - shown: 1
     name: Selectable
-  - shown: 0
+  - shown: 1
     name: Slider
-  - shown: 0
+  - shown: 1
     name: Text
-  - shown: 0
+  - shown: 1
     name: Toggle
-  - shown: 0
+  - shown: 1
     name: ToggleGroup
-  - shown: 0
+  - shown: 1
     name: BaseMeshEffect
-  - shown: 0
+  - shown: 1
     name: Outline
-  - shown: 0
+  - shown: 1
     name: PositionAsUV1
-  - shown: 0
+  - shown: 1
     name: Shadow
-  - shown: 0
+  - shown: 1
     name: EventSystem
-  - shown: 0
+  - shown: 1
     name: EventTrigger
-  - shown: 0
+  - shown: 1
     name: BaseInput
-  - shown: 0
+  - shown: 1
     name: BaseInputModule
-  - shown: 0
+  - shown: 1
     name: PointerInputModule
-  - shown: 0
+  - shown: 1
     name: StandaloneInputModule
-  - shown: 0
+  - shown: 1
     name: TouchInputModule
-  - shown: 0
+  - shown: 1
     name: BaseRaycaster
-  - shown: 0
+  - shown: 1
     name: Physics2DRaycaster
-  - shown: 0
+  - shown: 1
     name: PhysicsRaycaster
-  - shown: 0
+  - shown: 1
     name: UIBehaviour
-  - shown: 0
+  - shown: 1
     name: DropdownItem
-  - shown: 0
+  - shown: 1
     name: ExampleScript
-  - shown: 0
+  - shown: 1
+    name: ExampleScript2
+  - shown: 1
     name: ExampleScriptWithIcon
-  - shown: 0
+  - shown: 1
     name: NetworkAnimator
-  - shown: 0
+  - shown: 1
     name: NetworkBehaviour
-  - shown: 0
+  - shown: 1
     name: NetworkCallbacks
-  - shown: 0
+  - shown: 1
     name: NetworkDiscovery
-  - shown: 0
+  - shown: 1
     name: NetworkIdentity
-  - shown: 0
+  - shown: 1
     name: NetworkLobbyManager
-  - shown: 0
+  - shown: 1
     name: NetworkLobbyPlayer
-  - shown: 0
+  - shown: 1
     name: NetworkManager
-  - shown: 0
+  - shown: 1
     name: NetworkManagerHUD
-  - shown: 0
+  - shown: 1
     name: NetworkMigrationManager
-  - shown: 0
+  - shown: 1
     name: NetworkProximityChecker
-  - shown: 0
+  - shown: 1
     name: NetworkStartPosition
-  - shown: 0
+  - shown: 1
     name: NetworkTransform
-  - shown: 0
+  - shown: 1
     name: NetworkTransformChild
-  - shown: 0
+  - shown: 1
     name: NetworkTransformVisualizer

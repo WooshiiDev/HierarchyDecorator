@@ -26,7 +26,6 @@ namespace HierarchyDecorator
 
         [Header ("Line")]
         public LineStyle displayedLine = LineStyle.NONE;
-        public float lineHeight = 1f;
         public Color lineColor = Color.black;
         }
 

@@ -63,6 +63,7 @@ namespace HierarchyDecorator
 
             DrawHeaderContent ();
             DrawBodyContent ();
+        
             }
 
         private void DrawHeaderContent()
