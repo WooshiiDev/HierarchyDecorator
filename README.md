@@ -65,22 +65,47 @@ Net 4.0 is required to use this. This can be turned on in the **Player Settings*
 
 There is a scriptable object that is required for hierarchy decorator to run. If it is deleted, another will be created in the base of your asset folder in `Assets/HierarchyDecorator/`. These settings are also accessible from the `Preference` window.
 
- - **Global Settings** - will show the general toggles for showing/hiding features, and toggling general Hierarchy behaviour.
+<p>
+ <h3>Global</h3>
  
- ![](https://i.imgur.com/u917C3Y.png)
- 
- - **Prefixes** - Showing the settings for all prefixes 
- 
- ![](https://i.imgur.com/Ns0BAed.png)
- 
- - **Styles** - Change the `GUIStyle` settings for each style 
- 
- ![](https://i.imgur.com/JqPw9Hx.png?1)
- 
- - **Shown Components** - Toggle on/off the components you wish to see appear beside GameObjects if they exist on them.   
- 
- ![](https://i.imgur.com/LkvajCw.png)
+ All settings that generally control what the hierarchy looks like will be here. Optional settings, toggles and modes will also be shown here. This tab will go through
+ many design changes as development goes on, just to keep everything tidy and structured.
+ </p>
+</p>
+<p align="center">
+ <img src="https://i.imgur.com/9zldtdE.gif" alt="Global settings">
+</p>
 
+<p>
+ <h3>Prefixes</h3>
+ 
+ The Prefix tab controls the design of the headers and seperators for the hierarchy. Changing or updating the settings will instantly show in the hierarchy.
+ </p>
+</p>
+<p align="center">
+ <img src="https://i.imgur.com/mLpfHcK.gif" alt="Prefix Settings">
+</p>
+
+<p>
+ <h3>GUIStyles</h3>
+ 
+ The GUIStyle tab controls the drawing of each header and style, on top of the prefix tab. Currently, this doesn't provide much and will most likely be removed in the future,
+ with replacement settings added to the prefix tab. This however, can still be changed without any restrictions.
+ </p>
+</p>
+<p align="center">
+ <img src="https://i.imgur.com/JqPw9Hx.png?1" alt="GUIStyle Settings">
+</p>
+ 
+<p>
+ <h3>Component Icons</h3>
+ 
+ To provide selection and custom choice over what components will display in the inspector, here all icons that exist in your **current version** will appear in their specified catergories. Toggling the icons on or off will display them in the hierarchy on the right side, and you can also add your own MonoBehaviours for custom scripts.
+ </p>
+</p>
+<p align="center">
+ <img src="https://i.imgur.com/93LhHx9.gif" alt="Component/Icon Settings">
+</p>
 
 ## Support
 Please submit any queries, bugs or issues, to the [Issues](https://github.com/WooshiiDev/HierarchyDecorator/issues) page on this repository. All feedback is appreciated as it not just helps myself find problems I didn't otherwise see, but also helps improve the project. 
