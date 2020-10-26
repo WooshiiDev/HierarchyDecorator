@@ -1,3 +1,10 @@
+#### v0.4.6.2
+Can now move settings asset around the project.
+
+ - Path to current settings now saved in `EditorPrefs`. Will only create a new settings asset if one cannot be found within the project files
+ - Checkboxes for objects have been hidden in the Prefab Editor to stop the overlap of the show/hide child toggles
+ - Continuation of clean up, this time for the HierarchySettings class, see `AssetUtility.cs`
+
 #### v0.4.6.1
 Restructure of hierarchy decorator calls for correct two tone display
 
