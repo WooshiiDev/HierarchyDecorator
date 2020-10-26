@@ -97,3 +97,6 @@ HierarchyDecorator will be and always has been developed in my free time, and th
 Development will be continued with this and will forever stay public and free.
 
 ## License
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+Copyright (c) 2020 Damian Slocombe
