@@ -2,12 +2,16 @@
  <br>
  <img src="https://wooshii.studio/v2/img/projects/hierarchydecorator.png">
 </h1>
+
+<h4 align="center">  Unity editor extension adding requirements the hierarchy is missing.<br>Fully Customizable. Fully Editable.</h4>
+
 <p align="center">
  <a href="https://unity3d.com/get-unity/download">
  <img src="https://img.shields.io/badge/unity-2018.4%2B-blue.svg" alt="Unity Download Link">
  <a href="https://github.com/WooshiiDev/HierarchyDecorator/blob/master/LICENSE">
  <img src="https://img.shields.io/badge/License-MIT-brightgreen.svg" alt="License MIT">
 </p>
+  
 
 <p align="center">
   <a href="#about">About</a> •
