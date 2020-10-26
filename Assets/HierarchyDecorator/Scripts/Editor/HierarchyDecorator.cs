@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.Experimental.SceneManagement;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -14,8 +15,9 @@ namespace HierarchyDecorator
             {
             public readonly int instanceID;
             public readonly GameObject gameObject;
-            public readonly Rect selectionRect;
             public readonly bool isPrefab;
+
+            public Rect selectionRect;
 
             public InstanceInfo(int ID, GameObject gameObject, Rect selectionRect, bool isPrefab)
                 {
@@ -55,7 +57,7 @@ namespace HierarchyDecorator
             EditorApplication.hierarchyWindowItemOnGUI += HandleObject;
             }
 
-        private static void HandleObject(int instanceID, Rect selectionRect)
+        static void HandleObject(int instanceID, Rect selectionRect)
             {
             //Call it here to allow editor scripts to load
             //A lot of pain to work around
@@ -76,8 +78,6 @@ namespace HierarchyDecorator
 
             DrawElementStyle (gameObject, selectionRect);
             }
-
-    
 
         #region Unity Prequisites
 
@@ -117,6 +117,7 @@ namespace HierarchyDecorator
             Rect toggleRect = selectionRect;
             bool showingChildren = false;
 
+            //Select correct instance for toggle
             toggleRect = (finalInstance == transform) ? currentInstance.selectionRect : previousInstance.selectionRect;
             toggleRect.width = toggleRect.height;
             toggleRect.x -= 14;
@@ -241,10 +242,14 @@ namespace HierarchyDecorator
 
                 }
 
-            ShowChildFoldout (selectionRect, obj, false);
+            //TODO: Fix hierarchy layout in prefab 
+            if (PrefabStageUtility.GetCurrentPrefabStage () == null)
+                {
+                if (settings.globalStyle.showActiveToggles)
+                    DrawToggles (obj, selectionRect);
+                }
 
-            if (settings.globalStyle.showActiveToggles)
-                DrawToggles (obj, selectionRect);
+            ShowChildFoldout (selectionRect, obj, false);
 
             //Everything else, which is generally custom stuffs 
             if (!hasStyle && selectionRect.width > 160f)
@@ -327,18 +332,18 @@ namespace HierarchyDecorator
                     break;
 
                 case LineStyle.TOP:
-                    CreateLineSpacer (selectionRect, setting.lineColor);
+                    GUIHelper.LineSpacer (selectionRect, setting.lineColor);
                     break;
 
                 case LineStyle.BOTTOM:
                     selectionRect.y += EditorGUIUtility.singleLineHeight * 0.85f;
-                    CreateLineSpacer (selectionRect, setting.lineColor);
+                    GUIHelper.LineSpacer (selectionRect, setting.lineColor);
                     break;
 
                 case LineStyle.BOTH:
-                    CreateLineSpacer (selectionRect, setting.lineColor);
+                    GUIHelper.LineSpacer (selectionRect, setting.lineColor);
                     selectionRect.y += EditorGUIUtility.singleLineHeight * 0.85f;
-                    CreateLineSpacer (selectionRect, setting.lineColor);
+                    GUIHelper.LineSpacer (selectionRect, setting.lineColor);
                     break;
                 }
             }
@@ -617,23 +622,11 @@ namespace HierarchyDecorator
             return null;
             }
 
-        //TODO: [Reorganisation] Move CreateLineSpacer out of the HierarchyDecorator class
-        private static void CreateLineSpacer(Rect rect, Color color)
-            {
-            rect.height = 1;
-
-            Color c = GUI.color;
-
-            GUI.color = color;
-            EditorGUI.DrawRect (rect, color);
-            GUI.color = c;
-            }
-
         private static void GetSettings()
             {
             //Cache Styles
-            settings = Constants.Settings;
-            styles = Constants.Settings.prefixes.ToArray ();
+            settings = HierarchyDecoratorSettings.GetOrCreateSettings();
+            styles = settings.prefixes.ToArray ();
 
             //Call to make sure it updates without requiring the SO to be opened
             settings.UpdateSettings ();

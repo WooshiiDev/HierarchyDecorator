@@ -7,6 +7,9 @@ namespace HierarchyDecorator
     [InitializeOnLoad]
     internal static class Constants
         {
+        //Prefs for references
+        internal const string PREF_GUID = "HD_GUID";
+
         //Path
         internal const string SETTINGS_PATH = "Hierarchy Decorator";
 

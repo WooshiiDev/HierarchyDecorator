@@ -7,14 +7,12 @@ using UnityEngine;
 
 namespace HierarchyDecorator
     {
-
-    // Create a new type of Settings Asset.
+    /// <summary>
+    /// ScriptableObject containing all settings and relevant data for the hierarchy
+    /// </summary>
     internal class HierarchyDecoratorSettings : ScriptableObject, ISerializationCallbackReceiver
         {
         public GlobalSettings globalStyle;
-
-        #region Collections
-
 
         /// <summary>
         /// Collection of all prefixes used for custom hierarchy overlays
@@ -48,7 +46,14 @@ namespace HierarchyDecorator
 
         //Collection of every component type unity has 
         private static Type[] allTypes;
-        #endregion
+
+        //Constants
+        public const string typeString = "HierarchyDecoratorSettings";
+        
+        private void OnValidate()
+            {
+            EditorApplication.RepaintHierarchyWindow ();
+            }
 
         #region Creation
 
@@ -58,26 +63,33 @@ namespace HierarchyDecorator
         /// <returns>The loaded settings</returns>
         internal static HierarchyDecoratorSettings GetOrCreateSettings()
             {
-            //Find the asset 
-            HierarchyDecoratorSettings settings = AssetDatabase.LoadAssetAtPath<HierarchyDecoratorSettings> (Constants.SETTINGS_ASSET_PATH);
+            HierarchyDecoratorSettings settings = null;
 
-            //Create the asset if it doesn't exist
-            if (settings == null)
+            //Load from the saved GUID 
+            if (EditorPrefs.HasKey (Constants.PREF_GUID))
                 {
-                //Create and setup defaults
-                settings = CreateInstance<HierarchyDecoratorSettings> ();
+                string savedPath = AssetDatabase.GUIDToAssetPath (EditorPrefs.GetString (Constants.PREF_GUID));
+
+                if (!string.IsNullOrEmpty (savedPath))
+                    return settings = AssetDatabase.LoadAssetAtPath<HierarchyDecoratorSettings> (savedPath);
+                }
+
+            string[] guids = AssetDatabase.FindAssets ($"t:{typeString}");
+
+            //Create an asset if none exist
+            if (guids.Length == 0)
+                {
+                settings = AssetUtility.CreateScriptableAtPath<HierarchyDecoratorSettings> ("HierarchyDecoratorSettings", Constants.SETTINGS_ASSET_PATH);
                 settings.SetDefaults ();
-
-                //Create folder
-                if (!Directory.Exists (Constants.SETTINGS_ASSET_FOLDER))
-                    Directory.CreateDirectory (Constants.SETTINGS_ASSET_FOLDER);
-
-                //Create and save
-                AssetDatabase.CreateAsset (settings, Constants.SETTINGS_ASSET_PATH);
-                AssetDatabase.SaveAssets ();
 
                 Debug.Log ($"Hiearchy Decorator found no previous settings, creating one at {Constants.SETTINGS_ASSET_PATH}.");
                 }
+
+            string path = guids[0];
+            path = AssetDatabase.GUIDToAssetPath (path);
+
+            settings = AssetDatabase.LoadAssetAtPath<HierarchyDecoratorSettings> (path);
+            EditorPrefs.SetString (Constants.PREF_GUID, AssetDatabase.AssetPathToGUID (guids[0]));
 
             return settings;
             }
@@ -113,7 +125,7 @@ namespace HierarchyDecorator
             var toolbar = prefixes[1];
             toolbar.SetAlignment (TextAnchor.MiddleLeft);
             toolbar.SetFontSize (10);
-            toolbar.SetStyle(FontStyle.Normal);
+            toolbar.SetStyle (FontStyle.Normal);
 
             // - Grid Centered - 
             var grid = styles[2];
@@ -121,6 +133,44 @@ namespace HierarchyDecorator
             grid.stretchWidth = true;
 
             UpdateSettings ();
+            }
+
+        #endregion
+
+        #region Editor Serialization
+
+        //This is just to get psudeo-type selection working
+        //Can pass them back to the dictionary when required
+        public void OnBeforeSerialize() => UpdateSettings ();
+
+        public void OnAfterDeserialize() => UpdateSettings ();
+
+        public void UpdateSettings()
+            {
+            //Reflection for component types
+            if (allTypes == null)
+                allTypes = ReflectionUtility.GetTypesFromAllAssemblies (typeof (Component));
+
+            bool hasMissing = components.Count != allTypes.Length;
+
+            if (hasMissing)
+                components.Clear ();
+
+            for (int i = 0; i < allTypes.Length; i++)
+                {
+                var type = allTypes[i];
+
+                if (hasMissing)
+                    components.Add (new ComponentType (type));
+
+                ComponentType component = components[i];
+
+                if (component.type == null)
+                    component.UpdateType (type);
+
+                if (!shownComponents.ContainsKey (component.name))
+                    shownComponents.Add (component.name, component);
+                }
             }
 
         #endregion
@@ -140,6 +190,7 @@ namespace HierarchyDecorator
 
         private GUIStyle CreateGUIStyle(string name, GUIStyle styleBase = null)
             {
+
             //Generally optimistic settings
             return new GUIStyle (styleBase)
                 {
@@ -168,51 +219,5 @@ namespace HierarchyDecorator
             return names;
             }
         #endregion
-
-        //This is just to get psudeo-type selection working
-        //Can pass them back to the dictionary when required
-        public void OnBeforeSerialize()
-            {
-            UpdateSettings ();
-            }
-
-        public void OnAfterDeserialize()
-            {
-            
-            }
-
-        //This is used just to update the hiearchy when settings are changed
-        private void OnValidate()
-            {
-            EditorApplication.RepaintHierarchyWindow ();
-            }
-
-        public void UpdateSettings()
-            {
-            //Reflection for component types
-            if (allTypes == null)
-                allTypes = ReflectionUtility.GetTypesFromAllAssemblies (typeof (Component));
-
-            bool hasMissing = components.Count != allTypes.Length;
-
-            if (hasMissing)
-                components.Clear ();
-
-            for (int i = 0; i < allTypes.Length; i++)
-                {
-                var type = allTypes[i];
-
-                if (hasMissing)
-                    components.Add (new ComponentType (type));
-
-                if (components[i].type == null)
-                    components[i].UpdateType (type);
-
-                if (!shownComponents.ContainsKey (name))
-                    shownComponents.Add (name, components[i]);
-                }
-            }
         }
-
-  
     }

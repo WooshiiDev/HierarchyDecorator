@@ -22,6 +22,12 @@ public static class GUIHelper
         EditorGUI.DrawRect (rect, color);
         }
 
+    public static void LineSpacer(Rect rect, Color color, float height = 1)
+        {
+        rect.height = height;
+        EditorGUI.DrawRect (rect, color);
+        }
+
     #endregion 
 
     #region Automated Fields

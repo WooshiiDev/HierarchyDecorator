@@ -35,7 +35,7 @@ namespace HierarchyDecorator
     [System.Serializable]
     internal class CustomComponentType : ComponentType
         {
-        public MonoScript script;
+        public MonoScript script = null;
 
         public CustomComponentType(Type type) : base (type)
             {

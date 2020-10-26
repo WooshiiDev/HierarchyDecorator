@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   globalStyle:
     showComponents: 1
-    showMonoBehaviours: 0
+    showMonoBehaviours: 1
     showActiveToggles: 1
     twoToneBackground: 1
     showLayers: 1
@@ -28,7 +28,7 @@ MonoBehaviour:
       fontSize: 11
       fontAlignment: 4
       fontStyle: 1
-      fontColor: {r: 0.20754719, g: 0.20754719, b: 0.20754719, a: 1}
+      fontColor: {r: 0.1764706, g: 0.1764706, b: 0.1764706, a: 1}
       backgroundColor: {r: 0.6666667, g: 0.6666667, b: 0.6666667, a: 1}
       displayedLine: 0
       lineColor: {r: 0, g: 0, b: 0, a: 1}
@@ -286,8 +286,8 @@ MonoBehaviour:
     m_StretchHeight: 0
   customTypes:
   - shown: 1
-    name: ExampleScriptWithIcon
-    script: {fileID: 11500000, guid: 48d79846ffc2eb54ab2549c7da0a1c35, type: 3}
+    name: EntityStateMachine
+    script: {fileID: 11500000, guid: 2c7b71678d7334845a00135535107bc8, type: 3}
   components:
   - shown: 0
     name: NavMeshAgent
@@ -355,7 +355,7 @@ MonoBehaviour:
     name: OcclusionArea
   - shown: 0
     name: LensFlare
-  - shown: 1
+  - shown: 0
     name: Light
   - shown: 0
     name: Skybox
@@ -381,7 +381,7 @@ MonoBehaviour:
     name: MonoBehaviour
   - shown: 0
     name: RectTransform
-  - shown: 1
+  - shown: 0
     name: Transform
   - shown: 0
     name: SpriteRenderer
