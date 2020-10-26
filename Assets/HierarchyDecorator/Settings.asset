@@ -142,7 +142,7 @@ MonoBehaviour:
     m_WordWrap: 0
     m_RichText: 0
     m_TextClipping: 1
-    m_ImagePosition: 0
+    m_ImagePosition: 3
     m_ContentOffset: {x: 0, y: 0}
     m_FixedWidth: 0
     m_FixedHeight: 0
@@ -381,7 +381,7 @@ MonoBehaviour:
     name: MonoBehaviour
   - shown: 0
     name: RectTransform
-  - shown: 0
+  - shown: 1
     name: Transform
   - shown: 0
     name: SpriteRenderer
@@ -399,19 +399,19 @@ MonoBehaviour:
     name: ParticleSystemRenderer
   - shown: 0
     name: ParticleSystemForceField
-  - shown: 0
+  - shown: 1
     name: Rigidbody
-  - shown: 0
+  - shown: 1
     name: Collider
   - shown: 0
     name: CharacterController
-  - shown: 0
+  - shown: 1
     name: MeshCollider
-  - shown: 0
+  - shown: 1
     name: CapsuleCollider
-  - shown: 0
+  - shown: 1
     name: BoxCollider
-  - shown: 0
+  - shown: 1
     name: SphereCollider
   - shown: 0
     name: ConstantForce
@@ -491,7 +491,7 @@ MonoBehaviour:
     name: Terrain
   - shown: 0
     name: Tree
-  - shown: 0
+  - shown: 1
     name: TerrainCollider
   - shown: 0
     name: TextMesh
@@ -515,7 +515,7 @@ MonoBehaviour:
     name: VFXRenderer
   - shown: 0
     name: WorldAnchor
-  - shown: 0
+  - shown: 1
     name: WheelCollider
   - shown: 0
     name: VideoPlayer
