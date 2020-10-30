@@ -9,6 +9,7 @@ namespace HierarchyDecorator
 
         public GeneralTab() : base()
             {
+            Name = "General";
             global = settings.globalStyle;
             }
 

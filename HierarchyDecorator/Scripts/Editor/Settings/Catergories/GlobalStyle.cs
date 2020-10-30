@@ -5,19 +5,24 @@ namespace HierarchyDecorator
     {
     [System.Serializable]
     internal class GlobalSettings
-        {   
+        {
         //Toggle
-        public bool showComponents = true;
-        public bool showMonoBehaviours = true;
-        public bool showActiveToggles = true;
+        public bool showComponents;// = true;
+        public bool showMonoBehaviours;// = true;
+        public bool showActiveToggles;// = true;
 
         //Style
         public bool twoToneBackground;
 
         //Layer Mask
-        public bool showLayers = true;
-        public bool editableLayers = true;
-        public bool applyChildLayers = true;
+        public bool showLayers;// = true;
+        public bool editableLayers;// = true;
+        public bool applyChildLayers;// = true;
+
+        public GlobalSettings()
+            {
+
+            }
 
         public Color GetTwoToneColour(Rect selectionRect)
             {

@@ -14,6 +14,8 @@ namespace HierarchyDecorator
 
         public PrefixTab() : base()
             {
+            Name = "Prefixes";
+
             prefixes = serializedSettings.FindProperty ("prefixes");
 
             prefixNames = new List<string> ();

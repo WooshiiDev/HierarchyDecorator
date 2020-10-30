@@ -15,7 +15,7 @@ namespace HierarchyDecorator
         {
 
         //--- Settings ---
-        private static HierarchyDecoratorSettings settings;
+        private static Settings settings;
         private static SerializedObject serializedSettings;
         private static Editor settingsEditor;
 
@@ -35,8 +35,8 @@ namespace HierarchyDecorator
 
             if (settings == null)
                 {
-                settings = HierarchyDecoratorSettings.GetOrCreateSettings ();
-                serializedSettings = HierarchyDecoratorSettings.GetSerializedSettings ();
+                settings = Settings.GetOrCreateSettings ();
+                serializedSettings = Settings.GetSerializedSettings ();
                 }
             }
 

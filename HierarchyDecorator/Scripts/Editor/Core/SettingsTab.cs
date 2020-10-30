@@ -5,7 +5,9 @@ namespace HierarchyDecorator
     {
     internal abstract class SettingsTab
         {
-        protected HierarchyDecoratorSettings settings;
+        public string Name { get; protected set; }
+
+        protected Settings settings;
         protected SerializedObject serializedSettings;
 
         /// <summary>
@@ -14,11 +16,8 @@ namespace HierarchyDecorator
         /// <param name="settings">Current settings used for the hierarchy</param>
         public SettingsTab()
             {
-            this.settings = HierarchyDecoratorSettings.GetOrCreateSettings ();
-            this.serializedSettings = HierarchyDecoratorSettings.GetSerializedSettings ();
-
-            if (this.settings == null)
-                Debug.LogError ("Cannot find settings in project!");
+            settings = Settings.GetOrCreateSettings ();
+            serializedSettings = Settings.GetSerializedSettings ();
             }
 
         /// <summary>

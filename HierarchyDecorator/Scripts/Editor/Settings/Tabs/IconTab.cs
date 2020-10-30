@@ -17,6 +17,7 @@ namespace HierarchyDecorator
 
         public IconTab() : base()
             {
+            Name = "Icons";
             componentCatergories = new Dictionary<string, List<ComponentType>> ();
 
             //Setup catergories 

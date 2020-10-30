@@ -1,3 +1,8 @@
+#### v0.4.6.3
+Fixed General Settings not saving
+
+ - Lightened up the names of some of the classes as they were a little over the top
+
 #### v0.4.6.2
 Can now move settings asset around the project.
 

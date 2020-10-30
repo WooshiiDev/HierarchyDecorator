@@ -13,8 +13,9 @@ namespace HierarchyDecorator
 
         public StyleTab() : base ()
             {
-            styles = serializedSettings.FindProperty ("styles");
+            Name = "Styles";
 
+            styles = serializedSettings.FindProperty ("styles");
             styleNames = new List<string> ();
 
             for (int i = 0; i < styles.arraySize; i++)

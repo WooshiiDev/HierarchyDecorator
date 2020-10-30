@@ -23,7 +23,7 @@ namespace HierarchyDecorator
         internal readonly static Color UnactiveColor = new Color (0.9f, 0.9f, 0.9f, 0.4f);
         internal readonly static Color UnactivePrefabColor = new Color (0.48f, 0.67f, 0.95f, 0.6f);
 
-        internal static HierarchyDecoratorSettings Settings => HierarchyDecoratorSettings.GetOrCreateSettings ();
+        internal static Settings Settings => Settings.GetOrCreateSettings ();
         internal static List<HierarchyStyle> prefixes => Settings.prefixes;
 
         //Layer Masks

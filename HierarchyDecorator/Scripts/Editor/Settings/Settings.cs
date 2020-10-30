@@ -10,7 +10,7 @@ namespace HierarchyDecorator
     /// <summary>
     /// ScriptableObject containing all settings and relevant data for the hierarchy
     /// </summary>
-    internal class HierarchyDecoratorSettings : ScriptableObject, ISerializationCallbackReceiver
+    internal class Settings : ScriptableObject, ISerializationCallbackReceiver
         {
         public GlobalSettings globalStyle;
 
@@ -48,11 +48,12 @@ namespace HierarchyDecorator
         private static Type[] allTypes;
 
         //Constants
-        public const string typeString = "HierarchyDecoratorSettings";
+        public const string typeString = "Settings";
         
         private void OnValidate()
             {
             EditorApplication.RepaintHierarchyWindow ();
+            EditorUtility.SetDirty (this);
             }
 
         #region Creation
@@ -61,9 +62,9 @@ namespace HierarchyDecorator
         /// Load the asset for settings, or create one if it doesn't already exist
         /// </summary>
         /// <returns>The loaded settings</returns>
-        internal static HierarchyDecoratorSettings GetOrCreateSettings()
+        internal static Settings GetOrCreateSettings()
             {
-            HierarchyDecoratorSettings settings = null;
+            Settings settings = null;
 
             //Load from the saved GUID 
             if (EditorPrefs.HasKey (Constants.PREF_GUID))
@@ -71,7 +72,7 @@ namespace HierarchyDecorator
                 string savedPath = AssetDatabase.GUIDToAssetPath (EditorPrefs.GetString (Constants.PREF_GUID));
 
                 if (!string.IsNullOrEmpty (savedPath))
-                    return settings = AssetDatabase.LoadAssetAtPath<HierarchyDecoratorSettings> (savedPath);
+                    return settings = AssetDatabase.LoadAssetAtPath<Settings> (savedPath);
                 }
 
             string[] guids = AssetDatabase.FindAssets ($"t:{typeString}");
@@ -79,7 +80,7 @@ namespace HierarchyDecorator
             //Create an asset if none exist
             if (guids.Length == 0)
                 {
-                settings = AssetUtility.CreateScriptableAtPath<HierarchyDecoratorSettings> ("HierarchyDecoratorSettings", Constants.SETTINGS_ASSET_PATH);
+                settings = AssetUtility.CreateScriptableAtPath<Settings> ("HierarchyDecoratorSettings", Constants.SETTINGS_ASSET_PATH);
                 settings.SetDefaults ();
 
                 Debug.Log ($"Hiearchy Decorator found no previous settings, creating one at {Constants.SETTINGS_ASSET_PATH}.");
@@ -88,7 +89,7 @@ namespace HierarchyDecorator
             string path = guids[0];
             path = AssetDatabase.GUIDToAssetPath (path);
 
-            settings = AssetDatabase.LoadAssetAtPath<HierarchyDecoratorSettings> (path);
+            settings = AssetDatabase.LoadAssetAtPath<Settings> (path);
             EditorPrefs.SetString (Constants.PREF_GUID, AssetDatabase.AssetPathToGUID (guids[0]));
 
             return settings;
@@ -113,6 +114,7 @@ namespace HierarchyDecorator
 
             //Collections
             prefixes = importantPrefixes;
+
             components = new List<ComponentType> ();
             styles = new List<GUIStyle> ()
                 {

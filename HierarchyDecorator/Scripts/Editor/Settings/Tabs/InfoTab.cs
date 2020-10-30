@@ -5,6 +5,11 @@ namespace HierarchyDecorator
     {
     internal class InfoTab : SettingsTab
         {
+        public InfoTab()
+            {
+            Name = "About";
+            }
+
         public override void OnTitleHeaderGUI()
             {
 

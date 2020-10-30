@@ -41,7 +41,7 @@ namespace HierarchyDecorator
         private static int indentIndex = 0;
 
         //Data
-        private static HierarchyDecoratorSettings settings;
+        private static Settings settings;
         private static HierarchyStyle[] styles;
 
         private static bool IsTwoTone => (settings != null) ? settings.globalStyle.twoToneBackground : false;
@@ -625,7 +625,7 @@ namespace HierarchyDecorator
         private static void GetSettings()
             {
             //Cache Styles
-            settings = HierarchyDecoratorSettings.GetOrCreateSettings();
+            settings = Settings.GetOrCreateSettings();
             styles = settings.prefixes.ToArray ();
 
             //Call to make sure it updates without requiring the SO to be opened
