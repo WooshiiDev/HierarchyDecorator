@@ -1,6 +1,6 @@
 <h1 align="center">  
  <br>
- <img src="https://wooshii.studio/v2/img/projects/hierarchydecorator.png">
+ <img src="https://wooshii.studio/img/projects/hierarchydecorator.png">
 </h1>
 
 <h4 align="center">  Unity editor extension adding requirements the hierarchy is missing.<br>Fully Customizable. Fully Editable.</h4>
