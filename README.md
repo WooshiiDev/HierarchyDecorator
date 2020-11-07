@@ -24,9 +24,12 @@
 
 ## About
 
+
 Hierarchy Decorator is an extension for Unity 2019.1 and higher to support custom drawing within the Hierarchy window, and add extra information functionality. This provides easier and helpful structure to the Hierarchy without getting overly noisy or messy. 
 
-![](https://i.imgur.com/ATzBDoO.gif)
+<p align="center">
+<img src="https://i.imgur.com/ATzBDoO.gif" alt="Unity Download Link">
+</p>
 
 ## Installation
 <p align="center">
@@ -61,7 +64,9 @@ Net 4.0 is required to use this. This can be turned on in the **Player Settings*
 | Toggleable Settings        |         ✔️         |        ❌        |
 
 ## Settings
-![](https://i.imgur.com/Uop5ZEv.png)
+<p align="center">
+ <img src="https://i.imgur.com/Uop5ZEv.png" alt="Settings">
+</p>
 
 There is a scriptable object that is required for hierarchy decorator to run. If it is deleted, another will be created in the base of your asset folder in `Assets/HierarchyDecorator/`. These settings are also accessible from the `Preference` window.
 
