@@ -1,6 +1,6 @@
 <h1 align="center">  
  <br>
- <img src="https://wooshii.studio/v2/img/projects/hierarchydecorator.png">
+ <img src="https://wooshii.studio/img/projects/hierarchydecorator.png">
 </h1>
 
 <h4 align="center">  Unity editor extension adding requirements the hierarchy is missing.<br>Fully Customizable. Fully Editable.</h4>
@@ -24,13 +24,16 @@
 
 ## About
 
+
 Hierarchy Decorator is an extension for Unity 2019.1 and higher to support custom drawing within the Hierarchy window, and add extra information functionality. This provides easier and helpful structure to the Hierarchy without getting overly noisy or messy. 
 
-![](https://i.imgur.com/ATzBDoO.gif)
+<p align="center">
+<img src="https://i.imgur.com/ATzBDoO.gif" alt="Unity Download Link">
+</p>
 
 ## Installation
 <p align="center">
-  <a href="https://github.com/WooshiiDev/HierarchyDecorator/releases/tag/v0.4.6">Recent Release (v0.4.6)</a> • <a href="https://github.com/WooshiiDev/HierarchyDecorator/releases/download/v0.4.6/HierarchyDecorator.unitypackage">Unity Package</a> • <a href="https://github.com/WooshiiDev/HierarchyDecorator/archive/v0.4.6.zip">Zip</a> 
+  <a href="https://github.com/WooshiiDev/HierarchyDecorator/releases">Releases</a> • <a href="https://github.com/WooshiiDev/HierarchyDecorator/releases/download/v0.4.6.3/HierarchyDecorator.unitypackage">Unity Package</a> • <a href="https://github.com/WooshiiDev/HierarchyDecorator/archive/v0.4.6.3.zip">Zip</a> 
 </p>
 
 HierarchyDecorator can also be installed directly through the git url
@@ -61,7 +64,9 @@ Net 4.0 is required to use this. This can be turned on in the **Player Settings*
 | Toggleable Settings        |         ✔️         |        ❌        |
 
 ## Settings
-![](https://i.imgur.com/Uop5ZEv.png)
+<p align="center">
+ <img src="https://i.imgur.com/Uop5ZEv.png" alt="Settings">
+</p>
 
 There is a scriptable object that is required for hierarchy decorator to run. If it is deleted, another will be created in the base of your asset folder in `Assets/HierarchyDecorator/`. These settings are also accessible from the `Preference` window.
 
