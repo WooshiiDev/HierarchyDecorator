@@ -12,36 +12,68 @@ namespace HierarchyDecorator
     /// </summary>
     internal class Settings : ScriptableObject, ISerializationCallbackReceiver
         {
-        public GlobalSettings globalStyle;
+        // Settings
+        public GlobalSettings globalStyle; //Globa settings, show/hide
 
-        /// <summary>
-        /// Collection of all prefixes used for custom hierarchy overlays
-        /// </summary>
-        public List<HierarchyStyle> prefixes;
+        public List<HierarchyStyle> prefixes; //Collection of all prefixes
 
-        /// <summary>
-        /// Collection of custom <see cref="GUIStyle"/>'s used for the hierarchy designs
-        /// </summary>
-        public List<GUIStyle> styles;
+        public List<GUIStyle> styles; //List of all custom GUIStyles
 
         private readonly List<HierarchyStyle> importantPrefixes = new List<HierarchyStyle> ()
             {
-            new HierarchyStyle ("=" , "Header"),
-            new HierarchyStyle ("-" , "Toolbar"),
-            new HierarchyStyle ("+" ),
+            new HierarchyStyle ("=" , "Header")
+                {
+                lightMode =
+                    {
+                    fontColor = new Color(0.1764706f, 0.1764706f, 0.1764706f),
+                    backgroundColor = new Color(0.6666667f, 0.6666667f, 0.6666667f)
+                    },
+
+                darkMode =
+                    {
+                    fontColor = new Color(1f, 1f, 1f),
+                    backgroundColor = new Color(0.1764706f, 0.1764706f, 0.1764706f)
+                    }
+                }
+
+            ,
+            new HierarchyStyle ("-" , "Toolbar")
+                {
+
+                lightMode =
+                    {
+                    fontColor = new Color(0.245283f, 0.245283f, 0.245283f),
+                    backgroundColor = new Color(0.7960785f, 0.7960785f, 0.7960785f),
+                    },
+
+                darkMode =
+                    {
+                    fontColor = new Color(0.8584906f, 0.8584906f, 0.8584906f),
+                    backgroundColor = new Color (0.2352941f, 0.2352941f, 0.2352941f),
+                    }
+                },
+
+            new HierarchyStyle ("+")
+                {
+                lightMode =
+                    {
+                    fontColor = Color.white,
+                    backgroundColor = new Color(0.38568f, 0.6335747f, 0.764151f)
+                    },
+
+                darkMode =
+                    {
+                    fontColor = Color.white,
+                    backgroundColor = new Color(0.2671325f, 0.4473481f, 0.6509434f)
+                    }
+                }
             };
 
-        /// <summary>
-        /// Components shown in the inspector
-        /// </summary>
+        //Icon Data
         public Dictionary<string, ComponentType> shownComponents = new Dictionary<string, ComponentType> ();
 
         public List<CustomComponentType> customTypes = new List<CustomComponentType> ();
 
-        /// <summary>
-        /// List of all components
-        /// Required for easier handling of serialization
-        /// </summary>
         public List<ComponentType> components;
 
         //Collection of every component type unity has 
@@ -71,26 +103,18 @@ namespace HierarchyDecorator
                 {
                 string savedPath = AssetDatabase.GUIDToAssetPath (EditorPrefs.GetString (Constants.PREF_GUID));
 
-                if (!string.IsNullOrEmpty (savedPath))
+                bool assetExists = AssetDatabase.GetMainAssetTypeAtPath (savedPath) != null;
+
+                if (assetExists && !string.IsNullOrEmpty (savedPath))
                     return settings = AssetDatabase.LoadAssetAtPath<Settings> (savedPath);
                 }
 
-            string[] guids = AssetDatabase.FindAssets ($"t:{typeString}");
+            settings = AssetUtility.FindOrCreateScriptable<Settings> (typeString, Constants.SETTINGS_ASSET_FOLDER, 
+                (scriptable) => scriptable.SetDefaults());
 
-            //Create an asset if none exist
-            if (guids.Length == 0)
-                {
-                settings = AssetUtility.CreateScriptableAtPath<Settings> ("HierarchyDecoratorSettings", Constants.SETTINGS_ASSET_PATH);
-                settings.SetDefaults ();
-
-                Debug.Log ($"Hiearchy Decorator found no previous settings, creating one at {Constants.SETTINGS_ASSET_PATH}.");
-                }
-
-            string path = guids[0];
-            path = AssetDatabase.GUIDToAssetPath (path);
-
+            string path = AssetDatabase.GetAssetPath (settings);
             settings = AssetDatabase.LoadAssetAtPath<Settings> (path);
-            EditorPrefs.SetString (Constants.PREF_GUID, AssetDatabase.AssetPathToGUID (guids[0]));
+            EditorPrefs.SetString (Constants.PREF_GUID, AssetDatabase.AssetPathToGUID (path));
 
             return settings;
             }
@@ -152,6 +176,9 @@ namespace HierarchyDecorator
             //Reflection for component types
             if (allTypes == null)
                 allTypes = ReflectionUtility.GetTypesFromAllAssemblies (typeof (Component));
+
+            if (components == null)
+                return;
 
             bool hasMissing = components.Count != allTypes.Length;
 

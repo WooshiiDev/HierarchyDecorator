@@ -62,7 +62,15 @@ namespace HierarchyDecorator
             //Call it here to allow editor scripts to load
             //A lot of pain to work around
             if (settings == null)
+                {
                 GetSettings ();
+
+                if (settings == null)
+                    {
+                    Debug.LogError ("Cannot find settings");
+                    return;
+                    }
+                }
 
             GameObject gameObject = EditorUtility.InstanceIDToObject (instanceID) as GameObject;
 
@@ -626,6 +634,14 @@ namespace HierarchyDecorator
             {
             //Cache Styles
             settings = Settings.GetOrCreateSettings();
+
+            if (settings == null)
+                {
+                Debug.LogError ("Cannot find settings");
+                return;
+                }
+
+
             styles = settings.prefixes.ToArray ();
 
             //Call to make sure it updates without requiring the SO to be opened

@@ -32,8 +32,32 @@ namespace HierarchyDecorator
                 Directory.CreateDirectory (path);
 
             string fullPath = path + name + ".asset";
+
+            Debug.Log (fullPath);
+
             AssetDatabase.CreateAsset (scriptable, fullPath);
             AssetDatabase.SaveAssets ();
+
+            return scriptable;
+            }
+
+        internal static T FindOrCreateScriptable<T>(string type, string createPath, Action<T> onCreate = null) where T : ScriptableObject
+            {
+            T scriptable = null;
+            string[] guids = AssetDatabase.FindAssets ($"t:{type}");
+
+            if (guids.Length == 0)
+                {
+                scriptable = CreateScriptableAtPath<T> (type, createPath);
+                onCreate?.Invoke (scriptable);
+
+                Debug.Log ($"Created scriptable {type} at path {createPath}");
+                }
+            else
+                {
+                string scriptablePath = AssetDatabase.GUIDToAssetPath (guids[0]);
+                scriptable = AssetDatabase.LoadAssetAtPath<T> (scriptablePath);
+                }
 
             return scriptable;
             }

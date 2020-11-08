@@ -1,3 +1,7 @@
+#### v0.4.6.4
+ - Settings now correctly create new ScriptableObjects when one does not exist
+ - Temporary defaults for Settings have been added until a more refined setup is made
+
 #### v0.4.6.3
 Fixed General Settings not saving
 
