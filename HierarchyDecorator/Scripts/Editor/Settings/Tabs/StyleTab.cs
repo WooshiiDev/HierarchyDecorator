@@ -50,6 +50,7 @@ namespace HierarchyDecorator
             }
         public override void OnBodyContentGUI()
             {
+
             if (styles.arraySize == 0)
                 {
                 EditorGUILayout.EndVertical ();
@@ -58,15 +59,15 @@ namespace HierarchyDecorator
 
             var style = styles.GetArrayElementAtIndex (styleIndex);
             style.isExpanded = true;
-
+        
             EditorGUI.BeginChangeCheck ();
                 {
-                EditorGUILayout.PropertyField (style);
+                EditorGUILayout.PropertyField (style, true);
                 }
             if (EditorGUI.EndChangeCheck ())
                 {
                 UpdateNames ();
-                styles.serializedObject.ApplyModifiedProperties ();
+                serializedSettings.ApplyModifiedProperties ();
                 }
             }
 

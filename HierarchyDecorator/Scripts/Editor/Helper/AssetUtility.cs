@@ -33,10 +33,9 @@ namespace HierarchyDecorator
 
             string fullPath = path + name + ".asset";
 
-            Debug.Log (fullPath);
-
             AssetDatabase.CreateAsset (scriptable, fullPath);
             AssetDatabase.SaveAssets ();
+            AssetDatabase.Refresh ();
 
             return scriptable;
             }

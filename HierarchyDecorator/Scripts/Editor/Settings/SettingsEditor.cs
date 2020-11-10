@@ -22,8 +22,8 @@ namespace HierarchyDecorator
         //Tab Information
         public SettingsTab currentTab;
 
-        public static List<SettingsTab> tabs = new List<SettingsTab> ();
-        private static List<string> names = new List<string> ();
+        public List<SettingsTab> tabs = new List<SettingsTab> ();
+        private List<string> names = new List<string> ();
 
         private void OnEnable()
             {
@@ -31,13 +31,12 @@ namespace HierarchyDecorator
 
             RegisterTab (new GeneralTab ());
             RegisterTab (new PrefixTab ());
-            RegisterTab (new StyleTab ());
+            //RegisterTab (new StyleTab ());
             RegisterTab (new IconTab ());
             RegisterTab (new InfoTab ());
 
             currentTab = tabs[0];
             }
-
 
         public override void OnInspectorGUI()
             {
@@ -100,6 +99,7 @@ namespace HierarchyDecorator
                 }
             if (EditorGUI.EndChangeCheck ())
                 {
+                EditorUtility.SetDirty (t);
                 EditorApplication.RepaintHierarchyWindow ();
                 }
             }

@@ -17,7 +17,6 @@ namespace HierarchyDecorator
             Name = "Prefixes";
 
             prefixes = serializedSettings.FindProperty ("prefixes");
-
             prefixNames = new List<string> ();
 
             for (int i = 0; i < prefixes.arraySize; i++)
@@ -46,7 +45,6 @@ namespace HierarchyDecorator
                 }
             EditorGUILayout.EndHorizontal ();
 
-            
             prefixIndex = GUILayout.SelectionGrid (prefixIndex, prefixNames.ToArray (), 4, EditorStyles.centeredGreyMiniLabel);
             }
         public override void OnBodyContentGUI()

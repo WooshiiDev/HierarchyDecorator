@@ -7,17 +7,17 @@ namespace HierarchyDecorator
     internal class GlobalSettings
         {
         //Toggle
-        public bool showComponents;// = true;
-        public bool showMonoBehaviours;// = true;
-        public bool showActiveToggles;// = true;
+        public bool showComponents;
+        public bool showMonoBehaviours;
+        public bool showActiveToggles;
 
         //Style
         public bool twoToneBackground;
 
         //Layer Mask
-        public bool showLayers;// = true;
-        public bool editableLayers;// = true;
-        public bool applyChildLayers;// = true;
+        public bool showLayers;
+        public bool editableLayers;
+        public bool applyChildLayers;
 
         public GlobalSettings()
             {
