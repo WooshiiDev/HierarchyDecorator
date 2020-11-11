@@ -55,13 +55,27 @@ Net 4.0 is required to use this. This can be turned on in the **Player Settings*
 
 ## Features
 
-|                            | Wooshii Hierarchy Decorator  | Other Hierachy Extensions |
+Currently, this is what Hierarchy Decorator does have
+|                            | Hierarchy Decorator  | Other Hierachy Extensions |
 | -------------------------- | :----------------: | :-------------: |
-| GameObject Layer Selector  |         ✔️         |        ✔️        |
 | Light/Dark Mode Support    |         ✔️         |        ✔️        |
-| Custom Headers/Seperators  |         ✔️         |        ❌        |
-| Component Icon Display     |         ✔️         |        ❌        |
-| Toggleable Settings        |         ✔️         |        ❌        |
+| Custom Headers/Seperators  |         ✔️         |        ✔️        |
+| Toggleable Settings        |         ✔️         |        ✔️        |
+| Custom Component Icons     |         ✔️         |        ✔️        |
+| Unity Component Icons      |         ✔️         |        ❌        |
+| GameObject Layer Selector  |         ✔️         |        ❌        |
+
+
+These are currently future additions planned
+
+|                            | Hierarchy Decorator | Other Hierachy Extensions |
+| -------------------------- | :----------------:  | :-------------:   |
+| Hierarchy Breadcrumbs      |         Planned     |        ✔️        |
+| Custom Instance Icon       |         Planned     |        ✔️        |
+| More styling rules         |         Planned     |        ✔️        |
+| Rule-based Styling         |         Planned     |        ❌        |
+
+
 
 ## Settings
 <p align="center">
@@ -89,17 +103,6 @@ There is a scriptable object that is required for hierarchy decorator to run. If
 </p>
 <p align="center">
  <img src="https://i.imgur.com/mLpfHcK.gif" alt="Prefix Settings">
-</p>
-
-<p>
- <h3>GUIStyles</h3>
- 
- The GUIStyle tab controls the drawing of each header and style, on top of the prefix tab. Currently, this doesn't provide much and will most likely be removed in the future,
- with replacement settings added to the prefix tab. This however, can still be changed without any restrictions.
- </p>
-</p>
-<p align="center">
- <img src="https://i.imgur.com/JqPw9Hx.png?1" alt="GUIStyle Settings">
 </p>
  
 <p>
