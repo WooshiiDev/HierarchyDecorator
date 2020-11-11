@@ -1,3 +1,7 @@
+#### v0.4.6.5
+ - Removed Style Tab as it served very little purpose, settings will be added elsewhere
+ - Fixed a bug with static references targeting the previously destroyed SerializableObject for settings
+
 #### v0.4.6.4
  - Settings now correctly create new ScriptableObjects when one does not exist
  - Temporary defaults for Settings have been added until a more refined setup is made
