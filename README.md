@@ -1,9 +1,10 @@
 <h1 align="center">  
  <br>
- <img src="https://wooshii.studio/img/projects/hierarchydecorator.png">
+ <img src="https://wooshii.dev/img/work/hierarchydecorator.png">
+ Hierarchy Decorator
 </h1>
 
-<h4 align="center">  Unity editor extension adding requirements the hierarchy is missing.<br>Fully Customizable. Fully Editable.</h4>
+<h4 align="center"> Unity editor extension adding requirements the hierarchy is missing.<br>Fully Customizable. Fully Editable.</h4>
 
 <p align="center">
  <a href="https://unity3d.com/get-unity/download">
@@ -18,8 +19,7 @@
   <a href="#installation">Installation</a> •
   <a href="#features">Features</a> •
   <a href="#support">Support</a> •
-  <a href="#donate">Donate</a> •
-  <a href="#license">License</a>
+  <a href="#donate">Donate</a>
 </p>
 
 ## About
@@ -133,7 +133,4 @@ HierarchyDecorator will be and always has been developed in my free time, and th
 
 Development will be continued with this and will forever stay public and free.
 
-## License
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-Copyright (c) 2020 Damian Slocombe
+Copyright (c) 2020-2021 Damian Slocombe
