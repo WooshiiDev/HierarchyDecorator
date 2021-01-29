@@ -399,7 +399,7 @@ MonoBehaviour:
   - name: ParticleSystemForceField
     shown: 0
   - name: Rigidbody
-    shown: 0
+    shown: 1
   - name: Collider
     shown: 0
   - name: CharacterController
@@ -537,7 +537,7 @@ MonoBehaviour:
   - name: AspectRatioFitter
     shown: 0
   - name: CanvasScaler
-    shown: 0
+    shown: 1
   - name: ContentSizeFitter
     shown: 0
   - name: GridLayoutGroup

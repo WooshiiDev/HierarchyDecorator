@@ -7,6 +7,7 @@ namespace HierarchyDecorator
     [Serializable]
     internal class ComponentType : IComparable<ComponentType>
         {
+        [HideInInspector]
         public string name;
 
         public bool shown = false;

@@ -12,8 +12,6 @@ namespace HierarchyDecorator
         private ReorderableList prefixList;
         private SerializedProperty prefixes;
 
-        private GUIStyle listControlStyle;
-
         private readonly Color BACKGROUND_COLOR = new Color (0.235f, 0.360f, 0.580f);
         private readonly Color OUTLINE_COLOR = new Color (0.15f, 0.15f, 0.15f, 1f);
 
@@ -73,7 +71,7 @@ namespace HierarchyDecorator
             removeRect.width = 32f;
             removeRect.height = 18f;
 
-            if (GUI.Button (removeRect, "-", listControlStyle))
+            if (GUI.Button (removeRect, "-", Style.listControlStyle))
                 {
                 Undo.RecordObject (settings, "Removed prefix " + prefix.displayName);
                 prefixes.DeleteArrayElementAtIndex (index);
@@ -98,7 +96,7 @@ namespace HierarchyDecorator
             buttonRect.width += 7f;
 
             // Draw optionals
-            if (GUI.Button (buttonRect, "+", listControlStyle))
+            if (GUI.Button (buttonRect, "+", Style.listControlStyle))
                 {
                 Undo.RecordObject (settings, "Added new prefix");
                 prefixes.InsertArrayElementAtIndex (prefixes.arraySize);
@@ -140,13 +138,7 @@ namespace HierarchyDecorator
         /// </summary>
         protected override void OnTitleGUI()
             {
-            if (listControlStyle == null)
-                {
-                listControlStyle = new GUIStyle (EditorStyles.centeredGreyMiniLabel)
-                    {
-                    fontSize = 28,
-                    };
-                }
+        
             }
 
         /// <summary>

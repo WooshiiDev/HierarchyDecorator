@@ -71,6 +71,7 @@ namespace HierarchyDecorator
         {
         public static readonly GUIStyle foldoutHeaderStyle;
         public static readonly GUIStyle tabBackgroundStyle;
+        public static readonly GUIStyle listControlStyle;
 
         static Style()
             {
@@ -89,6 +90,11 @@ namespace HierarchyDecorator
                 fixedHeight = 0,
 
                 alignment = TextAnchor.MiddleLeft
+                };
+
+            listControlStyle = new GUIStyle (EditorStyles.centeredGreyMiniLabel)
+                {
+                fontSize = 28,
                 };
             }
         }
