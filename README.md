@@ -1,9 +1,10 @@
 <h1 align="center">  
  <br>
- <img src="https://wooshii.studio/img/projects/hierarchydecorator.png">
+ <img src="https://wooshii.dev/img/work/hierarchydecorator.png">
+ Hierarchy Decorator
 </h1>
 
-<h4 align="center">  Unity editor extension adding requirements the hierarchy is missing.<br>Fully Customizable. Fully Editable.</h4>
+<h4 align="center"> Unity editor extension adding requirements the hierarchy is missing.<br>Fully Customizable. Fully Editable.</h4>
 
 <p align="center">
  <a href="https://unity3d.com/get-unity/download">
@@ -18,8 +19,7 @@
   <a href="#installation">Installation</a> •
   <a href="#features">Features</a> •
   <a href="#support">Support</a> •
-  <a href="#donate">Donate</a> •
-  <a href="#license">License</a>
+  <a href="#donate">Donate</a>
 </p>
 
 ## About
@@ -55,13 +55,27 @@ Net 4.0 is required to use this. This can be turned on in the **Player Settings*
 
 ## Features
 
-|                            | Wooshii Hierarchy Decorator  | Other Hierachy Extensions |
+Currently, this is what Hierarchy Decorator does have
+|                            | Hierarchy Decorator  | Other Hierachy Extensions |
 | -------------------------- | :----------------: | :-------------: |
-| GameObject Layer Selector  |         ✔️         |        ✔️        |
 | Light/Dark Mode Support    |         ✔️         |        ✔️        |
-| Custom Headers/Seperators  |         ✔️         |        ❌        |
-| Component Icon Display     |         ✔️         |        ❌        |
-| Toggleable Settings        |         ✔️         |        ❌        |
+| Custom Headers/Seperators  |         ✔️         |        ✔️        |
+| Toggleable Settings        |         ✔️         |        ✔️        |
+| Custom Component Icons     |         ✔️         |        ✔️        |
+| Unity Component Icons      |         ✔️         |        ❌        |
+| GameObject Layer Selector  |         ✔️         |        ❌        |
+
+
+These are currently future additions planned
+
+|                            | Hierarchy Decorator | Other Hierachy Extensions |
+| -------------------------- | :----------------:  | :-------------:   |
+| Hierarchy Breadcrumbs      |         Planned     |        ✔️        |
+| Custom Instance Icon       |         Planned     |        ✔️        |
+| More styling rules         |         Planned     |        ✔️        |
+| Rule-based Styling         |         Planned     |        ❌        |
+
+
 
 ## Settings
 <p align="center">
@@ -89,17 +103,6 @@ There is a scriptable object that is required for hierarchy decorator to run. If
 </p>
 <p align="center">
  <img src="https://i.imgur.com/mLpfHcK.gif" alt="Prefix Settings">
-</p>
-
-<p>
- <h3>GUIStyles</h3>
- 
- The GUIStyle tab controls the drawing of each header and style, on top of the prefix tab. Currently, this doesn't provide much and will most likely be removed in the future,
- with replacement settings added to the prefix tab. This however, can still be changed without any restrictions.
- </p>
-</p>
-<p align="center">
- <img src="https://i.imgur.com/JqPw9Hx.png?1" alt="GUIStyle Settings">
 </p>
  
 <p>
@@ -130,7 +133,4 @@ HierarchyDecorator will be and always has been developed in my free time, and th
 
 Development will be continued with this and will forever stay public and free.
 
-## License
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-Copyright (c) 2020 Damian Slocombe
+Copyright (c) 2020-2021 Damian Slocombe
