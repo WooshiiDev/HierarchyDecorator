@@ -1,3 +1,13 @@
+#### v0.5.1.0
+Readded custom component icons back to settings
+
+ - Added functionality to icon settings switching between one and two column view if window gets too small
+ - Improved visualisation of icon settings
+
+Some of the settings still need tweaked slightly for various reasons (window size, ease of access etc.).
+Will improve throughout v0.5 before jumping on to Hierarchy redesigns.
+Later reworking of `ComponentTypes` is required as it's not the most flexible structure.
+
 #### v0.5.0.0
  Settings redesign!
 
