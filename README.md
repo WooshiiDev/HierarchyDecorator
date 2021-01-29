@@ -79,30 +79,30 @@ These are currently future additions planned
 
 ## Settings
 <p align="center">
- <img src="https://i.imgur.com/Uop5ZEv.png" alt="Settings">
+ <img src="https://i.imgur.com/TdLpPwZ.png" alt="Settings">
 </p>
 
 There is a scriptable object that is required for hierarchy decorator to run. If it is deleted, another will be created in the base of your asset folder in `Assets/HierarchyDecorator/`. These settings are also accessible from the `Preference` window.
 
+All settings enabled and disabled will reflect the Hierarchy instantly.
 <p>
- <h3>Global</h3>
- 
- All settings that generally control what the hierarchy looks like will be here. Optional settings, toggles and modes will also be shown here. This tab will go through
- many design changes as development goes on, just to keep everything tidy and structured.
+ <h3>General Settings</h3>
+
+ This section will contain all the general enabling/disabling of features and systems. In the future this may be redesigned or structured differently depending on the catergories required.
  </p>
 </p>
 <p align="center">
- <img src="https://i.imgur.com/9zldtdE.gif" alt="Global settings">
+ <img src="https://i.imgur.com/NRMCe40.png" alt="Global settings">
 </p>
 
 <p>
  <h3>Prefixes</h3>
  
- The Prefix tab controls the design of the headers and seperators for the hierarchy. Changing or updating the settings will instantly show in the hierarchy.
+ The Prefix tab controls the design of the headers and seperators for the hierarchy. Settings are seperate for light and dark mode, to provide convenience and accessibility.
  </p>
 </p>
 <p align="center">
- <img src="https://i.imgur.com/mLpfHcK.gif" alt="Prefix Settings">
+ <img src="https://i.imgur.com/CclRJwN.png" alt="Prefix Settings">
 </p>
  
 <p>
@@ -112,7 +112,7 @@ There is a scriptable object that is required for hierarchy decorator to run. If
  </p>
 </p>
 <p align="center">
- <img src="https://i.imgur.com/93LhHx9.gif" alt="Component/Icon Settings">
+ <img src="https://i.imgur.com/TxJlvw5.png" alt="Component/Icon Settings">
 </p>
 
 ## Support
@@ -122,7 +122,7 @@ A GitHub Project [Board](https://github.com/WooshiiDev/HierarchyDecorator/projec
 
 Reach out to me or see my other work through:
 
- - Website: https://wooshii.studio/
+ - Website: https://wooshii.dev/
  - Email: wooshiidev@gmail.com;
 
 ## Donate
