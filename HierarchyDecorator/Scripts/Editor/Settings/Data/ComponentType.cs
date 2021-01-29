@@ -1,14 +1,15 @@
 ﻿using System;
 using UnityEditor;
+using UnityEngine;
 
 namespace HierarchyDecorator
     {
-    [System.Serializable]
+    [Serializable]
     internal class ComponentType : IComparable<ComponentType>
         {
-        //Off by default to stop a huge spam of every component
-        public bool shown = false;
         public string name;
+
+        public bool shown = false;
         public Type type;
 
         public ComponentType(Type type)
@@ -32,7 +33,7 @@ namespace HierarchyDecorator
             }
         }
 
-    [System.Serializable]
+    [Serializable]
     internal class CustomComponentType : ComponentType
         {
         public MonoScript script = null;

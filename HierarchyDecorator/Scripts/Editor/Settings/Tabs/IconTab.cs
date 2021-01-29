@@ -2,22 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace HierarchyDecorator
     {
     internal class IconTab : SettingsTab
         {
-        private int catergorySelection;
-        private int customSelection;
-
-        private static List<ComponentType> currentComponents;
         private static Dictionary<string, List<ComponentType>> componentCatergories;
+        private static bool[] catergoryFoldout;
 
-        public IconTab() : base()
+        // References
+        private SerializedProperty customComponents;
+        private SerializedProperty unityComponents;
+        private ReorderableList componentList;
+
+        public IconTab() : base ("Icons", "d_FilterByType")
             {
-            Name = "Icons";
             componentCatergories = new Dictionary<string, List<ComponentType>> ();
 
             //Setup catergories 
@@ -27,16 +28,20 @@ namespace HierarchyDecorator
                 string keyword = keywords[i];
 
                 if (!componentCatergories.ContainsKey (keyword))
+                    {
                     componentCatergories.Add (keyword, new List<ComponentType> ());
+                    }
                 }
 
             componentCatergories.Add ("General", new List<ComponentType> ());
-            componentCatergories.Add ("Custom", null);
+            componentCatergories.Add ("Custom", new List<ComponentType> ());
+
+            catergoryFoldout = new bool[componentCatergories.Count];
 
             //Get all types and sort into catergories
-            for (int i = 0; i < settings.components.Count; i++)
+            for (int i = 0; i < settings.unityComponents.Count; i++)
                 {
-                ComponentType component = settings.components[i];
+                ComponentType component = settings.unityComponents[i];
 
                 bool isContained = false;
                 for (int j = 0; j < keywords.Length; j++)
@@ -45,8 +50,10 @@ namespace HierarchyDecorator
                     Type type = component.type;
 
                     if (type == null)
+                        {
                         continue;
-                    
+                        }
+
                     if (type.FullName.Contains (keyword))
                         {
                         componentCatergories[keyword].Add (component);
@@ -56,144 +63,96 @@ namespace HierarchyDecorator
                     }
 
                 if (!isContained)
+                    {
                     componentCatergories["General"].Add (component);
+                    }
                 }
 
+            // Sort to have larget catergories at the start, just for some form of row equality
+            // Not the best, but as it's getting called once, it should be fine
+            componentCatergories = componentCatergories.OrderByDescending (c => c.Value.Count).ToDictionary(t => t.Key, t => t.Value);
+
             //Sort just for nicer viewing
-            foreach (var item in componentCatergories.Values)
+            foreach (List<ComponentType> item in componentCatergories.Values)
                 {
                 if (item != null)
                     item.Sort ();
                 }
+
+            unityComponents = serializedSettings.FindProperty ("unityComponents");
+            customComponents = serializedSettings.FindProperty ("customComponents");
+
+
             }
 
-        public override void OnTitleHeaderGUI()
+        protected override void OnTitleGUI()
             {
 
             }
 
-        public override void OnTitleContentGUI()
+        protected override void OnContentGUI()
             {
-            EditorGUILayout.Space ();
-            GUIHelper.LineSpacer ();
-            EditorGUILayout.Space ();
-
-            string[] catergories = componentCatergories.Keys.ToArray ();
-            catergorySelection = GUILayout.SelectionGrid (catergorySelection, catergories, 4, EditorStyles.centeredGreyMiniLabel);
-            currentComponents = componentCatergories[catergories[catergorySelection]];
-            }
-
-        public override void OnBodyHeaderGUI()
-            {
-
-            }
-
-        public override void OnBodyContentGUI()
-            {
-            if (catergorySelection == componentCatergories.Count - 1)
+            for (int i = 0; i < componentCatergories.Count; i++)
                 {
-                DrawCustoms ();
-                return;
-                }
-            EditorGUILayout.BeginHorizontal();
-            {
-                if (GUILayout.Button("Enable All"))
-                    SetVisibilityForAll(true);
-                if (GUILayout.Button("Disable All"))
-                    SetVisibilityForAll(false);
-            }
-            EditorGUILayout.EndHorizontal();
-            GUIHelper.LineSpacer();
-            EditorGUILayout.Space();
-
-            //Draw all components for the catergory
-            foreach (ComponentType component in currentComponents)
-                {
-                GUIContent content = EditorGUIUtility.ObjectContent (null, component.type);
-
-                //Do not display if it's irrelevant in the first place
-                if (content.image == null || content.image.name == "d_DefaultAsset Icon")
-                    continue;
-
-                content.text = component.name;
+                KeyValuePair<string, List<ComponentType>> catergory = componentCatergories.ElementAt (i);
+                var components = catergory.Value;
 
                 EditorGUILayout.BeginHorizontal ();
-                    {
-                    component.shown = EditorGUILayout.Toggle (component.shown);
-                    EditorGUILayout.LabelField (content);
-                    }
-                EditorGUILayout.EndHorizontal ();
-                }
-            }
-        
+                    { 
+                    catergoryFoldout[i] = EditorGUILayout.Foldout (catergoryFoldout[i], catergory.Key, true);
 
-        private void SetVisibilityForAll(bool visible)
-        {
-            foreach (ComponentType component in currentComponents)
-                component.shown = visible;
-        }
+                    GUILayout.FlexibleSpace ();
 
-        private void DrawCustoms()
-            {
-            serializedSettings.UpdateIfRequiredOrScript ();
+                    if (GUILayout.Button ("Enable All", EditorStyles.centeredGreyMiniLabel))
+                        SetVisibilityForAll (components, true);
 
-            var customTypes = serializedSettings.FindProperty ("customTypes");
+                    EditorGUILayout.Space ();
 
-            if (customTypes.arraySize == 0)
-                {
-                if (GUILayout.Button ("Add", EditorStyles.miniButtonRight))
-                    {
-                    customTypes.InsertArrayElementAtIndex (0);
-                    serializedSettings.ApplyModifiedProperties ();
-                    }
-                }
-
-            string[] customNames = new string[customTypes.arraySize];
-
-            EditorGUI.indentLevel++;
-
-            SerializedProperty customType = null;
-            SerializedProperty script = null;
-            Object scriptValue = null;
-
-
-            for (int i = 0; i < customTypes.arraySize; i++)
-                {                        
-                customType = customTypes.GetArrayElementAtIndex (i);
-                script = customType.FindPropertyRelative ("script");
-                scriptValue = script.objectReferenceValue;
-
-                string displayName = scriptValue == null ? "Empty Custom Element" : scriptValue.name;
-
-                //Draw header for the custom type
-                EditorGUILayout.BeginHorizontal ();
-                    {
-                    GUIHelper.GetSerializedFoldout (customType, displayName);
-
-                    if (GUILayout.Button ("Delete", EditorStyles.miniButtonLeft))
-                        settings.customTypes.RemoveAt (i);
-                    else
-                    if (GUILayout.Button ("Add", EditorStyles.miniButtonRight))
-                        settings.customTypes.Insert (i + 1, null);
+                    if (GUILayout.Button("Disable All", EditorStyles.centeredGreyMiniLabel))
+                        SetVisibilityForAll (components, false);
                     }
                 EditorGUILayout.EndHorizontal ();
 
-                //Drwa all children afterwards
-                if (customType.isExpanded)
+                if (catergoryFoldout[i])
                     {
-                    EditorGUI.BeginChangeCheck ();
+                
+                    bool hasColumn = false;
+                    int validIndex = 0;
+                    for (int j = 0; j < components.Count; j++)
                         {
-                        SerializedPropertyUtility.DrawChildrenProperties (customType, false);
+                        ComponentType component = components[j];
+                        GUIContent content = EditorGUIUtility.ObjectContent (null, component.type);
+
+                        // Ignore irrelevant components, mostly base types or unused components
+                        if (content.image == null || content.image.name == "d_DefaultAsset Icon")
+                            continue;
+
+                        // Setup group to display two column view of icons
+                        hasColumn = validIndex % 2 == 0;
+
+                        GUIHelper.BeginConditionalHorizontal (hasColumn);
+                            {
+                            content.text = component.name;
+                            component.shown = EditorGUILayout.ToggleLeft (content, component.shown);
+                            }
+                        GUIHelper.EndConditionHorizontal (!hasColumn);
+
+                        validIndex++;
                         }
-                    if (EditorGUI.EndChangeCheck ())
-                        {
-                        serializedSettings.ApplyModifiedProperties ();
-                        settings.customTypes[i].UpdateScriptType ();
-                        }
+
+                    //Got to cancel the horizontal group
+                    GUIHelper.EndConditionHorizontal (hasColumn);
                     }
                 }
-            EditorGUI.indentLevel--;  
+
             }
-            
+
+        private void SetVisibilityForAll(List<ComponentType> components, bool visibility)
+            {
+            Undo.RecordObject (settings, $"Toggled components to {visibility}.");
+
+            foreach (var component in components)
+                component.shown = visibility;
+            }
         }
     }

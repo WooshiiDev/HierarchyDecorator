@@ -1,3 +1,12 @@
+#### v0.5.0.0
+ Settings redesign!
+
+ - Removed single tab view due to it being a waste of space, and slow navigation.
+ - Combined tabs into a single view with foldout displays.
+ - Component Icon Types all display in settings as foldouts.
+ - Component Icons can now all be enabled or disabled per type.
+ - Prefixes can now all be expanded or hidden in settings.
+
 #### v0.4.6.5
  - Removed Style Tab as it served very little purpose, settings will be added elsewhere
  - Fixed a bug with static references targeting the previously destroyed SerializableObject for settings

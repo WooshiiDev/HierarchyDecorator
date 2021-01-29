@@ -15,15 +15,17 @@ namespace HierarchyDecorator
         // Settings
         public GlobalSettings globalStyle; //Globa settings, show/hide
 
-        public List<HierarchyStyle> prefixes; //Collection of all prefixes
+        public List<PrefixSettings> prefixes; //Collection of all prefixes
 
         public List<GUIStyle> styles = new List<GUIStyle>(); //List of all custom GUIStyles
 
-        private readonly List<HierarchyStyle> importantPrefixes = new List<HierarchyStyle> ()
+        private readonly List<PrefixSettings> importantPrefixes = new List<PrefixSettings> ()
             {
-            new HierarchyStyle("=" , "Header")
-            {
-            lightMode =
+            new PrefixSettings("=" , "Header")
+                {
+                name = "Header",
+
+                lightMode =
                     {
                 fontColor = new Color (0.1764706f, 0.1764706f, 0.1764706f),
                     backgroundColor = new Color (0.6666667f, 0.6666667f, 0.6666667f)
@@ -34,12 +36,13 @@ namespace HierarchyDecorator
                 fontColor = new Color (1f, 1f, 1f),
                     backgroundColor = new Color (0.1764706f, 0.1764706f, 0.1764706f)
                     }
-            },
+                },
 
-            new HierarchyStyle("-" , "Toolbar")
-            {
+            new PrefixSettings("-" , "Toolbar")
+                {
+                name = "Subheader",
 
-            lightMode =
+                lightMode =
                     {
                 fontColor = new Color (0.245283f, 0.245283f, 0.245283f),
                     backgroundColor = new Color (0.7960785f, 0.7960785f, 0.7960785f),
@@ -50,11 +53,13 @@ namespace HierarchyDecorator
                 fontColor = new Color (0.8584906f, 0.8584906f, 0.8584906f),
                     backgroundColor = new Color (0.2352941f, 0.2352941f, 0.2352941f),
                     }
-            },
+                },
 
-            new HierarchyStyle("+")
-            {
-            lightMode =
+            new PrefixSettings("+")
+                {
+                name = "Blue Header",
+
+                lightMode =
                     {
                 fontColor = Color.white,
                     backgroundColor = new Color (0.38568f, 0.6335747f, 0.764151f)
@@ -65,15 +70,12 @@ namespace HierarchyDecorator
                 fontColor = Color.white,
                     backgroundColor = new Color (0.2671325f, 0.4473481f, 0.6509434f)
                     }
-            }
+                }
             };
 
-    //Icon Data
-    public Dictionary<string, ComponentType> shownComponents = new Dictionary<string, ComponentType> ();
-
-        public List<CustomComponentType> customTypes = new List<CustomComponentType> ();
-
-        public List<ComponentType> components;
+        //Icon Data
+        public List<ComponentType> unityComponents = new List<ComponentType> ();
+        public List<CustomComponentType> customComponents = new List<CustomComponentType> ();
 
         //Collection of every component type unity has 
         private static Type[] allTypes;
@@ -132,22 +134,22 @@ namespace HierarchyDecorator
         /// </summary>
         internal void SetDefaults()
             {
+            //Create collections
+            unityComponents = new List<ComponentType> ();
+            customComponents = new List<CustomComponentType> ();
+
             //Settings
             globalStyle = new GlobalSettings ();
 
             //Collections
             prefixes = importantPrefixes;
-
-            components = new List<ComponentType> ();
             styles = new List<GUIStyle> ()
                 {
                 CreateGUIStyle ("Header",       EditorStyles.boldLabel),
                 CreateGUIStyle ("Toolbar",      EditorStyles.toolbarButton),
                 CreateGUIStyle ("Grid Centered",EditorStyles.centeredGreyMiniLabel),
                 };
-
-            Debug.Log (styles.Count);
-
+        
             //Specifics for defaults
             var toolbar = prefixes[1];
             toolbar.SetAlignment (TextAnchor.MiddleLeft);
@@ -166,41 +168,33 @@ namespace HierarchyDecorator
 
         #region Editor Serialization
 
-        //This is just to get psudeo-type selection working
-        //Can pass them back to the dictionary when required
         public void OnBeforeSerialize() => UpdateSettings ();
 
         public void OnAfterDeserialize() => UpdateSettings ();
 
         public void UpdateSettings()
             {
-
             //Reflection for component types
             if (allTypes == null)
                 allTypes = ReflectionUtility.GetTypesFromAllAssemblies (typeof (Component));
 
-            if (components == null)
-                components = new List<ComponentType> ();
-                
-            bool hasMissing = components.Count != allTypes.Length;
+            //Generally used when switching versions
+            bool hasMissing = unityComponents.Count != allTypes.Length;
 
             if (hasMissing)
-                components.Clear ();
+                unityComponents.Clear ();
 
             for (int i = 0; i < allTypes.Length; i++)
                 {
                 var type = allTypes[i];
 
                 if (hasMissing)
-                    components.Add (new ComponentType (type));
+                    unityComponents.Add (new ComponentType (type));
 
-                ComponentType component = components[i];
+                ComponentType component = unityComponents[i];
 
                 if (component.type == null)
                     component.UpdateType (type);
-
-                if (!shownComponents.ContainsKey (component.name))
-                    shownComponents.Add (component.name, component);
                 }
             }
 
@@ -240,15 +234,6 @@ namespace HierarchyDecorator
                 };
             }
 
-        public string[] GetStyleNames()
-            {
-            string[] names = new string[styles.Count];
-
-            for (int i = 0; i < names.Length; i++)
-                names[i] = styles[i].name;
-
-            return names;
-            }
         #endregion
         }
     }

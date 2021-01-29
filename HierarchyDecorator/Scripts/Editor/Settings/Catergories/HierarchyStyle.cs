@@ -12,7 +12,7 @@ namespace HierarchyDecorator
         }
 
     [System.Serializable]
-    public class StyleSettings
+    public class ModeOptions
         {
         [Header ("Font")]
         public Font font = null;
@@ -30,21 +30,22 @@ namespace HierarchyDecorator
         }
 
     [System.Serializable]
-    public class HierarchyStyle
+    public class PrefixSettings
         {
+        public string name = "New Prefix";
         public string prefix;
         public string guiStyle = "Header";
 
-        public StyleSettings lightMode = new StyleSettings();
-        public StyleSettings darkMode = new StyleSettings();
+        public ModeOptions lightMode = new ModeOptions();
+        public ModeOptions darkMode = new ModeOptions();
 
-        public HierarchyStyle(string prefix, string name = "Header")
+        public PrefixSettings(string prefix, string name = "Header")
             {
             this.prefix = prefix;
             this.guiStyle = name;
             }
 
-        public StyleSettings GetCurrentSettings()
+        public ModeOptions GetCurrentSettings()
             {
             return (EditorGUIUtility.isProSkin) ? darkMode : lightMode;
             }

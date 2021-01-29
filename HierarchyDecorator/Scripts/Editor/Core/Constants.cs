@@ -24,7 +24,7 @@ namespace HierarchyDecorator
         internal readonly static Color UnactivePrefabColor = new Color (0.48f, 0.67f, 0.95f, 0.6f);
 
         internal static Settings Settings => Settings.GetOrCreateSettings ();
-        internal static List<HierarchyStyle> prefixes => Settings.prefixes;
+        internal static List<PrefixSettings> prefixes => Settings.prefixes;
 
         //Layer Masks
         internal static string[] LayerMasks => UnityEditorInternal.InternalEditorUtility.layers;
@@ -65,5 +65,31 @@ namespace HierarchyDecorator
         #endregion
 
         internal readonly static Texture2D Banner = Resources.Load<Texture2D> ("HierarchyDecoratorLogo");
+        }
+
+    internal static class Style
+        {
+        public static readonly GUIStyle foldoutHeaderStyle;
+        public static readonly GUIStyle tabBackgroundStyle;
+
+        static Style()
+            {
+            foldoutHeaderStyle = new GUIStyle (EditorStyles.foldout)
+                {
+                stretchHeight = true,
+
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleLeft,
+
+                };
+
+            tabBackgroundStyle = new GUIStyle (EditorStyles.helpBox)
+                {
+                stretchHeight = true,
+                fixedHeight = 0,
+
+                alignment = TextAnchor.MiddleLeft
+                };
+            }
         }
     }

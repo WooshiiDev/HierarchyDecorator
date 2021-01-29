@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using UnityEditorInternal;
 
 namespace HierarchyDecorator
     {
@@ -7,39 +8,34 @@ namespace HierarchyDecorator
         {
         private GlobalSettings global;
 
-        public GeneralTab() : base()
+        public GeneralTab() : base("General", "d_CustomTool")
             {
-            Name = "General";
             global = settings.globalStyle;
             }
 
-        public override void OnTitleHeaderGUI()
+        /// <summary>
+        /// The title gui drawn, primarily to display a header of some form
+        /// </summary>
+        protected override void OnTitleGUI()
             {
 
             }
 
-        public override void OnTitleContentGUI()
+        /// <summary>
+        /// The main content area for the settings
+        /// </summary>
+        protected override void OnContentGUI()
             {
-
-            }
-
-        public override void OnBodyHeaderGUI()
-            {
-            
-            }
-
-        public override void OnBodyContentGUI()
-            {
-            // === ======== ====
-            // === Features ====
-            // === ======== ====
+            // ==================
+            // ==== Features ====
+            // ==================
             EditorGUILayout.LabelField ("Features", EditorStyles.boldLabel);
 
             EditorGUI.indentLevel++;
                 {
-                GUIHelper.ToggleAuto (ref settings.globalStyle.showActiveToggles, "Show GameObject Toggles");
-                GUIHelper.ToggleAuto (ref settings.globalStyle.showComponents, "Show Common Components");
-                GUIHelper.ToggleAuto (ref settings.globalStyle.showMonoBehaviours, "Show All MonoBehaviour Icons");
+                GUIHelper.ToggleAuto (ref global.showActiveToggles, "Enable GameObject Toggles");
+                GUIHelper.ToggleAuto (ref global.showComponents, "Enable Component Icons");
+                GUIHelper.ToggleAuto (ref global.showMonoBehaviours, "Show All Component Icons");
 
                 EditorGUILayout.HelpBox ("This will display all MonoBehaviour derived types that exist, with their custom icon. When enabled, using the custom icons will not be needed.", MessageType.Info);
                 }
@@ -47,29 +43,29 @@ namespace HierarchyDecorator
 
             EditorGUILayout.Space ();
 
-            // ==============
-            // ====Style=====
-            // ==============
+            // ===============
+            // ==== Style ====
+            // ===============
             EditorGUILayout.LabelField ("Style", EditorStyles.boldLabel);
 
             EditorGUI.indentLevel++;
                 {
-                GUIHelper.ToggleAuto (ref settings.globalStyle.twoToneBackground, "Show Two Tone Background");
+                GUIHelper.ToggleAuto (ref global.twoToneBackground, "Show Two Tone Background");
                 }
             EditorGUI.indentLevel--;
 
             EditorGUILayout.Space ();
 
-            // ==============
-            // ====Layers====
-            // ==============
+            // ================
+            // ==== Layers ====
+            // ================
             EditorGUILayout.LabelField ("Layer Display", EditorStyles.boldLabel);
 
             EditorGUI.indentLevel++;
                 {
-                GUIHelper.ToggleAuto (ref settings.globalStyle.showLayers, "Show Layers");
-                GUIHelper.ToggleAuto (ref settings.globalStyle.editableLayers, "Show layer selection on click");
-                GUIHelper.ToggleAuto (ref settings.globalStyle.applyChildLayers, "Update layer on children");
+                GUIHelper.ToggleAuto (ref global.showLayers, "Show Layers");
+                GUIHelper.ToggleAuto (ref global.editableLayers, "Show layer selection on click");
+                GUIHelper.ToggleAuto (ref global.applyChildLayers, "Update layer on children");
                 }
             EditorGUI.indentLevel--;
             }

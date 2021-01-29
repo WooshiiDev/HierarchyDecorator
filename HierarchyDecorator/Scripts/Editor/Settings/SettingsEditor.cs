@@ -11,31 +11,31 @@ namespace HierarchyDecorator
         private Settings t;
 
         // --- GUI ---
-        private int tabSelection;
-
-        private Vector2 scrollView;
+        private static int tabSelection;
+        private static Vector2 scrollView;
 
         // --- Others ---
-        private GUIStyle verticalStyle;
-        private GUIStyle greyMidStyle;
+        private static GUIStyle titleStyle;
+        private GUIContent imageContent;
 
         //Tab Information
-        public SettingsTab currentTab;
-
-        public List<SettingsTab> tabs = new List<SettingsTab> ();
-        private List<string> names = new List<string> ();
+        private static List<SettingsTab> tabs;
 
         private void OnEnable()
             {
             t = target as Settings;
 
-            RegisterTab (new GeneralTab ());
-            RegisterTab (new PrefixTab ());
-            //RegisterTab (new StyleTab ());
-            RegisterTab (new IconTab ());
-            RegisterTab (new InfoTab ());
+            if (tabs == null)
+                {
+                tabs = new List<SettingsTab> ();
 
-            currentTab = tabs[0];
+                RegisterTab (new GeneralTab ());
+                RegisterTab (new PrefixTab ());
+                RegisterTab (new IconTab ());
+
+                imageContent = new GUIContent (Textures.Banner);
+                }
+
             }
 
         public override void OnInspectorGUI()
@@ -43,74 +43,61 @@ namespace HierarchyDecorator
             if (serializedObject == null)
                 return;
 
-            serializedObject.UpdateIfRequiredOrScript ();
-
-            if (verticalStyle == null)
+            if (titleStyle == null)
                 {
-                verticalStyle = new GUIStyle (GUI.skin.window)
+                titleStyle = new GUIStyle (EditorStyles.boldLabel)
                     {
-                    padding = new RectOffset (0, 0, 10, 10),
-                    fontSize = 10
-                    };
-
-                greyMidStyle = new GUIStyle (EditorStyles.centeredGreyMiniLabel)
-                    {
-                    fontSize = 12,
-                    fontStyle = FontStyle.Bold,
+                    fontSize = 18,
+                    fixedHeight = 21,
                     };
                 }
 
-            DrawHeaderContent ();
-            DrawBodyContent ();
-            }
-
-        private void DrawHeaderContent()
-            {
-            EditorGUILayout.BeginVertical (verticalStyle, GUILayout.Height (30));
+            EditorGUILayout.BeginHorizontal ();
                 {
-                EditorGUI.BeginChangeCheck ();
-                tabSelection = GUILayout.SelectionGrid (tabSelection, names.ToArray(), names.Count, greyMidStyle);
-                if (EditorGUI.EndChangeCheck ())
-                    currentTab = tabs[tabSelection];
+                EditorGUILayout.LabelField ("Hierarchy Settings", titleStyle);
 
-                currentTab.OnTitleHeaderGUI ();
-                currentTab.OnTitleContentGUI (); 
+                GUILayout.FlexibleSpace ();
+
+                if (GUILayout.Button ("GitHub Repository", EditorStyles.miniButtonMid))
+                    Application.OpenURL ("https://github.com/WooshiiDev/HierarchyDecorator/");
+
+                EditorGUILayout.Space ();
+
+                if (GUILayout.Button ("Twitter", EditorStyles.miniButtonMid))
+                    Application.OpenURL ("https://twitter.com/WooshiiDev");
+
+                EditorGUILayout.Space ();
                 }
-            EditorGUILayout.EndVertical ();
+            EditorGUILayout.EndHorizontal ();
 
             EditorGUILayout.Space ();
-            }
 
-        private void DrawBodyContent()
-            {
-            EditorGUI.BeginChangeCheck ();
+            foreach (var tab in tabs)
                 {
-                EditorGUILayout.BeginVertical (verticalStyle);
+                EditorGUI.BeginChangeCheck ();
                     {
                     EditorGUI.indentLevel++;
                         {
-                        currentTab.OnBodyHeaderGUI ();
-                        EditorGUILayout.Space ();
-                        currentTab.OnBodyContentGUI ();
+                        tab.OnGUI ();
                         }
                     EditorGUI.indentLevel--;
                     }
-                EditorGUILayout.EndVertical ();
+                if (EditorGUI.EndChangeCheck ())
+                    {
+                    EditorUtility.SetDirty (t);
+                    EditorApplication.RepaintHierarchyWindow ();
+                    }
                 }
-            if (EditorGUI.EndChangeCheck ())
-                {
-                EditorUtility.SetDirty (t);
-                EditorApplication.RepaintHierarchyWindow ();
-                }
+
+            serializedObject.UpdateIfRequiredOrScript ();
             }
 
+        /// <summary>
+        /// Register a tab to draw
+        /// </summary>
         public void RegisterTab(SettingsTab tab)
             {
-            if (!names.Contains (tab.Name))
-                {
-                tabs.Add (tab);
-                names.Add (tab.Name);
-                }
+            tabs.Add (tab);
             }
         } 
     }

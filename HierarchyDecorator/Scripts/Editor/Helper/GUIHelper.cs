@@ -28,31 +28,55 @@ public static class GUIHelper
         EditorGUI.DrawRect (rect, color);
         }
 
-    #endregion 
-
-    #region Automated Fields
-
-    public static void ToggleAuto(ref bool value, string label, GUIStyle style = null)
+    public static Texture GetUnityIcon(string iconName)
         {
-        if (style == null)
-            style = EditorStyles.toggle;
-
-        EditorGUILayout.BeginHorizontal ();
-            {
-            EditorGUIUtility.labelWidth = 0;//style.CalcSize (new GUIContent (label)).x;
-            EditorGUILayout.LabelField (label);
-
-            EditorGUIUtility.labelWidth = 0;
-            value = EditorGUILayout.Toggle (value);
-            }
-        EditorGUILayout.EndHorizontal ();
+        return EditorGUIUtility.IconContent(iconName).image;
         }
 
     #endregion
 
-    #region Button
+    #region Layout
 
-    public static bool ButtonAction(string label, System.Action callback)
+    /// <summary>
+    /// Begin a horizontal group, as long as the given condition is true
+    /// </summary>
+    /// <param name="condition">The condition required to create the group</param>
+    public static void BeginConditionalHorizontal(bool condition)
+        {
+        if (condition)
+            EditorGUILayout.BeginHorizontal ();
+        }
+
+    /// <summary>
+    /// End a horizontal group, as long as the given condition is true. Can be used
+    /// in conjunction with <see cref="BeginConditionalHorizontal(bool)"/> by inverting the condition
+    /// </summary>
+    /// <param name="condition">The condition required to end the group</param>
+    public static void EndConditionHorizontal(bool condition)
+        {
+        if (condition)
+            EditorGUILayout.EndHorizontal ();
+        }
+
+    #endregion
+
+    #region Fields
+
+    /// <summary>
+    /// Draw a toggle and update the original boolean value 
+    /// </summary>
+    /// <param name="value">Current boolean value for the toggle</param>
+    /// <param name="label">Toggle label</param>
+    public static void ToggleAuto(ref bool value, string label)
+        {
+        value = EditorGUILayout.ToggleLeft (label, value);
+        }
+
+    #endregion
+
+    #region GUI Actions
+
+    public static bool ButtonAction(string label, Action callback = null)
         {
         bool pressed = false;
 
@@ -62,7 +86,7 @@ public static class GUIHelper
         return pressed;
         }
 
-    public static bool ButtonAction(string label, GUIStyle style, System.Action callback)
+    public static bool ButtonAction(string label, GUIStyle style, Action callback = null)
         {
         bool pressed = false;
 
@@ -70,6 +94,27 @@ public static class GUIHelper
             callback?.Invoke ();
 
         return pressed;
+        }
+
+    public static bool FoldoutAction(bool toggle, string label, Action<bool> callback = null)
+        {
+        toggle = EditorGUILayout.Foldout (toggle, "General Settings", true);
+
+        callback?.Invoke (toggle);
+
+        return toggle;
+        }
+
+    public static bool FoldoutAction(bool toggle, string label, GUIStyle style, Action<bool> callback = null)
+        {
+        EditorGUILayout.BeginVertical (style);
+
+        toggle = EditorGUILayout.Foldout (toggle, label, true);
+        callback?.Invoke(toggle);
+
+        EditorGUILayout.EndVertical ();
+
+        return toggle;
         }
 
     #endregion

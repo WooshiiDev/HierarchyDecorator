@@ -42,7 +42,7 @@ namespace HierarchyDecorator
 
         //Data
         private static Settings settings;
-        private static HierarchyStyle[] styles;
+        private static PrefixSettings[] styles;
 
         private static bool IsTwoTone => (settings != null) ? settings.globalStyle.twoToneBackground : false;
 
@@ -59,6 +59,7 @@ namespace HierarchyDecorator
 
         static void HandleObject(int instanceID, Rect selectionRect)
             {
+
             //Call it here to allow editor scripts to load
             //A lot of pain to work around
             if (settings == null)
@@ -84,6 +85,7 @@ namespace HierarchyDecorator
                 PrefabUtility.GetPrefabInstanceStatus (gameObject) != PrefabInstanceStatus.NotAPrefab
                 );
 
+            //Draw custom styling
             DrawElementStyle (gameObject, selectionRect);
             }
 
@@ -231,6 +233,7 @@ namespace HierarchyDecorator
             if (hasStyle || !hasStyle && IsTwoTone)
                 DrawStandardSelection (selectionRect, obj);
                 
+            //Draw element style
             if (hasStyle)
                 {
                 for (int i = 0; i < styles.Length; i++)
@@ -280,14 +283,11 @@ namespace HierarchyDecorator
                     DrawStandardContent (selectionRect, obj);
                 }
 
-            //Anything further will be on top of text, so beware of that
-
-
             //EditorGUI.DrawRect (selectionRect, obj.activeSelf ? Color.clear : Constants.UnactiveColor);
             previousInstance = currentInstance;
             }
 
-        private static void ApplyElementStyle(Rect selectionRect, string name, HierarchyStyle prefix)
+        private static void ApplyElementStyle(Rect selectionRect, string name, PrefixSettings prefix)
             {
             var styleSetting = prefix.GetCurrentSettings ();
 
@@ -330,7 +330,7 @@ namespace HierarchyDecorator
             DrawLineStyle (backgroundRect, prefix);
             }
 
-        private static void DrawLineStyle(Rect selectionRect, HierarchyStyle style)
+        private static void DrawLineStyle(Rect selectionRect, PrefixSettings style)
             {
             var setting = style.GetCurrentSettings ();
 
@@ -391,46 +391,43 @@ namespace HierarchyDecorator
                 var m = new GenericMenu ();
 
                 Event e = Event.current;
+                bool isSelected = e.type == EventType.MouseDown && rect.Contains (Event.current.mousePosition) && Event.current.button == 0;
 
-                if (e.type == EventType.MouseDown)
+                if (!isSelected)
+                    return;
+                        
+                //Only select the one we click if there are no others
+                if (Selection.gameObjects.Length == 0)
+                    Selection.SetActiveObjectWithContext (currentInstance.gameObject, null);
+
+                string[] layers = Constants.LayerMasks;
+                for (int i = 0; i < layers.Length; i++)
                     {
-                    if (rect.Contains (Event.current.mousePosition) && Event.current.button == 0)
+                    var layer = layers[i];
+                    int layerIndex = LayerMask.NameToLayer (layer);
+
+                    m.AddItem (new GUIContent (layer), false, () =>
                         {
-                        //Only select the one we click if there are no others
-                        if (Selection.gameObjects.Length == 0)
-                            Selection.SetActiveObjectWithContext (currentInstance.gameObject, null);
+                        Undo.RecordObjects (Selection.gameObjects, "Layer Changed");
 
-                        string[] layers = Constants.LayerMasks;
-                        for (int i = 0; i < layers.Length; i++)
+                        foreach (GameObject go in Selection.gameObjects)
                             {
-                            var layer = layers[i];
-                            int layerIndex = LayerMask.NameToLayer (layer);
+                            go.layer = layerIndex;
 
-                            m.AddItem (new GUIContent (layer), false, () =>
-                            {
-                                Undo.RecordObjects (Selection.gameObjects, "Layer Changed");
-
-                                foreach (GameObject go in Selection.gameObjects)
-                                    {
-                                    go.layer = layerIndex;
-
-                                    if (settings.globalStyle.applyChildLayers)
-                                        {
-                                        foreach (Transform child in go.transform)
-                                            child.gameObject.layer = layerIndex;
-                                        }
-                                    }
-
-                                if (Selection.gameObjects.Length == 1)
-                                    Selection.SetActiveObjectWithContext (null, null);
-                            });
+                            if (settings.globalStyle.applyChildLayers)
+                                {
+                                foreach (Transform child in go.transform)
+                                    child.gameObject.layer = layerIndex;
+                                }
                             }
 
-                        m.ShowAsContext ();
-
-                        e.Use ();
-                        }
+                        if (Selection.gameObjects.Length == 1)
+                            Selection.SetActiveObjectWithContext (null, null);
+                        });
                     }
+
+                m.ShowAsContext ();
+                e.Use ();
                 }
             }
 
@@ -567,7 +564,7 @@ namespace HierarchyDecorator
             return originalString;
             }
 
-        private static void TogglePrefix(GameObject gameObject, HierarchyStyle style)
+        private static void TogglePrefix(GameObject gameObject, PrefixSettings style)
             {
             string str = gameObject.name;
 
@@ -593,18 +590,18 @@ namespace HierarchyDecorator
         private static bool IsAllowedType(Type type)
             {
             //Check global
-            for (int i = 0; i < settings.components.Count; i++)
+            for (int i = 0; i < settings.unityComponents.Count; i++)
                 {
-                var component = settings.components[i];
+                var component = settings.unityComponents[i];
 
                 if (component.type == type)
                     return component.shown;
                 }
 
             //Check custom types
-            for (int i = 0; i < settings.customTypes.Count; i++)
+            for (int i = 0; i < settings.customComponents.Count; i++)
                 {
-                var component = settings.customTypes[i];
+                var component = settings.customComponents[i];
 
                 if (component == null)
                     continue;
@@ -619,9 +616,9 @@ namespace HierarchyDecorator
         // Find the correct custom type in the custom list
         private static MonoScript GetCustomType(Type type)
             {
-            for (int i = 0; i < settings.customTypes.Count; i++)
+            for (int i = 0; i < settings.customComponents.Count; i++)
                 {
-                var customType = settings.customTypes[i];
+                var customType = settings.customComponents[i];
 
                 if (type.Name == customType.name && customType.shown)
                     return customType.script;
@@ -640,7 +637,6 @@ namespace HierarchyDecorator
                 Debug.LogError ("Cannot find settings");
                 return;
                 }
-
 
             styles = settings.prefixes.ToArray ();
 

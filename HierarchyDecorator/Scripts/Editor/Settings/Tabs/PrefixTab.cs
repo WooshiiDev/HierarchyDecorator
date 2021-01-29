@@ -1,138 +1,160 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Linq;
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
 
 namespace HierarchyDecorator
     {
     internal class PrefixTab : SettingsTab
         {
+        private ReorderableList prefixList;
         private SerializedProperty prefixes;
-        private int prefixIndex;
-        private int modeSelection;
 
-        private static List<string> prefixNames;
+        private GUIStyle listControlStyle;
 
-        public PrefixTab() : base()
+        private readonly Color BACKGROUND_COLOR = new Color (0.235f, 0.360f, 0.580f);
+        private readonly Color OUTLINE_COLOR = new Color (0.15f, 0.15f, 0.15f, 1f);
+
+        public PrefixTab() : base ("Prefixes", "d_InputField Icon")
             {
-            Name = "Prefixes";
-
             prefixes = serializedSettings.FindProperty ("prefixes");
-            prefixNames = new List<string> ();
-
-            for (int i = 0; i < prefixes.arraySize; i++)
-                prefixNames.Add ("Prefix " + prefixes.GetArrayElementAtIndex (i).displayName);
-            }
-
-        public override void OnTitleHeaderGUI()
-            {
-            //EditorGUILayout.LabelField ("Prefix Settings");
-            }
-
-        public override void OnBodyHeaderGUI()
-        {
-              }
-            
-        public override void OnTitleContentGUI()
-        {
-            EditorGUILayout.Space();
-            GUIHelper.LineSpacer();
-            EditorGUILayout.Space();
-
-            EditorGUILayout.BeginHorizontal ();
+            prefixList = new ReorderableList (serializedSettings, prefixes)
                 {
-                EditorGUILayout.LabelField ("Prefix Settings");
-                GUIHelper.SerializedArraySelection (prefixes, ref prefixIndex, UpdateNames, UpdateNames);
+                drawHeaderCallback = DrawPrefixHeader,
+
+                drawElementCallback = DrawPrefixElements,
+                drawElementBackgroundCallback = DrawPrefixBackground,
+
+                drawFooterCallback = DrawPrefixFooter,
+
+                elementHeightCallback = GetPropertyHeight,
+
+                headerHeight = 12f,
+
+                showDefaultBackground = false,
+                draggable = false
+                };
+            }
+
+        #region Reorderable List
+
+        private void DrawPrefixHeader(Rect rect)
+            {
+            rect.y += 2f;
+
+            Rect buttonRect = rect;
+            buttonRect.width = rect.width*0.5f;
+
+            // Draw optionals
+            if (GUI.Button (buttonRect, "Expand All", EditorStyles.centeredGreyMiniLabel))
+                {
+                SerializedProperty listProperty = prefixList.serializedProperty;
+                for (int i = 0; i < prefixList.count; ++i)
+                    listProperty.GetArrayElementAtIndex (i).isExpanded = true;
                 }
-            EditorGUILayout.EndHorizontal ();
 
-            prefixIndex = GUILayout.SelectionGrid (prefixIndex, prefixNames.ToArray (), 4, EditorStyles.centeredGreyMiniLabel);
-            }
-        public override void OnBodyContentGUI()
-            {
-            if (prefixes.arraySize == 0)
+            buttonRect.x += buttonRect.width;
+            if (GUI.Button (buttonRect, "Hide All", EditorStyles.centeredGreyMiniLabel))
                 {
-                EditorGUILayout.EndVertical ();
+                SerializedProperty listProperty = prefixList.serializedProperty;
+                for (int i = 0; i < prefixList.count; ++i)
+                    listProperty.GetArrayElementAtIndex (i).isExpanded = false;
+                }
+            }
+
+        private void DrawPrefixElements(Rect rect, int index, bool isActive, bool isFocused)
+            {
+            SerializedProperty prefix = prefixes.GetArrayElementAtIndex (index);
+
+            Rect removeRect = rect;
+            removeRect.x += removeRect.width - 32f;
+            removeRect.width = 32f;
+            removeRect.height = 18f;
+
+            if (GUI.Button (removeRect, "-", listControlStyle))
+                {
+                Undo.RecordObject (settings, "Removed prefix " + prefix.displayName);
+                prefixes.DeleteArrayElementAtIndex (index);
+                serializedSettings.ApplyModifiedProperties ();
                 return;
                 }
 
-            var prefix = prefixes.GetArrayElementAtIndex (prefixIndex);
-            var mode = (modeSelection == 0) ? prefix.FindPropertyRelative ("lightMode") : prefix.FindPropertyRelative ("darkMode");
-            //mode.isExpanded = true;
+            EditorGUI.PropertyField (rect, prefix, prefix.isExpanded);
+            }
 
-            var prefixString = prefix.FindPropertyRelative ("prefix");
-            var guiStyle = prefix.FindPropertyRelative ("guiStyle");
+        private void DrawPrefixBackground(Rect rect, int index, bool isActive, bool isFocused)
+            {
+            //DrawBackground (rect, isFocused);
+            }
 
-            EditorGUI.BeginChangeCheck ();
+        private void DrawPrefixFooter(Rect rect)
+            {
+            rect.y -= 4f;
+
+            Rect buttonRect = rect;
+            buttonRect.x -= 3f;
+            buttonRect.width += 7f;
+
+            // Draw optionals
+            if (GUI.Button (buttonRect, "+", listControlStyle))
                 {
-                int styleSelection = GetStyleIndex (guiStyle.stringValue);
-                string[] styles = settings.GetStyleNames ();
-
-                EditorGUILayout.PropertyField (prefixString);
-
-                if (styles.Length == 0)
-                    EditorGUILayout.LabelField ("Cannot find style, please add a style to the Style Tab");
-                else
-                    guiStyle.stringValue = styles[EditorGUILayout.Popup ("Style", styleSelection, styles)];
-
-                EditorGUILayout.Space ();
-
-                //Gotta do this for horizontal alignment
-                EditorGUILayout.BeginHorizontal ();
-                    {
-                    mode.isExpanded = EditorGUILayout.Foldout (true, mode.displayName, true);
-                    modeSelection = GUILayout.SelectionGrid (modeSelection, new[] { "Light", "Dark" }, 2, EditorStyles.centeredGreyMiniLabel);
-                    }
-                EditorGUILayout.EndHorizontal ();
-
-
-                SerializedProperty iterator = mode.Copy();
-
-                if (mode.isExpanded)
-                    {
-                    while (iterator.NextVisible (true))
-                        {
-                        if (SerializedProperty.EqualContents (iterator, mode.GetEndProperty ()))
-                            break;
-
-                        EditorGUILayout.PropertyField (iterator);
-                        }
-                    }
-
-                //EditorGUILayout.PropertyField (mode);
-                }
-            if (EditorGUI.EndChangeCheck ())
-                {
-                UpdateNames ();
-                prefixes.serializedObject.ApplyModifiedProperties ();
-
-                EditorApplication.RepaintHierarchyWindow ();
+                Undo.RecordObject (settings, "Added new prefix");
+                prefixes.InsertArrayElementAtIndex (prefixes.arraySize);
+                serializedSettings.ApplyModifiedProperties ();
                 }
             }
 
-        private void UpdateNames()
+        private float GetPropertyHeight(int index)
             {
-            prefixNames.Clear ();
+            return GetPropertyHeight (prefixes.GetArrayElementAtIndex (index));
+            }
 
-            for (int i = 0; i < prefixes.arraySize; i++)
+        private float GetPropertyHeight(SerializedProperty property)
+            {
+            return EditorGUI.GetPropertyHeight (property);
+            }
+
+        private void DrawBackground(Rect rect, bool isFocused)
+            {
+            rect.x -= 16f;
+            rect.width += 16f;
+
+            EditorGUI.LabelField (rect, "", GUI.skin.box);
+
+            rect.x += 16f;
+            rect.width -= 16f;
+
+            Color fill = (isFocused) ? BACKGROUND_COLOR : Color.clear;
+
+            Handles.BeginGUI ();
+            Handles.DrawSolidRectangleWithOutline (rect, Color.clear, OUTLINE_COLOR);
+            Handles.EndGUI ();
+            }
+
+        #endregion
+
+        /// <summary>
+        /// The title gui drawn, primarily to display a header of some form
+        /// </summary>
+        protected override void OnTitleGUI()
+            {
+            if (listControlStyle == null)
                 {
-                var name = "Prefix " + prefixes.GetArrayElementAtIndex (i).displayName;
-
-                //if (!prefixNames.Contains (name))
-                    prefixNames.Add (name);
+                listControlStyle = new GUIStyle (EditorStyles.centeredGreyMiniLabel)
+                    {
+                    fontSize = 28,
+                    };
                 }
             }
 
-        private int GetStyleIndex(string styleName)
+        /// <summary>
+        /// The main content area for the settings
+        /// </summary>
+        protected override void OnContentGUI()
             {
-            for (int i = 0; i < settings.styles.Count; i++)
-                {
-                string name = settings.styles[i].name;
-
-                if (styleName == name)
-                    return i;
-                }
-
-            return -1;
+            prefixList.DoLayoutList ();
             }
         }
     }

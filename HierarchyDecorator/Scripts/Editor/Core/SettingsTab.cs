@@ -5,41 +5,59 @@ namespace HierarchyDecorator
     {
     internal abstract class SettingsTab
         {
-        public string Name { get; protected set; }
+        //GUI 
+        private bool isShown;
+        private readonly GUIContent content;
 
-        protected Settings settings;
-        protected SerializedObject serializedSettings;
+        // References
+        protected readonly Settings settings;
+        protected readonly SerializedObject serializedSettings;
 
         /// <summary>
         /// Constructor used to cache the data required
         /// </summary>
         /// <param name="settings">Current settings used for the hierarchy</param>
-        public SettingsTab()
+        public SettingsTab(string name, string icon)
             {
             settings = Settings.GetOrCreateSettings ();
             serializedSettings = Settings.GetSerializedSettings ();
+
+            content = new GUIContent (name, GUIHelper.GetUnityIcon (icon));
             }
 
         /// <summary>
-        /// The header drawn under the tab selection
+        /// Draw the settings tab
         /// </summary>
-        public abstract void OnTitleHeaderGUI();
+        public void OnGUI()
+            {
+            EditorGUILayout.BeginVertical (Style.tabBackgroundStyle, GUILayout.MinHeight (32f));
+                {
+                if (IsShown ())
+                    {
+                    OnTitleGUI ();
+                    OnContentGUI ();
+                    EditorGUILayout.Space ();
+                    }
+                }
+            EditorGUILayout.EndVertical ();
+            }
 
         /// <summary>
-        /// The content drawn under the header GUI
-        /// Use this when information is required under the HeaderGUI
+        /// Is the current tab open or closed, hiding the settings?
         /// </summary>
-        public abstract void OnTitleContentGUI();
+        protected bool IsShown()
+            {
+            return isShown = EditorGUILayout.Foldout (isShown, content, true, Style.foldoutHeaderStyle);
+            }
 
         /// <summary>
-        /// The header for the body, if it requires any content
+        /// The title gui drawn, primarily to display a header of some form
         /// </summary>
-        public abstract void OnBodyHeaderGUI();
+        protected abstract void OnTitleGUI();
 
         /// <summary>
-        /// The main content area for the settings tab,
-        /// drawn under the body header
+        /// The main content area for the settings
         /// </summary>
-        public abstract void OnBodyContentGUI();
+        protected abstract void OnContentGUI();
         }
     }
