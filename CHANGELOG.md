@@ -1,4 +1,4 @@
-#### v0.6.0
+#### v0.6.0.0
  Hierarchy Core Improvements & Redesign
 
  Additions Changes
