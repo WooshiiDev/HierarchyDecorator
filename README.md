@@ -25,7 +25,7 @@
 ## About
 
 
-Hierarchy Decorator is an extension for Unity 2019.1 and higher to support custom drawing within the Hierarchy window, and add extra information functionality. This provides easier and helpful structure to the Hierarchy without getting overly noisy or messy. 
+Hierarchy Decorator is an extension for Unity 2018.4 and higher to support custom drawing within the Hierarchy window, and add extra information functionality. This provides easier and helpful structure to the Hierarchy without getting overly noisy or messy. 
 
 <p align="center">
 <img src="https://i.imgur.com/ATzBDoO.gif" alt="Unity Download Link">
