@@ -3,14 +3,6 @@ using UnityEditor;
 
 namespace HierarchyDecorator
     {
-    public enum LineStyle
-        {
-        NONE    = 0,
-        TOP     = 1,
-        BOTTOM  = 2,
-        BOTH    = 3
-        }
-
     [System.Serializable]
     public class ModeOptions
         {
@@ -24,9 +16,9 @@ namespace HierarchyDecorator
         public Color fontColor = Color.black;
         public Color backgroundColor = Color.white;
 
-        [Header ("Line")]
-        public LineStyle displayedLine = LineStyle.NONE;
-        public Color lineColor = Color.black;
+        [Header ("Others")]
+        public bool hasOutline;
+        public Color outlineColor = Color.black;
         }
 
     [System.Serializable]
@@ -65,9 +57,9 @@ namespace HierarchyDecorator
             lightMode.fontStyle = darkMode.fontStyle = style;
             }
 
-        public void SetLineStyle(LineStyle lineStyle)
+        public void SetOutline(bool hasOutline)
             {
-            lightMode.displayedLine = darkMode.displayedLine = lineStyle;
+            lightMode.hasOutline = darkMode.hasOutline = hasOutline;
             }
         }
     }

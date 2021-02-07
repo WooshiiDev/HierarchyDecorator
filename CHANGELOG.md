@@ -1,3 +1,20 @@
+#### v0.6.0
+ Hierarchy Core Improvements & Redesign
+
+ Additions Changes
+ - Hierarchy now has a new feature system, with easy toggles on options. Will be reflected in the settings in the near future.
+ - Hierarchy features/info displayed will now reposition based on what is hidden or displayed keeping space clean.
+ - Hovering over component icons will now display what component they are. 
+ - The normal hierarchy data now draws under the custom features. This will be provided as an option in the settings in the future.
+ - Can now toggle on/off full width styling for the two tone background and styles. If turned off, this will draw custom styles within the normal rect for each instance.
+
+ Fixes/Bugs
+ - Fixed a bug where the ScriptableObject will not be created from the git repository.
+ - Removed the Settings ScriptableObject from the project. The settings will still exist within the package.
+ - Fixed a bug where the settings would revert after editing other setting tabs.
+ - Fixed bugs related to saving and updating where settings would revert if AssetDatabase.SaveAssets() was not called. All settings are now handled through serialized properties.
+ - General optimisation and clean up of `HierarchyDecorator.cs` has been done.
+
 #### v0.5.1.0
 Readded custom component icons back to settings
 

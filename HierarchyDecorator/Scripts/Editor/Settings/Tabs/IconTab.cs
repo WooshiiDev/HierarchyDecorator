@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
-using UnityEditorInternal;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -10,9 +9,27 @@ namespace HierarchyDecorator
     {
     internal class IconTab : SettingsTab
         {
-        private static Dictionary<string, List<ComponentType>> componentCategories;
+        [System.Serializable]
+        private class IconInfo : IComparable<IconInfo>
+            {
+            public readonly Type type;
+            public SerializedProperty property;
 
-        private static bool[] categoryFoldout;
+            public IconInfo(Type type, SerializedProperty property)
+                {
+                this.type = type;
+                this.property = property;
+                }
+
+            public Int32 CompareTo(IconInfo other)
+                {
+                return type.FullName.CompareTo (other.type.FullName);
+                }
+            }
+
+        private static Dictionary<string, List<IconInfo>> componentCategories = new Dictionary<string, List<IconInfo>> ();
+
+        private static bool[] categoryFoldout;            
 
         // References
         private readonly SerializedProperty customComponents;
@@ -20,68 +37,50 @@ namespace HierarchyDecorator
 
         public IconTab() : base ("Icons", "d_FilterByType")
             {
-            componentCategories = new Dictionary<string, List<ComponentType>> ();
+            // Setup References
+            unityComponents = serializedSettings.FindProperty ("unityComponents");
+            customComponents = serializedSettings.FindProperty ("customComponents");
 
             //Setup catergories 
             string[] keywords = Constants.componentKeywords;
+
             for (int i = 0; i < keywords.Length; i++)
-                {
-                string keyword = keywords[i];
+                componentCategories.Add (keywords[i], new List<IconInfo> ());
 
-                if (!componentCategories.ContainsKey (keyword))
-                    {
-                    componentCategories.Add (keyword, new List<ComponentType> ());
-                    }
-                }
-
-            componentCategories.Add ("General", new List<ComponentType> ());
-
-            categoryFoldout = new bool[componentCategories.Count];
+            //Add other categories
+            componentCategories.Add ("General", new List<IconInfo> ());
 
             //Get all types and sort into catergories
             for (int i = 0; i < settings.unityComponents.Count; i++)
                 {
                 ComponentType component = settings.unityComponents[i];
+                Type type = component.type;
 
-                bool isContained = false;
-                for (int j = 0; j < keywords.Length; j++)
-                    {
-                    string keyword = keywords[j];
-                    Type type = component.type;
+                IconInfo info = new IconInfo (type, unityComponents.GetArrayElementAtIndex (i).FindPropertyRelative("shown"));
+                Texture componentImage = EditorGUIUtility.ObjectContent (null, type).image;
 
-                    if (type == null)
-                        {
-                        continue;
-                        }
+                if (componentImage == null || componentImage.name == "d_DefaultAsset Icon")
+                    continue;
 
-                    if (type.FullName.Contains (keyword))
-                        {
-                        componentCategories[keyword].Add (component);
-                        isContained = true;
-                        break;
-                        }
-                    }
+                string componentKeyword = keywords.FirstOrDefault (f => type.FullName.Contains (f));
 
-                if (!isContained)
-                    {
-                    componentCategories["General"].Add (component);
-                    }
+                if (string.IsNullOrEmpty (componentKeyword))
+                    componentKeyword = "General";
+
+                componentCategories[componentKeyword].Add (info);
                 }
 
-            // Sort to have larget catergories at the start, just for some form of row equality
-            // Not the best, but as it's getting called once, it should be fine
-            componentCategories = componentCategories.OrderByDescending (c => c.Value.Count).ToDictionary(t => t.Key, t => t.Value);
+            // Sort to have larget catergories at the start
+            componentCategories = componentCategories.OrderByDescending (c => c.Value.Count).ToDictionary (t => t.Key, t => t.Value);
 
-            //Sort just for nicer viewing
-            foreach (List<ComponentType> item in componentCategories.Values)
-                {
-                if (item != null)
-                    item.Sort ();
-                }
+            foreach (List<IconInfo> item in componentCategories.Values)
+                item.Sort ();
 
-            unityComponents = serializedSettings.FindProperty ("unityComponents");
-            customComponents = serializedSettings.FindProperty ("customComponents");
+            // Bools for foldouts
+            categoryFoldout = new bool[componentCategories.Count];
             }
+
+
 
         protected override void OnTitleGUI()
             {
@@ -91,47 +90,41 @@ namespace HierarchyDecorator
         protected override void OnContentGUI()
             {
             bool canHaveColumns = EditorGUIUtility.currentViewWidth > 500f;
-  
+
             for (int i = 0; i < componentCategories.Count; i++)
                 {
-                KeyValuePair<string, List<ComponentType>> category = componentCategories.ElementAt (i);
-                var components = category.Value;
+                var category = componentCategories.ElementAt (i);
+                var icons = category.Value;
 
                 EditorGUILayout.BeginVertical (GUI.skin.box);
-
-                DrawCategoryFoldout (ref categoryFoldout[i], category.Key, components);
-              
-
-                if (categoryFoldout[i])
                     {
-                    bool hasColumn = false;
-                    int validIndex = 0;
-                    for (int j = 0; j < components.Count; j++)
+                    if (categoryFoldout[i] = DrawCategoryFoldout (categoryFoldout[i], category.Key, category.Value))
                         {
-                        ComponentType component = components[j];
-                        GUIContent content = EditorGUIUtility.ObjectContent (null, component.type);
+                        bool hasColumn = false;
+                        int validIndex = 0;
 
-                        // Ignore irrelevant components, mostly base types or unused components
-                        if (content.image == null || content.image.name == "d_DefaultAsset Icon")
-                            continue;
-
-                        // Setup group to display two column view of icons
-                        hasColumn = validIndex % 2 == 0;
-
-                        GUIHelper.BeginConditionalHorizontal (hasColumn && canHaveColumns);
+                        for (int j = 0; j < icons.Count; j++)
                             {
-                            content.text = component.name;
-                            component.shown = EditorGUILayout.ToggleLeft (content, component.shown);
+                            IconInfo icon = icons[j];
+
+                            GUIContent content = EditorGUIUtility.ObjectContent (null, icon.type);
+                            content.text = icon.type.Name;
+
+                            // Setup group to display two column view of icons
+                            hasColumn = validIndex % 2 == 0;
+
+                            GUIHelper.BeginConditionalHorizontal (hasColumn && canHaveColumns);
+                                {
+                                icon.property.boolValue = EditorGUILayout.ToggleLeft (content, icon.property.boolValue);
+                                }
+                            GUIHelper.EndConditionHorizontal (!hasColumn && canHaveColumns);
+
+                            validIndex++;
                             }
-                        GUIHelper.EndConditionHorizontal (!hasColumn && canHaveColumns);
 
-                        validIndex++;
+                        GUIHelper.EndConditionHorizontal (hasColumn && canHaveColumns);
                         }
-
-                    //Got to cancel the horizontal group
-                    GUIHelper.EndConditionHorizontal (hasColumn && canHaveColumns);
                     }
-
                 EditorGUILayout.EndVertical ();
                 }
 
@@ -161,37 +154,36 @@ namespace HierarchyDecorator
                     EditorGUI.indentLevel++;
 
                     EditorGUILayout.BeginHorizontal ();
-
-                    EditorGUILayout.BeginVertical ();
-
-                    //Drwa all children afterwards
-                    SerializedProperty shown = customType.FindPropertyRelative ("shown");
-
-                    EditorGUI.BeginChangeCheck ();
                         {
-                        EditorGUILayout.BeginHorizontal ();
-                        shown.boolValue = EditorGUILayout.Toggle (shown.boolValue, GUILayout.Width(64f));
-                        EditorGUILayout.ObjectField (script, new GUIContent());
+                        EditorGUILayout.BeginVertical ();
+                            {
+                            //Draw all children afterwards
+                            SerializedProperty shown = customType.FindPropertyRelative ("shown");
 
+                            EditorGUI.BeginChangeCheck ();
+                                {
+                                EditorGUILayout.BeginHorizontal ();
 
-                        EditorGUILayout.EndHorizontal ();
+                                shown.boolValue = EditorGUILayout.Toggle (shown.boolValue, GUILayout.Width (64f));
+                                EditorGUILayout.ObjectField (script, new GUIContent ());
+
+                                EditorGUILayout.EndHorizontal ();
+                                }
+                            if (EditorGUI.EndChangeCheck ())
+                                {
+                                serializedSettings.ApplyModifiedProperties ();
+                                settings.customComponents[i].UpdateScriptType ();
+                                serializedSettings.UpdateIfRequiredOrScript ();
+                                }
+                            }
+                        EditorGUILayout.EndVertical ();
+
+                        if (GUILayout.Button ("Delete Icon", EditorStyles.centeredGreyMiniLabel, GUILayout.ExpandHeight (true)))
+                            {
+                            customComponents.DeleteArrayElementAtIndex (i);
+                            serializedSettings.ApplyModifiedProperties ();
+                            }
                         }
-                    if (EditorGUI.EndChangeCheck ())
-                        {
-                        serializedSettings.ApplyModifiedProperties ();
-                        settings.customComponents[i].UpdateScriptType ();
-                        serializedSettings.UpdateIfRequiredOrScript ();
-                        }
-                        
-
-                    EditorGUILayout.EndVertical ();
-
-                    if (GUILayout.Button ("Delete Icon", EditorStyles.centeredGreyMiniLabel, GUILayout.ExpandHeight(true)))
-                        {
-                        customComponents.DeleteArrayElementAtIndex (i);
-                        serializedSettings.ApplyModifiedProperties ();
-                        }
-
                     EditorGUILayout.EndHorizontal ();
 
                     EditorGUI.indentLevel--;
@@ -209,7 +201,7 @@ namespace HierarchyDecorator
             EditorGUILayout.EndVertical ();
             }
 
-        private void DrawCategoryFoldout(ref bool foldout, string name, List<ComponentType> components)
+        private bool DrawCategoryFoldout(bool foldout, string name, List<IconInfo> components)
             {
             EditorGUILayout.BeginHorizontal ();
                 {
@@ -224,6 +216,8 @@ namespace HierarchyDecorator
                     SetVisibilityForAll (components, false);
                 }
             EditorGUILayout.EndHorizontal ();
+
+            return foldout;
             }
 
         private void DrawCategoryFoldout(string name, SerializedProperty componentParent)
@@ -246,20 +240,18 @@ namespace HierarchyDecorator
         private void DrawCustomFoldout(int index, string name, SerializedProperty customProperty)
             {
             EditorGUILayout.BeginHorizontal ();
-                {
                 GUIHelper.GetSerializedFoldout (customProperty, name);
-
-              
-                }
             EditorGUILayout.EndHorizontal ();
             }
 
-        private void SetVisibilityForAll(List<ComponentType> components, bool visibility)
+        private void SetVisibilityForAll(List<IconInfo> components, bool visibility)
             {
             Undo.RecordObject (settings, $"Toggled components to {visibility}.");
 
             foreach (var component in components)
-                component.shown = visibility;
+                component.property.boolValue = visibility;
+
+            serializedSettings.ApplyModifiedProperties ();
             }
 
         private void SetVisibilityForAll(SerializedProperty componentParent, bool visibility)
@@ -271,8 +263,6 @@ namespace HierarchyDecorator
                 SerializedProperty component = componentParent.GetArrayElementAtIndex (i);
                 component.FindPropertyRelative ("shown").boolValue = visibility;
                 }
-
-            serializedSettings.ApplyModifiedProperties ();
             }
         }
     }

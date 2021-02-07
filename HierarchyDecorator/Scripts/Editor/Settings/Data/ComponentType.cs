@@ -46,7 +46,10 @@ namespace HierarchyDecorator
 
         public void UpdateScriptType()
             {
-            this.type = script.GetType ();
+            if (script == null)
+                return;
+
+            this.type = script.GetClass ();
             this.name = script.name;
             }
         }

@@ -4,30 +4,34 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.SceneManagement;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
 
 namespace HierarchyDecorator
     {
+
+    internal class InstanceInfo
+        {
+        public readonly int instanceID;
+        public readonly GameObject gameObject;
+        public readonly bool isPrefab;
+        public bool isExpanded;
+        public bool hasStyle;
+
+        public Rect selectionRect;
+
+        public InstanceInfo(int ID, GameObject gameObject, Rect selectionRect, bool isPrefab)
+            {
+            this.instanceID = ID;
+            this.gameObject = gameObject;
+            this.selectionRect = selectionRect;
+            this.isPrefab = isPrefab;
+            }
+        }
+
     [InitializeOnLoad]
     internal static class HierarchyDecorator
         {
-        internal class InstanceInfo
-            {
-            public readonly int instanceID;
-            public readonly GameObject gameObject;
-            public readonly bool isPrefab;
-
-            public Rect selectionRect;
-
-            public InstanceInfo(int ID, GameObject gameObject, Rect selectionRect, bool isPrefab)
-                {
-                this.instanceID = ID;
-                this.gameObject = gameObject;
-                this.selectionRect = selectionRect;
-                this.isPrefab = isPrefab;
-                }
-            }
-
         //Instance references
         private static InstanceInfo currentInstance;
         private static InstanceInfo previousInstance;
@@ -36,6 +40,7 @@ namespace HierarchyDecorator
 
         //Component Info
         private static List<Type> returnedComponents;
+        private static HierarchyInfo[] info;
 
         //Drawing GUI
         private static int indentIndex = 0;
@@ -44,7 +49,7 @@ namespace HierarchyDecorator
         private static Settings settings;
         private static PrefixSettings[] styles;
 
-        private static bool IsTwoTone => (settings != null) ? settings.globalStyle.twoToneBackground : false;
+        private static bool IsTwoTone => (settings != null) ? settings.globalSettings.twoToneBackground : false;
 
         // ==== Constructor ====
         static HierarchyDecorator()
@@ -59,7 +64,6 @@ namespace HierarchyDecorator
 
         static void HandleObject(int instanceID, Rect selectionRect)
             {
-
             //Call it here to allow editor scripts to load
             //A lot of pain to work around
             if (settings == null)
@@ -71,6 +75,14 @@ namespace HierarchyDecorator
                     Debug.LogError ("Cannot find settings");
                     return;
                     }
+
+                info = new HierarchyInfo[]
+                    {
+                    new LayerInfo (settings),
+                    new ComponentIconInfo (settings),
+                    };
+
+                settings.UpdateCustomComponentData ();
                 }
 
             GameObject gameObject = EditorUtility.InstanceIDToObject (instanceID) as GameObject;
@@ -85,67 +97,179 @@ namespace HierarchyDecorator
                 PrefabUtility.GetPrefabInstanceStatus (gameObject) != PrefabInstanceStatus.NotAPrefab
                 );
 
+            if (previousInstance != null && previousInstance.gameObject != null)
+                {
+                Transform previousTransform = previousInstance.gameObject.transform;
+                Transform currentTransform = gameObject.transform;
+
+                previousInstance.isExpanded = previousTransform.GetSiblingIndex () >= currentTransform.GetSiblingIndex ();
+
+                bool isSibling = previousTransform.parent == currentTransform.parent;
+
+                if (previousTransform.root.GetSiblingIndex () > currentTransform.root.GetSiblingIndex ())
+                    finalInstance = previousTransform;
+                }
+
             //Draw custom styling
             DrawElementStyle (gameObject, selectionRect);
             }
+   
+        #region Draw Style
+
+        private static void DrawElementStyle(GameObject obj, Rect selectionRect)
+            {
+            indentIndex = 0;
+
+            // ========= BACK LAYER =========
+            if (IsTwoTone)
+                {
+                Rect twoToneRect = (settings.globalSettings.stretchWidth) ? GetActualHierarchyWidth (selectionRect) : selectionRect;
+                EditorGUI.DrawRect (twoToneRect, settings.globalSettings.GetTwoToneColour (selectionRect));
+                }
+
+            // ======== CONTENT LAYER ========
+            // Draw selection backgrounds first to make sure no icons or content get into conflict with it
+            bool hasStyle = styles.Any (p => obj.name.TrimStart().StartsWith (p.prefix));
+
+            if (hasStyle || !hasStyle && IsTwoTone)
+                DrawStandardSelection (selectionRect, obj);
+
+            // ======== OVERLAY LAYER ========
+            if (IsTwoTone && !hasStyle)
+                DrawStandardContent (selectionRect, obj);
+
+
+            //Draw element style
+            if (hasStyle)
+                {
+                var style = styles.FirstOrDefault (s => obj.name.TrimStart ().StartsWith (s.prefix));
+                ApplyElementStyle (selectionRect, obj.name, style);
+                }
+
+            if (PrefabStageUtility.GetCurrentPrefabStage () == null)
+                {
+                if (settings.globalSettings.showActiveToggles)
+                    DrawToggles (obj, selectionRect);
+                }
+
+            bool requiresFoldout = (previousInstance != null && previousInstance.hasStyle) || (settings.globalSettings.twoToneBackground && settings.globalSettings.stretchWidth);
+
+            if (requiresFoldout)
+                ShowChildFoldout (selectionRect, obj, false);       
+               
+            //Everything else, which is generally custom stuffs 
+            if (!hasStyle && selectionRect.width > 160f)
+                {
+                foreach (var infoGUI in info)
+                    {
+                    infoGUI.Draw (selectionRect, indentIndex, obj, settings);
+
+                    if (infoGUI.CanDisplayInfo ())
+                        indentIndex += infoGUI.GetRowSize ();
+                    }
+                }
+
+         
+            previousInstance = currentInstance;
+            previousInstance.hasStyle = hasStyle;
+            }
+
+        private static void ApplyElementStyle(Rect selectionRect, string name, PrefixSettings prefix)
+            {
+            var styleSetting = prefix.GetCurrentSettings ();
+
+
+            name = RemovePrefix (name, prefix.prefix);
+
+            //Setup style
+            Color backgroundColor = styleSetting.backgroundColor;
+            Color fontCol = styleSetting.fontColor;
+
+            //Create style to draw
+            GUIStyle style = new GUIStyle (settings.GetGUIStyle (prefix.guiStyle))
+                {
+                alignment = styleSetting.fontAlignment,
+                fontSize = styleSetting.fontSize,
+                fontStyle = styleSetting.fontStyle,
+
+                font = styleSetting.font ?? EditorStyles.standardFont,
+                };
+
+            style.normal.textColor = fontCol;
+
+            Rect backgroundRect = (settings.globalSettings.stretchWidth) ? GetActualHierarchyWidth (selectionRect) : selectionRect;
+            Rect labelRect = backgroundRect;
+
+            if (settings.globalSettings.stretchWidth)
+                {
+                labelRect.x += 24f;
+                labelRect.width -= 48f;
+                }
+
+            if (currentInstance.gameObject.transform.parent != null)
+                {
+                backgroundRect = selectionRect;
+                labelRect = selectionRect;
+                }
+      
+            //Draw header background
+            //backgroundRect = GetAlignedRect (backgroundRect, styleSetting.widthScale, style.alignment);
+            EditorGUI.DrawRect (backgroundRect, backgroundColor);
+
+            if (styleSetting.hasOutline)
+                {
+                Handles.BeginGUI ();
+                Handles.DrawSolidRectangleWithOutline (backgroundRect, Color.clear, styleSetting.outlineColor);
+                Handles.EndGUI ();
+                }
+
+            //Draw twice to take into account full width draw
+            EditorGUI.LabelField (GetActualHierarchyWidth (selectionRect), "", style);
+            EditorGUI.LabelField (labelRect, name.ToUpper (), style);
+
+         
+
+            }
+
+        /// <summary>
+        /// Draw toggles for the GameObject's active state
+        /// </summary>
+        private static void DrawToggles(GameObject obj, Rect rect)
+            {
+            rect.x = 32;
+            rect.width = 16f;
+
+            bool isActive = obj.activeInHierarchy;
+            GUIStyle toggleStyle = isActive ? "OL Toggle" : "OL ToggleMixed";
+
+            EditorGUI.BeginChangeCheck ();
+            isActive = EditorGUI.Toggle (rect, obj.activeSelf, toggleStyle);
+            if (EditorGUI.EndChangeCheck())
+                obj.SetActive (isActive);
+            }
+
+        #endregion
 
         #region Unity Prequisites
 
         private static void ShowChildFoldout(Rect selectionRect, GameObject obj, bool showBack)
             {
-            //If there is no previous instance, ignore
-            if (previousInstance == null)
+            Transform currentTransform = obj.transform;
+
+            // Usecase for the final instance in the hierarchy
+            if (currentTransform == finalInstance && currentTransform.childCount > 0)
+                DrawFoldout (currentInstance.selectionRect, false);
+
+            // No previous instance if it's the first object
+            if (previousInstance == null || previousInstance.gameObject == null)
                 return;
 
-            //Deleted
-            if (previousInstance.gameObject == null)
+            Transform previousTransform = previousInstance.gameObject.transform;
+
+            if (previousTransform.childCount == 0 || previousTransform == finalInstance)
                 return;
 
-            Transform prevTransform = previousInstance.gameObject.transform;
-            Transform transform = obj.transform;
-
-            int prevIndex = prevTransform.GetSiblingIndex ();
-            int siblingIndex = transform.GetSiblingIndex ();
-
-            if (prevTransform.childCount == 0 && finalInstance != transform)
-                {
-                if (siblingIndex == 0 && transform.parent == null)
-                    finalInstance = null;
-
-                return;
-                }
-
-            //Special use case for the previous transform
-            if (siblingIndex == 0 && transform.parent == null)
-                {
-                finalInstance = prevTransform;
-                return;
-                }
-
-            int index = siblingIndex - prevIndex;
-
-            Rect toggleRect = selectionRect;
-            bool showingChildren = false;
-
-            //Select correct instance for toggle
-            toggleRect = (finalInstance == transform) ? currentInstance.selectionRect : previousInstance.selectionRect;
-            toggleRect.width = toggleRect.height;
-            toggleRect.x -= 14;
-
-            showingChildren = prevTransform == transform.parent;
-
-            EditorGUI.Foldout (toggleRect, showingChildren, "");
-
-            if (finalInstance == transform)
-                {
-                if (prevTransform.childCount > 0)
-                    {
-                    toggleRect = previousInstance.selectionRect;
-                    toggleRect.x -= 14;
-
-                    EditorGUI.Foldout (toggleRect, showingChildren, "");
-                    }
-                }
+            DrawFoldout (previousInstance.selectionRect, previousInstance.isExpanded);
             }
 
         private static void DrawStandardContent(Rect selectionRect, GameObject obj)
@@ -177,7 +301,7 @@ namespace HierarchyDecorator
             else
                 content.image = EditorGUIUtility.IconContent ("GameObject Icon").image;
 
-            GUIStyle style = new GUIStyle (EditorStyles.label);
+            GUIStyle style = new GUIStyle (Style.componentIconStyle);
 
             if (currentInstance.isPrefab)
                 {
@@ -193,7 +317,11 @@ namespace HierarchyDecorator
             if (!obj.activeInHierarchy)
                 style.normal.textColor = (currentInstance.isPrefab) ? Constants.UnactivePrefabColor : Color.gray;
 
+            Vector2 originalIconSize = EditorGUIUtility.GetIconSize ();
+            EditorGUIUtility.SetIconSize (Vector2.one * selectionRect.height);
             EditorGUI.LabelField (selectionRect, content, style);
+
+            EditorGUIUtility.SetIconSize(originalIconSize);
             }
 
         private static void DrawStandardSelection(Rect selectionRect, GameObject obj)
@@ -209,274 +337,21 @@ namespace HierarchyDecorator
    
         #endregion
 
-        #region Draw Style
-
-        private static void DrawElementStyle(GameObject obj, Rect selectionRect)
-            {
-
-            // ============================
-            // =========BACK LAYER=========
-            // ============================
-            // Here are overridden backgrounds, and any other prerequired data
-
-            if (IsTwoTone)
-                EditorGUI.DrawRect (GetActualHierarchyWidth (selectionRect), settings.globalStyle.GetTwoToneColour (selectionRect));
-
-            // =============================
-            // ========CONTENT LAYER========
-            // =============================
-            // Drawing icons, styles and any custom GUI content
-
-            // Draw selection backgrounds first to make sure no icons or content get into conflict with it
-            bool hasStyle = styles.Any (p => obj.name.StartsWith (p.prefix));
-
-            if (hasStyle || !hasStyle && IsTwoTone)
-                DrawStandardSelection (selectionRect, obj);
-                
-            //Draw element style
-            if (hasStyle)
-                {
-                for (int i = 0; i < styles.Length; i++)
-                    {
-                    var style = styles[i];
-
-                    if (obj.name.StartsWith (style.prefix))
-                        {
-                        Rect elementRect = selectionRect;
-                        elementRect.x += 28f;
-                        elementRect.width -= 28f * 1.73f;
-
-                        ApplyElementStyle (elementRect, obj.name, style);
-                        break;
-                        }
-                    }
-
-                }
-
-            //TODO: Fix hierarchy layout in prefab 
-            if (PrefabStageUtility.GetCurrentPrefabStage () == null)
-                {
-                if (settings.globalStyle.showActiveToggles)
-                    DrawToggles (obj, selectionRect);
-                }
-
-            ShowChildFoldout (selectionRect, obj, false);
-
-            //Everything else, which is generally custom stuffs 
-            if (!hasStyle && selectionRect.width > 160f)
-                {
-                if (settings.globalStyle.showComponents)
-                    DrawComponentData (selectionRect, obj);
-
-                if (settings.globalStyle.showLayers)
-                    LayerMaskMenu (selectionRect, obj);
-                }
-
-            // =============================
-            // ========OVERLAY LAYER========
-            // =============================
-
-            //Draw selection, status etc
-            if (IsTwoTone)
-                {
-                if (!hasStyle)
-                    DrawStandardContent (selectionRect, obj);
-                }
-
-            //EditorGUI.DrawRect (selectionRect, obj.activeSelf ? Color.clear : Constants.UnactiveColor);
-            previousInstance = currentInstance;
-            }
-
-        private static void ApplyElementStyle(Rect selectionRect, string name, PrefixSettings prefix)
-            {
-            var styleSetting = prefix.GetCurrentSettings ();
-
-            name = RemovePrefix (name, prefix.prefix);
-
-            //Setup style
-            Color backgroundColor = styleSetting.backgroundColor;
-            Color fontCol = styleSetting.fontColor;
-
-            //Create style to draw
-            GUIStyle style = new GUIStyle (settings.GetGUIStyle (prefix.guiStyle))
-                {
-                alignment = styleSetting.fontAlignment,
-                fontSize = styleSetting.fontSize,
-                fontStyle = styleSetting.fontStyle,
-
-                font = styleSetting.font ?? EditorStyles.standardFont,
-                };
-
-            style.normal.textColor = fontCol;
-
-            Rect backgroundRect = GetActualHierarchyWidth (selectionRect);
-            Rect labelRect = selectionRect = GetHierarchyStyleSize (selectionRect);
-
-            if (currentInstance.gameObject.transform.parent != null)
-                {
-                backgroundRect = selectionRect;
-                labelRect = selectionRect;
-                }
-
-            //Draw background and label
-            EditorGUI.DrawRect (backgroundRect, backgroundColor);
-
-            //Draw twice to take into account full width draw
-            //TODO: Consider looking into content offset, draw texture may be a future option
-            EditorGUI.LabelField (GetActualHierarchyWidth (selectionRect), "", style);
-            EditorGUI.LabelField (labelRect, name.ToUpper (), style);
-
-            //Apply overlay line
-            DrawLineStyle (backgroundRect, prefix);
-            }
-
-        private static void DrawLineStyle(Rect selectionRect, PrefixSettings style)
-            {
-            var setting = style.GetCurrentSettings ();
-
-            switch (setting.displayedLine)
-                {
-                case LineStyle.NONE:
-                    break;
-
-                case LineStyle.TOP:
-                    GUIHelper.LineSpacer (selectionRect, setting.lineColor);
-                    break;
-
-                case LineStyle.BOTTOM:
-                    selectionRect.y += EditorGUIUtility.singleLineHeight * 0.85f;
-                    GUIHelper.LineSpacer (selectionRect, setting.lineColor);
-                    break;
-
-                case LineStyle.BOTH:
-                    GUIHelper.LineSpacer (selectionRect, setting.lineColor);
-                    selectionRect.y += EditorGUIUtility.singleLineHeight * 0.85f;
-                    GUIHelper.LineSpacer (selectionRect, setting.lineColor);
-                    break;
-                }
-            }
-
-        /// <summary>
-        /// Draw toggles for the GameObject's active state
-        /// </summary>
-        private static void DrawToggles(GameObject obj, Rect selectionRect)
-            {
-            selectionRect.x = 32;
-            selectionRect.width = 16f;
-
-            GUIStyle style = new GUIStyle ();
-            style.normal.background = (obj.activeSelf)
-                ? Textures.Checked
-                : Textures.Checkbox;
-
-            //obj.SetActive (EditorGUI.Toggle (selectionRect, obj.activeSelf, style));
-            bool active = obj.activeInHierarchy;
-
-            GUIStyle toggleStyle = active
-              ? "OL Toggle"
-              : "OL ToggleMixed";
-
-            obj.SetActive (EditorGUI.Toggle (selectionRect, obj.activeSelf, toggleStyle));
-            }
-
-        private static void LayerMaskMenu(Rect selectionRect, GameObject obj)
-            {
-            indentIndex = 2;
-            Rect rect = GetRightLayerMaskRect (selectionRect, indentIndex);
-
-            EditorGUI.LabelField (rect, LayerMask.LayerToName (obj.layer), EditorStyles.centeredGreyMiniLabel);
-
-            if (settings.globalStyle.editableLayers)
-                {
-                var m = new GenericMenu ();
-
-                Event e = Event.current;
-                bool isSelected = e.type == EventType.MouseDown && rect.Contains (Event.current.mousePosition) && Event.current.button == 0;
-
-                if (!isSelected)
-                    return;
-                        
-                //Only select the one we click if there are no others
-                if (Selection.gameObjects.Length == 0)
-                    Selection.SetActiveObjectWithContext (currentInstance.gameObject, null);
-
-                string[] layers = Constants.LayerMasks;
-                for (int i = 0; i < layers.Length; i++)
-                    {
-                    var layer = layers[i];
-                    int layerIndex = LayerMask.NameToLayer (layer);
-
-                    m.AddItem (new GUIContent (layer), false, () =>
-                        {
-                        Undo.RecordObjects (Selection.gameObjects, "Layer Changed");
-
-                        foreach (GameObject go in Selection.gameObjects)
-                            {
-                            go.layer = layerIndex;
-
-                            if (settings.globalStyle.applyChildLayers)
-                                {
-                                foreach (Transform child in go.transform)
-                                    child.gameObject.layer = layerIndex;
-                                }
-                            }
-
-                        if (Selection.gameObjects.Length == 1)
-                            Selection.SetActiveObjectWithContext (null, null);
-                        });
-                    }
-
-                m.ShowAsContext ();
-                e.Use ();
-                }
-            }
-
-        #endregion
-
         #region Component Draw
-
-        private static void DrawComponentData(Rect selectionRect, GameObject obj)
-            {
-            //Clear cached components
-            returnedComponents.Clear ();
-
-            //Space for layer
-            indentIndex = 3;
-
-            //Iterate over all components that exist on the current instance
-            Component[] components = obj.GetComponents<Component> ();
-            for (int i = 0; i < components.Length; i++)
-                {
-                Component component = components[i];
-
-                if (component == null)
-                    continue;
-
-                //Get correct positioning and icon
-                Rect drawRect = GetRightRectWithOffset (selectionRect, indentIndex);
-
-                var type = component.GetType ();
-
-                if (returnedComponents.Contains (type))
-                    return;
-
-                if (type.IsSubclassOf (typeof (MonoBehaviour)) )
-                    DrawMonoBehaviour (drawRect, component);
-                else
-                    DrawComponent (drawRect, component);
-
-                }
-            }
 
         private static void DrawMonoBehaviour(Rect rect, Component component)
             {
             Type type = component.GetType ();
             MonoScript script = GetCustomType (type);
 
+            if (script == null)
+                return;
+
+
             string path = null;
             Texture icon = null;
 
-            if (settings.globalStyle.showMonoBehaviours || script != null)
+            if (settings.globalSettings.showAllComponents || script != null)
                 {
                 path = AssetDatabase.GetAssetPath (MonoScript.FromMonoBehaviour (component as MonoBehaviour));
                 icon = AssetDatabase.GetCachedIcon (path);
@@ -494,6 +369,7 @@ namespace HierarchyDecorator
             //Draw and increment icon placement
             GUI.DrawTexture (rect, content.image, ScaleMode.ScaleToFit, true, 0, currentInstance.gameObject.activeInHierarchy ? Color.white : Constants.UnactiveColor, 0, 0);
             indentIndex++;
+
             }
 
         private static void DrawComponent(Rect rect, Component component)
@@ -511,6 +387,18 @@ namespace HierarchyDecorator
             //Draw and increment icon placement
             GUI.DrawTexture (rect, content.image, ScaleMode.ScaleToFit, true, 0, currentInstance.gameObject.activeInHierarchy ? Color.white : Constants.UnactiveColor, 0, 0);
             indentIndex++;
+
+            //DrawOutline (rect);
+            }
+
+        private static bool DrawFoldout(Rect selectionRect, bool foldout)
+            {
+            selectionRect.width = selectionRect.height;
+            selectionRect.x -= 14f;
+
+            foldout = EditorGUI.Foldout (selectionRect, foldout, "");
+
+            return foldout;
             }
 
         #endregion
@@ -540,16 +428,6 @@ namespace HierarchyDecorator
             newRect.x = rect.x + rect.width - (rect.height * offset) - 16;
 
             return newRect;
-            }
-
-        private static Rect GetRightLayerMaskRect(Rect rect, int offset)
-            {
-            rect = GetRightRectWithOffset (rect, offset);
-
-            rect.x -= 4;
-            rect.width += 48;
-
-            return rect;
             }
 
         #endregion
@@ -609,6 +487,7 @@ namespace HierarchyDecorator
                 if (component.name == type.Name)
                     return component.shown;
                 }
+
 
             return false;
             }

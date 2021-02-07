@@ -13,7 +13,7 @@ namespace HierarchyDecorator
     internal class Settings : ScriptableObject, ISerializationCallbackReceiver
         {
         // Settings
-        public GlobalSettings globalStyle; //Globa settings, show/hide
+        public GlobalSettings globalSettings = new GlobalSettings(); //Globa settings, show/hide
 
         public List<PrefixSettings> prefixes; //Collection of all prefixes
 
@@ -35,7 +35,7 @@ namespace HierarchyDecorator
                     {
                 fontColor = new Color (1f, 1f, 1f),
                     backgroundColor = new Color (0.1764706f, 0.1764706f, 0.1764706f)
-                    }
+                    },
                 },
 
             new PrefixSettings("-" , "Toolbar")
@@ -138,9 +138,6 @@ namespace HierarchyDecorator
             unityComponents = new List<ComponentType> ();
             customComponents = new List<CustomComponentType> ();
 
-            //Settings
-            globalStyle = new GlobalSettings ();
-
             //Collections
             prefixes = importantPrefixes;
             styles = new List<GUIStyle> ()
@@ -150,6 +147,7 @@ namespace HierarchyDecorator
                 CreateGUIStyle ("Grid Centered",EditorStyles.centeredGreyMiniLabel),
                 };
         
+
             //Specifics for defaults
             var toolbar = prefixes[1];
             toolbar.SetAlignment (TextAnchor.MiddleLeft);
@@ -168,7 +166,12 @@ namespace HierarchyDecorator
 
         #region Editor Serialization
 
-        public void OnBeforeSerialize() => UpdateSettings ();
+        public void OnBeforeSerialize()
+            {
+            UpdateSettings ();
+
+         
+            }
 
         public void OnAfterDeserialize() => UpdateSettings ();
 
@@ -235,5 +238,30 @@ namespace HierarchyDecorator
             }
 
         #endregion
+
+        public bool FindCustomComponentFromType(Type type, out CustomComponentType component)
+            {
+            foreach (var custom in customComponents)
+                {
+                if (custom.script == null)
+                    continue;
+
+                // Not a good work around
+                if (custom.type == type)
+                    {
+                    component = custom;
+                    return true;
+                    }
+                }
+
+            component = null;
+            return false;
+            }
+
+        public void UpdateCustomComponentData()
+            {
+            foreach (var customType in customComponents)
+                customType.UpdateScriptType ();
+            }
         }
     }

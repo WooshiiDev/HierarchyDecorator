@@ -21,7 +21,7 @@ namespace HierarchyDecorator
         internal static T CreateScriptableAtPath<T>(string name, string path) where T : ScriptableObject
             {
             if (string.IsNullOrEmpty(name))
-                throw new StringNullOrEmptyException ($"Cannot create Scriptable with null name!");
+                throw new ArgumentNullException ();
 
             if (string.IsNullOrEmpty (path))
                 path = Application.dataPath;

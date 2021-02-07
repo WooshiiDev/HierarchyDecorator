@@ -6,15 +6,13 @@ namespace HierarchyDecorator
     [System.Serializable]
     internal class GlobalSettings
         {
-        //Toggle
         public bool showActiveToggles = true;
         public bool showComponents = true;
-        public bool showMonoBehaviours = true;
+        public bool showAllComponents = true;
 
-        //Style
         public bool twoToneBackground = true;
+        public bool stretchWidth = true;
 
-        //Layer Mask
         public bool showLayers = true;
         public bool editableLayers = true;
         public bool applyChildLayers = true;

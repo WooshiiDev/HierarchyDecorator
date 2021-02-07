@@ -1,16 +1,51 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
 using UnityEditor;
-using UnityEditorInternal;
 
 namespace HierarchyDecorator
     {
     internal class GeneralTab : SettingsTab
         {
-        private GlobalSettings global;
+        internal class SettingGroup
+            {
+            public string label;
+            public List<string> settings;
+
+            public SettingGroup(string label)
+                {
+                this.label = label;
+                settings = new List<string> ();
+                }
+
+            public SettingGroup(string label, string[] settings = null)
+                {
+                this.label = label;
+                this.settings = new List<string> (settings);
+                }
+
+            public void DisplaySettings(SerializedProperty property)
+                {
+                EditorGUILayout.LabelField (label, EditorStyles.boldLabel);
+
+                EditorGUI.indentLevel++;
+
+                foreach (string setting in settings)
+                    EditorGUILayout.PropertyField (property.FindPropertyRelative (setting), true);
+                    
+                EditorGUI.indentLevel--;
+                }
+            }
+
+        private readonly SerializedProperty serializedGlobal;
+        private readonly SettingGroup[] groups = new SettingGroup[]
+            {
+            new SettingGroup("Features", new string[] {"showActiveToggles", "showComponents", "showAllComponents"}),
+            new SettingGroup("Style", new string[] {"twoToneBackground", "stretchWidth"}),
+            new SettingGroup("Features", new string[] {"showLayers", "editableLayers", "applyChildLayers"}),
+            };
 
         public GeneralTab() : base("General", "d_CustomTool")
             {
-            global = settings.globalStyle;
+            serializedGlobal = serializedSettings.FindProperty ("globalSettings");
             }
 
         /// <summary>
@@ -26,48 +61,11 @@ namespace HierarchyDecorator
         /// </summary>
         protected override void OnContentGUI()
             {
-            // ==================
-            // ==== Features ====
-            // ==================
-            EditorGUILayout.LabelField ("Features", EditorStyles.boldLabel);
-
-            EditorGUI.indentLevel++;
+            foreach (var group in groups)
                 {
-                GUIHelper.ToggleAuto (ref global.showActiveToggles, "Enable GameObject Toggles");
-                GUIHelper.ToggleAuto (ref global.showComponents, "Enable Component Icons");
-                GUIHelper.ToggleAuto (ref global.showMonoBehaviours, "Show All Component Icons");
-
-                EditorGUILayout.HelpBox ("This will display all MonoBehaviour derived types that exist, with their custom icon. When enabled, using the custom icons will not be needed.", MessageType.Info);
+                group.DisplaySettings (serializedGlobal);
+                EditorGUILayout.Space ();
                 }
-            EditorGUI.indentLevel--;
-
-            EditorGUILayout.Space ();
-
-            // ===============
-            // ==== Style ====
-            // ===============
-            EditorGUILayout.LabelField ("Style", EditorStyles.boldLabel);
-
-            EditorGUI.indentLevel++;
-                {
-                GUIHelper.ToggleAuto (ref global.twoToneBackground, "Show Two Tone Background");
-                }
-            EditorGUI.indentLevel--;
-
-            EditorGUILayout.Space ();
-
-            // ================
-            // ==== Layers ====
-            // ================
-            EditorGUILayout.LabelField ("Layer Display", EditorStyles.boldLabel);
-
-            EditorGUI.indentLevel++;
-                {
-                GUIHelper.ToggleAuto (ref global.showLayers, "Show Layers");
-                GUIHelper.ToggleAuto (ref global.editableLayers, "Show layer selection on click");
-                GUIHelper.ToggleAuto (ref global.applyChildLayers, "Update layer on children");
-                }
-            EditorGUI.indentLevel--;
             }
         }
     }

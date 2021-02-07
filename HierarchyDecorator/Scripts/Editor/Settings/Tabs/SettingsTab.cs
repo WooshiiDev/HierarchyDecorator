@@ -34,12 +34,22 @@ namespace HierarchyDecorator
                 {
                 if (IsShown ())
                     {
-                    OnTitleGUI ();
-                    OnContentGUI ();
+                    EditorGUI.BeginChangeCheck ();
+                        {
+                        OnTitleGUI ();
+                        OnContentGUI ();
+                        }
+                    if (EditorGUI.EndChangeCheck())
+                        {
+                        serializedSettings.ApplyModifiedProperties ();
+                        EditorApplication.RepaintHierarchyWindow ();
+                        }
                     EditorGUILayout.Space ();
                     }
                 }
             EditorGUILayout.EndVertical ();
+
+            serializedSettings.Update ();
             }
 
         /// <summary>

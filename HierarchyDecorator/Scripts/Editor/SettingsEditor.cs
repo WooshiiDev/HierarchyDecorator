@@ -20,6 +20,9 @@ namespace HierarchyDecorator
 
         //Tab Information
         private static List<SettingsTab> tabs;
+        private bool changesDetected;
+
+        private bool IsDirty => EditorUtility.IsDirty (t.GetInstanceID ());
 
         private void OnEnable()
             {
@@ -40,6 +43,7 @@ namespace HierarchyDecorator
 
         public override void OnInspectorGUI()
             {
+
             if (serializedObject == null)
                 return;
 
@@ -51,6 +55,31 @@ namespace HierarchyDecorator
                     fixedHeight = 21,
                     };
                 }
+
+            DrawTitle ();
+
+            EditorGUILayout.Space ();
+
+            foreach (var tab in tabs)
+                {
+                EditorGUI.indentLevel++;
+                    tab.OnGUI ();
+                EditorGUI.indentLevel--;
+                }
+
+            serializedObject.UpdateIfRequiredOrScript ();
+            }
+
+        /// <summary>
+        /// Register a tab to draw
+        /// </summary>
+        public void RegisterTab(SettingsTab tab)
+            {
+            tabs.Add (tab);
+            }
+    
+        private void DrawTitle()
+            {
 
             EditorGUILayout.BeginHorizontal ();
                 {
@@ -69,35 +98,6 @@ namespace HierarchyDecorator
                 EditorGUILayout.Space ();
                 }
             EditorGUILayout.EndHorizontal ();
-
-            EditorGUILayout.Space ();
-
-            foreach (var tab in tabs)
-                {
-                EditorGUI.BeginChangeCheck ();
-                    {
-                    EditorGUI.indentLevel++;
-                        {
-                        tab.OnGUI ();
-                        }
-                    EditorGUI.indentLevel--;
-                    }
-                if (EditorGUI.EndChangeCheck ())
-                    {
-                    EditorUtility.SetDirty (t);
-                    EditorApplication.RepaintHierarchyWindow ();
-                    }
-                }
-
-            serializedObject.UpdateIfRequiredOrScript ();
-            }
-
-        /// <summary>
-        /// Register a tab to draw
-        /// </summary>
-        public void RegisterTab(SettingsTab tab)
-            {
-            tabs.Add (tab);
             }
         } 
     }

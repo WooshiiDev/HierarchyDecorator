@@ -23,6 +23,11 @@ namespace HierarchyDecorator
         internal readonly static Color UnactiveColor = new Color (0.9f, 0.9f, 0.9f, 0.4f);
         internal readonly static Color UnactivePrefabColor = new Color (0.48f, 0.67f, 0.95f, 0.6f);
 
+        internal readonly static Color DarkBackgroundColor = new Color (0.219f, 0.219f, 0.219f);
+        internal readonly static Color LightBackgroundColor = new Color (0.8f, 0.8f, 0.8f, 1);
+
+        internal static Color DefaultBackgroundColor => EditorGUIUtility.isProSkin ? DarkBackgroundColor : LightBackgroundColor;
+
         internal static Settings Settings => Settings.GetOrCreateSettings ();
         internal static List<PrefixSettings> prefixes => Settings.prefixes;
 
@@ -72,6 +77,8 @@ namespace HierarchyDecorator
         public static readonly GUIStyle foldoutHeaderStyle;
         public static readonly GUIStyle tabBackgroundStyle;
         public static readonly GUIStyle listControlStyle;
+        public static readonly GUIStyle dropdownSmallStyle;
+        public static readonly GUIStyle componentIconStyle;
 
         static Style()
             {
@@ -95,6 +102,17 @@ namespace HierarchyDecorator
             listControlStyle = new GUIStyle (EditorStyles.centeredGreyMiniLabel)
                 {
                 fontSize = 28,
+                };
+
+            dropdownSmallStyle = new GUIStyle (EditorStyles.centeredGreyMiniLabel)
+                {
+                alignment = TextAnchor.MiddleCenter,
+                fontSize = 9,
+                };
+
+            componentIconStyle = new GUIStyle (EditorStyles.label)
+                {
+                padding = new RectOffset (0, 0, 0, 0)
                 };
             }
         }

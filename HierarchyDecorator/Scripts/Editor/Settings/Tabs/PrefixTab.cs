@@ -79,7 +79,14 @@ namespace HierarchyDecorator
                 return;
                 }
 
-            EditorGUI.PropertyField (rect, prefix, prefix.isExpanded);
+            EditorGUI.BeginChangeCheck ();
+                {
+                EditorGUI.PropertyField (rect, prefix, prefix.isExpanded);
+                }
+            if (EditorGUI.EndChangeCheck())
+                {
+                serializedSettings.ApplyModifiedProperties ();
+                }
             }
 
         private void DrawPrefixBackground(Rect rect, int index, bool isActive, bool isFocused)
