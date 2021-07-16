@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
 namespace HierarchyDecorator
-    {
+{
     /// <summary>
     /// ScriptableObject containing all settings and relevant data for the hierarchy
     /// </summary>
     internal class Settings : ScriptableObject, ISerializationCallbackReceiver
-        {
+    {
         // Settings
-        public GlobalSettings globalSettings = new GlobalSettings(); //Globa settings, show/hide
+        public GlobalSettings globalSettings = new GlobalSettings ();
 
         public List<PrefixSettings> prefixes; //Collection of all prefixes
 
-        public List<GUIStyle> styles = new List<GUIStyle>(); //List of all custom GUIStyles
+        public List<GUIStyle> styles = new List<GUIStyle> (); //List of all custom GUIStyles
 
         private readonly List<PrefixSettings> importantPrefixes = new List<PrefixSettings> ()
             {
@@ -75,19 +74,20 @@ namespace HierarchyDecorator
 
         //Icon Data
         public List<ComponentType> unityComponents = new List<ComponentType> ();
+
         public List<CustomComponentType> customComponents = new List<CustomComponentType> ();
 
-        //Collection of every component type unity has 
+        //Collection of every component type unity has
         private static Type[] allTypes;
 
         //Constants
         public const string typeString = "Settings";
-        
+
         private void OnValidate()
-            {
+        {
             EditorApplication.RepaintHierarchyWindow ();
             EditorUtility.SetDirty (this);
-            }
+        }
 
         #region Creation
 
@@ -96,19 +96,21 @@ namespace HierarchyDecorator
         /// </summary>
         /// <returns>The loaded settings</returns>
         internal static Settings GetOrCreateSettings()
-            {
+        {
             Settings settings = null;
 
-            //Load from the saved GUID 
+            //Load from the saved GUID
             if (EditorPrefs.HasKey (Constants.PREF_GUID))
-                {
+            {
                 string savedPath = AssetDatabase.GUIDToAssetPath (EditorPrefs.GetString (Constants.PREF_GUID));
 
                 bool assetExists = AssetDatabase.GetMainAssetTypeAtPath (savedPath) != null;
 
                 if (assetExists && !string.IsNullOrEmpty (savedPath))
+                {
                     return AssetDatabase.LoadAssetAtPath<Settings> (savedPath);
                 }
+            }
 
             settings = AssetUtility.FindOrCreateScriptable<Settings> (typeString, Constants.SETTINGS_ASSET_FOLDER);
             settings.SetDefaults ();
@@ -118,22 +120,22 @@ namespace HierarchyDecorator
             EditorPrefs.SetString (Constants.PREF_GUID, AssetDatabase.AssetPathToGUID (path));
 
             return settings;
-            }
+        }
 
         /// <summary>
         /// Convert into serialized object for handling GUI
         /// </summary>
         /// <returns>Serialized version of the settings</returns>
         internal static SerializedObject GetSerializedSettings()
-            {
+        {
             return new SerializedObject (GetOrCreateSettings ());
-            }
+        }
 
         /// <summary>
         /// Setup defaults for the new settings asset
         /// </summary>
         internal void SetDefaults()
-            {
+        {
             //Create collections
             unityComponents = new List<ComponentType> ();
             customComponents = new List<CustomComponentType> ();
@@ -146,62 +148,70 @@ namespace HierarchyDecorator
                 CreateGUIStyle ("Toolbar",      EditorStyles.toolbarButton),
                 CreateGUIStyle ("Grid Centered",EditorStyles.centeredGreyMiniLabel),
                 };
-        
 
             //Specifics for defaults
-            var toolbar = prefixes[1];
+            PrefixSettings toolbar = prefixes[1];
             toolbar.SetAlignment (TextAnchor.MiddleLeft);
             toolbar.SetFontSize (10);
             toolbar.SetStyle (FontStyle.Normal);
 
-            // - Grid Centered - 
-            var grid = styles[2];
+            // - Grid Centered -
+            GUIStyle grid = styles[2];
             grid.border = new RectOffset (15, 15, 15, 15);
             grid.stretchWidth = true;
 
             UpdateSettings ();
-            }
+        }
 
-        #endregion
+        #endregion Creation
 
         #region Editor Serialization
 
         public void OnBeforeSerialize()
-            {
+        {
             UpdateSettings ();
+        }
 
-         
-            }
-
-        public void OnAfterDeserialize() => UpdateSettings ();
+        public void OnAfterDeserialize()
+        {
+            UpdateSettings ();
+        }
 
         public void UpdateSettings()
-            {
+        {
             //Reflection for component types
             if (allTypes == null)
+            {
                 allTypes = ReflectionUtility.GetTypesFromAllAssemblies (typeof (Component));
+            }
 
             //Generally used when switching versions
             bool hasMissing = unityComponents.Count != allTypes.Length;
 
             if (hasMissing)
+            {
                 unityComponents.Clear ();
+            }
 
             for (int i = 0; i < allTypes.Length; i++)
-                {
-                var type = allTypes[i];
+            {
+                Type type = allTypes[i];
 
                 if (hasMissing)
+                {
                     unityComponents.Add (new ComponentType (type));
+                }
 
                 ComponentType component = unityComponents[i];
 
                 if (component.type == null)
+                {
                     component.UpdateType (type);
                 }
             }
+        }
 
-        #endregion
+        #endregion Editor Serialization
 
         #region GUIStyles
 
@@ -211,17 +221,16 @@ namespace HierarchyDecorator
         /// <param name="name">The name of the style to find</param>
         /// <returns>Returns the gui style found, or the bold label as default if one is not</returns>
         public GUIStyle GetGUIStyle(string name)
-            {
+        {
             GUIStyle style = styles.FirstOrDefault (s => s.name == name);
             return style ?? EditorStyles.boldLabel;
-            }
+        }
 
         private GUIStyle CreateGUIStyle(string name, GUIStyle styleBase = null)
-            {
-
+        {
             //Generally optimistic settings
             return new GUIStyle (styleBase)
-                {
+            {
                 name = name,
 
                 stretchHeight = false,
@@ -234,34 +243,38 @@ namespace HierarchyDecorator
                 fixedWidth = 0,
 
                 alignment = TextAnchor.MiddleCenter,
-                };
-            }
+            };
+        }
 
-        #endregion
+        #endregion GUIStyles
 
         public bool FindCustomComponentFromType(Type type, out CustomComponentType component)
+        {
+            foreach (CustomComponentType custom in customComponents)
             {
-            foreach (var custom in customComponents)
-                {
                 if (custom.script == null)
+                {
                     continue;
+                }
 
                 // Not a good work around
                 if (custom.type == type)
-                    {
+                {
                     component = custom;
                     return true;
-                    }
                 }
+            }
 
             component = null;
             return false;
-            }
+        }
 
         public void UpdateCustomComponentData()
+        {
+            foreach (CustomComponentType customType in customComponents)
             {
-            foreach (var customType in customComponents)
                 customType.UpdateScriptType ();
             }
         }
     }
+}

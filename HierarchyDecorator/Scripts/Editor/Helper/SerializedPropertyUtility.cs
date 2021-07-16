@@ -1,25 +1,27 @@
 ﻿using UnityEditor;
 
 namespace HierarchyDecorator
-    {
+{
     internal static class SerializedPropertyUtility
-        {
+    {
         public static void DrawChildrenProperties(SerializedProperty property, bool showChildrenRecursive)
-            {
-            var iterator = property.Copy ();
-            var endProperty = iterator.GetEndProperty();
+        {
+            SerializedProperty iterator = property.Copy ();
+            SerializedProperty endProperty = iterator.GetEndProperty ();
 
             EditorGUI.indentLevel++;
 
-            while (iterator.NextVisible(true))
-                {
+            while (iterator.NextVisible (true))
+            {
                 if (SerializedProperty.EqualContents (iterator, endProperty))
+                {
                     break;
-
-                EditorGUILayout.PropertyField (iterator, showChildrenRecursive);
                 }
 
-            EditorGUI.indentLevel--;
+                EditorGUILayout.PropertyField (iterator, showChildrenRecursive);
             }
+
+            EditorGUI.indentLevel--;
         }
     }
+}

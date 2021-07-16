@@ -1,11 +1,11 @@
-﻿using UnityEngine;
-using UnityEditor;
+﻿using UnityEditor;
+using UnityEngine;
 
 namespace HierarchyDecorator
-    {
+{
     internal abstract class SettingsTab
-        {
-        //GUI 
+    {
+        //GUI
         private bool isShown;
         private readonly GUIContent content;
 
@@ -18,47 +18,47 @@ namespace HierarchyDecorator
         /// </summary>
         /// <param name="settings">Current settings used for the hierarchy</param>
         public SettingsTab(string name, string icon)
-            {
+        {
             settings = Settings.GetOrCreateSettings ();
             serializedSettings = Settings.GetSerializedSettings ();
 
             content = new GUIContent (name, GUIHelper.GetUnityIcon (icon));
-            }
+        }
 
         /// <summary>
         /// Draw the settings tab
         /// </summary>
         public void OnGUI()
-            {
+        {
             EditorGUILayout.BeginVertical (Style.tabBackgroundStyle, GUILayout.MinHeight (32f));
-                {
+            {
                 if (IsShown ())
-                    {
+                {
                     EditorGUI.BeginChangeCheck ();
-                        {
+                    {
                         OnTitleGUI ();
                         OnContentGUI ();
-                        }
-                    if (EditorGUI.EndChangeCheck())
-                        {
+                    }
+                    if (EditorGUI.EndChangeCheck ())
+                    {
                         serializedSettings.ApplyModifiedProperties ();
                         EditorApplication.RepaintHierarchyWindow ();
-                        }
-                    EditorGUILayout.Space ();
                     }
+                    EditorGUILayout.Space ();
                 }
+            }
             EditorGUILayout.EndVertical ();
 
             serializedSettings.Update ();
-            }
+        }
 
         /// <summary>
         /// Is the current tab open or closed, hiding the settings?
         /// </summary>
         protected bool IsShown()
-            {
+        {
             return isShown = EditorGUILayout.Foldout (isShown, content, true, Style.foldoutHeaderStyle);
-            }
+        }
 
         /// <summary>
         /// The title gui drawn, primarily to display a header of some form
@@ -69,5 +69,5 @@ namespace HierarchyDecorator
         /// The main content area for the settings
         /// </summary>
         protected abstract void OnContentGUI();
-        }
     }
+}

@@ -1,21 +1,22 @@
 ﻿using UnityEngine;
-using UnityEditor;
 
 namespace HierarchyDecorator
-    {
+{
     internal abstract class HierarchyInfo
-        {
+    {
         protected readonly Settings settings;
 
         public HierarchyInfo(Settings settings)
-            {
+        {
             this.settings = settings;
-            }
+        }
 
         public void Draw(Rect rect, int startRow, GameObject instance, Settings settings)
-            {
+        {
             if (!CanDisplayInfo ())
+            {
                 return;
+            }
 
             int rowSize = GetRowSize ();
             int rowOffset = 16 * (startRow + rowSize);
@@ -27,7 +28,7 @@ namespace HierarchyDecorator
             rect.width = 16f * rowSize;
 
             DrawInternal (rect, instance);
-            }
+        }
 
         /// <summary>
         /// Internal method to draw and setup the GUI to display in the Hierarchy
@@ -45,5 +46,5 @@ namespace HierarchyDecorator
         /// Condition to validate the display of the info
         /// </summary>
         public abstract bool CanDisplayInfo();
-        }
     }
+}
