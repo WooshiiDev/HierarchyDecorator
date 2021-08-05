@@ -11,7 +11,6 @@ namespace HierarchyDecorator
         public bool showAllComponents = true;
 
         public bool twoToneBackground = true;
-        public bool stretchWidth = true;
 
         public bool showLayers = true;
         public bool editableLayers = true;

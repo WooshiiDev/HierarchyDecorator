@@ -6,61 +6,60 @@ namespace HierarchyDecorator
     [System.Serializable]
     public class ModeOptions
     {
-        [Header ("Font")]
+        public ModeOptions(Color fontColour, Color backgroundColour)
+        {
+            this.fontColour = fontColour;
+            this.backgroundColour = backgroundColour;
+        }
+
+        public Color fontColour = Color.black;
+        public Color backgroundColour = Color.white;
+    }
+
+    [System.Serializable]
+    public class PrefixSettings
+    {
+        public string prefix = "!!";
+        public string name = "New Prefix";
+
+        [Space(19f)]
+
         public Font font = null;
 
         public int fontSize = 11;
         public TextAnchor fontAlignment = TextAnchor.MiddleCenter;
         public FontStyle fontStyle = FontStyle.Bold;
 
-        [Header ("Colors")]
-        public Color fontColor = Color.black;
-        public Color backgroundColor = Color.white;
+        public ModeOptions[] modes = new ModeOptions[2];
+        public ModeOptions CurrentMode => EditorGUIUtility.isProSkin ? modes[1] : modes[0];
 
-        [Header ("Others")]
-        public bool hasOutline;
-        public Color outlineColor = Color.black;
-    }
+        [HideInInspector] public GUIStyle style = new GUIStyle ();
 
-    [System.Serializable]
-    public class PrefixSettings
-    {
-        public string name = "New Prefix";
-        public string prefix;
-        public string guiStyle = "Header";
+        // Constructor
 
-        public ModeOptions lightMode = new ModeOptions ();
-        public ModeOptions darkMode = new ModeOptions ();
+        public PrefixSettings()
+        {
+            modes[0] = new ModeOptions (Color.black, Color.white);
+            modes[1] = new ModeOptions (Color.white, Color.black);
+        }
 
-        public PrefixSettings(string prefix, string name = "Header")
+        public PrefixSettings(string prefix, string name, ModeOptions lightMode, ModeOptions darkMode)
         {
             this.prefix = prefix;
-            this.guiStyle = name;
+            this.name = name;
+
+            modes[0] = lightMode;
+            modes[1] = darkMode;
         }
 
-        public ModeOptions GetCurrentSettings()
+        public void UpdateStyle()
         {
-            return (EditorGUIUtility.isProSkin) ? darkMode : lightMode;
-        }
+            style.fontStyle = fontStyle;
+            style.fontSize = fontSize;
+            style.alignment = fontAlignment;
 
-        public void SetAlignment(TextAnchor anchor)
-        {
-            lightMode.fontAlignment = darkMode.fontAlignment = anchor;
-        }
-
-        public void SetFontSize(int size)
-        {
-            lightMode.fontSize = darkMode.fontSize = size;
-        }
-
-        public void SetStyle(FontStyle style)
-        {
-            lightMode.fontStyle = darkMode.fontStyle = style;
-        }
-
-        public void SetOutline(bool hasOutline)
-        {
-            lightMode.hasOutline = darkMode.hasOutline = hasOutline;
+            style.font = font;
+            style.normal.textColor = CurrentMode.fontColour;
         }
     }
 }

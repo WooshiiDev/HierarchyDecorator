@@ -40,13 +40,12 @@ namespace HierarchyDecorator
         private readonly SerializedProperty serializedGlobal;
 
         private readonly SettingGroup[] groups = new SettingGroup[]
-            {
-            new SettingGroup("Features", new string[] {"showActiveToggles", "showComponents", "showAllComponents"}),
-            new SettingGroup("Style", new string[] {"twoToneBackground", "stretchWidth"}),
-            new SettingGroup("Features", new string[] {"showLayers", "editableLayers", "applyChildLayers"}),
-            };
+        {
+            new SettingGroup("Features", new string[] {"showActiveToggles", "showComponents", "showAllComponents", "twoToneBackground"}),
+            new SettingGroup("Layers", new string[] {"showLayers", "editableLayers", "applyChildLayers"}),
+        };
 
-        public GeneralTab() : base ("General", "d_CustomTool")
+        public GeneralTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, "General", "d_CustomTool")
         {
             serializedGlobal = serializedSettings.FindProperty ("globalSettings");
         }
@@ -63,10 +62,17 @@ namespace HierarchyDecorator
         /// </summary>
         protected override void OnContentGUI()
         {
+            EditorGUI.BeginChangeCheck ();
+
             foreach (SettingGroup group in groups)
             {
                 group.DisplaySettings (serializedGlobal);
                 EditorGUILayout.Space ();
+            }
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                serializedSettings.ApplyModifiedProperties ();
             }
         }
     }

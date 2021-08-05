@@ -9,7 +9,7 @@ namespace HierarchyDecorator
 {
     internal class IconTab : SettingsTab
     {
-        [System.Serializable]
+        [Serializable]
         private class IconInfo : IComparable<IconInfo>
         {
             public readonly Type type;
@@ -36,13 +36,14 @@ namespace HierarchyDecorator
 
         private readonly SerializedProperty unityComponents;
 
-        public IconTab() : base ("Icons", "d_FilterByType")
+        public IconTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, "Icons", "d_FilterByType")
         {
             // Setup References
             unityComponents = serializedSettings.FindProperty ("unityComponents");
             customComponents = serializedSettings.FindProperty ("customComponents");
 
             //Setup catergories
+            componentCategories = new Dictionary<string, List<IconInfo>> ();
             string[] keywords = Constants.componentKeywords;
 
             for (int i = 0; i < keywords.Length; i++)
@@ -95,6 +96,8 @@ namespace HierarchyDecorator
         {
             bool canHaveColumns = EditorGUIUtility.currentViewWidth > 500f;
 
+            EditorGUI.BeginChangeCheck ();
+
             for (int i = 0; i < componentCategories.Count; i++)
             {
                 KeyValuePair<String, List<IconInfo>> category = componentCategories.ElementAt (i);
@@ -130,6 +133,11 @@ namespace HierarchyDecorator
                     }
                 }
                 EditorGUILayout.EndVertical ();
+            }
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                serializedSettings.ApplyModifiedProperties ();
             }
 
             DrawCustomComponents ();
@@ -175,9 +183,10 @@ namespace HierarchyDecorator
                             }
                             if (EditorGUI.EndChangeCheck ())
                             {
-                                serializedSettings.ApplyModifiedProperties ();
-                                settings.customComponents[i].UpdateScriptType ();
-                                serializedSettings.UpdateIfRequiredOrScript ();
+                                if (serializedSettings.ApplyModifiedProperties ())
+                                {
+                                    settings.customComponents[i].UpdateScriptType ();
+                                }
                             }
                         }
                         EditorGUILayout.EndVertical ();
@@ -265,7 +274,7 @@ namespace HierarchyDecorator
                 component.property.boolValue = visibility;
             }
 
-            serializedSettings.ApplyModifiedProperties ();
+            EditorUtility.SetDirty (settings);
         }
 
         private void SetVisibilityForAll(SerializedProperty componentParent, bool visibility)
@@ -277,6 +286,8 @@ namespace HierarchyDecorator
                 SerializedProperty component = componentParent.GetArrayElementAtIndex (i);
                 component.FindPropertyRelative ("shown").boolValue = visibility;
             }
+
+            serializedSettings.ApplyModifiedProperties ();
         }
     }
 }

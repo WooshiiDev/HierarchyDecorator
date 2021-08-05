@@ -7,16 +7,20 @@ namespace HierarchyDecorator
     [InitializeOnLoad]
     internal static class Constants
     {
-        //Prefs for references
+        // ====== Prefs ======
+
         internal const string PREF_GUID = "HD_GUID";
 
-        //Path
+        // ====== Path ======
+
         internal const string SETTINGS_PATH = "Hierarchy Decorator";
 
         internal const string SETTINGS_ASSET_PATH = "Assets/HierarchyDecorator/Settings.asset";
         internal const string SETTINGS_ASSET_FOLDER = "Assets/HierarchyDecorator/";
 
-        //Draw
+        // ====== GUI ======
+
+        // ------ Colours ------
         internal readonly static Color SelectionColor = new Color (58f / 255f, 178f / 255f, 178f / 255f, 1);
 
         internal readonly static Color HoverColor = new Color (150f / 255f, 150f / 255f, 150f / 255f, 1);
@@ -29,15 +33,13 @@ namespace HierarchyDecorator
 
         internal static Color DefaultBackgroundColor => EditorGUIUtility.isProSkin ? DarkBackgroundColor : LightBackgroundColor;
 
-        internal static Settings Settings => Settings.GetOrCreateSettings ();
-        internal static List<PrefixSettings> prefixes => Settings.prefixes;
+        // ====== Instance Data ======
 
-        //Layer Masks
         internal static string[] LayerMasks => UnityEditorInternal.InternalEditorUtility.layers;
-
         internal readonly static LayerMask AllLayers = ~0;
 
-        //Editor Settings
+        //====== Editor Settings ======
+
         public readonly static string[] componentKeywords =
         {
             "2D",
@@ -99,7 +101,7 @@ namespace HierarchyDecorator
 
             listControlStyle = new GUIStyle (EditorStyles.centeredGreyMiniLabel)
             {
-                fontSize = 28,
+                fontSize = 18,
             };
 
             dropdownSmallStyle = new GUIStyle (EditorStyles.centeredGreyMiniLabel)

@@ -2,49 +2,61 @@
 
 namespace HierarchyDecorator
 {
-    internal abstract class HierarchyInfo
+    internal abstract class HierarchyInfo : HierarchyDrawer
     {
-        protected readonly Settings settings;
+        protected const int INDENT_SIZE = 16;
+        protected static int IndentIndex;
 
-        public HierarchyInfo(Settings settings)
+        /// <summary>
+        /// Apply the drawer GUI to the instance given
+        /// </summary>
+        /// <param name="rect">The drawn instance rect</param>
+        /// <param name="instance">The instance to draw for</param>
+        /// <param name="settings">Hierarchy settings</param>
+        protected override void DrawInternal(Rect rect, GameObject instance, Settings settings)
         {
-            this.settings = settings;
-        }
-
-        public void Draw(Rect rect, int startRow, GameObject instance, Settings settings)
-        {
-            if (!CanDisplayInfo ())
-            {
-                return;
-            }
-
-            int rowSize = GetRowSize ();
-            int rowOffset = 16 * (startRow + rowSize);
+            int gridCount = GetGridCount ();
 
             // Get intial position - at the end of the rect
-            rect.x += rect.width - rowOffset;
+            rect.x += rect.width - GetGridPosition();
+            rect.width = INDENT_SIZE * gridCount;
 
-            //Calculate size based on rows
-            rect.width = 16f * rowSize;
+            // Draw Info
+            DrawInfo (rect, instance, settings);
 
-            DrawInternal (rect, instance);
+            // Calculate the next initial index
+            IndentIndex += gridCount;
         }
 
         /// <summary>
-        /// Internal method to draw and setup the GUI to display in the Hierarchy
+        /// Draw the GUI info.
         /// </summary>
-        /// <param name="rect">Hierarchy rectfor the instance</param>
-        /// <param name="instance">The current hierarchy instance</param>
-        protected abstract void DrawInternal(Rect rect, GameObject instance);
+        /// <param name="rect">The drawn instance rect</param>
+        /// <param name="instance">The instance to draw for</param>
+        /// <param name="settings">Hierarchy settings</param>
+        protected abstract void DrawInfo(Rect rect, GameObject instance, Settings settings);
 
         /// <summary>
-        /// Current grid size of the module. This tells the hierarchy how much space is taken up
+        /// Get the number of grid elements this info will use when drawing
         /// </summary>
-        public abstract int GetRowSize();
+        /// <returns>Returns the grid usage count</returns>
+        protected abstract int GetGridCount();
 
         /// <summary>
-        /// Condition to validate the display of the info
+        /// Get the initial draw position on the grid
         /// </summary>
-        public abstract bool CanDisplayInfo();
+        /// <returns>Returns the position this drawer begins at</returns>
+        protected int GetGridPosition()
+        {
+            return INDENT_SIZE * (IndentIndex + GetGridCount ());
+        }
+
+        /// <summary>
+        /// Reset the indent
+        /// </summary>
+        public static void ResetIndent()
+        {
+            IndentIndex = 0;
+        }
     }
 }

@@ -10,17 +10,17 @@ namespace HierarchyDecorator
         private readonly GUIContent content;
 
         // References
-        protected readonly Settings settings;
-        protected readonly SerializedObject serializedSettings;
+        protected Settings settings;
+        protected SerializedObject serializedSettings;
 
         /// <summary>
         /// Constructor used to cache the data required
         /// </summary>
         /// <param name="settings">Current settings used for the hierarchy</param>
-        public SettingsTab(string name, string icon)
+        public SettingsTab(Settings settings, SerializedObject serializedSettings, string name, string icon)
         {
-            settings = Settings.GetOrCreateSettings ();
-            serializedSettings = Settings.GetSerializedSettings ();
+            this.settings = settings;
+            this.serializedSettings = serializedSettings;
 
             content = new GUIContent (name, GUIHelper.GetUnityIcon (icon));
         }
@@ -34,22 +34,13 @@ namespace HierarchyDecorator
             {
                 if (IsShown ())
                 {
-                    EditorGUI.BeginChangeCheck ();
-                    {
-                        OnTitleGUI ();
-                        OnContentGUI ();
-                    }
-                    if (EditorGUI.EndChangeCheck ())
-                    {
-                        serializedSettings.ApplyModifiedProperties ();
-                        EditorApplication.RepaintHierarchyWindow ();
-                    }
+                    OnTitleGUI ();
+                    OnContentGUI ();
+                    
                     EditorGUILayout.Space ();
                 }
             }
             EditorGUILayout.EndVertical ();
-
-            serializedSettings.Update ();
         }
 
         /// <summary>

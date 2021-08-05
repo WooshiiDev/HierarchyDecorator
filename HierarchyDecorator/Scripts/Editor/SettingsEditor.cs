@@ -10,45 +10,28 @@ namespace HierarchyDecorator
     {
         private Settings t;
 
-        // --- GUI ---
-        private static int tabSelection;
-
-        private static Vector2 scrollView;
-
-        // --- Others ---
+        // --- Others --
         private static GUIStyle titleStyle;
-
         private GUIContent imageContent;
 
-        //Tab Information
-        private static List<SettingsTab> tabs;
-
-        private bool changesDetected;
-
-        private bool IsDirty => EditorUtility.IsDirty (t.GetInstanceID ());
+        private List<SettingsTab> tabs;
 
         private void OnEnable()
         {
-            t = target as Settings;
+            t = base.target as Settings;
 
-            if (tabs == null)
-            {
-                tabs = new List<SettingsTab> ();
+            tabs = new List<SettingsTab> ();
 
-                RegisterTab (new GeneralTab ());
-                RegisterTab (new PrefixTab ());
-                RegisterTab (new IconTab ());
+            RegisterTab (new GeneralTab (t, serializedObject));
+            RegisterTab (new PrefixTab (t, serializedObject));
+            RegisterTab (new IconTab (t, serializedObject));
 
-                imageContent = new GUIContent (Textures.Banner);
-            }
+            imageContent = new GUIContent (Textures.Banner);
         }
 
         public override void OnInspectorGUI()
         {
-            if (serializedObject == null)
-            {
-                return;
-            }
+            serializedObject.Update ();
 
             if (titleStyle == null)
             {
@@ -70,7 +53,7 @@ namespace HierarchyDecorator
                 EditorGUI.indentLevel--;
             }
 
-            serializedObject.UpdateIfRequiredOrScript ();
+            EditorApplication.RepaintHierarchyWindow ();
         }
 
         /// <summary>

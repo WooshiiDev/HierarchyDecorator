@@ -13,83 +13,25 @@ namespace HierarchyDecorator
     {
         // Settings
         public GlobalSettings globalSettings = new GlobalSettings ();
-
         public List<PrefixSettings> prefixes; //Collection of all prefixes
-
         public List<GUIStyle> styles = new List<GUIStyle> (); //List of all custom GUIStyles
 
-        private readonly List<PrefixSettings> importantPrefixes = new List<PrefixSettings> ()
-            {
-            new PrefixSettings("=" , "Header")
-                {
-                name = "Header",
-
-                lightMode =
-                    {
-                fontColor = new Color (0.1764706f, 0.1764706f, 0.1764706f),
-                    backgroundColor = new Color (0.6666667f, 0.6666667f, 0.6666667f)
-                    },
-
-                darkMode =
-                    {
-                fontColor = new Color (1f, 1f, 1f),
-                    backgroundColor = new Color (0.1764706f, 0.1764706f, 0.1764706f)
-                    },
-                },
-
-            new PrefixSettings("-" , "Toolbar")
-                {
-                name = "Subheader",
-
-                lightMode =
-                    {
-                fontColor = new Color (0.245283f, 0.245283f, 0.245283f),
-                    backgroundColor = new Color (0.7960785f, 0.7960785f, 0.7960785f),
-                    },
-
-                darkMode =
-                    {
-                fontColor = new Color (0.8584906f, 0.8584906f, 0.8584906f),
-                    backgroundColor = new Color (0.2352941f, 0.2352941f, 0.2352941f),
-                    }
-                },
-
-            new PrefixSettings("+")
-                {
-                name = "Blue Header",
-
-                lightMode =
-                    {
-                fontColor = Color.white,
-                    backgroundColor = new Color (0.38568f, 0.6335747f, 0.764151f)
-                    },
-
-                darkMode =
-                    {
-                fontColor = Color.white,
-                    backgroundColor = new Color (0.2671325f, 0.4473481f, 0.6509434f)
-                    }
-                }
-            };
-
-        //Icon Data
+        // Icon Data
         public List<ComponentType> unityComponents = new List<ComponentType> ();
-
         public List<CustomComponentType> customComponents = new List<CustomComponentType> ();
 
-        //Collection of every component type unity has
+        // Collection of every component type unity has
         private static Type[] allTypes;
 
-        //Constants
+        // Constants
         public const string typeString = "Settings";
 
-        private void OnValidate()
+        // Settings Creation
+
+        private void OnValidation()
         {
             EditorApplication.RepaintHierarchyWindow ();
-            EditorUtility.SetDirty (this);
         }
-
-        #region Creation
 
         /// <summary>
         /// Load the asset for settings, or create one if it doesn't already exist
@@ -97,26 +39,23 @@ namespace HierarchyDecorator
         /// <returns>The loaded settings</returns>
         internal static Settings GetOrCreateSettings()
         {
-            Settings settings = null;
+            string path = null;
 
-            //Load from the saved GUID
+            // Make sure the key is still valid - no assuming that settings just 'exist'
             if (EditorPrefs.HasKey (Constants.PREF_GUID))
             {
-                string savedPath = AssetDatabase.GUIDToAssetPath (EditorPrefs.GetString (Constants.PREF_GUID));
+                path = AssetDatabase.GUIDToAssetPath (EditorPrefs.GetString (Constants.PREF_GUID));
 
-                bool assetExists = AssetDatabase.GetMainAssetTypeAtPath (savedPath) != null;
-
-                if (assetExists && !string.IsNullOrEmpty (savedPath))
+                if (AssetDatabase.GetMainAssetTypeAtPath (path) != null)
                 {
-                    return AssetDatabase.LoadAssetAtPath<Settings> (savedPath);
+                    return AssetDatabase.LoadAssetAtPath<Settings> (path);
                 }
             }
 
-            settings = AssetUtility.FindOrCreateScriptable<Settings> (typeString, Constants.SETTINGS_ASSET_FOLDER);
+            Settings settings = AssetUtility.FindOrCreateScriptable<Settings> (typeString, Constants.SETTINGS_ASSET_FOLDER);
             settings.SetDefaults ();
 
-            string path = AssetDatabase.GetAssetPath (settings);
-            settings = AssetDatabase.LoadAssetAtPath<Settings> (path);
+            path = AssetDatabase.GetAssetPath (settings);
             EditorPrefs.SetString (Constants.PREF_GUID, AssetDatabase.AssetPathToGUID (path));
 
             return settings;
@@ -136,36 +75,27 @@ namespace HierarchyDecorator
         /// </summary>
         internal void SetDefaults()
         {
-            //Create collections
+            // Create collections
             unityComponents = new List<ComponentType> ();
             customComponents = new List<CustomComponentType> ();
 
-            //Collections
-            prefixes = importantPrefixes;
-            styles = new List<GUIStyle> ()
-                {
-                CreateGUIStyle ("Header",       EditorStyles.boldLabel),
-                CreateGUIStyle ("Toolbar",      EditorStyles.toolbarButton),
-                CreateGUIStyle ("Grid Centered",EditorStyles.centeredGreyMiniLabel),
-                };
+            // Defaults
+            styles = HierarchyDecoratorHelper.ImportantStyles;
+            prefixes = HierarchyDecoratorHelper.ImportantPrefixes;
 
-            //Specifics for defaults
-            PrefixSettings toolbar = prefixes[1];
-            toolbar.SetAlignment (TextAnchor.MiddleLeft);
-            toolbar.SetFontSize (10);
-            toolbar.SetStyle (FontStyle.Normal);
+            foreach (PrefixSettings prefix in prefixes)
+            {
+                prefix.UpdateStyle ();
+            }
 
-            // - Grid Centered -
-            GUIStyle grid = styles[2];
-            grid.border = new RectOffset (15, 15, 15, 15);
-            grid.stretchWidth = true;
+            EditorUtility.SetDirty (this);
+            AssetDatabase.SaveAssets ();
+
 
             UpdateSettings ();
         }
 
-        #endregion Creation
-
-        #region Editor Serialization
+        // Serialization
 
         public void OnBeforeSerialize()
         {
@@ -185,35 +115,31 @@ namespace HierarchyDecorator
                 allTypes = ReflectionUtility.GetTypesFromAllAssemblies (typeof (Component));
             }
 
-            //Generally used when switching versions
-            bool hasMissing = unityComponents.Count != allTypes.Length;
-
-            if (hasMissing)
+            // If we're missing any components, look for them
+            if (unityComponents.Count != allTypes.Length)
             {
                 unityComponents.Clear ();
-            }
 
-            for (int i = 0; i < allTypes.Length; i++)
-            {
-                Type type = allTypes[i];
-
-                if (hasMissing)
+                for (int i = 0; i < allTypes.Length; i++)
                 {
-                    unityComponents.Add (new ComponentType (type));
+                    unityComponents.Add (new ComponentType (allTypes[i]));
                 }
-
-                ComponentType component = unityComponents[i];
-
-                if (component.type == null)
+            }
+            else
+            {
+                for (int i = 0; i < allTypes.Length; i++)
                 {
-                    component.UpdateType (type);
+                    ComponentType component = unityComponents[i];
+
+                    if (component.type == null)
+                    {
+                        component.UpdateType (allTypes[i]);
+                    }
                 }
             }
         }
 
-        #endregion Editor Serialization
-
-        #region GUIStyles
+        // GUI Styles
 
         /// <summary>
         /// Get a GUI style from the custom style list
@@ -223,44 +149,32 @@ namespace HierarchyDecorator
         public GUIStyle GetGUIStyle(string name)
         {
             GUIStyle style = styles.FirstOrDefault (s => s.name == name);
-            return style ?? EditorStyles.boldLabel;
+            return style ?? new GUIStyle();
         }
 
-        private GUIStyle CreateGUIStyle(string name, GUIStyle styleBase = null)
-        {
-            //Generally optimistic settings
-            return new GUIStyle (styleBase)
-            {
-                name = name,
+        // Components
 
-                stretchHeight = false,
-                stretchWidth = false,
-
-                fontSize = 11,
-                fontStyle = FontStyle.Bold,
-
-                fixedHeight = 0,
-                fixedWidth = 0,
-
-                alignment = TextAnchor.MiddleCenter,
-            };
-        }
-
-        #endregion GUIStyles
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type">The type to find</param>
+        /// <param name="component"></param>
+        /// <returns></returns>
         public bool FindCustomComponentFromType(Type type, out CustomComponentType component)
         {
-            foreach (CustomComponentType custom in customComponents)
+            for (int i = 0; i < customComponents.Count; i ++)
             {
-                if (custom.script == null)
+                CustomComponentType customComponent = customComponents[i];
+
+                if (customComponent.script == null)
                 {
                     continue;
                 }
 
                 // Not a good work around
-                if (custom.type == type)
+                if (customComponent.type == type)
                 {
-                    component = custom;
+                    component = customComponent;
                     return true;
                 }
             }
@@ -271,10 +185,97 @@ namespace HierarchyDecorator
 
         public void UpdateCustomComponentData()
         {
-            foreach (CustomComponentType customType in customComponents)
+            for (int i = 0; i < customComponents.Count; i++)
             {
-                customType.UpdateScriptType ();
+                customComponents[i].UpdateScriptType ();
             }
         }
+    }
+
+    public static class HierarchyDecoratorHelper
+    {
+        public static List<GUIStyle> ImportantStyles = new List<GUIStyle>
+        {
+            new GUIStyle()
+            {
+                name = "Header (Centered)",
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleCenter
+            },
+
+            new GUIStyle()
+            {
+                name = "Subheader",
+                fontSize = 10,
+                alignment = TextAnchor.MiddleLeft
+            },
+
+            new GUIStyle()
+            {
+                name = "Mini Header (Centered)",
+                fontSize = 10,
+                fontStyle = FontStyle.Bold,
+                normal =
+                {
+                    textColor = Color.gray
+                }
+            }
+        };
+
+        public static List<PrefixSettings> ImportantPrefixes = new List<PrefixSettings> ()
+        {
+             new PrefixSettings(
+                "=" ,
+                "Header (Centered)",
+                new ModeOptions(
+                    new Color (0.1764706f, 0.1764706f, 0.1764706f),
+                    new Color (0.6666667f, 0.6666667f, 0.6666667f)
+                    ),
+
+                new ModeOptions(
+                    Color.white,
+                    new Color (0.1764706f, 0.1764706f, 0.1764706f)
+                    ))
+                {
+                    fontSize = 11,
+                    fontStyle = FontStyle.Bold,
+                    fontAlignment = TextAnchor.MiddleCenter
+                },
+
+            new PrefixSettings(
+                "-",
+                "Subheader",
+                new ModeOptions(
+                    new Color (0.245283f, 0.245283f, 0.245283f),
+                    new Color (0.7960785f, 0.7960785f, 0.7960785f)),
+
+                new ModeOptions(
+                    new Color (0.8584906f, 0.8584906f, 0.8584906f),
+                    new Color (0.2352941f, 0.2352941f, 0.2352941f)
+                    ))
+                {
+                    fontSize = 10,
+                    fontStyle = FontStyle.Bold,
+                    fontAlignment = TextAnchor.MiddleLeft
+                },
+
+            new PrefixSettings(
+                "+",
+                "Mini Header (Centered)",
+                new ModeOptions(
+                    Color.white,
+                    new Color (0.38568f, 0.6335747f, 0.764151f)
+                    ),
+
+                new ModeOptions(
+                    Color.white,
+                    new Color (0.2671325f, 0.4473481f, 0.6509434f)
+                    ))
+                {
+                    fontSize = 10,
+                    fontStyle = FontStyle.Bold,
+                    fontAlignment = TextAnchor.MiddleCenter
+                }
+        };
     }
 }
