@@ -36,8 +36,8 @@ namespace HierarchyDecorator
 
             if (settings == null)
             {
-                settings = Settings.GetOrCreateSettings ();
-                serializedSettings = Settings.GetSerializedSettings ();
+                settings = HierarchyDecorator.GetOrCreateSettings ();
+                serializedSettings = HierarchyDecorator.GetSerializedSettings ();
             }
         }
 

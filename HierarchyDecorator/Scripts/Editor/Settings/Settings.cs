@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 
 namespace HierarchyDecorator
@@ -13,8 +12,8 @@ namespace HierarchyDecorator
     {
         // Settings
         public GlobalSettings globalSettings = new GlobalSettings ();
-        public List<PrefixSettings> prefixes; //Collection of all prefixes
-        public List<GUIStyle> styles = new List<GUIStyle> (); //List of all custom GUIStyles
+        public List<PrefixSettings> prefixes;
+        public List<GUIStyle> styles = new List<GUIStyle> ();
 
         // Icon Data
         public List<ComponentType> unityComponents = new List<ComponentType> ();
@@ -23,52 +22,7 @@ namespace HierarchyDecorator
         // Collection of every component type unity has
         private static Type[] allTypes;
 
-        // Constants
-        public const string typeString = "Settings";
-
         // Settings Creation
-
-        private void OnValidation()
-        {
-            EditorApplication.RepaintHierarchyWindow ();
-        }
-
-        /// <summary>
-        /// Load the asset for settings, or create one if it doesn't already exist
-        /// </summary>
-        /// <returns>The loaded settings</returns>
-        internal static Settings GetOrCreateSettings()
-        {
-            string path = null;
-
-            // Make sure the key is still valid - no assuming that settings just 'exist'
-            if (EditorPrefs.HasKey (Constants.PREF_GUID))
-            {
-                path = AssetDatabase.GUIDToAssetPath (EditorPrefs.GetString (Constants.PREF_GUID));
-
-                if (AssetDatabase.GetMainAssetTypeAtPath (path) != null)
-                {
-                    return AssetDatabase.LoadAssetAtPath<Settings> (path);
-                }
-            }
-
-            Settings settings = AssetUtility.FindOrCreateScriptable<Settings> (typeString, Constants.SETTINGS_ASSET_FOLDER);
-            settings.SetDefaults ();
-
-            path = AssetDatabase.GetAssetPath (settings);
-            EditorPrefs.SetString (Constants.PREF_GUID, AssetDatabase.AssetPathToGUID (path));
-
-            return settings;
-        }
-
-        /// <summary>
-        /// Convert into serialized object for handling GUI
-        /// </summary>
-        /// <returns>Serialized version of the settings</returns>
-        internal static SerializedObject GetSerializedSettings()
-        {
-            return new SerializedObject (GetOrCreateSettings ());
-        }
 
         /// <summary>
         /// Setup defaults for the new settings asset
@@ -87,10 +41,6 @@ namespace HierarchyDecorator
             {
                 prefix.UpdateStyle ();
             }
-
-            EditorUtility.SetDirty (this);
-            AssetDatabase.SaveAssets ();
-
 
             UpdateSettings ();
         }

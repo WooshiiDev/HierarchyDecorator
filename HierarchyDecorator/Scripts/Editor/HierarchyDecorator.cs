@@ -10,6 +10,8 @@ namespace HierarchyDecorator
     {
         private static Settings Settings;
 
+        // Drawer
+
         private static List<HierarchyDrawer> Drawers = new List<HierarchyDrawer> ()
         {
             new StyleDrawer(),
@@ -22,10 +24,14 @@ namespace HierarchyDecorator
             new ComponentIconInfo()
         };
 
+        // Constants
+
+        public const string SETTINGS_TYPE_STRING = "Settings";
 
         static HierarchyDecorator()
         {
-            Settings = Settings.GetOrCreateSettings ();
+            Settings = GetOrCreateSettings ();
+
             Settings.UpdateSettings ();
             Settings.UpdateCustomComponentData ();
 
@@ -43,7 +49,7 @@ namespace HierarchyDecorator
         {
             if (Settings == null)
             {
-                Settings = Settings.GetOrCreateSettings ();
+                Settings = GetOrCreateSettings ();
                 return;
             }
 
@@ -51,6 +57,7 @@ namespace HierarchyDecorator
 
             // Skip over the instance 
             // - normally if it's a Scene instance rather than a GameObject
+
             if (instance == null)
             {
                 return;
@@ -80,6 +87,48 @@ namespace HierarchyDecorator
             }
 
             Drawers.Add (drawer);
+        }
+
+        // Factory Methods
+
+        /// <summary>
+        /// Load the asset for settings, or create one if it doesn't already exist
+        /// </summary>
+        /// <returns>The loaded settings</returns>
+        internal static Settings GetOrCreateSettings()
+        {
+            string path = null;
+
+            // Make sure the key is still valid - no assuming that settings just 'exist'
+            if (EditorPrefs.HasKey (Constants.PREF_GUID))
+            {
+                path = AssetDatabase.GUIDToAssetPath (EditorPrefs.GetString (Constants.PREF_GUID));
+
+                if (AssetDatabase.GetMainAssetTypeAtPath (path) != null)
+                {
+                    return AssetDatabase.LoadAssetAtPath<Settings> (path);
+                }
+            }
+
+            Settings settings = AssetUtility.FindOrCreateScriptable<Settings> (SETTINGS_TYPE_STRING, Constants.SETTINGS_ASSET_FOLDER);
+            settings.SetDefaults ();
+
+            path = AssetDatabase.GetAssetPath (settings);
+            EditorPrefs.SetString (Constants.PREF_GUID, AssetDatabase.AssetPathToGUID (path));
+
+            EditorUtility.SetDirty (settings);
+            AssetDatabase.SaveAssets ();
+
+            return settings;
+        }
+
+        /// <summary>
+        /// Convert into serialized object for handling GUI
+        /// </summary>
+        /// <returns>Serialized version of the settings</returns>
+        internal static SerializedObject GetSerializedSettings()
+        {
+            return new SerializedObject (GetOrCreateSettings ());
         }
     }
 }
