@@ -1,5 +1,4 @@
-﻿using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace HierarchyDecorator
 {
@@ -19,7 +18,7 @@ namespace HierarchyDecorator
     [System.Serializable]
     public class PrefixSettings
     {
-        public string prefix = "!!";
+        public string prefix = "<PREFIX>";
         public string name = "New Prefix";
 
         [Space(19f)]
@@ -30,8 +29,7 @@ namespace HierarchyDecorator
         public TextAnchor fontAlignment = TextAnchor.MiddleCenter;
         public FontStyle fontStyle = FontStyle.Bold;
 
-        public ModeOptions[] modes = new ModeOptions[2];
-        public ModeOptions CurrentMode => EditorGUIUtility.isProSkin ? modes[1] : modes[0];
+        public ModeOptions[] modes;
 
         [HideInInspector] public GUIStyle style = new GUIStyle ();
 
@@ -39,8 +37,11 @@ namespace HierarchyDecorator
 
         public PrefixSettings()
         {
-            modes[0] = new ModeOptions (Color.black, Color.white);
-            modes[1] = new ModeOptions (Color.white, Color.black);
+            modes = new ModeOptions[]
+            {
+                new ModeOptions (Color.black, Color.white),
+                new ModeOptions (Color.white, Color.black)
+            };
         }
 
         public PrefixSettings(string prefix, string name, ModeOptions lightMode, ModeOptions darkMode)
@@ -48,18 +49,26 @@ namespace HierarchyDecorator
             this.prefix = prefix;
             this.name = name;
 
-            modes[0] = lightMode;
-            modes[1] = darkMode;
+            modes = new ModeOptions[]
+            {
+                lightMode,
+                darkMode
+            };
         }
 
-        public void UpdateStyle()
+        public void UpdateStyle(bool isDarkMode)
         {
             style.fontStyle = fontStyle;
             style.fontSize = fontSize;
             style.alignment = fontAlignment;
 
             style.font = font;
-            style.normal.textColor = CurrentMode.fontColour;
+            style.normal.textColor = GetCurrentMode(isDarkMode).fontColour;
+        }
+
+        public ModeOptions GetCurrentMode(bool isDarkMode)
+        {
+            return modes[isDarkMode ? 1 : 0];
         }
     }
 }

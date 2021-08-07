@@ -121,7 +121,7 @@ namespace HierarchyDecorator
             content.tooltip = type.Name;
             content.text = "";
 
-            GUI.Label (rect, content, Style.componentIconStyle);
+            GUI.Label (rect, content, Style.ComponentIconStyle);
         }
     }
 }

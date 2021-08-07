@@ -18,20 +18,49 @@ namespace HierarchyDecorator
         internal const string SETTINGS_ASSET_PATH = "Assets/HierarchyDecorator/Settings.asset";
         internal const string SETTINGS_ASSET_FOLDER = "Assets/HierarchyDecorator/";
 
-        // ====== GUI ======
+        // ====== Colours ======
 
-        // ------ Colours ------
-        internal readonly static Color SelectionColor = new Color (58f / 255f, 178f / 255f, 178f / 255f, 1);
+        // ------ Two Tone Colours ------
 
-        internal readonly static Color HoverColor = new Color (150f / 255f, 150f / 255f, 150f / 255f, 1);
+        internal readonly static Color darkModeEvenColor = new Color (0.25f, 0.25f, 0.25f, 1f);
+        internal readonly static Color darkModeOddColor = new Color (0.225f, 0.225f, 0.225f, 1f);
 
-        internal readonly static Color UnactiveColor = new Color (0.9f, 0.9f, 0.9f, 0.4f);
-        internal readonly static Color UnactivePrefabColor = new Color (0.48f, 0.67f, 0.95f, 0.6f);
+        internal readonly static Color lightModeEvenColor = new Color (0.8f, 0.8f, 0.8f, 1f);
+        internal readonly static Color lightModeOddColor = new Color (0.765f, 0.765f, 0.765f, 1f);
 
-        internal readonly static Color DarkBackgroundColor = new Color (0.219f, 0.219f, 0.219f);
-        internal readonly static Color LightBackgroundColor = new Color (0.8f, 0.8f, 0.8f, 1);
+        // ------ Standard Colours ------
 
-        internal static Color DefaultBackgroundColor => EditorGUIUtility.isProSkin ? DarkBackgroundColor : LightBackgroundColor;
+        /// <summary>
+        /// The Standard Selection Colour
+        /// </summary>
+        internal readonly static Color SelectionColour = new Color (58f / 255f, 178f / 255f, 178f / 255f, 1);
+
+        /// <summary>
+        /// The Standard Hover Colour
+        /// </summary>
+        internal readonly static Color HoverColour = new Color (150f / 255f, 150f / 255f, 150f / 255f, 1);
+
+        /// <summary>
+        /// The Standard Inactive Colour
+        /// </summary>
+        internal readonly static Color InactiveColour = new Color (0.9f, 0.9f, 0.9f, 0.4f);
+
+        /// <summary>
+        /// The Standard Inactive Prefab Colour
+        /// </summary>
+        internal readonly static Color InactivePrefabColour = new Color (0.48f, 0.67f, 0.95f, 0.6f);
+
+        /// <summary>
+        /// The Standard Dark Background Colour
+        /// </summary>
+        internal readonly static Color DarkBackgroundColour = new Color (0.219f, 0.219f, 0.219f);
+
+        /// <summary>
+        /// The Standard Light Background Colour
+        /// </summary>
+        internal readonly static Color LightBackgroundColour = new Color (0.8f, 0.8f, 0.8f, 1);
+
+        internal static Color DefaultBackgroundColor => EditorGUIUtility.isProSkin ? DarkBackgroundColour : LightBackgroundColour;
 
         // ====== Instance Data ======
 
@@ -58,6 +87,22 @@ namespace HierarchyDecorator
 
             "Renderer",
         };
+
+        // Helper Methods
+
+        public static Color GetTwoToneColour(Rect selectionRect)
+        {
+            bool isEvenRow = selectionRect.y % 32 != 0;
+
+            if (EditorGUIUtility.isProSkin)
+            {
+                return isEvenRow ? darkModeEvenColor: darkModeOddColor;
+            }
+            else
+            {
+                return isEvenRow ? lightModeEvenColor : lightModeOddColor;
+            }
+        }
     }
 
     internal static class Textures
@@ -75,15 +120,19 @@ namespace HierarchyDecorator
 
     internal static class Style
     {
-        public static readonly GUIStyle foldoutHeaderStyle;
-        public static readonly GUIStyle tabBackgroundStyle;
-        public static readonly GUIStyle listControlStyle;
-        public static readonly GUIStyle dropdownSmallStyle;
-        public static readonly GUIStyle componentIconStyle;
+        public static readonly GUIStyle FoldoutHeaderStyle;
+        public static readonly GUIStyle TabBackgroundStyle;
+        public static readonly GUIStyle ListControlStyle;
+        public static readonly GUIStyle DropdownSmallStyle;
+        public static readonly GUIStyle ComponentIconStyle;
+
+        public static readonly GUIStyle TitleStyle;
+
+        public static readonly GUIStyle WindowStyle;
 
         static Style()
         {
-            foldoutHeaderStyle = new GUIStyle (EditorStyles.foldout)
+            FoldoutHeaderStyle = new GUIStyle (EditorStyles.foldout)
             {
                 stretchHeight = true,
 
@@ -91,7 +140,7 @@ namespace HierarchyDecorator
                 alignment = TextAnchor.MiddleLeft,
             };
 
-            tabBackgroundStyle = new GUIStyle (EditorStyles.helpBox)
+            TabBackgroundStyle = new GUIStyle (EditorStyles.helpBox)
             {
                 stretchHeight = true,
                 fixedHeight = 0,
@@ -99,20 +148,32 @@ namespace HierarchyDecorator
                 alignment = TextAnchor.MiddleLeft
             };
 
-            listControlStyle = new GUIStyle (EditorStyles.centeredGreyMiniLabel)
+            ListControlStyle = new GUIStyle (EditorStyles.centeredGreyMiniLabel)
             {
                 fontSize = 18,
             };
 
-            dropdownSmallStyle = new GUIStyle (EditorStyles.centeredGreyMiniLabel)
+            DropdownSmallStyle = new GUIStyle (EditorStyles.centeredGreyMiniLabel)
             {
                 alignment = TextAnchor.MiddleCenter,
                 fontSize = 9,
             };
 
-            componentIconStyle = new GUIStyle (EditorStyles.label)
+            ComponentIconStyle = new GUIStyle (EditorStyles.label)
             {
                 padding = new RectOffset (0, 0, 0, 0)
+            };
+
+            TitleStyle = new GUIStyle (EditorStyles.boldLabel)
+            {
+                fontSize = 18,
+                fixedHeight = 21,
+            };
+
+            WindowStyle = new GUIStyle(GUI.skin.window)
+            {
+                padding = new RectOffset (2, 0, 0, 0),
+                margin = new RectOffset (0, 0, 0, 0),
             };
         }
     }

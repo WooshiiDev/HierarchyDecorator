@@ -202,7 +202,7 @@ namespace HierarchyDecorator
                     EditorGUI.indentLevel--;
                 }
 
-                if (GUILayout.Button ("+", Style.listControlStyle))
+                if (GUILayout.Button ("+", Style.ListControlStyle))
                 {
                     Undo.RecordObject (settings, "Added new custom component icon");
 
@@ -218,7 +218,7 @@ namespace HierarchyDecorator
         {
             EditorGUILayout.BeginHorizontal ();
             {
-                foldout = EditorGUILayout.Foldout (foldout, name, true, Style.foldoutHeaderStyle);
+                foldout = EditorGUILayout.Foldout (foldout, name, true, Style.FoldoutHeaderStyle);
 
                 if (GUILayout.Button ("Enable All", EditorStyles.centeredGreyMiniLabel))
                 {
@@ -241,7 +241,7 @@ namespace HierarchyDecorator
         {
             EditorGUILayout.BeginHorizontal ();
             {
-                componentParent.isExpanded = EditorGUILayout.Foldout (componentParent.isExpanded, name, true, Style.foldoutHeaderStyle);
+                componentParent.isExpanded = EditorGUILayout.Foldout (componentParent.isExpanded, name, true, Style.FoldoutHeaderStyle);
 
                 if (GUILayout.Button ("Enable All", EditorStyles.centeredGreyMiniLabel))
                 {

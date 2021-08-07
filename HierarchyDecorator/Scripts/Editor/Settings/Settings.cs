@@ -12,14 +12,15 @@ namespace HierarchyDecorator
     {
         // Settings
         public GlobalSettings globalSettings = new GlobalSettings ();
+
         public List<PrefixSettings> prefixes;
         public List<GUIStyle> styles = new List<GUIStyle> ();
 
-        // Icon Data
+        // Component Data
+
         public List<ComponentType> unityComponents = new List<ComponentType> ();
         public List<CustomComponentType> customComponents = new List<CustomComponentType> ();
 
-        // Collection of every component type unity has
         private static Type[] allTypes;
 
         // Settings Creation
@@ -27,7 +28,7 @@ namespace HierarchyDecorator
         /// <summary>
         /// Setup defaults for the new settings asset
         /// </summary>
-        internal void SetDefaults()
+        internal void SetDefaults(bool isDarkMode)
         {
             // Create collections
             unityComponents = new List<ComponentType> ();
@@ -39,7 +40,7 @@ namespace HierarchyDecorator
 
             foreach (PrefixSettings prefix in prefixes)
             {
-                prefix.UpdateStyle ();
+                prefix.UpdateStyle (isDarkMode);
             }
 
             UpdateSettings ();
@@ -144,7 +145,7 @@ namespace HierarchyDecorator
 
     public static class HierarchyDecoratorHelper
     {
-        public static List<GUIStyle> ImportantStyles = new List<GUIStyle>
+        public static readonly List<GUIStyle> ImportantStyles = new List<GUIStyle>
         {
             new GUIStyle()
             {
@@ -172,7 +173,7 @@ namespace HierarchyDecorator
             }
         };
 
-        public static List<PrefixSettings> ImportantPrefixes = new List<PrefixSettings> ()
+        public static readonly List<PrefixSettings> ImportantPrefixes = new List<PrefixSettings> ()
         {
              new PrefixSettings(
                 "=" ,

@@ -105,7 +105,7 @@ namespace HierarchyDecorator
             removeRect.width = 32f;
             removeRect.height = 18f;
 
-            if (GUI.Button (removeRect, "-", Style.listControlStyle))
+            if (GUI.Button (removeRect, "-", Style.ListControlStyle))
             {
                 prefixes.DeleteArrayElementAtIndex (index);
                 serializedSettings.ApplyModifiedProperties ();
@@ -145,8 +145,6 @@ namespace HierarchyDecorator
             if (EditorGUI.EndChangeCheck ())
             {
                 serializedSettings.ApplyModifiedProperties ();
-
-                settings.prefixes[index].UpdateStyle ();
                 serializedSettings.Update ();
             }
         }
@@ -165,7 +163,7 @@ namespace HierarchyDecorator
             buttonRect.width += 7f;
 
             // Draw optionals
-            if (GUI.Button (buttonRect, "+", Style.listControlStyle))
+            if (GUI.Button (buttonRect, "+", Style.ListControlStyle))
             {
                 Undo.RecordObject (settings, "Added new prefix");
                 settings.prefixes.Add (new PrefixSettings ());

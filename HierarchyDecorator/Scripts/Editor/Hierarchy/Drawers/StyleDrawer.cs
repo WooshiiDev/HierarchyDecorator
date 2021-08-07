@@ -95,7 +95,7 @@ namespace HierarchyDecorator
             int len = prefix.prefix.Length;
             string name = instance.name.Trim().Remove (0, len);
 
-            ModeOptions styleSetting = prefix.CurrentMode;
+            ModeOptions styleSetting = prefix.GetCurrentMode(EditorGUIUtility.isProSkin);
 
             // =======================
             // ===== Setup style =====
@@ -162,22 +162,21 @@ namespace HierarchyDecorator
         {
       
             // Draw the custom background
-
             Rect twoToneRect = GetActualHierarchyWidth (rect);
 
             Handles.BeginGUI ();
             {
-                Handles.DrawSolidRectangleWithOutline (twoToneRect, _settings.globalSettings.GetTwoToneColour (rect), Color.clear);
+                Handles.DrawSolidRectangleWithOutline (
+                    twoToneRect, 
+                    Constants.GetTwoToneColour (rect),
+                    Color.clear);
             }
             Handles.EndGUI ();
 
 
             // Draw standard content on top of drawn background
 
-            GUIContent content = new GUIContent ()
-            {
-                //text = instance.name
-            };
+            GUIContent content = new GUIContent ();
 
             Object prefabObj = PrefabUtility.GetPrefabInstanceHandle (instance);
 
@@ -203,7 +202,7 @@ namespace HierarchyDecorator
                 content.image = EditorGUIUtility.IconContent ("GameObject Icon").image;
             }
 
-            GUIStyle style = new GUIStyle (Style.componentIconStyle);
+            GUIStyle style = new GUIStyle (Style.ComponentIconStyle);
 
             if (prefabObj != null)
             {
@@ -219,7 +218,7 @@ namespace HierarchyDecorator
 
             if (!instance.activeInHierarchy)
             {
-                style.normal.textColor = (prefabObj != null) ? Constants.UnactivePrefabColor : Color.gray;
+                style.normal.textColor = (prefabObj != null) ? Constants.InactivePrefabColour : Color.gray;
             }
 
             Vector2 originalIconSize = EditorGUIUtility.GetIconSize ();
@@ -271,5 +270,6 @@ namespace HierarchyDecorator
             prefix = null;
             return false;
         }
+
     }
 }

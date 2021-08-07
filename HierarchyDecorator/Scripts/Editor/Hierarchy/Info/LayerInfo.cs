@@ -7,7 +7,7 @@ namespace HierarchyDecorator
     {
         protected override void DrawInfo(Rect rect, GameObject instance, Settings settings)
         {
-            EditorGUI.LabelField (rect, LayerMask.LayerToName (instance.layer), Style.dropdownSmallStyle);
+            EditorGUI.LabelField (rect, LayerMask.LayerToName (instance.layer), Style.DropdownSmallStyle);
 
             if (settings.globalSettings.editableLayers)
             {

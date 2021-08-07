@@ -30,7 +30,7 @@ namespace HierarchyDecorator
         /// </summary>
         public void OnGUI()
         {
-            EditorGUILayout.BeginVertical (Style.tabBackgroundStyle, GUILayout.MinHeight (32f));
+            EditorGUILayout.BeginVertical (Style.TabBackgroundStyle, GUILayout.MinHeight (32f));
             {
                 if (IsShown ())
                 {
@@ -48,7 +48,7 @@ namespace HierarchyDecorator
         /// </summary>
         protected bool IsShown()
         {
-            return isShown = EditorGUILayout.Foldout (isShown, content, true, Style.foldoutHeaderStyle);
+            return isShown = EditorGUILayout.Foldout (isShown, content, true, Style.FoldoutHeaderStyle);
         }
 
         /// <summary>

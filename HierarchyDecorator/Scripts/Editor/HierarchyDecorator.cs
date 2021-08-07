@@ -8,26 +8,23 @@ namespace HierarchyDecorator
     [InitializeOnLoad]
     internal static class HierarchyDecorator
     {
+        public const string SETTINGS_TYPE_STRING = "Settings";
+
         private static Settings Settings;
 
-        // Drawer
+        // Drawers 
 
         private static List<HierarchyDrawer> Drawers = new List<HierarchyDrawer> ()
         {
             new StyleDrawer(),
             new ToggleDrawer(),
         };
-
         private static HierarchyInfo[] Info = new HierarchyInfo[]    
         {
             new LayerInfo(),
             new ComponentIconInfo()
         };
-
-        // Constants
-
-        public const string SETTINGS_TYPE_STRING = "Settings";
-
+    
         static HierarchyDecorator()
         {
             Settings = GetOrCreateSettings ();
@@ -78,17 +75,6 @@ namespace HierarchyDecorator
             HierarchyInfo.ResetIndent ();
         }
 
-        public static void RegisterDrawer(HierarchyDrawer drawer)
-        {
-            if (Drawers.Contains(drawer))
-            {
-                Debug.LogError (string.Format("Drawer of {0} already exists!", drawer.GetType().Name));
-                return;
-            }
-
-            Drawers.Add (drawer);
-        }
-
         // Factory Methods
 
         /// <summary>
@@ -111,7 +97,7 @@ namespace HierarchyDecorator
             }
 
             Settings settings = AssetUtility.FindOrCreateScriptable<Settings> (SETTINGS_TYPE_STRING, Constants.SETTINGS_ASSET_FOLDER);
-            settings.SetDefaults ();
+            settings.SetDefaults (EditorGUIUtility.isProSkin);
 
             path = AssetDatabase.GetAssetPath (settings);
             EditorPrefs.SetString (Constants.PREF_GUID, AssetDatabase.AssetPathToGUID (path));
@@ -129,6 +115,19 @@ namespace HierarchyDecorator
         internal static SerializedObject GetSerializedSettings()
         {
             return new SerializedObject (GetOrCreateSettings ());
+        }
+
+        // Drawers
+
+        public static void RegisterDrawer(HierarchyDrawer drawer)
+        {
+            if (Drawers.Contains (drawer))
+            {
+                Debug.LogError (string.Format ("Drawer of {0} already exists!", drawer.GetType ().Name));
+                return;
+            }
+
+            Drawers.Add (drawer);
         }
     }
 }

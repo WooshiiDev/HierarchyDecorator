@@ -7,9 +7,6 @@ using UnityEngine.UIElements;
 using UnityEngine.Experimental.UIElements;
 #endif
 
-
-#pragma warning disable CS0649
-
 namespace HierarchyDecorator
 {
     internal class SettingsPreferences : SettingsProvider
@@ -65,27 +62,12 @@ namespace HierarchyDecorator
 
         private void DrawSettings()
         {
-            GUIStyle skin = new GUIStyle (GUI.skin.window)
+            if (settingsEditor == null)
             {
-                padding = new RectOffset (2, 0, 0, 0),
-                margin = new RectOffset (0, 0, 0, 0),
-            };
-            EditorGUILayout.InspectorTitlebar (false, settings, false);
-
-            EditorGUILayout.BeginHorizontal ();
-            {
-                EditorGUILayout.BeginVertical ();
-                {
-                    if (settingsEditor == null)
-                    {
-                        Editor.CreateCachedEditor (settings, null, ref settingsEditor);
-                    }
-
-                    settingsEditor.OnInspectorGUI ();
-                }
-                EditorGUILayout.EndVertical ();
+                Editor.CreateCachedEditor (settings, null, ref settingsEditor);
             }
-            EditorGUILayout.EndHorizontal ();
+
+            settingsEditor.OnInspectorGUI ();
         }
     }
 }
