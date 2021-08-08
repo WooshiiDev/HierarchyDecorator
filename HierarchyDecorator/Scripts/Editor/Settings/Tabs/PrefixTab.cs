@@ -15,6 +15,7 @@ namespace HierarchyDecorator
         private readonly Color OUTLINE_COLOR = new Color (0.15f, 0.15f, 0.15f, 1f);
 
         private readonly string[] guiStyleNames;
+        private string[] modes = new string[] { "Light Mode", "Dark Mode" };
 
         public PrefixTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, "Prefixes", "d_InputField Icon")
         {
@@ -65,13 +66,22 @@ namespace HierarchyDecorator
 
         private void DrawPrefixHeader(Rect rect)
         {
-            rect.y += 2f;
-
             Rect buttonRect = rect;
             buttonRect.width = rect.width * 0.5f;
 
+            // Height of header is 10px, need to expand it
+#if UNITY_2019_1_OR_NEWER
+            buttonRect.y += 2f;
+            GUIStyle style = EditorStyles.centeredGreyMiniLabel;
+#else       
+            buttonRect.y -= 6f;
+            buttonRect.height = 15f;
+
+            GUIStyle style = EditorStyles.centeredGreyMiniLabel;
+#endif
+
             // Draw optionals
-            if (GUI.Button (buttonRect, "Expand All", EditorStyles.centeredGreyMiniLabel))
+            if (GUI.Button (buttonRect, "Expand All", style))
             {
                 SerializedProperty listProperty = prefixList.serializedProperty;
                 for (int i = 0; i < prefixList.count; ++i)
@@ -81,7 +91,7 @@ namespace HierarchyDecorator
             }
 
             buttonRect.x += buttonRect.width;
-            if (GUI.Button (buttonRect, "Hide All", EditorStyles.centeredGreyMiniLabel))
+            if (GUI.Button (buttonRect, "Hide All", style))
             {
                 SerializedProperty listProperty = prefixList.serializedProperty;
                 for (int i = 0; i < prefixList.count; ++i)
@@ -156,12 +166,17 @@ namespace HierarchyDecorator
 
         private void DrawPrefixFooter(Rect rect)
         {
-            rect.y -= 4f;
-
             Rect buttonRect = rect;
             buttonRect.x -= 3f;
             buttonRect.width += 7f;
 
+#if UNITY_2019_1_OR_NEWER
+            buttonRect.y -= 4f;
+#else
+            buttonRect.y -= 8f;
+            buttonRect.height = 21f;
+#endif
+            
             // Draw optionals
             if (GUI.Button (buttonRect, "+", Style.ListControlStyle))
             {
@@ -218,7 +233,7 @@ namespace HierarchyDecorator
             Handles.EndGUI ();
         }
 
-        #endregion Reorderable List
+#endregion Reorderable List
 
         public void DrawModes(Rect rect, SerializedProperty property)
         {
@@ -228,8 +243,6 @@ namespace HierarchyDecorator
             }
 
             property.isExpanded = true;
-
-            string[] modes = new string[] { "Light Mode", "Dark Mode" };
 
             Rect selectionRect = rect;
             selectionRect.height = 21f;

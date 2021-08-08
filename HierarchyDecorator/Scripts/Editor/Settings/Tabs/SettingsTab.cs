@@ -30,7 +30,11 @@ namespace HierarchyDecorator
         /// </summary>
         public void OnGUI()
         {
+#if UNITY_2019_1_OR_NEWER
             EditorGUILayout.BeginVertical (Style.TabBackgroundStyle, GUILayout.MinHeight (32f));
+#else
+            EditorGUILayout.BeginVertical (Style.TabBackgroundStyle, GUILayout.MinHeight (16f));
+#endif
             {
                 if (IsShown ())
                 {

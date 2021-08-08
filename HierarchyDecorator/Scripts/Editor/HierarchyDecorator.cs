@@ -50,6 +50,10 @@ namespace HierarchyDecorator
                 return;
             }
 
+#if UNITY_2019_1_OR_NEWER
+            selectionRect.height = 16f;
+#endif
+
             GameObject instance = EditorUtility.InstanceIDToObject (instanceID) as GameObject;
 
             // Skip over the instance 
