@@ -88,6 +88,37 @@ namespace HierarchyDecorator
             "Renderer",
         };
 
+        public readonly static CategoryFilter[] ComponentFilters =
+        {
+            new CategoryFilter ("2D", "2D", FilterType.NAME),
+
+            // Animation
+            new CategoryFilter ("Animation", "Anim", FilterType.NAME),
+            new CategoryFilter ("Animation", "Constraint", FilterType.NAME),
+
+            // Audio
+            new CategoryFilter ("Audio", "Audio", FilterType.NAME),
+
+            // Colliders
+            //new CategoryFilter ("Collider", "Collider", FilterType.NAME),
+
+            // Mesh
+            new CategoryFilter ("Mesh", "Renderer", FilterType.NAME),
+            new CategoryFilter ("Mesh", "Mesh", FilterType.NAME),
+
+            // Physics
+            new CategoryFilter ("Physics", "Collider", FilterType.NAME),
+            new CategoryFilter ("Physics", "Joint", FilterType.NAME),
+            new CategoryFilter ("Physics", "Rigidbody", FilterType.NAME),
+
+            // Networking
+            new CategoryFilter ("Network", "Network", FilterType.NAME),
+
+            new CategoryFilter ("UI", "Canvas", FilterType.NAME),
+            new CategoryFilter ("UI", "UnityEngine.EventSystems.UIBehaviour, UnityEngine.UI", FilterType.TYPE),
+            new CategoryFilter ("UI", "UnityEngine.GUIElement, UnityEngine", FilterType.TYPE)
+        };
+
         // Helper Methods
 
         public static Color GetTwoToneColour(Rect selectionRect)
@@ -125,17 +156,19 @@ namespace HierarchyDecorator
         public static readonly GUIStyle ListControlStyle;
         public static readonly GUIStyle DropdownSmallStyle;
         public static readonly GUIStyle ComponentIconStyle;
-
         public static readonly GUIStyle TitleStyle;
-
         public static readonly GUIStyle WindowStyle;
+
+        public static readonly GUIStyle LargeButtonStyle;
+        public static readonly GUIStyle LargeButtonSmallTextStyle;
 
         static Style()
         {
             FoldoutHeaderStyle = new GUIStyle (EditorStyles.foldout)
             {
+#if UNITY_2019_1_OR_NEWER
                 stretchHeight = true,
-
+#endif
                 fontStyle = FontStyle.Bold,
                 alignment = TextAnchor.MiddleLeft,
             };
@@ -151,6 +184,7 @@ namespace HierarchyDecorator
             ListControlStyle = new GUIStyle (EditorStyles.centeredGreyMiniLabel)
             {
                 fontSize = 18,
+                fixedHeight = 0,
             };
 
             DropdownSmallStyle = new GUIStyle (EditorStyles.centeredGreyMiniLabel)
@@ -175,6 +209,34 @@ namespace HierarchyDecorator
                 padding = new RectOffset (2, 0, 0, 0),
                 margin = new RectOffset (0, 0, 0, 0),
             };
+
+            LargeButtonStyle = new GUIStyle (EditorStyles.miniButton)
+            {
+                fixedHeight = 32f
+            };
+
+            LargeButtonSmallTextStyle = new GUIStyle (EditorStyles.miniButton)
+            {
+                fixedHeight = 32f,
+                fontSize = 12
+            };
+        }
+    }
+
+
+    public enum FilterType { NONE, NAME, TYPE }
+
+    internal struct CategoryFilter
+    {
+        public string name;
+        public string filter;
+        public FilterType type;
+
+        public CategoryFilter(string name, string filter, FilterType type)
+        {
+            this.name = name;
+            this.filter = filter;
+            this.type = type;
         }
     }
 }

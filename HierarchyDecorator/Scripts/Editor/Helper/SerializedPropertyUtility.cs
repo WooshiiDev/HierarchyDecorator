@@ -37,8 +37,7 @@ namespace HierarchyDecorator
             EditorGUI.indentLevel--;
         }
 
-        public static void DrawChildrenProperties(Rect rect, SerializedProperty property, bool showChildrenRecursive, 
-            Dictionary<string, Action<Rect, SerializedProperty>> onCustomDraw = null)
+        public static void DrawChildrenProperties(Rect rect, SerializedProperty property, bool showChildrenRecursive, Dictionary<string, Action<Rect, SerializedProperty>> onCustomDraw = null)
         {
             bool hasCustomDrawing = onCustomDraw != null;
 

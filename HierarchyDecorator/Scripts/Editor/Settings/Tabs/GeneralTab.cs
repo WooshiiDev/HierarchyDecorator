@@ -41,7 +41,7 @@ namespace HierarchyDecorator
 
         private readonly SettingGroup[] groups = new SettingGroup[]
         {
-            new SettingGroup("Features", new string[] {"showActiveToggles", "showComponents", "showAllComponents", "twoToneBackground"}),
+            new SettingGroup("Features", new string[] {"showActiveToggles", "showComponentIcons", "twoToneBackground"}),
             new SettingGroup("Layers", new string[] {"showLayers", "editableLayers", "applyChildLayers"}),
         };
 

@@ -5,7 +5,7 @@ namespace HierarchyDecorator
     internal class GlobalSettings
     {
         public bool showActiveToggles = true;
-        public bool showComponents = true;
+        public bool showComponentIcons = true;
         public bool showAllComponents = true;
 
         public bool twoToneBackground = true;

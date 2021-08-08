@@ -21,6 +21,10 @@ namespace HierarchyDecorator
             RegisterTab (new GeneralTab (t, serializedObject));
             RegisterTab (new PrefixTab (t, serializedObject));
             RegisterTab (new IconTab (t, serializedObject));
+
+            var global = serializedObject.FindProperty ("globalSettings");
+
+     
         }
 
         public override void OnInspectorGUI()

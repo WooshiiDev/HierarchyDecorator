@@ -17,7 +17,7 @@ namespace HierarchyDecorator
 
         protected override bool DrawerIsEnabled(Settings settings)
         {
-            return settings.globalSettings.showComponents;
+            return settings.globalSettings.showComponentIcons;
         }
 
         protected override void DrawInfo(Rect rect, GameObject instance, Settings settings)
@@ -73,6 +73,7 @@ namespace HierarchyDecorator
                     return;
                 }
             }
+
 
             string path = AssetDatabase.GetAssetPath (MonoScript.FromMonoBehaviour (component as MonoBehaviour));
             GUIContent content = new GUIContent (AssetDatabase.GetCachedIcon (path));

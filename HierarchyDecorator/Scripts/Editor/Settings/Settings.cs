@@ -117,6 +117,11 @@ namespace HierarchyDecorator
             {
                 CustomComponentType customComponent = customComponents[i];
 
+                if (customComponent.script == null || customComponent.type == null)
+                {
+                    customComponent.UpdateScriptType ();
+                }
+
                 if (customComponent.script == null)
                 {
                     continue;
