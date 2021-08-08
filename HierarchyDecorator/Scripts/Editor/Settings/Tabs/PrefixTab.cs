@@ -156,6 +156,8 @@ namespace HierarchyDecorator
             {
                 serializedSettings.ApplyModifiedProperties ();
                 serializedSettings.Update ();
+
+                settings.prefixes[index].UpdateStyle (EditorGUIUtility.isProSkin);
             }
         }
 
