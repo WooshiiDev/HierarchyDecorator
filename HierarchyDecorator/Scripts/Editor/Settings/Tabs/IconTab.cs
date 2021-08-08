@@ -127,7 +127,13 @@ namespace HierarchyDecorator
                     {
                         serializedSettings.ApplyModifiedProperties ();
                     }
+
+#if UNITY_2019_1_OR_NEWER
                     EditorGUILayout.Space (6f);
+#else
+                    EditorGUILayout.Space ();
+#endif
+
                     selection = GUILayout.SelectionGrid (selection, componentCategories.Keys.ToArray (), 1, Style.LargeButtonStyle);
                 }
                 EditorGUILayout.EndVertical ();
@@ -145,7 +151,11 @@ namespace HierarchyDecorator
                     {
                         DrawGlobalToggles (serializedCustomComponents);
 
+#if UNITY_2019_1_OR_NEWER
                         EditorGUILayout.Space (10f);
+#else
+                        EditorGUILayout.Space ();
+#endif
 
                         DrawCustomComponents ();
                     }
@@ -153,7 +163,11 @@ namespace HierarchyDecorator
                     {
                         DrawGlobalToggles (icons);
 
+#if UNITY_2019_1_OR_NEWER
                         EditorGUILayout.Space (10f);
+#else
+                        EditorGUILayout.Space ();
+#endif
 
                         int validIndex = 0;
                         for (int j = 0; j < icons.Count; j++)
