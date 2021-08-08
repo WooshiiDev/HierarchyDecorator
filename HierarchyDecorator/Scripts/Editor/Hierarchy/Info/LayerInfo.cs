@@ -5,13 +5,9 @@ namespace HierarchyDecorator
 {
     internal class LayerInfo : HierarchyInfo
     {
-        public LayerInfo(Settings settings) : base (settings)
+        protected override void DrawInfo(Rect rect, GameObject instance, Settings settings)
         {
-        }
-
-        protected override void DrawInternal(Rect rect, GameObject instance)
-        {
-            EditorGUI.LabelField (rect, LayerMask.LayerToName (instance.layer), Style.dropdownSmallStyle);
+            EditorGUI.LabelField (rect, LayerMask.LayerToName (instance.layer), Style.DropdownSmallStyle);
 
             if (settings.globalSettings.editableLayers)
             {
@@ -68,12 +64,12 @@ namespace HierarchyDecorator
             }
         }
 
-        public override int GetRowSize()
+        protected override int GetGridCount()
         {
             return 3;
         }
 
-        public override bool CanDisplayInfo()
+        protected override bool DrawerIsEnabled(Settings settings)
         {
             return settings.globalSettings.showLayers;
         }

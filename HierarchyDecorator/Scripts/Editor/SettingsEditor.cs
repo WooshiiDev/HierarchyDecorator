@@ -10,54 +10,26 @@ namespace HierarchyDecorator
     {
         private Settings t;
 
-        // --- GUI ---
-        private static int tabSelection;
-
-        private static Vector2 scrollView;
-
-        // --- Others ---
-        private static GUIStyle titleStyle;
-
-        private GUIContent imageContent;
-
-        //Tab Information
-        private static List<SettingsTab> tabs;
-
-        private bool changesDetected;
-
-        private bool IsDirty => EditorUtility.IsDirty (t.GetInstanceID ());
+        private List<SettingsTab> tabs;
 
         private void OnEnable()
         {
             t = target as Settings;
 
-            if (tabs == null)
-            {
-                tabs = new List<SettingsTab> ();
+            tabs = new List<SettingsTab> ();
 
-                RegisterTab (new GeneralTab ());
-                RegisterTab (new PrefixTab ());
-                RegisterTab (new IconTab ());
+            RegisterTab (new GeneralTab (t, serializedObject));
+            RegisterTab (new PrefixTab (t, serializedObject));
+            RegisterTab (new IconTab (t, serializedObject));
 
-                imageContent = new GUIContent (Textures.Banner);
-            }
+            var global = serializedObject.FindProperty ("globalSettings");
+
+     
         }
 
         public override void OnInspectorGUI()
         {
-            if (serializedObject == null)
-            {
-                return;
-            }
-
-            if (titleStyle == null)
-            {
-                titleStyle = new GUIStyle (EditorStyles.boldLabel)
-                {
-                    fontSize = 18,
-                    fixedHeight = 21,
-                };
-            }
+            serializedObject.Update ();
 
             DrawTitle ();
 
@@ -70,13 +42,10 @@ namespace HierarchyDecorator
                 EditorGUI.indentLevel--;
             }
 
-            serializedObject.UpdateIfRequiredOrScript ();
+            EditorApplication.RepaintHierarchyWindow ();
         }
 
-        /// <summary>
-        /// Register a tab to draw
-        /// </summary>
-        public void RegisterTab(SettingsTab tab)
+        private void RegisterTab(SettingsTab tab)
         {
             tabs.Add (tab);
         }
@@ -85,7 +54,7 @@ namespace HierarchyDecorator
         {
             EditorGUILayout.BeginHorizontal ();
             {
-                EditorGUILayout.LabelField ("Hierarchy Settings", titleStyle);
+                EditorGUILayout.LabelField ("Hierarchy Settings", Style.TitleStyle);
 
                 GUILayout.FlexibleSpace ();
 

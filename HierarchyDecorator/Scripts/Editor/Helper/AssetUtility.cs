@@ -24,7 +24,7 @@ namespace HierarchyDecorator
         {
             if (string.IsNullOrEmpty (name))
             {
-                throw new ArgumentNullException ();
+                throw new ArgumentNullException ("Cannot create scriptable with null name.");
             }
 
             if (string.IsNullOrEmpty (path))
@@ -58,7 +58,7 @@ namespace HierarchyDecorator
                 scriptable = CreateScriptableAtPath<T> (type, createPath);
                 onCreate?.Invoke (scriptable);
 
-                Debug.Log ($"Created scriptable {type} at path {createPath}");
+                Debug.Log (string.Format("Created scriptable {0} at path {1}", type, createPath));
             }
             else
             {

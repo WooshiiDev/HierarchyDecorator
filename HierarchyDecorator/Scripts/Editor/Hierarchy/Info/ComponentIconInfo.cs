@@ -8,36 +8,27 @@ namespace HierarchyDecorator
 {
     internal class ComponentIconInfo : HierarchyInfo
     {
-        private List<Type> componentTypes;
+        private List<Type> componentTypes = new List<Type> ();
 
-        public ComponentIconInfo(Settings settings) : base (settings)
-        {
-            componentTypes = new List<Type> ();
-        }
-
-        public override int GetRowSize()
+        protected override int GetGridCount()
         {
             return componentTypes.Count;
         }
 
-        public override bool CanDisplayInfo()
+        protected override bool DrawerIsEnabled(Settings settings)
         {
-            return settings.globalSettings.showComponents;
+            return settings.globalSettings.showComponentIcons;
         }
 
-        protected override void DrawInternal(Rect rect, GameObject instance)
+        protected override void DrawInfo(Rect rect, GameObject instance, Settings settings)
         {
-            if (instance == null)
-            {
-                return;
-            }
-
             componentTypes.Clear ();
 
             Component[] components = instance.GetComponents<Component> ();
             for (int i = components.Length; i-- > 0;)
             {
                 var component = components[i];
+
                 if (component == null)
                 {
                     continue;
@@ -52,16 +43,16 @@ namespace HierarchyDecorator
 
                 if (type.IsSubclassOf (typeof (MonoBehaviour)))
                 {
-                    DrawMonobehaviour (rect, component);
+                    DrawMonobehaviour (rect, component, settings);
                 }
                 else
                 {
-                    DrawComponent (rect, type, instance);
+                    DrawComponent (rect, type, instance, settings);
                 }
             }
         }
 
-        private void DrawMonobehaviour(Rect rect, Component component)
+        private void DrawMonobehaviour(Rect rect, Component component, Settings settings)
         {
             Type type = component.GetType ();
 
@@ -84,14 +75,15 @@ namespace HierarchyDecorator
                 }
             }
 
+
             string path = AssetDatabase.GetAssetPath (MonoScript.FromMonoBehaviour (component as MonoBehaviour));
             GUIContent content = new GUIContent (AssetDatabase.GetCachedIcon (path));
 
             componentTypes.Add (type);
-            DrawComponentIcon (rect, content, type, component.gameObject.activeInHierarchy);
+            DrawComponentIcon (rect, content, type);
         }
 
-        private void DrawComponent(Rect rect, Type type, GameObject instance)
+        private void DrawComponent(Rect rect, Type type, GameObject instance, Settings settings)
         {
             // Need to check for specifics if globally all components are not on
             if (!settings.globalSettings.showAllComponents)
@@ -117,20 +109,21 @@ namespace HierarchyDecorator
             }
 
             componentTypes.Add (type);
-            DrawComponentIcon (rect, content, type, instance.activeInHierarchy);
+            DrawComponentIcon (rect, content, type);
         }
 
-        private void DrawComponentIcon(Rect rect, GUIContent content, Type type, bool isActive)
+        private void DrawComponentIcon(Rect rect, GUIContent content, Type type)
         {
             // Move to left-most side possible, then move along rows
             rect.x += rect.width;
-            rect.x -= 16f * GetRowSize ();
-            rect.width = rect.height;
+            rect.x -= INDENT_SIZE * GetGridCount ();
+
+            rect.width = rect.height = INDENT_SIZE;
 
             content.tooltip = type.Name;
             content.text = "";
 
-            GUI.Label (rect, content, Style.componentIconStyle);
+            GUI.Label (rect, content, Style.ComponentIconStyle);
         }
     }
 }
