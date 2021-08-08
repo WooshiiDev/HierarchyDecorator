@@ -25,9 +25,10 @@ namespace HierarchyDecorator
             componentTypes.Clear ();
 
             Component[] components = instance.GetComponents<Component> ();
-
-            foreach (Component component in components)
+            for (int i = components.Length; i-- > 0;)
             {
+                var component = components[i];
+
                 if (component == null)
                 {
                     continue;
