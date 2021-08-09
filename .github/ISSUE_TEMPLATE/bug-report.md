@@ -2,7 +2,7 @@
 name: Bug Report
 about: Create a report to help us improve
 title: 'Hierarchy Decorator Bug - '
-labels: ''
+labels: bug
 assignees: WooshiiDev
 
 ---
