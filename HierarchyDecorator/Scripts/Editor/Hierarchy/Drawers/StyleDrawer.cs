@@ -57,48 +57,48 @@ namespace HierarchyDecorator
             {
                 DrawTwoToneContent (rect, instance, _settings);
                 DrawSelection (rect, instanceID);
-            }
 
-            // Need to do a manual check if this is the final transform
-            if (currentTransform == finalTransform)
-            {
-                if (currentTransform.childCount > 0)
+                // Need to do a manual check if this is the final transform
+                if (currentTransform == finalTransform)
                 {
-                    EditorGUI.Foldout (GetToggleRect (rect), false, GUIContent.none);
+                    if (currentTransform.childCount > 0)
+                    {
+                        EditorGUI.Foldout (GetToggleRect (rect), false, GUIContent.none);
+                    }
                 }
-            }
 
-            // Draw required foldouts for previous instance
-            if (previousNeedsFoldout && previousTransform != currentTransform)
-            {
-                DrawPreviousFoldout ();
-            }
+                // Draw required foldouts for previous instance
+                if (previousNeedsFoldout && previousTransform != currentTransform)
+                {
+                    DrawPreviousFoldout ();
+                }
 
-            // Will update the final transform until it gets to the bottom of the hierarchy
-            // The final transform can be found based on the root (top level parent) of the current instance
-            // Instances higher up the hierarchy have a lower index than instances further down
-            if (previousTransform.root.GetSiblingIndex () > currentTransform.root.GetSiblingIndex ())
-            {
-                // This essentially checks if we've went back to the top of the hierarchy
-                // where the index is set back to zero. This then will only need to check once
-                // PER hierarchy update (if the final transform is hidden, deleted, then it'll need to recalculate)
-                if (previousTransformIndex == transformIndex)
+                // Will update the final transform until it gets to the bottom of the hierarchy
+                // The final transform can be found based on the root (top level parent) of the current instance
+                // Instances higher up the hierarchy have a lower index than instances further down
+                if (previousTransform.root.GetSiblingIndex () > currentTransform.root.GetSiblingIndex ())
+                {
+                    // This essentially checks if we've went back to the top of the hierarchy
+                    // where the index is set back to zero. This then will only need to check once
+                    // PER hierarchy update (if the final transform is hidden, deleted, then it'll need to recalculate)
+                    if (previousTransformIndex == transformIndex)
+                    {
+                        finalTransform = previousTransform;
+                        transformIndex++;
+                    }
+                }
+                // Specific use-case when the final instance shown is also a child of the first instance
+                if (currentTransform == previousTransform.root)
                 {
                     finalTransform = previousTransform;
                     transformIndex++;
                 }
-            }
-            // Specific use-case when the final instance shown is also a child of the first instance
-            if (currentTransform == previousTransform.root)
-            {
-                finalTransform = previousTransform;
-                transformIndex++;
-            }
 
-            previousNeedsFoldout = hasStyle || (hasChildren && _settings.globalSettings.twoToneBackground);
-            previousRect = rect;
-            previousTransform = currentTransform;
-            previousTransformIndex = transformIndex;
+                previousNeedsFoldout = hasStyle || (hasChildren && _settings.globalSettings.twoToneBackground);
+                previousRect = rect;
+                previousTransform = currentTransform;
+                previousTransformIndex = transformIndex;
+            }
         }
 
         protected override bool DrawerIsEnabled(Settings _settings)
