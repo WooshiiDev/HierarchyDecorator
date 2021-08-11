@@ -19,6 +19,9 @@ namespace HierarchyDecorator
         private Transform currentTransform;
         private Transform finalTransform;
 
+        private int transformIndex;
+        private int previousTransformIndex;
+
         protected override void DrawInternal(Rect rect, GameObject instance, Settings _settings)
         {
             currentTransform = instance.transform;
@@ -31,6 +34,7 @@ namespace HierarchyDecorator
             if (firstTransform == null)
             {
                 firstTransform = currentTransform;
+                transformIndex = 0;
             }
 
             int instanceID = instance.GetInstanceID ();
@@ -65,7 +69,7 @@ namespace HierarchyDecorator
             }
 
             // Draw required foldouts for previous instance
-            if (previousNeedsFoldout)
+            if (previousNeedsFoldout && previousTransform != currentTransform)
             {
                 DrawPreviousFoldout ();
             }
@@ -75,12 +79,26 @@ namespace HierarchyDecorator
             // Instances higher up the hierarchy have a lower index than instances further down
             if (previousTransform.root.GetSiblingIndex () > currentTransform.root.GetSiblingIndex ())
             {
+                // This essentially checks if we've went back to the top of the hierarchy
+                // where the index is set back to zero. This then will only need to check once
+                // PER hierarchy update (if the final transform is hidden, deleted, then it'll need to recalculate)
+                if (previousTransformIndex == transformIndex)
+                {
+                    finalTransform = previousTransform;
+                    transformIndex++;
+                }
+            }
+            // Specific use-case when the final instance shown is also a child of the first instance
+            if (currentTransform == previousTransform.root)
+            {
                 finalTransform = previousTransform;
+                transformIndex++;
             }
 
             previousNeedsFoldout = hasStyle || (hasChildren && _settings.globalSettings.twoToneBackground);
             previousRect = rect;
             previousTransform = currentTransform;
+            previousTransformIndex = transformIndex;
         }
 
         protected override bool DrawerIsEnabled(Settings _settings)
@@ -130,10 +148,6 @@ namespace HierarchyDecorator
             {
                 return;
             }
-
-            //bool isToggled = (finalTransform == previousTransform)
-            //    ? false
-            //    : previousTransform.GetSiblingIndex () >= currentTransform.GetSiblingIndex ();
 
             EditorGUI.Foldout (
                 GetToggleRect(previousRect), 
