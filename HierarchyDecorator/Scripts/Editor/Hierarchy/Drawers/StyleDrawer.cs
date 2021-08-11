@@ -1,6 +1,4 @@
-﻿using System;
-using UnityEditor;
-using UnityEditor.Experimental.SceneManagement;
+﻿using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -19,86 +17,78 @@ namespace HierarchyDecorator
         private Transform currentTransform;
         private Transform finalTransform;
 
-        private int transformIndex;
-        private int previousTransformIndex;
-
         protected override void DrawInternal(Rect rect, GameObject instance, Settings _settings)
         {
+            // ==========================================================
+            // ======================= Assignment =======================
+            // ==========================================================
+
             currentTransform = instance.transform;
 
-            if (previousTransform == null)
+            // Draw previous transform
+            if (previousNeedsFoldout && previousTransform)
             {
-                previousTransform = currentTransform;
+                DrawFoldout (previousRect, currentTransform.parent == previousTransform);
             }
 
-            if (firstTransform == null)
+            // We've went back to the start
+            if (firstTransform == currentTransform)
+            {
+                finalTransform = previousTransform;
+            }
+
+            // First transform will have the lowest index and no parent
+            if (currentTransform.parent == null && currentTransform.GetSiblingIndex () == 0)
             {
                 firstTransform = currentTransform;
-                transformIndex = 0;
             }
 
-            int instanceID = instance.GetInstanceID ();
-            bool hasChildren = currentTransform.childCount > 0;
-            bool hasStyle = false;
+            // ==========================================================
+            // ======================= Background =======================
+            // ==========================================================
 
             // Draw style, and then drawn selection on top
-            if (_settings.prefixes.Count > 0 && TryGetStyle (instance, _settings, out PrefixSettings prefix))
-            {
-                // Draw the style or general two tone background if either exist
-                // Have to make sure selection colours are drawn on top when required too
-                ApplyStyle (rect, instance, prefix, _settings);
-                DrawSelection (rect, instanceID);
+            int instanceID = instance.GetInstanceID ();
+            bool hasChildren = currentTransform.childCount > 0;
 
-                hasStyle = true;
-            }
-            else
+            bool hasStyle = _settings.globalSettings.twoToneBackground;
+
             // Only draw the two tone background if there's no style override
             if (_settings.globalSettings.twoToneBackground)
             {
                 DrawTwoToneContent (rect, instance, _settings);
                 DrawSelection (rect, instanceID);
 
-                // Need to do a manual check if this is the final transform
-                if (currentTransform == finalTransform)
-                {
-                    if (currentTransform.childCount > 0)
-                    {
-                        EditorGUI.Foldout (GetToggleRect (rect), false, GUIContent.none);
-                    }
-                }
-
-                // Draw required foldouts for previous instance
-                if (previousNeedsFoldout && previousTransform != currentTransform)
-                {
-                    DrawPreviousFoldout ();
-                }
-
-                // Will update the final transform until it gets to the bottom of the hierarchy
-                // The final transform can be found based on the root (top level parent) of the current instance
-                // Instances higher up the hierarchy have a lower index than instances further down
-                if (previousTransform.root.GetSiblingIndex () > currentTransform.root.GetSiblingIndex ())
-                {
-                    // This essentially checks if we've went back to the top of the hierarchy
-                    // where the index is set back to zero. This then will only need to check once
-                    // PER hierarchy update (if the final transform is hidden, deleted, then it'll need to recalculate)
-                    if (previousTransformIndex == transformIndex)
-                    {
-                        finalTransform = previousTransform;
-                        transformIndex++;
-                    }
-                }
-                // Specific use-case when the final instance shown is also a child of the first instance
-                if (currentTransform == previousTransform.root)
-                {
-                    finalTransform = previousTransform;
-                    transformIndex++;
-                }
-
-                previousNeedsFoldout = hasStyle || (hasChildren && _settings.globalSettings.twoToneBackground);
-                previousRect = rect;
-                previousTransform = currentTransform;
-                previousTransformIndex = transformIndex;
+                hasStyle = true;
             }
+
+            // Draw the style if one is to be applied
+            // Have to make sure selection colours are drawn on top when required too
+            if (_settings.prefixes.Count > 0 && TryGetStyle (instance, _settings, out PrefixSettings prefix))
+            {
+                ApplyStyle (rect, instance, prefix, _settings);
+                DrawSelection (rect, instanceID);
+
+                hasStyle = true;
+            }
+
+            // ==========================================================
+            // =================== Previous Transform ===================
+            // ==========================================================
+
+            // Final Transform Draw
+            if (hasStyle && hasChildren && currentTransform == finalTransform)
+            {
+                DrawFoldout (rect, false);
+            }
+
+            // ==========================================================
+            // ========================== Data ==========================
+            // ==========================================================
+
+            previousRect = rect;
+            previousTransform = currentTransform;
+            previousNeedsFoldout = hasStyle && hasChildren;
         }
 
         protected override bool DrawerIsEnabled(Settings _settings)
@@ -111,9 +101,9 @@ namespace HierarchyDecorator
         private void ApplyStyle(Rect rect, GameObject instance, PrefixSettings prefix, Settings settings)
         {
             int len = prefix.prefix.Length;
-            string name = instance.name.Trim().Remove (0, len);
+            string name = instance.name.Trim ().Remove (0, len);
 
-            ModeOptions styleSetting = prefix.GetCurrentMode(EditorGUIUtility.isProSkin);
+            ModeOptions styleSetting = prefix.GetCurrentMode (EditorGUIUtility.isProSkin);
 
             // =======================
             // ===== Setup style =====
@@ -142,17 +132,9 @@ namespace HierarchyDecorator
             EditorGUI.LabelField (rect, name.ToUpper (), prefix.style);
         }
 
-        private void DrawPreviousFoldout()
+        private void DrawFoldout(Rect rect, bool foldout)
         {
-            if (previousTransform.childCount == 0)
-            {
-                return;
-            }
-
-            EditorGUI.Foldout (
-                GetToggleRect(previousRect), 
-                previousTransform.GetSiblingIndex () >= currentTransform.GetSiblingIndex (), 
-                GUIContent.none);
+            EditorGUI.Foldout (GetToggleRect (rect), foldout, GUIContent.none);
         }
 
         private void DrawSelection(Rect rect, int instanceID)
@@ -160,13 +142,13 @@ namespace HierarchyDecorator
             Vector2 mousePosition = Event.current.mousePosition;
             rect = GetActualHierarchyWidth (rect);
 
-            if (Selection.Contains(instanceID))
+            if (Selection.Contains (instanceID))
             {
                 EditorGUI.DrawRect (rect, new Color (0.214f, 0.42f, 0.76f, 0.2f));
 
             }
             else
-            if (rect.Contains(mousePosition))
+            if (rect.Contains (mousePosition))
             {
                 EditorGUI.DrawRect (rect, new Color (0.3f, 0.3f, 0.3f, 0.2f));
             }
@@ -174,19 +156,11 @@ namespace HierarchyDecorator
 
         private void DrawTwoToneContent(Rect rect, GameObject instance, Settings _settings)
         {
-      
-            // Draw the custom background
             Rect twoToneRect = GetActualHierarchyWidth (rect);
 
             Handles.BeginGUI ();
-            {
-                Handles.DrawSolidRectangleWithOutline (
-                    twoToneRect, 
-                    Constants.GetTwoToneColour (rect),
-                    Color.clear);
-            }
+            Handles.DrawSolidRectangleWithOutline (twoToneRect, Constants.GetTwoToneColour (rect), Color.clear);
             Handles.EndGUI ();
-
 
             // Draw standard content on top of drawn background
 
@@ -275,13 +249,13 @@ namespace HierarchyDecorator
 
         private bool TryGetStyle(GameObject instance, Settings settings, out PrefixSettings prefix)
         {
-            string nameStart = instance.name.TrimStart ().Split(' ')[0];
+            string nameStart = instance.name.TrimStart ().Split (' ')[0];
 
             for (int i = 0; i < settings.prefixes.Count; i++)
             {
                 prefix = settings.prefixes[i];
 
-                if (nameStart.Equals(prefix.prefix))
+                if (nameStart.Equals (prefix.prefix))
                 {
                     return true;
                 }
