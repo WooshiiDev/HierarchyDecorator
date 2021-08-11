@@ -31,6 +31,7 @@ namespace HierarchyDecorator
             }
             if (EditorGUI.EndChangeCheck ())
             {
+                Undo.RecordObject (instance, string.Format("Changed the active state of an {0}", instance.name));
                 instance.SetActive (isActive);
             }
 #else
