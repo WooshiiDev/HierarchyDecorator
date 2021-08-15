@@ -59,8 +59,6 @@ namespace HierarchyDecorator
                     unityComponents.Add (new ComponentType (allTypes[i]));
                 }
 
-                Debug.LogWarning (string.Format("HierarchyDecorator found {0} Unity components.", allTypes.Length));
-
                 isDirty = false;
             }
             else
