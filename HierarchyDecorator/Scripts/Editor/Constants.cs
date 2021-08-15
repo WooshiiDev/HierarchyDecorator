@@ -5,67 +5,67 @@ using UnityEngine;
 namespace HierarchyDecorator
 {
     [InitializeOnLoad]
-    internal static class Constants
+    public static class Constants
     {
         // ====== Prefs ======
 
-        internal const string PREF_GUID = "HD_GUID";
+        public const string PREF_GUID = "HD_GUID";
 
         // ====== Path ======
 
-        internal const string SETTINGS_PATH = "Hierarchy Decorator";
+        public const string SETTINGS_PATH = "Hierarchy Decorator";
 
-        internal const string SETTINGS_ASSET_PATH = "Assets/HierarchyDecorator/Settings.asset";
-        internal const string SETTINGS_ASSET_FOLDER = "Assets/HierarchyDecorator/";
+        public const string SETTINGS_ASSET_PATH = "Assets/HierarchyDecorator/Settings.asset";
+        public const string SETTINGS_ASSET_FOLDER = "Assets/HierarchyDecorator/";
 
         // ====== Colours ======
 
         // ------ Two Tone Colours ------
 
-        internal readonly static Color darkModeEvenColor = new Color (0.25f, 0.25f, 0.25f, 1f);
-        internal readonly static Color darkModeOddColor = new Color (0.225f, 0.225f, 0.225f, 1f);
+        public readonly static Color darkModeEvenColor = new Color (0.25f, 0.25f, 0.25f, 1f);
+        public readonly static Color darkModeOddColor = new Color (0.225f, 0.225f, 0.225f, 1f);
 
-        internal readonly static Color lightModeEvenColor = new Color (0.8f, 0.8f, 0.8f, 1f);
-        internal readonly static Color lightModeOddColor = new Color (0.765f, 0.765f, 0.765f, 1f);
+        public readonly static Color lightModeEvenColor = new Color (0.8f, 0.8f, 0.8f, 1f);
+        public readonly static Color lightModeOddColor = new Color (0.765f, 0.765f, 0.765f, 1f);
 
         // ------ Standard Colours ------
 
         /// <summary>
         /// The Standard Selection Colour
         /// </summary>
-        internal readonly static Color SelectionColour = new Color (58f / 255f, 178f / 255f, 178f / 255f, 1);
+        public readonly static Color SelectionColour = new Color (58f / 255f, 178f / 255f, 178f / 255f, 1);
 
         /// <summary>
         /// The Standard Hover Colour
         /// </summary>
-        internal readonly static Color HoverColour = new Color (150f / 255f, 150f / 255f, 150f / 255f, 1);
+        public readonly static Color HoverColour = new Color (150f / 255f, 150f / 255f, 150f / 255f, 1);
 
         /// <summary>
         /// The Standard Inactive Colour
         /// </summary>
-        internal readonly static Color InactiveColour = new Color (0.9f, 0.9f, 0.9f, 0.4f);
+        public readonly static Color InactiveColour = new Color (0.9f, 0.9f, 0.9f, 0.4f);
 
         /// <summary>
         /// The Standard Inactive Prefab Colour
         /// </summary>
-        internal readonly static Color InactivePrefabColour = new Color (0.48f, 0.67f, 0.95f, 0.6f);
+        public readonly static Color InactivePrefabColour = new Color (0.48f, 0.67f, 0.95f, 0.6f);
 
         /// <summary>
         /// The Standard Dark Background Colour
         /// </summary>
-        internal readonly static Color DarkBackgroundColour = new Color (0.219f, 0.219f, 0.219f);
+        public readonly static Color DarkBackgroundColour = new Color (0.219f, 0.219f, 0.219f);
 
         /// <summary>
         /// The Standard Light Background Colour
         /// </summary>
-        internal readonly static Color LightBackgroundColour = new Color (0.8f, 0.8f, 0.8f, 1);
+        public readonly static Color LightBackgroundColour = new Color (0.8f, 0.8f, 0.8f, 1);
 
-        internal static Color DefaultBackgroundColor => EditorGUIUtility.isProSkin ? DarkBackgroundColour : LightBackgroundColour;
+        public static Color DefaultBackgroundColor => EditorGUIUtility.isProSkin ? DarkBackgroundColour : LightBackgroundColour;
 
         // ====== Instance Data ======
 
-        internal static string[] LayerMasks => UnityEditorInternal.InternalEditorUtility.layers;
-        internal readonly static LayerMask AllLayers = ~0;
+        public static string[] LayerMasks => UnityEditorInternal.InternalEditorUtility.layers;
+        public readonly static LayerMask AllLayers = ~0;
 
         //====== Editor Settings ======
 
@@ -153,12 +153,13 @@ namespace HierarchyDecorator
     {
         public static readonly GUIStyle FoldoutHeaderStyle;
         public static readonly GUIStyle TabBackgroundStyle;
-        public static readonly GUIStyle ListControlStyle;
+        public static readonly GUIStyle CenteredBoldLabel;
         public static readonly GUIStyle DropdownSmallStyle;
         public static readonly GUIStyle ComponentIconStyle;
         public static readonly GUIStyle TitleStyle;
         public static readonly GUIStyle WindowStyle;
 
+        // Foldouts
         public static readonly GUIStyle LargeButtonStyle;
         public static readonly GUIStyle LargeButtonSmallTextStyle;
 
@@ -178,13 +179,16 @@ namespace HierarchyDecorator
                 stretchHeight = true,
                 fixedHeight = 0,
 
+                margin = new RectOffset (0, 0, 0, 0),
+
                 alignment = TextAnchor.MiddleLeft
             };
 
-            ListControlStyle = new GUIStyle (EditorStyles.centeredGreyMiniLabel)
+            CenteredBoldLabel = new GUIStyle (EditorStyles.centeredGreyMiniLabel)
             {
-                fontSize = 18,
+                fontSize = 11,
                 fixedHeight = 0,
+                fontStyle = FontStyle.Bold
             };
 
             DropdownSmallStyle = new GUIStyle (EditorStyles.centeredGreyMiniLabel)
@@ -195,7 +199,8 @@ namespace HierarchyDecorator
 
             ComponentIconStyle = new GUIStyle (EditorStyles.label)
             {
-                padding = new RectOffset (0, 0, 0, 0)
+                padding = new RectOffset (0, 0, 0, 0),
+                margin = new RectOffset (0, 0, 0, 0)
             };
 
             TitleStyle = new GUIStyle (EditorStyles.boldLabel)
@@ -223,10 +228,9 @@ namespace HierarchyDecorator
         }
     }
 
-
     public enum FilterType { NONE, NAME, TYPE }
 
-    internal struct CategoryFilter
+    public struct CategoryFilter
     {
         public string name;
         public string filter;

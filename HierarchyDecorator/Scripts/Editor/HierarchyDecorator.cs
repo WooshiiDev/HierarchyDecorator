@@ -29,14 +29,13 @@ namespace HierarchyDecorator
         {
             Settings = GetOrCreateSettings ();
 
-            Settings.UpdateSettings ();
-            Settings.UpdateCustomComponentData ();
-
             if (Settings == null)
             {
                 Debug.LogError ("Cannot initialize HierarchyDecorator because settings do not exist!");
                 return;
             }
+
+            Settings.componentData.UpdateData (true);
 
             EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyItem;
             EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyItem;

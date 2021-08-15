@@ -9,7 +9,7 @@ using UnityEngine.Experimental.UIElements;
 
 namespace HierarchyDecorator
 {
-    internal class SettingsPreferences : SettingsProvider
+    public class SettingsPreferences : SettingsProvider
     {
         //--- Settings ---
         private static Settings settings;

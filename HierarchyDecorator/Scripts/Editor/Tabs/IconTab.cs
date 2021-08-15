@@ -7,7 +7,7 @@ using Object = UnityEngine.Object;
 
 namespace HierarchyDecorator
 {
-    internal class IconTab : SettingsTab
+    public class IconTab : SettingsTab
     {
         [Serializable]
         private class IconInfo : IComparable<IconInfo>
@@ -40,17 +40,18 @@ namespace HierarchyDecorator
         private bool[] categoryFoldout;
         private int selection;
 
-        public IconTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, "Icons", "d_FilterByType")
+        public IconTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, serializedSettings.FindProperty("componentData"), "Icons", "d_FilterByType")
         {
             // Setup References
-            showAllProperty = serializedSettings.FindProperty ("globalSettings.showAllComponents");
+            showAllProperty = serializedSettings.FindProperty ("globalData.showAllComponents");
 
-            serializedUnityComponents = serializedSettings.FindProperty ("unityComponents");
-            serializedCustomComponents = serializedSettings.FindProperty ("customComponents");
+            serializedUnityComponents = serializedTab.FindPropertyRelative ("unityComponents");
+            serializedCustomComponents = serializedTab.FindPropertyRelative ("customComponents");
 
             componentCategories.Add ("General", new List<IconInfo> ());
 
-            List<ComponentType> unityComponents = settings.unityComponents;
+            List<ComponentType> unityComponents = settings.componentData.unityComponents;
+
             for (int i = 0; i < unityComponents.Count; i++)
             {
                 ComponentType component = unityComponents[i];
@@ -105,8 +106,6 @@ namespace HierarchyDecorator
             componentCategories.Add ("Custom", null);
         }
 
-        protected override void OnTitleGUI() { }
-
         protected override void OnContentGUI()
         {
             float currentViewWidth = EditorGUIUtility.currentViewWidth;
@@ -142,6 +141,13 @@ namespace HierarchyDecorator
 
                 EditorGUILayout.BeginVertical (Style.TabBackgroundStyle);
                 {
+                    if (showAllProperty.boolValue)
+                    {
+                        EditorGUILayout.LabelField ("All Icons are shown as \"Show All Icons\" is enabled", Style.CenteredBoldLabel);
+                    }
+
+                    EditorGUI.BeginDisabledGroup (showAllProperty.boolValue);
+
                     KeyValuePair<String, List<IconInfo>> category = componentCategories.ElementAt (selection);
                     List<IconInfo> icons = category.Value;
 
@@ -168,6 +174,7 @@ namespace HierarchyDecorator
 #else
                         EditorGUILayout.Space ();
 #endif
+                        EditorGUIUtility.SetIconSize (Vector2.one * 16f);
 
                         int validIndex = 0;
                         for (int j = 0; j < icons.Count; j++)
@@ -184,7 +191,7 @@ namespace HierarchyDecorator
                             EditorGUI.BeginChangeCheck ();
 
                             GUIHelper.BeginConditionalHorizontal (hasColumn && canHaveColumns);
-                            icon.property.boolValue = EditorGUILayout.ToggleLeft (content, icon.property.boolValue, GUILayout.MaxWidth (horizIconWidth));
+                            icon.property.boolValue = EditorGUILayout.ToggleLeft (content, icon.property.boolValue, GUILayout.Width (horizIconWidth));
                             GUIHelper.EndConditionHorizontal (!hasColumn && canHaveColumns);
 
                             if (EditorGUI.EndChangeCheck())
@@ -196,7 +203,11 @@ namespace HierarchyDecorator
                         }
                     }
 
+                    EditorGUIUtility.SetIconSize (Vector2.zero);
+
                     GUIHelper.EndConditionHorizontal (hasColumn && canHaveColumns);
+
+                    EditorGUI.EndDisabledGroup ();
                 }
                 EditorGUILayout.EndVertical ();
             }

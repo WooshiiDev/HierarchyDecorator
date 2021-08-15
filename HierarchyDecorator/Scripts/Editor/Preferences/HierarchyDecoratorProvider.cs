@@ -4,7 +4,7 @@ using UnityEditor;
 namespace HierarchyDecorator
 {
     // Register the Settings for the HiearchyDecorator
-    internal static class HierarchyDecoratorProvider
+    public static class HierarchyDecoratorProvider
     {
         public static SettingsProvider[] tabs =
         {

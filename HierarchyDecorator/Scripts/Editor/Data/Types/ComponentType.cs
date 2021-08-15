@@ -5,7 +5,7 @@ using UnityEngine;
 namespace HierarchyDecorator
 {
     [Serializable]
-    internal class ComponentType : IComparable<ComponentType>
+    public class ComponentType : IComparable<ComponentType>
     {
         [HideInInspector]
         public string name;
@@ -37,7 +37,7 @@ namespace HierarchyDecorator
     }
 
     [Serializable]
-    internal class CustomComponentType : ComponentType
+    public class CustomComponentType : ComponentType
     {
         public MonoScript script = null;
 

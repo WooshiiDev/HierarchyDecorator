@@ -19,12 +19,17 @@ namespace HierarchyDecorator
             tabs = new List<SettingsTab> ();
 
             RegisterTab (new GeneralTab (t, serializedObject));
-            RegisterTab (new PrefixTab (t, serializedObject));
+            RegisterTab (new StyleTab (t, serializedObject));
             RegisterTab (new IconTab (t, serializedObject));
+        }
 
-            var global = serializedObject.FindProperty ("globalSettings");
+        private void OnDisable()
+        {
+            if (serializedObject != null)
+            {
+                serializedObject.Dispose ();
 
-     
+            }
         }
 
         public override void OnInspectorGUI()
@@ -42,7 +47,10 @@ namespace HierarchyDecorator
                 EditorGUI.indentLevel--;
             }
 
-            EditorApplication.RepaintHierarchyWindow ();
+            if (serializedObject.UpdateIfRequiredOrScript())
+            {
+                EditorApplication.RepaintHierarchyWindow ();
+            }
         }
 
         private void RegisterTab(SettingsTab tab)

@@ -6,7 +6,7 @@ namespace HierarchyDecorator
     /// <summary>
     /// Base class for drawing custom GUI to the Hierarchy
     /// </summary>
-    internal abstract class HierarchyDrawer
+    public abstract class HierarchyDrawer
     {
         /// <summary>
         /// Display the drawer for the given instance.
@@ -16,7 +16,7 @@ namespace HierarchyDecorator
         /// <param name="settings">Hierarchy Settings.</param>
         public void Draw(Rect rect, GameObject instance, Settings settings)
         {
-            if (DrawerIsEnabled (settings))
+            if (DrawerIsEnabled (settings, instance))
             {
                 DrawInternal (rect, instance, settings);
             }
@@ -35,6 +35,6 @@ namespace HierarchyDecorator
         /// </summary>
         /// <param name="_settings">Hierarchy settings</param>
         /// <returns>Returns true/false depending on if the drawer can be used.</returns>
-        protected abstract bool DrawerIsEnabled(Settings _settings);
+        protected abstract bool DrawerIsEnabled(Settings _settings, GameObject instance);
     }
 }

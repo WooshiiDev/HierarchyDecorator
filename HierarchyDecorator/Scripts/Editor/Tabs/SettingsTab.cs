@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace HierarchyDecorator
 {
-    internal abstract class SettingsTab
+    public abstract class SettingsTab
     {
         //GUI
         private bool isShown;
@@ -12,15 +12,17 @@ namespace HierarchyDecorator
         // References
         protected Settings settings;
         protected SerializedObject serializedSettings;
+        protected SerializedProperty serializedTab;
 
         /// <summary>
         /// Constructor used to cache the data required
         /// </summary>
         /// <param name="settings">Current settings used for the hierarchy</param>
-        public SettingsTab(Settings settings, SerializedObject serializedSettings, string name, string icon)
+        public SettingsTab(Settings settings, SerializedObject serializedSettings, SerializedProperty serializedTab, string name, string icon)
         {
             this.settings = settings;
             this.serializedSettings = serializedSettings;
+            this.serializedTab = serializedTab;
 
             content = new GUIContent (name, GUIHelper.GetUnityIcon (icon));
         }
@@ -35,15 +37,12 @@ namespace HierarchyDecorator
 #else
             EditorGUILayout.BeginVertical (Style.TabBackgroundStyle, GUILayout.MinHeight (16f));
 #endif
+            if (IsShown ())
             {
-                if (IsShown ())
-                {
-                    OnTitleGUI ();
-                    OnContentGUI ();
-                    
-                    EditorGUILayout.Space ();
-                }
+                OnContentGUI ();
+                EditorGUILayout.Space ();
             }
+
             EditorGUILayout.EndVertical ();
         }
 
@@ -52,13 +51,8 @@ namespace HierarchyDecorator
         /// </summary>
         protected bool IsShown()
         {
-            return isShown = EditorGUILayout.Foldout (isShown, content, true, Style.FoldoutHeaderStyle);
+            return serializedTab.isExpanded = EditorGUILayout.Foldout (serializedTab.isExpanded, content, true, Style.FoldoutHeaderStyle);
         }
-
-        /// <summary>
-        /// The title gui drawn, primarily to display a header of some form
-        /// </summary>
-        protected abstract void OnTitleGUI();
 
         /// <summary>
         /// The main content area for the settings

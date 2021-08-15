@@ -16,12 +16,10 @@ namespace HierarchyDecorator
     }
 
     [System.Serializable]
-    public class PrefixSettings
+    public class HierarchyStyle
     {
         public string prefix = "<PREFIX>";
-        public string name = "New Prefix";
-
-        [Space(19f)]
+        public string name = "New Style";
 
         public Font font = null;
 
@@ -35,7 +33,7 @@ namespace HierarchyDecorator
 
         // Constructor
 
-        public PrefixSettings()
+        public HierarchyStyle()
         {
             modes = new ModeOptions[]
             {
@@ -44,7 +42,7 @@ namespace HierarchyDecorator
             };
         }
 
-        public PrefixSettings(string prefix, string name, ModeOptions lightMode, ModeOptions darkMode)
+        public HierarchyStyle(string prefix, string name, ModeOptions lightMode, ModeOptions darkMode)
         {
             this.prefix = prefix;
             this.name = name;

@@ -44,8 +44,6 @@ namespace HierarchyDecorator
             SerializedProperty iterator = property.Copy ();
             SerializedProperty endProperty = iterator.GetEndProperty ();
 
-            EditorGUI.indentLevel++;
-
             bool enterChildren = true;
             while (iterator.NextVisible (enterChildren))
             {
@@ -72,8 +70,6 @@ namespace HierarchyDecorator
                 rect.y += height + 1;
                 enterChildren = false;
             }
-
-            EditorGUI.indentLevel--;
         }
     }
 }

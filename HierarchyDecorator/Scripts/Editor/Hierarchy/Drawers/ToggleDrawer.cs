@@ -5,7 +5,7 @@ using UnityEditor.Experimental.SceneManagement;
 
 namespace HierarchyDecorator
 {
-    internal class ToggleDrawer : HierarchyDrawer
+    public class ToggleDrawer : HierarchyDrawer
     {
         private const string TOGGLE_ON = "OL Toggle";
 
@@ -51,9 +51,9 @@ namespace HierarchyDecorator
 #endif
         }
 
-        protected override bool DrawerIsEnabled(Settings _settings)
+        protected override bool DrawerIsEnabled(Settings _settings, GameObject instace)
         {
-           return _settings.globalSettings.showActiveToggles && PrefabStageUtility.GetCurrentPrefabStage() == null;
+           return _settings.globalData.showActiveToggles && PrefabStageUtility.GetCurrentPrefabStage() == null;
         }
     }
 }

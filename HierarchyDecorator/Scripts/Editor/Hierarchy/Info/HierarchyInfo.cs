@@ -2,7 +2,7 @@
 
 namespace HierarchyDecorator
 {
-    internal abstract class HierarchyInfo : HierarchyDrawer
+    public abstract class HierarchyInfo : HierarchyDrawer
     {
         protected const int INDENT_SIZE = 16;
         protected static int IndentIndex;

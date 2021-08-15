@@ -2,7 +2,7 @@
 namespace HierarchyDecorator
 {
     [System.Serializable]
-    internal class GlobalSettings
+    public class GlobalData
     {
         public bool showActiveToggles = true;
         public bool showComponentIcons = true;
