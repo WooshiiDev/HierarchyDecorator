@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 
-public class ExampleScript : MonoBehaviour
+namespace HierarchyDecorator
 {
+    public class ExampleScript : MonoBehaviour
+    {
 
+    }
 }
