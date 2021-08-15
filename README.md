@@ -28,7 +28,7 @@
 Hierarchy Decorator is an extension for Unity 2018.4 and higher to support custom drawing within the Hierarchy window, and add extra information functionality. This provides easier and helpful structure to the Hierarchy without getting overly noisy or messy. 
 
 <p align="center">
-<img src="https://i.imgur.com/ATzBDoO.gif" alt="Unity Download Link">
+<img src="https://i.imgur.com/YCiU6zn.png" alt="Unity Download Link">
 </p>
 
 ## Installation
@@ -57,63 +57,74 @@ Net 4.0 is required to use this. This can be turned on in the **Player Settings*
 
 Currently, this is what Hierarchy Decorator does have
 |                            | Hierarchy Decorator  | Other Hierachy Extensions |
-| -------------------------- | :----------------: | :-------------: |
+| -------------------------- | :----------------: | :-------------:   |
 | Light/Dark Mode Support    |         ✔️         |        ✔️        |
-| Custom Headers/Seperators  |         ✔️         |        ✔️        |
-| Toggleable Settings        |         ✔️         |        ✔️        |
-| Custom Component Icons     |         ✔️         |        ✔️        |
-| Unity Component Icons      |         ✔️         |        ❌        |
+| Headers/Seperators         |         ✔️         |        ✔️        |
+| Toggleable Settings        |         ✔️         |        ❌        |
+| Custom Header Styles       |         ✔️         |        ❌        |
 | GameObject Layer Selector  |         ✔️         |        ❌        |
-
+| Unity Icon Selection       |         ✔️         |        ❌        |
+| Custom Icon Selection      |         ✔️         |        ❌        |
 
 These are currently future additions planned
 
 |                            | Hierarchy Decorator | Other Hierachy Extensions |
 | -------------------------- | :----------------:  | :-------------:   |
 | Hierarchy Breadcrumbs      |         Planned     |        ✔️        |
-| Custom Instance Icon       |         Planned     |        ✔️        |
-| More styling rules         |         Planned     |        ✔️        |
+| Hierarchy Folders          |         Planned     |        ✔️        |
+| Custom Instance Icons      |         Planned     |        ✔️        |
 | Rule-based Styling         |         Planned     |        ❌        |
-
-
+| External Package Support   |         Planned     |        ❌        |
+| Script Error/Warning Popup |         Planned     |        ❌        |
+| Undeletable Instances      |         Planned     |        ❌        |
+| Selectable Editor Flags    |         Planned     |        ❌        |
+| Hierarchy Comment Popups   |         Planned     |        ❌        |
 
 ## Settings
 <p align="center">
- <img src="https://i.imgur.com/TdLpPwZ.png" alt="Settings">
+ <img src="https://i.imgur.com/FeZaopz.png" alt="Settings">
 </p>
 
-There is a scriptable object that is required for hierarchy decorator to run. If it is deleted, another will be created in the base of your asset folder in `Assets/HierarchyDecorator/`. These settings are also accessible from the `Preference` window.
+There is a scriptable object that is required for hierarchy decorator to run. If it is deleted, another will be created in the base of your asset folder in `Assets/HierarchyDecorator/`. These settings are also accessible from `Preferences`.
 
 All settings enabled and disabled will reflect the Hierarchy instantly.
 <p>
  <h3>General Settings</h3>
 
- This section will contain all the general enabling/disabling of features and systems. In the future this may be redesigned or structured differently depending on the catergories required.
+This section will contain all the general enabling/disabling of features and systems. In the future this may be redesigned or structured differently depending on the catergories required.
  </p>
 </p>
 <p align="center">
- <img src="https://i.imgur.com/NRMCe40.png" alt="Global settings">
+ <img src="https://i.imgur.com/6J0Pw9a.png" alt="Global settings">
 </p>
 
 <p>
- <h3>Prefixes</h3>
+ <h3>Hierarchy Styles</h3>
  
- The Prefix tab controls the design of the headers and seperators for the hierarchy. Settings are seperate for light and dark mode, to provide convenience and accessibility.
+  The Style tab controls the design of the headers and seperators for the hierarchy. Colours are individual for light and dark mode providing accessibility.
  </p>
 </p>
 <p align="center">
- <img src="https://i.imgur.com/CclRJwN.png" alt="Prefix Settings">
+ <img src="https://i.imgur.com/6zfMz61.png" alt="Style Settings">
 </p>
  
 <p>
- <h3>Component Icons</h3>
+ <h3>Icons</h3>
  
  To provide selection and custom choice over what components will display in the inspector, here all icons that exist in your **current version** will appear in their specified catergories. Toggling the icons on or off will display them in the hierarchy on the right side, and you can also add your own MonoBehaviours for custom scripts.
- </p>
+</p>
 </p>
 <p align="center">
- <img src="https://i.imgur.com/TxJlvw5.png" alt="Component/Icon Settings">
+ <img src="https://i.imgur.com/Itr5KXX.png" alt="Component/Icon Settings">
 </p>
+<p>
+Icons for custom Monobehaviours or Non-UnityEngine types have their own tab and toggles so they can be added. 
+</p>
+<p align="center">
+ <img src="https://i.imgur.com/P3ftsD0.png" alt="Component/Icon Settings">
+</p>
+
+
 
 ## Support
 Please submit any queries, bugs or issues, to the [Issues](https://github.com/WooshiiDev/HierarchyDecorator/issues) page on this repository. All feedback is appreciated as it not just helps myself find problems I didn't otherwise see, but also helps improve the project. 
