@@ -195,6 +195,10 @@ namespace HierarchyDecorator
             {
                 alignment = TextAnchor.MiddleCenter,
                 fontSize = 9,
+                normal =
+                {
+                    textColor = new Color(0.6f, 0.6f, 0.6f)
+                }
             };
 
             ComponentIconStyle = new GUIStyle (EditorStyles.label)
