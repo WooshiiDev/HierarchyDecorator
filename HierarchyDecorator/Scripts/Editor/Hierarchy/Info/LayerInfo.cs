@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace HierarchyDecorator
 {
-    internal class LayerInfo : HierarchyInfo
+    public class LayerInfo : HierarchyInfo
     {
         protected override void DrawInfo(Rect rect, GameObject instance, Settings settings)
         {
             EditorGUI.LabelField (rect, LayerMask.LayerToName (instance.layer), Style.DropdownSmallStyle);
 
-            if (settings.globalSettings.editableLayers)
+            if (settings.globalData.editableLayers)
             {
                 Event e = Event.current;
                 bool hasClicked = rect.Contains (e.mousePosition) && e.type == EventType.MouseDown;
@@ -27,7 +27,7 @@ namespace HierarchyDecorator
                 }
 
                 GenericMenu menu = new GenericMenu ();
-                bool setChildLayers = settings.globalSettings.applyChildLayers;
+                bool setChildLayers = settings.globalData.applyChildLayers;
 
                 foreach (System.String layer in Constants.LayerMasks)
                 {
@@ -69,9 +69,14 @@ namespace HierarchyDecorator
             return 3;
         }
 
-        protected override bool DrawerIsEnabled(Settings settings)
+        protected override bool DrawerIsEnabled(Settings settings, GameObject instance)
         {
-            return settings.globalSettings.showLayers;
+            if (settings.styleData.HasStyle (instance.name) && !settings.styleData.displayLayers)
+            {
+                return false;
+            }
+
+            return settings.globalData.showLayers;
         }
     }
 }

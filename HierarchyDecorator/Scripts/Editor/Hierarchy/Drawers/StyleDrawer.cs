@@ -4,9 +4,7 @@ using Object = UnityEngine.Object;
 
 namespace HierarchyDecorator
 {
-    // TODO: [Wooshii] Need to check for use-cases, handle prefabs correctly
-
-    internal class StyleDrawer : HierarchyDrawer
+    public class StyleDrawer : HierarchyDrawer
     {
         private Transform firstTransform;
 
@@ -17,12 +15,8 @@ namespace HierarchyDecorator
         private Transform currentTransform;
         private Transform finalTransform;
 
-        protected override void DrawInternal(Rect rect, GameObject instance, Settings _settings)
+        protected override void DrawInternal(Rect rect, GameObject instance, Settings settings)
         {
-            // ==========================================================
-            // ======================= Assignment =======================
-            // ==========================================================
-
             currentTransform = instance.transform;
 
             // Draw previous transform
@@ -43,20 +37,16 @@ namespace HierarchyDecorator
                 firstTransform = currentTransform;
             }
 
-            // ==========================================================
-            // ======================= Background =======================
-            // ==========================================================
-
             // Draw style, and then drawn selection on top
             int instanceID = instance.GetInstanceID ();
             bool hasChildren = currentTransform.childCount > 0;
 
-            bool hasStyle = _settings.globalSettings.twoToneBackground;
+            bool hasStyle = settings.globalData.twoToneBackground;
 
             // Only draw the two tone background if there's no style override
-            if (_settings.globalSettings.twoToneBackground)
+            if (settings.globalData.twoToneBackground)
             {
-                DrawTwoToneContent (rect, instance, _settings);
+                DrawTwoToneContent (rect, instance, settings);
                 DrawSelection (rect, instanceID);
 
                 hasStyle = true;
@@ -64,72 +54,31 @@ namespace HierarchyDecorator
 
             // Draw the style if one is to be applied
             // Have to make sure selection colours are drawn on top when required too
-            if (_settings.prefixes.Count > 0 && TryGetStyle (instance, _settings, out PrefixSettings prefix))
+            if (settings.styleData.TryGetStyleFromPrefix (instance.name, out HierarchyStyle prefix))
             {
-                ApplyStyle (rect, instance, prefix, _settings);
+                Rect styleRect = (instance.transform.parent != null)
+                    ? rect
+                    : GetActualHierarchyWidth (rect);
+
+                HierarchyGUI.DrawHierarchyStyle (prefix, styleRect, rect, instance.name);
                 DrawSelection (rect, instanceID);
 
                 hasStyle = true;
             }
 
-            // ==========================================================
-            // =================== Previous Transform ===================
-            // ==========================================================
-
-            // Final Transform Draw
             if (hasStyle && hasChildren && currentTransform == finalTransform)
             {
                 DrawFoldout (rect, false);
             }
-
-            // ==========================================================
-            // ========================== Data ==========================
-            // ==========================================================
 
             previousRect = rect;
             previousTransform = currentTransform;
             previousNeedsFoldout = hasStyle && hasChildren;
         }
 
-        protected override bool DrawerIsEnabled(Settings _settings)
+        protected override bool DrawerIsEnabled(Settings _settings, GameObject instance)
         {
-            return _settings.prefixes.Count > 0 || _settings.globalSettings.twoToneBackground;
-        }
-
-        // Applying custom style
-
-        private void ApplyStyle(Rect rect, GameObject instance, PrefixSettings prefix, Settings settings)
-        {
-            int len = prefix.prefix.Length;
-            string name = instance.name.Trim ().Remove (0, len);
-
-            ModeOptions styleSetting = prefix.GetCurrentMode (EditorGUIUtility.isProSkin);
-
-            // =======================
-            // ===== Setup style =====
-            // =======================
-
-            Color backgroundColor = styleSetting.backgroundColour;
-            Color fontCol = styleSetting.fontColour;
-
-            //Create style to draw
-            Rect backgroundRect = GetActualHierarchyWidth (rect);
-            Rect labelRect = backgroundRect;
-
-            if (instance.transform.parent != null)
-            {
-                backgroundRect = rect;
-                labelRect = rect;
-            }
-
-            // ======================
-            // Draw header background
-            // ======================
-
-            EditorGUI.DrawRect (backgroundRect, backgroundColor);
-
-            //Draw twice to take into account full width draw
-            EditorGUI.LabelField (rect, name.ToUpper (), prefix.style);
+            return _settings.styleData.Count > 0 || _settings.globalData.twoToneBackground;
         }
 
         private void DrawFoldout(Rect rect, bool foldout)
@@ -246,24 +195,5 @@ namespace HierarchyDecorator
 
             return rect;
         }
-
-        private bool TryGetStyle(GameObject instance, Settings settings, out PrefixSettings prefix)
-        {
-            string nameStart = instance.name.TrimStart ().Split (' ')[0];
-
-            for (int i = 0; i < settings.prefixes.Count; i++)
-            {
-                prefix = settings.prefixes[i];
-
-                if (nameStart.Equals (prefix.prefix))
-                {
-                    return true;
-                }
-            }
-
-            prefix = null;
-            return false;
-        }
-
     }
 }

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace HierarchyDecorator
 {
-    internal class ComponentIconInfo : HierarchyInfo
+    public class ComponentIconInfo : HierarchyInfo
     {
         private List<Type> componentTypes = new List<Type> ();
 
@@ -15,9 +15,14 @@ namespace HierarchyDecorator
             return componentTypes.Count;
         }
 
-        protected override bool DrawerIsEnabled(Settings settings)
+        protected override bool DrawerIsEnabled(Settings settings, GameObject instance)
         {
-            return settings.globalSettings.showComponentIcons;
+            if (settings.styleData.HasStyle (instance.name) && !settings.styleData.displayIcons)
+            {
+                return false;
+            }
+
+            return settings.globalData.showComponentIcons;
         }
 
         protected override void DrawInfo(Rect rect, GameObject instance, Settings settings)
@@ -56,10 +61,10 @@ namespace HierarchyDecorator
         {
             Type type = component.GetType ();
 
-            if (!settings.globalSettings.showAllComponents)
+            if (!settings.globalData.showAllComponents)
             {
                 // Find custom component
-                if (!settings.FindCustomComponentFromType (type, out CustomComponentType componentType))
+                if (!settings.componentData.FindCustomComponentFromType (type, out CustomComponentType componentType))
                 {
                     return;
                 }
@@ -86,13 +91,13 @@ namespace HierarchyDecorator
         private void DrawComponent(Rect rect, Type type, GameObject instance, Settings settings)
         {
             // Need to check for specifics if globally all components are not on
-            if (!settings.globalSettings.showAllComponents)
+            if (!settings.globalData.showAllComponents)
             {
-                ComponentType componentType = settings.unityComponents.FirstOrDefault (t => t.type == type);
+                ComponentType componentType = settings.componentData.unityComponents.FirstOrDefault (t => t.type == type);
 
                 if (componentType == null)
                 {
-                    componentType = settings.customComponents.FirstOrDefault (t => t.type == type);
+                    componentType = settings.componentData.customComponents.FirstOrDefault (t => t.type == type);
                 }
 
                 if (componentType == null || !componentType.shown)
@@ -123,6 +128,7 @@ namespace HierarchyDecorator
             content.tooltip = type.Name;
             content.text = "";
 
+            //GUI.DrawTexture (rect, content.image, ScaleMode.ScaleToFit);
             GUI.Label (rect, content, Style.ComponentIconStyle);
         }
     }
