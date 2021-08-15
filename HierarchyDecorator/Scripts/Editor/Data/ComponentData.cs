@@ -7,14 +7,19 @@ namespace HierarchyDecorator
     [System.Serializable]
     public class ComponentData
     {
-        private string unityVersion;
-        private bool isDirty;
+        public bool showMissingScriptsWarning;
 
-        private Type[] allTypes;
-
+        // Collecitons
         public List<ComponentType> unityComponents = new List<ComponentType> ();
         public List<CustomComponentType> customComponents = new List<CustomComponentType> ();
 
+        // Component Checks
+        private string unityVersion;
+        private bool isDirty;
+
+        // Reflected Types
+        private Type[] allTypes;
+     
         public ComponentData()
         {
             unityComponents = new List<ComponentType> ();

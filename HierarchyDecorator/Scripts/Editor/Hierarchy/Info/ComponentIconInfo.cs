@@ -9,6 +9,11 @@ namespace HierarchyDecorator
     public class ComponentIconInfo : HierarchyInfo
     {
         private List<Type> componentTypes = new List<Type> ();
+        private Component[] components;
+
+        private bool hasInvalidType;
+
+        private GUIContent warningGUI = EditorGUIUtility.IconContent ("warning");
 
         protected override int GetGridCount()
         {
@@ -28,15 +33,23 @@ namespace HierarchyDecorator
         protected override void DrawInfo(Rect rect, GameObject instance, Settings settings)
         {
             componentTypes.Clear ();
+            components = instance.GetComponents<Component> ();
 
-            Component[] components = instance.GetComponents<Component> ();
             for (int i = components.Length; i-- > 0;)
             {
-                var component = components[i];
+                Component component = components[i];
 
                 if (component == null)
                 {
-                    continue;
+                    if (settings.componentData.showMissingScriptsWarning)
+                    {
+                        DrawMissingComponent (rect);
+                        return;
+                    }
+                    else
+                    {
+                        continue;
+                    }
                 }
 
                 Type type = component.GetType ();
@@ -119,17 +132,35 @@ namespace HierarchyDecorator
 
         private void DrawComponentIcon(Rect rect, GUIContent content, Type type)
         {
-            // Move to left-most side possible, then move along rows
-            rect.x += rect.width;
-            rect.x -= INDENT_SIZE * GetGridCount ();
-
-            rect.width = rect.height = INDENT_SIZE;
+            rect = GetIconPosition (rect);
 
             content.tooltip = type.Name;
             content.text = "";
 
             //GUI.DrawTexture (rect, content.image, ScaleMode.ScaleToFit);
             GUI.Label (rect, content, Style.ComponentIconStyle);
+        }
+
+        private void DrawMissingComponent(Rect rect)
+        {
+            rect = GetIconPosition (rect, true);
+
+            warningGUI.text = "";
+
+            GUI.Label (rect, warningGUI, Style.ComponentIconStyle);
+        }
+
+        private Rect GetIconPosition(Rect rect, bool isInvalid = false)
+        {
+            int gridCount = isInvalid ? GetGridCount () + 1 : GetGridCount ();
+
+            // Move to left-most side possible, then move along rows
+            rect.x += rect.width;
+            rect.x -= INDENT_SIZE * gridCount;
+
+            rect.width = rect.height = INDENT_SIZE;
+
+            return rect;
         }
     }
 }
