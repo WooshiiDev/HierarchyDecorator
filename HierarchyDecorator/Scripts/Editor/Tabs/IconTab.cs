@@ -29,6 +29,7 @@ namespace HierarchyDecorator
 
         // References
         private readonly SerializedProperty showAllProperty;
+        private readonly SerializedProperty showMissingProperty;
 
         private readonly SerializedProperty serializedCustomComponents;
         private readonly SerializedProperty serializedUnityComponents;
@@ -44,6 +45,7 @@ namespace HierarchyDecorator
         {
             // Setup References
             showAllProperty = serializedSettings.FindProperty ("globalData.showAllComponents");
+            showMissingProperty = serializedTab.FindPropertyRelative ("showMissingScriptsWarning");
 
             serializedUnityComponents = serializedTab.FindPropertyRelative ("unityComponents");
             serializedCustomComponents = serializedTab.FindPropertyRelative ("customComponents");
@@ -113,8 +115,16 @@ namespace HierarchyDecorator
             bool canHaveColumns = currentViewWidth > 500f;
             float horizIconWidth = (currentViewWidth * 0.75f) * 0.45f;
 
-            GUILayout.Label ("Select a category for components", EditorStyles.largeLabel);
-            GUIHelper.LineSpacer ();
+            EditorGUILayout.Space ();
+
+            EditorGUI.BeginChangeCheck ();
+            EditorGUILayout.PropertyField (showMissingProperty);
+            if (EditorGUI.EndChangeCheck ())
+            {
+                serializedSettings.ApplyModifiedProperties ();
+            }
+
+            EditorGUILayout.Space ();
 
             EditorGUILayout.BeginHorizontal (GUILayout.MaxWidth (currentViewWidth));
             {
