@@ -153,11 +153,6 @@ namespace HierarchyDecorator
                 style.normal.textColor = Color.white;
             }
 
-            if (!instance.activeInHierarchy)
-            {
-                style.normal.textColor = (prefabObj != null) ? Constants.InactivePrefabColour : Color.gray;
-            }
-
             Vector2 originalIconSize = EditorGUIUtility.GetIconSize ();
             EditorGUIUtility.SetIconSize (Vector2.one * rect.height);
 
@@ -168,6 +163,11 @@ namespace HierarchyDecorator
 
             EditorGUI.LabelField (rect, instance.name, style);
             EditorGUIUtility.SetIconSize (originalIconSize);
+
+            if (!instance.activeInHierarchy)
+            {
+                Handles.DrawSolidRectangleWithOutline (twoToneRect, Constants.InactiveColour, Constants.InactiveColour);
+            }
         }
 
         // Helpers

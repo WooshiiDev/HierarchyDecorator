@@ -43,7 +43,7 @@ namespace HierarchyDecorator
         /// <summary>
         /// The Standard Inactive Colour
         /// </summary>
-        public readonly static Color InactiveColour = new Color (0.9f, 0.9f, 0.9f, 0.4f);
+        public readonly static Color InactiveColour = new Color (0.20f, 0.20f, 0.20f, 0.3f);
 
         /// <summary>
         /// The Standard Inactive Prefab Colour
