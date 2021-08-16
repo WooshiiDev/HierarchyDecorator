@@ -1,5 +1,8 @@
+<h2 align="center">
+Please note this is still in development! Check <a href="https://github.com/WooshiiDev/HierarchyDecorator/issues">Issues</a> for any current support issues or bugs that may exist!
+</h2>
+
 <h1 align="center">  
- <br>
  <img src="https://wooshii.dev/img/work/hierarchydecorator.png">
  Hierarchy Decorator
 </h1>
