@@ -83,7 +83,7 @@ namespace HierarchyDecorator
 
         private void DrawFoldout(Rect rect, bool foldout)
         {
-            EditorGUI.Foldout (GetToggleRect (rect), foldout, GUIContent.none);
+            GUI.Toggle (GetToggleRect (rect), foldout, GUIContent.none, EditorStyles.foldout);
         }
 
         private void DrawSelection(Rect rect, int instanceID)
