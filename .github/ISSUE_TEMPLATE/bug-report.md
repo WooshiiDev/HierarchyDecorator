@@ -7,7 +7,8 @@ assignees: WooshiiDev
 
 ---
 
-Unity Version
+**Current Unity version used**
+Please specify the Unity version.
 
 **Describe the bug**
 A clear and concise description of what the bug is.
