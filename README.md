@@ -7,7 +7,10 @@ Please note this is still in development! Check <a href="https://github.com/Woos
  Hierarchy Decorator
 </h1>
 
-<h4 align="center"> Unity editor extension adding requirements the hierarchy is missing.<br>Fully Customizable. Fully Editable.</h4>
+<h4 align="center"> Unity Editor Plugin turning the Hierarchy into what it should be. <br><br>
+ 
+ Fully Customisable. <br>
+ Completely Editable.</h4>
 
 <p align="center">
  <a href="https://unity3d.com/get-unity/download">
@@ -143,7 +146,6 @@ Reach out to me or see my other work through:
 HierarchyDecorator will be and always has been developed in my free time, and there are many more features I'd like to include. If you would to support me, you can do so below:
 
 [![PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://paypal.me/Wooshii?locale.x=en_GB)
-[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/L3L026UOE)
 
 Development will be continued with this and will forever stay public and free.
 
