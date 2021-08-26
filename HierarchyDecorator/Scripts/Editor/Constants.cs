@@ -134,6 +134,20 @@ namespace HierarchyDecorator
                 return isEvenRow ? lightModeEvenColor : lightModeOddColor;
             }
         }
+
+        public static Color GetTwoToneColour(int rowIndex)
+        {
+            bool isEvenRow = rowIndex % 2 != 0;
+
+            if (EditorGUIUtility.isProSkin)
+            {
+                return isEvenRow ? darkModeEvenColor : darkModeOddColor;
+            }
+            else
+            {
+                return isEvenRow ? lightModeEvenColor : lightModeOddColor;
+            }
+        }
     }
 
     internal static class Textures
