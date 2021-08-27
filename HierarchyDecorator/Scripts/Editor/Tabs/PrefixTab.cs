@@ -46,16 +46,10 @@ namespace HierarchyDecorator
                 var style = serializedStyles.GetArrayElementAtIndex (i);
                 var temp = style.isExpanded;
                 style.isExpanded = false;
-
-                style.serializedObject.Update ();
-
-                style.isExpanded = temp;
             }
 #endif
 
             styleGlobalSettings = new SettingGroup ("Style Global Features", "displayLayers", "displayIcons");
-
-
         }
 
         /// <summary>
