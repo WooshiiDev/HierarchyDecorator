@@ -1,7 +1,7 @@
 {
   "name": "com.wooshii.hierarchydecorator",
   "displayName": "HierarchyDecorator",
-  "version": "0.8.4",
+  "version": "0.8.3",
   "unity": "2018.4",
   "description": "HierarchyDecorator is an extension for the Unity Hierarchy enhancing it's utility.",
   "keywords": [
