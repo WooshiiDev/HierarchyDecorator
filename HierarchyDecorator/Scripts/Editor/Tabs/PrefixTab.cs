@@ -316,15 +316,18 @@ namespace HierarchyDecorator
 
         private Rect GetStyleRect(Rect rect)
         {
+
 #if UNITY_2021_1_OR_NEWER
-
             rect.x += 1f;
-            rect.y += 2f;
-
-            rect.height = 18f;
             rect.width -= 40f;
+
+            rect.y += 2f;
+            rect.height = 18f;
 #else
-            styleRect.y++;
+            rect.width -= 39f;
+
+            rect.height = 17f;
+            rect.y++;
 #endif
 
             return rect;
@@ -332,13 +335,18 @@ namespace HierarchyDecorator
 
         private Rect GetStyleLabelRect(Rect rect)
         {
-#if UNITY_2021_1_OR_NEWER
-            rect.x += 20f;
-#endif
             rect.height = 19f;
-            rect.width -= 64f;
+            rect.width -= 40f;
 
+#if UNITY_2021_1_OR_NEWER
             rect.y++;
+            rect.x += 20f;
+#else
+            rect.y -= 1f;
+            rect.x += 4f;
+#endif
+
+            //EditorGUI.DrawRect (rect, Color.white);
 
             return rect;
         }
@@ -351,7 +359,10 @@ namespace HierarchyDecorator
             rect.width = 19f;
 
             rect.x += 2f;
+
+#if UNITY_2021_1_OR_NEWER
             rect.y += 2f;
+#endif
 
             return rect;
         }
@@ -372,7 +383,7 @@ namespace HierarchyDecorator
             rect.x += 1f;
             rect.width -= 40f;
 #else
-            styleRect.y++;
+            rect.y++;
 #endif
             rect.height -= 18f;
             rect.y -= 3f;
