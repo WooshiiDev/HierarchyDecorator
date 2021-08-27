@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 using UnityEditor;
-using UnityEditor.Callbacks;
+using UnityEngine;
 
 namespace HierarchyDecorator
 {
@@ -49,19 +48,18 @@ namespace HierarchyDecorator
                 return;
             }
 
-#if UNITY_2019_1_OR_NEWER
-            selectionRect.height = 16f;
-#endif
-
-            GameObject instance = EditorUtility.InstanceIDToObject (instanceID) as GameObject;
-
             // Skip over the instance 
             // - normally if it's a Scene instance rather than a GameObject
-
+            GameObject instance = EditorUtility.InstanceIDToObject (instanceID) as GameObject;
+            
             if (instance == null)
             {
                 return;
             }
+
+#if UNITY_2019_1_OR_NEWER
+            selectionRect.height = 16f;
+#endif
 
             // Draw GUI
 
@@ -84,7 +82,7 @@ namespace HierarchyDecorator
         /// Load the asset for settings, or create one if it doesn't already exist
         /// </summary>
         /// <returns>The loaded settings</returns>
-        internal static Settings GetOrCreateSettings()
+        public static Settings GetOrCreateSettings()
         {
             string path = null;
 
@@ -115,7 +113,7 @@ namespace HierarchyDecorator
         /// Convert into serialized object for handling GUI
         /// </summary>
         /// <returns>Serialized version of the settings</returns>
-        internal static SerializedObject GetSerializedSettings()
+        public static SerializedObject GetSerializedSettings()
         {
             return new SerializedObject (GetOrCreateSettings ());
         }

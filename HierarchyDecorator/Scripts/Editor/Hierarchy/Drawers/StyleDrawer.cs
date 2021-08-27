@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -15,35 +16,73 @@ namespace HierarchyDecorator
         private Transform currentTransform;
         private Transform finalTransform;
 
+        private int instanceIndex;
+
+        private List<int> validFoldoutCache = new List<int>();
+        private Dictionary<int, bool> foldoutCache = new Dictionary<int, bool> ();
+
         protected override void DrawInternal(Rect rect, GameObject instance, Settings settings)
         {
             currentTransform = instance.transform;
 
-            // Draw previous transform
-            if (previousNeedsFoldout && previousTransform)
-            {
-                DrawFoldout (previousRect, currentTransform.parent == previousTransform);
-            }
-
             // We've went back to the start
             if (firstTransform == currentTransform)
             {
+                // Safe to assume the previous instance was the final
                 finalTransform = previousTransform;
+
+                // Find all invalid keys...
+                //... remove all of them
+                List<int> invalidKeys = new List<int> ();
+                foreach (var key in foldoutCache.Keys)
+                {
+                    if (!validFoldoutCache.Contains(key))
+                    {
+                        invalidKeys.Add (key);
+                    }
+                }
+
+                for (int i = 0; i < invalidKeys.Count; i++)
+                {
+                    foldoutCache.Remove (invalidKeys[i]);
+                }
+
+                // Clear the valid cache for the next check
+                validFoldoutCache.Clear ();
             }
 
             // First transform will have the lowest index and no parent
             if (currentTransform.parent == null && currentTransform.GetSiblingIndex () == 0)
             {
                 firstTransform = currentTransform;
+                instanceIndex = 0;
+            }
+
+            // Draw previous transform
+            if (previousTransform != null)
+            {
+                int previousInstanceID = previousTransform.GetInstanceID ();
+
+                if (previousNeedsFoldout)
+                {
+                    foldoutCache[previousInstanceID] = currentTransform.parent == previousTransform;
+                }
+                else
+                if (foldoutCache.ContainsKey (previousInstanceID))
+                {
+                    foldoutCache.Remove (previousInstanceID);
+                }
             }
 
             // Draw style, and then drawn selection on top
-            int instanceID = instance.GetInstanceID ();
+
+            int instanceID = currentTransform.GetInstanceID ();
             bool hasChildren = currentTransform.childCount > 0;
 
             bool hasStyle = settings.globalData.twoToneBackground;
 
             // Only draw the two tone background if there's no style override
+
             if (settings.globalData.twoToneBackground)
             {
                 DrawTwoToneContent (rect, instance, settings);
@@ -54,6 +93,7 @@ namespace HierarchyDecorator
 
             // Draw the style if one is to be applied
             // Have to make sure selection colours are drawn on top when required too
+
             if (settings.styleData.TryGetStyleFromPrefix (instance.name, out HierarchyStyle prefix))
             {
                 Rect styleRect = (instance.transform.parent != null)
@@ -66,14 +106,29 @@ namespace HierarchyDecorator
                 hasStyle = true;
             }
 
-            if (hasStyle && hasChildren && currentTransform == finalTransform)
-            {
-                DrawFoldout (rect, false);
-            }
+            // Cache values for next instance
 
             previousRect = rect;
             previousTransform = currentTransform;
             previousNeedsFoldout = hasStyle && hasChildren;
+
+            // Draw foldout on top if required
+
+            if (previousNeedsFoldout)
+            {
+                if (foldoutCache.ContainsKey (instanceID))
+                {
+                    DrawFoldout (rect, foldoutCache[instanceID]);
+                }
+                else
+                {
+                    foldoutCache.Add (instanceID, false);
+                }
+
+                validFoldoutCache.Add (instanceID);
+            }
+
+            instanceIndex++;
         }
 
         protected override bool DrawerIsEnabled(Settings _settings, GameObject instance)
@@ -81,10 +136,30 @@ namespace HierarchyDecorator
             return _settings.styleData.Count > 0 || _settings.globalData.twoToneBackground;
         }
 
+        // Standards
+
+        private GUIContent GetStandardContent(Rect rect, GameObject instance, bool isPrefab)
+        {
+            string contentType = "";
+
+            if (isPrefab)
+            {
+                contentType = "Prefab Icon";
+            }
+            else
+            {
+                contentType = "GameObject Icon";
+            }
+
+            return EditorGUIUtility.IconContent (contentType);
+        }
+
         private void DrawFoldout(Rect rect, bool foldout)
         {
             GUI.Toggle (GetToggleRect (rect), foldout, GUIContent.none, EditorStyles.foldout);
         }
+
+        // Rect GUI
 
         private void DrawSelection(Rect rect, int instanceID)
         {
@@ -107,62 +182,8 @@ namespace HierarchyDecorator
         {
             Rect twoToneRect = GetActualHierarchyWidth (rect);
 
-            Handles.BeginGUI ();
-            Handles.DrawSolidRectangleWithOutline (twoToneRect, Constants.GetTwoToneColour (rect), Color.clear);
-            Handles.EndGUI ();
-
-            // Draw standard content on top of drawn background
-
-            GUIContent content = new GUIContent ();
-
-            Object prefabObj = PrefabUtility.GetPrefabInstanceHandle (instance);
-
-            if (prefabObj != null)
-            {
-                if (PrefabUtility.GetNearestPrefabInstanceRoot (instance) == instance)
-                {
-                    content.image = EditorGUIUtility.IconContent ("Prefab Icon").image;
-
-                    Rect iconRect = rect;
-                    iconRect.x = rect.width + rect.x;
-                    iconRect.width = rect.height;
-
-                    GUI.DrawTexture (iconRect, EditorGUIUtility.IconContent ("tab_next").image, ScaleMode.ScaleToFit);
-                }
-                else
-                {
-                    content.image = EditorGUIUtility.IconContent ("GameObject Icon").image;
-                }
-            }
-            else
-            {
-                content.image = EditorGUIUtility.IconContent ("GameObject Icon").image;
-            }
-
-            GUIStyle style = new GUIStyle (Style.ComponentIconStyle);
-
-            if (prefabObj != null)
-            {
-                style.normal.textColor = (EditorGUIUtility.isProSkin)
-                    ? new Color (0.48f, 0.67f, 0.95f, 1f)
-                    : new Color (0.1f, 0.3f, 0.7f, 1f);
-            }
-
-            if (Selection.Contains (instance))
-            {
-                style.normal.textColor = Color.white;
-            }
-
-            Vector2 originalIconSize = EditorGUIUtility.GetIconSize ();
-            EditorGUIUtility.SetIconSize (Vector2.one * rect.height);
-
-            EditorGUI.LabelField (rect, content, style);
-
-            rect.x += 18f;
-            rect.y--;
-
-            EditorGUI.LabelField (rect, instance.name, style);
-            EditorGUIUtility.SetIconSize (originalIconSize);
+            Handles.DrawSolidRectangleWithOutline (twoToneRect, Constants.GetTwoToneColour (instanceIndex), Color.clear);
+            HierarchyGUI.DrawStandardContent (rect, instance);
 
             if (!instance.activeInHierarchy)
             {

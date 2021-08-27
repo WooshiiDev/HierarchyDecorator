@@ -22,7 +22,7 @@ namespace HierarchyDecorator
         {
             serializedStyles = serializedTab.FindPropertyRelative ("styles");
 
-            styleList = new ReorderableList (serializedSettings, serializedStyles)
+            styleList = new ReorderableList (serializedSettings, serializedStyles, true, false, false, false)
             {
                 drawHeaderCallback = DrawHeader,
                 drawFooterCallback = DrawFooter,
@@ -36,11 +36,18 @@ namespace HierarchyDecorator
                 headerHeight = 0,
                 footerHeight = 19f,
 
-                showDefaultBackground = false,
-                draggable = true,
-                displayAdd = false,
-                displayRemove = false
+                showDefaultBackground = false
             };
+
+            // Fix for Unity 2021.X for buggy unexpanded list elements
+#if UNITY_2021_1_OR_NEWER
+            for (int i = 0; i < serializedStyles.arraySize; i++)
+            {
+                var style = serializedStyles.GetArrayElementAtIndex (i);
+                var temp = style.isExpanded;
+                style.isExpanded = false;
+            }
+#endif
 
             styleGlobalSettings = new SettingGroup ("Style Global Features", "displayLayers", "displayIcons");
         }
@@ -61,6 +68,7 @@ namespace HierarchyDecorator
 
             EditorGUILayout.Space ();
             EditorGUILayout.LabelField ("Hierarchy Styles", EditorStyles.boldLabel);
+
             styleList.DoLayoutList ();
         }
 
@@ -73,6 +81,7 @@ namespace HierarchyDecorator
 
         private void DrawStyleElements(Rect rect, int index, bool isActive, bool isFocused)
         {
+
             rect.x += 3f;
             rect.width -= 3f;
 
@@ -96,22 +105,11 @@ namespace HierarchyDecorator
                 return;
             }
 
-            // Handle Foldout - the foldout doesn't need to stretch the entire height
             rect.y--;
-            Rect foldoutRect = rect;
-            foldoutRect.height = 19f;
-            foldoutRect.width -= 49f;
 
-            Rect labelRect = foldoutRect;
-            labelRect.width += 10f;
-            labelRect.height -= 2f;
-
-            // Likewise with the style and the label
-            Rect styleRect = labelRect;
-            styleRect.y++;
-
-            foldoutRect.x += 2;
-            foldoutRect.width = 19f;
+            Rect foldoutRect = GetFoldoutRect(rect);
+            Rect labelRect = GetStyleLabelRect(rect);
+            Rect styleRect = GetStyleRect(rect);
 
             EditorGUI.BeginChangeCheck ();
             {
@@ -120,9 +118,7 @@ namespace HierarchyDecorator
                 // Use GUI over EditorGUI due to overlapping on draggable
                 style.isExpanded = GUI.Toggle (foldoutRect, style.isExpanded, "", EditorStyles.foldout);
 
-                Rect propertyRect = rect;
-                propertyRect.y += 21f;
-                propertyRect.width -= 49f;
+                Rect propertyRect = GetStylePropertyRect (rect);
 
                 if (style.isExpanded)
                 {
@@ -172,7 +168,7 @@ namespace HierarchyDecorator
             // Draw optionals
             if (GUI.Button (rect, "Add New Style", Style.CenteredBoldLabel))
             {
-                serializedTab.InsertArrayElementAtIndex (serializedTab.arraySize);
+                serializedStyles.InsertArrayElementAtIndex (serializedStyles.arraySize);
                 serializedSettings.ApplyModifiedProperties ();
                 serializedSettings.Update ();
             }
@@ -295,9 +291,99 @@ namespace HierarchyDecorator
 
         // Rect Helpers
 
-        private Rect GetFullWidthInspector(Rect rect)
+        // --- Style Rects
+
+        private Rect GetStylePropertyRect(Rect rect)
         {
-            rect.x = 8f;
+#if UNITY_2021_1_OR_NEWER
+            rect.y += 23f;
+            rect.x += 16f;
+
+            rect.width -= 64f;
+#else
+            rect.y += 21f;
+            rect.width -= 50f;
+#endif
+
+            return rect;
+        }
+
+        private Rect GetStyleRect(Rect rect)
+        {
+
+#if UNITY_2021_1_OR_NEWER
+            rect.x += 1f;
+            rect.width -= 40f;
+
+            rect.y += 2f;
+            rect.height = 18f;
+#else
+            rect.width -= 39f;
+
+            rect.height = 17f;
+            rect.y++;
+#endif
+
+            return rect;
+        }
+
+        private Rect GetStyleLabelRect(Rect rect)
+        {
+            rect.height = 19f;
+
+#if UNITY_2021_1_OR_NEWER
+            rect.y++;
+
+            rect.x += 20f;
+            rect.width -= 64f;
+#else
+            rect.y -= 1f;
+
+            rect.x += 4f;
+            rect.width -= 48f;
+#endif
+
+            //EditorGUI.DrawRect (rect, Color.white);
+
+            return rect;
+        }
+
+        // --- Other GUI Rect
+
+        private Rect GetFoldoutRect(Rect rect)
+        {
+            rect.height = 19f;
+            rect.width = 19f;
+
+            rect.x += 2f;
+
+#if UNITY_2021_1_OR_NEWER
+            rect.y += 2f;
+#endif
+
+            return rect;
+        }
+
+        private Rect GetRemoveButtonRect(Rect rect)
+        {
+            rect.x = rect.width + 6f;
+            rect.width = 48f;
+            rect.height = 18f;
+
+            return rect;
+        }
+
+        private Rect GetBoxRect(Rect rect)
+        {
+       
+#if UNITY_2021_1_OR_NEWER
+            rect.x += 1f;
+            rect.width -= 40f;
+#else
+            rect.y++;
+#endif
+            rect.height -= 18f;
+            rect.y -= 3f;
 
             return rect;
         }
