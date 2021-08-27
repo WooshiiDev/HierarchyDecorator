@@ -336,7 +336,7 @@ namespace HierarchyDecorator
         private Rect GetStyleLabelRect(Rect rect)
         {
             rect.height = 19f;
-            rect.width -= 40f;
+            rect.width -= 48f;
 
 #if UNITY_2021_1_OR_NEWER
             rect.y++;
