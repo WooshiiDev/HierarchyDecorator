@@ -336,14 +336,17 @@ namespace HierarchyDecorator
         private Rect GetStyleLabelRect(Rect rect)
         {
             rect.height = 19f;
-            rect.width -= 48f;
 
 #if UNITY_2021_1_OR_NEWER
             rect.y++;
+
             rect.x += 20f;
+            rect.width -= 64f;
 #else
             rect.y -= 1f;
+
             rect.x += 4f;
+            rect.width -= 48f;
 #endif
 
             //EditorGUI.DrawRect (rect, Color.white);
