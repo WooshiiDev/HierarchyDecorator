@@ -182,7 +182,7 @@ namespace HierarchyDecorator
         {
             Rect twoToneRect = GetActualHierarchyWidth (rect);
 
-            Handles.DrawSolidRectangleWithOutline (twoToneRect, Constants.GetTwoToneColour (instanceIndex), Color.clear);
+            Handles.DrawSolidRectangleWithOutline (twoToneRect, HierarchyGUI.GetTwoToneColour (instanceIndex), Color.clear);
             HierarchyGUI.DrawStandardContent (rect, instance);
 
             if (!instance.activeInHierarchy)

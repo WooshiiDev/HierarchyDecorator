@@ -33,7 +33,7 @@ namespace HierarchyDecorator
         public void OnGUI()
         {
 #if UNITY_2019_1_OR_NEWER
-            EditorGUILayout.BeginVertical (Style.TabBackgroundStyle, GUILayout.MinHeight (32f));
+            EditorGUILayout.BeginVertical (Style.TabBackground, GUILayout.MinHeight (32f));
 #else
             EditorGUILayout.BeginVertical (Style.TabBackgroundStyle, GUILayout.MinHeight (16f));
 #endif
@@ -51,7 +51,7 @@ namespace HierarchyDecorator
         /// </summary>
         protected bool IsShown()
         {
-            return serializedTab.isExpanded = EditorGUILayout.Foldout (serializedTab.isExpanded, content, true, Style.FoldoutHeaderStyle);
+            return serializedTab.isExpanded = EditorGUILayout.Foldout (serializedTab.isExpanded, content, true, Style.FoldoutHeader);
         }
 
         /// <summary>

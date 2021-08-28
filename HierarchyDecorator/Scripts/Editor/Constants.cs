@@ -7,11 +7,9 @@ namespace HierarchyDecorator
     [InitializeOnLoad]
     public static class Constants
     {
-        // ====== Prefs ======
+        // ====== Settings Strings ======
 
         public const string PREF_GUID = "HD_GUID";
-
-        // ====== Path ======
 
         public const string SETTINGS_PATH = "Hierarchy Decorator";
 
@@ -22,42 +20,24 @@ namespace HierarchyDecorator
 
         // ------ Two Tone Colours ------
 
-        public readonly static Color darkModeEvenColor = new Color (0.25f, 0.25f, 0.25f, 1f);
-        public readonly static Color darkModeOddColor = new Color (0.225f, 0.225f, 0.225f, 1f);
+        public readonly static Color DarkModeEvenColor = new Color (0.25f, 0.25f, 0.25f, 1f);
+        public readonly static Color DarkModeOddColor = new Color (0.225f, 0.225f, 0.225f, 1f);
 
-        public readonly static Color lightModeEvenColor = new Color (0.8f, 0.8f, 0.8f, 1f);
-        public readonly static Color lightModeOddColor = new Color (0.765f, 0.765f, 0.765f, 1f);
+        public readonly static Color LightModeEvenColor = new Color (0.8f, 0.8f, 0.8f, 1f);
+        public readonly static Color LightModeOddColor = new Color (0.765f, 0.765f, 0.765f, 1f);
 
         // ------ Standard Colours ------
 
-        /// <summary>
-        /// The Standard Selection Colour
-        /// </summary>
         public readonly static Color SelectionColour = new Color (58f / 255f, 178f / 255f, 178f / 255f, 1);
-
-        /// <summary>
-        /// The Standard Hover Colour
-        /// </summary>
+    
         public readonly static Color HoverColour = new Color (150f / 255f, 150f / 255f, 150f / 255f, 1);
 
-        /// <summary>
-        /// The Standard Inactive Colour
-        /// </summary>
         public readonly static Color InactiveColour = new Color (0.20f, 0.20f, 0.20f, 0.3f);
 
-        /// <summary>
-        /// The Standard Inactive Prefab Colour
-        /// </summary>
         public readonly static Color InactivePrefabColour = new Color (0.48f, 0.67f, 0.95f, 0.6f);
 
-        /// <summary>
-        /// The Standard Dark Background Colour
-        /// </summary>
         public readonly static Color DarkBackgroundColour = new Color (0.219f, 0.219f, 0.219f);
 
-        /// <summary>
-        /// The Standard Light Background Colour
-        /// </summary>
         public readonly static Color LightBackgroundColour = new Color (0.8f, 0.8f, 0.8f, 1);
 
         public static Color DefaultBackgroundColor => EditorGUIUtility.isProSkin ? DarkBackgroundColour : LightBackgroundColour;
@@ -69,25 +49,6 @@ namespace HierarchyDecorator
 
         //====== Editor Settings ======
 
-        public readonly static string[] componentKeywords =
-        {
-            "2D",
-
-            "Anim",
-            "Audio",
-
-            "Collider",
-
-            "Joint",
-
-            "Nav",
-            "Network",
-
-            "Mesh",
-
-            "Renderer",
-        };
-
         public readonly static CategoryFilter[] ComponentFilters =
         {
             new CategoryFilter ("2D", "2D", FilterType.NAME),
@@ -98,9 +59,6 @@ namespace HierarchyDecorator
 
             // Audio
             new CategoryFilter ("Audio", "Audio", FilterType.NAME),
-
-            // Colliders
-            //new CategoryFilter ("Collider", "Collider", FilterType.NAME),
 
             // Mesh
             new CategoryFilter ("Mesh", "Renderer", FilterType.NAME),
@@ -118,36 +76,6 @@ namespace HierarchyDecorator
             new CategoryFilter ("UI", "UnityEngine.EventSystems.UIBehaviour, UnityEngine.UI", FilterType.TYPE),
             new CategoryFilter ("UI", "UnityEngine.GUIElement, UnityEngine", FilterType.TYPE)
         };
-
-        // Helper Methods
-
-        public static Color GetTwoToneColour(Rect selectionRect)
-        {
-            bool isEvenRow = selectionRect.y % 32 != 0;
-
-            if (EditorGUIUtility.isProSkin)
-            {
-                return isEvenRow ? darkModeEvenColor: darkModeOddColor;
-            }
-            else
-            {
-                return isEvenRow ? lightModeEvenColor : lightModeOddColor;
-            }
-        }
-
-        public static Color GetTwoToneColour(int rowIndex)
-        {
-            bool isEvenRow = rowIndex % 2 != 0;
-
-            if (EditorGUIUtility.isProSkin)
-            {
-                return isEvenRow ? darkModeEvenColor : darkModeOddColor;
-            }
-            else
-            {
-                return isEvenRow ? lightModeEvenColor : lightModeOddColor;
-            }
-        }
     }
 
     internal static class Textures
@@ -165,13 +93,13 @@ namespace HierarchyDecorator
 
     internal static class Style
     {
-        public static readonly GUIStyle FoldoutHeaderStyle;
-        public static readonly GUIStyle TabBackgroundStyle;
+        public static readonly GUIStyle FoldoutHeader;
+        public static readonly GUIStyle TabBackground;
         public static readonly GUIStyle CenteredBoldLabel;
-        public static readonly GUIStyle DropdownSmallStyle;
+        public static readonly GUIStyle SmallDropdown;
         public static readonly GUIStyle ComponentIconStyle;
-        public static readonly GUIStyle TitleStyle;
-        public static readonly GUIStyle WindowStyle;
+        public static readonly GUIStyle Title;
+        public static readonly GUIStyle InnerWindow;
 
         // Foldouts
         public static readonly GUIStyle LargeButtonStyle;
@@ -179,7 +107,7 @@ namespace HierarchyDecorator
 
         static Style()
         {
-            FoldoutHeaderStyle = new GUIStyle (EditorStyles.foldout)
+            FoldoutHeader = new GUIStyle (EditorStyles.foldout)
             {
 #if UNITY_2019_1_OR_NEWER
                 stretchHeight = true,
@@ -188,7 +116,7 @@ namespace HierarchyDecorator
                 alignment = TextAnchor.MiddleLeft,
             };
 
-            TabBackgroundStyle = new GUIStyle (EditorStyles.helpBox)
+            TabBackground = new GUIStyle (EditorStyles.helpBox)
             {
                 stretchHeight = true,
                 fixedHeight = 0,
@@ -205,7 +133,7 @@ namespace HierarchyDecorator
                 fontStyle = FontStyle.Bold
             };
 
-            DropdownSmallStyle = new GUIStyle (EditorStyles.centeredGreyMiniLabel)
+            SmallDropdown = new GUIStyle (EditorStyles.centeredGreyMiniLabel)
             {
                 alignment = TextAnchor.MiddleCenter,
                 fontSize = 9,
@@ -221,13 +149,13 @@ namespace HierarchyDecorator
                 margin = new RectOffset (0, 0, 0, 0)
             };
 
-            TitleStyle = new GUIStyle (EditorStyles.boldLabel)
+            Title = new GUIStyle (EditorStyles.boldLabel)
             {
                 fontSize = 18,
                 fixedHeight = 21,
             };
 
-            WindowStyle = new GUIStyle(GUI.skin.window)
+            InnerWindow = new GUIStyle(GUI.skin.window)
             {
                 padding = new RectOffset (2, 0, 0, 0),
                 margin = new RectOffset (0, 0, 0, 0),
@@ -246,19 +174,4 @@ namespace HierarchyDecorator
         }
     }
 
-    public enum FilterType { NONE, NAME, TYPE }
-
-    public struct CategoryFilter
-    {
-        public string name;
-        public string filter;
-        public FilterType type;
-
-        public CategoryFilter(string name, string filter, FilterType type)
-        {
-            this.name = name;
-            this.filter = filter;
-            this.type = type;
-        }
-    }
 }

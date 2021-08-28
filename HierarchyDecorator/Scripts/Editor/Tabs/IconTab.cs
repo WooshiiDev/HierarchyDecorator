@@ -128,7 +128,7 @@ namespace HierarchyDecorator
 
             EditorGUILayout.BeginHorizontal (GUILayout.MaxWidth (currentViewWidth));
             {
-                EditorGUILayout.BeginVertical (Style.TabBackgroundStyle, GUILayout.Width (currentViewWidth * 0.125F));
+                EditorGUILayout.BeginVertical (Style.TabBackground, GUILayout.Width (currentViewWidth * 0.125F));
                 {
                     EditorGUI.BeginChangeCheck ();
                     showAllProperty.boolValue = GUILayout.Toggle (showAllProperty.boolValue, "Show All Icons", Style.LargeButtonSmallTextStyle);
@@ -149,7 +149,7 @@ namespace HierarchyDecorator
 
                 // Any rare usecases
 
-                EditorGUILayout.BeginVertical (Style.TabBackgroundStyle);
+                EditorGUILayout.BeginVertical (Style.TabBackground);
                 {
                     if (showAllProperty.boolValue)
                     {

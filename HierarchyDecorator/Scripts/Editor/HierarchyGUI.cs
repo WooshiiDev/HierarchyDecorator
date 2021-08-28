@@ -68,11 +68,39 @@ namespace HierarchyDecorator
             GUI.DrawTexture (iconRect, EditorGUIUtility.IconContent ("tab_next").image, ScaleMode.ScaleToFit);
         }
 
-        // Helpers
+        // Content Helpers
 
-        private static GUIContent GetStandardContent(Rect rect, GameObject instance, bool isPrefab)
+        public static GUIContent GetStandardContent(Rect rect, GameObject instance, bool isPrefab)
         {
             return EditorGUIUtility.IconContent (isPrefab ? "Prefab Icon" : "GameObject Icon");
+        }
+
+        public static Color GetTwoToneColour(Rect selectionRect)
+        {
+            bool isEvenRow = selectionRect.y % 32 != 0;
+
+            if (EditorGUIUtility.isProSkin)
+            {
+                return isEvenRow ? Constants.DarkModeEvenColor : Constants.DarkModeOddColor;
+            }
+            else
+            {
+                return isEvenRow ? Constants.LightModeEvenColor : Constants.LightModeOddColor;
+            }
+        }
+
+        public static Color GetTwoToneColour(int rowIndex)
+        {
+            bool isEvenRow = rowIndex % 2 != 0;
+
+            if (EditorGUIUtility.isProSkin)
+            {
+                return isEvenRow ? Constants.DarkModeEvenColor : Constants.DarkModeOddColor;
+            }
+            else
+            {
+                return isEvenRow ? Constants.LightModeEvenColor : Constants.LightModeOddColor;
+            }
         }
     }
 }

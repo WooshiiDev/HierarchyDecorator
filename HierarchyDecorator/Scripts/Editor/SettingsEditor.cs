@@ -62,7 +62,7 @@ namespace HierarchyDecorator
         {
             EditorGUILayout.BeginHorizontal ();
             {
-                EditorGUILayout.LabelField ("Hierarchy Settings", Style.TitleStyle);
+                EditorGUILayout.LabelField ("Hierarchy Settings", Style.Title);
 
                 GUILayout.FlexibleSpace ();
 
