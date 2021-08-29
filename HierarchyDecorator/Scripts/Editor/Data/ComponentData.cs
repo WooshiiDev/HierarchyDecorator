@@ -14,8 +14,8 @@ namespace HierarchyDecorator
         public List<CustomComponentType> customComponents = new List<CustomComponentType> ();
 
         // Component Checks
-        private string unityVersion;
-        private bool isDirty;
+        [SerializeField] private string unityVersion;
+        [SerializeField] private bool isDirty;
 
         // Reflected Types
         private Type[] allTypes;
