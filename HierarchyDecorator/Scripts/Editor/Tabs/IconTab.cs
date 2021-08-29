@@ -50,63 +50,10 @@ namespace HierarchyDecorator
             serializedUnityComponents = serializedTab.FindPropertyRelative ("unityComponents");
             serializedCustomComponents = serializedTab.FindPropertyRelative ("customComponents");
 
-            componentCategories.Add ("General", new List<IconInfo> ());
-
-            List<ComponentType> unityComponents = settings.componentData.unityComponents;
-
-            for (int i = 0; i < unityComponents.Count; i++)
-            {
-                ComponentType component = unityComponents[i];
-                Type type = component.type;
-
-                IconInfo info = new IconInfo (type, serializedUnityComponents.GetArrayElementAtIndex (i).FindPropertyRelative ("shown"));
-
-                // If the texture is null or shows a placeholder, we can assume it's not needed
-                Texture componentImage = EditorGUIUtility.ObjectContent (null, type).image;
-
-                if (componentImage == null || componentImage.name == "d_DefaultAsset Icon" || componentImage.name == "DefaultAsset Icon")
-                {
-                    continue;
-                }
-
-                // Get the category name
-                string categoryName = Constants.ComponentFilters.FirstOrDefault ((f) =>
-                    {
-                        Type baseType = null;
-
-                        if (f.type == FilterType.TYPE)
-                        {
-                            baseType = Type.GetType (f.filter);
-                        }
-
-                        return (f.type == FilterType.NAME)
-                            ? type.FullName.Contains (f.filter)
-                            : type.IsAssignableFrom (baseType) || type.IsSubclassOf (baseType);
-                    }).name;
-
-                if (string.IsNullOrEmpty (categoryName))
-                {
-                    categoryName = "General";
-                }
-
-                if (!componentCategories.ContainsKey (categoryName))
-                {
-                    componentCategories.Add (categoryName, new List<IconInfo> ());
-                }
-
-                componentCategories[categoryName].Add (info);
-            }
-
-            // Sort/Cleanup for better display 
-            componentCategories = componentCategories.OrderBy (c => c.Key).ToDictionary (t => t.Key, t => t.Value);
-
-            foreach (List<IconInfo> item in componentCategories.Values)
-            {
-                item.Sort ();
-            }
-
-            componentCategories.Add ("Custom", null);
+            componentCategories = GetIconCategories ();
         }
+
+        // GUI
 
         protected override void OnContentGUI()
         {
@@ -128,10 +75,10 @@ namespace HierarchyDecorator
 
             EditorGUILayout.BeginHorizontal (GUILayout.MaxWidth (currentViewWidth));
             {
-                EditorGUILayout.BeginVertical (Style.TabBackground, GUILayout.Width (currentViewWidth * 0.125F));
+                EditorGUILayout.BeginVertical (Style.TabBackground, GUILayout.Width (currentViewWidth * 0.075F));
                 {
                     EditorGUI.BeginChangeCheck ();
-                    showAllProperty.boolValue = GUILayout.Toggle (showAllProperty.boolValue, "Show All Icons", Style.LargeButtonSmallTextStyle);
+                    showAllProperty.boolValue = GUILayout.Toggle (showAllProperty.boolValue, "Show All\nIcons", Style.LargeButtonSmallTextStyle);
                     if (EditorGUI.EndChangeCheck())
                     {
                         serializedSettings.ApplyModifiedProperties ();
@@ -355,6 +302,80 @@ namespace HierarchyDecorator
             }
 
             serializedSettings.ApplyModifiedProperties ();
+        }
+
+        // Icon Setup
+
+        private Dictionary<string, List<IconInfo>> GetIconCategories()
+        {
+            Dictionary<string, List<IconInfo>> categories = new Dictionary<string, List<IconInfo>>
+            {
+                { "General", new List<IconInfo> () }
+            };
+
+            List<ComponentType> unityComponents = settings.componentData.unityComponents;
+
+            for (int i = 0; i < unityComponents.Count; i++)
+            {
+                Type type = unityComponents[i].type;
+
+                // Ignore default icons
+
+                Texture componentImage = EditorGUIUtility.ObjectContent (null, type).image;
+
+                if (componentImage == null || componentImage.name == "d_DefaultAsset Icon" || componentImage.name == "DefaultAsset Icon")
+                {
+                    continue;
+                }
+
+                // Add icon to category
+
+                string categoryName = GetTypeFilter (type);
+
+                if (!componentCategories.ContainsKey (categoryName))
+                {
+                    componentCategories.Add (categoryName, new List<IconInfo> ());
+                }
+
+                IconInfo info = new IconInfo (type, serializedUnityComponents.GetArrayElementAtIndex (i).FindPropertyRelative ("shown"));
+                componentCategories[categoryName].Add (info);
+            }
+
+            // Sort/Cleanup for better display 
+            componentCategories = componentCategories.OrderBy (c => c.Key).ToDictionary (t => t.Key, t => t.Value);
+
+            foreach (List<IconInfo> item in componentCategories.Values)
+            {
+                item.Sort ();
+            }
+
+            componentCategories.Add ("Custom", null);
+
+            return componentCategories;
+        }
+
+        private string GetTypeFilter(Type type)
+        {
+            string categoryName = Constants.ComponentFilters.FirstOrDefault ((f) =>
+            {
+                Type baseType = null;
+
+                if (f.type == FilterType.TYPE)
+                {
+                    baseType = Type.GetType (f.filter);
+                }
+
+                return (f.type == FilterType.NAME)
+                    ? type.FullName.Contains (f.filter)
+                    : type.IsAssignableFrom (baseType) || type.IsSubclassOf (baseType);
+            }).name;
+
+            if (string.IsNullOrEmpty (categoryName))
+            {
+                categoryName = "General";
+            }
+
+            return categoryName;
         }
     }
 }
