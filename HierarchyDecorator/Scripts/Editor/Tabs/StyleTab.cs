@@ -325,7 +325,7 @@ namespace HierarchyDecorator
 #else
             rect.width -= 35f;
 
-            rect.height = 17f;
+            rect.height = 15f;
             rect.y++;
 #endif
 
@@ -369,6 +369,10 @@ namespace HierarchyDecorator
 
 #if UNITY_2021_1_OR_NEWER
             rect.y += 2f;
+#elif UNITY_2019_1_OR_NEWER
+
+#else
+            rect.y++;
 #endif
 
             return rect;
