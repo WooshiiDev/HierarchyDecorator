@@ -13,7 +13,11 @@ namespace HierarchyDecorator
 
         private bool hasInvalidType;
 
+#if UNITY_2019_1_OR_NEWER
         private GUIContent warningGUI = EditorGUIUtility.IconContent ("warning");
+#else
+        private GUIContent warningGUI = EditorGUIUtility.IconContent ("console.warnicon");
+#endif
 
         protected override int GetGridCount()
         {
