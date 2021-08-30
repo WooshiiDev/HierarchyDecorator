@@ -109,12 +109,7 @@ namespace HierarchyDecorator
         public static readonly GUIStyle Toggle;
         public static readonly GUIStyle ToggleMixed;
 
-
-#if UNITY_2019_1_OR_NEWER
         private const string TOGGLE_MIXED = "OL ToggleMixed";
-#else
-        private const string TOGGLE_MIXED = "OL Toggle Mixed";
-#endif
 
         static Style()
         {
@@ -187,6 +182,7 @@ namespace HierarchyDecorator
 
             Toggle = new GUIStyle ("OL Toggle");
 
+#if UNITY_2019_4_OR_NEWER
             ToggleMixed = new GUIStyle (TOGGLE_MIXED)
             {
                 focused =
@@ -195,7 +191,10 @@ namespace HierarchyDecorator
                     scaledBackgrounds = null,
                 },
             };
+#else
+            ToggleMixed = new GUIStyle (Toggle);
+#endif
+
         }
     }
-
 }
