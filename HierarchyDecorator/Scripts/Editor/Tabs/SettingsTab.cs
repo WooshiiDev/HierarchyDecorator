@@ -24,7 +24,11 @@ namespace HierarchyDecorator
             this.serializedSettings = serializedSettings;
             this.serializedTab = serializedTab;
 
+#if UNITY_2019_4_OR_NEWER
             content = new GUIContent (name, GUIHelper.GetUnityIcon (icon));
+#else
+            content = new GUIContent (name);
+#endif
         }
 
         /// <summary>
@@ -35,8 +39,9 @@ namespace HierarchyDecorator
 #if UNITY_2019_1_OR_NEWER
             EditorGUILayout.BeginVertical (Style.TabBackground, GUILayout.MinHeight (32f));
 #else
-            EditorGUILayout.BeginVertical (Style.TabBackgroundStyle, GUILayout.MinHeight (16f));
+            EditorGUILayout.BeginVertical (Style.TabBackground, GUILayout.MinHeight (16f));
 #endif
+
             if (IsShown ())
             {
                 OnContentGUI ();

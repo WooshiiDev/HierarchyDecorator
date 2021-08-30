@@ -14,8 +14,8 @@ namespace HierarchyDecorator
         public List<CustomComponentType> customComponents = new List<CustomComponentType> ();
 
         // Component Checks
-        private string unityVersion;
-        private bool isDirty;
+        [SerializeField] private string unityVersion;
+        [SerializeField] private bool isDirty;
 
         // Reflected Types
         private Type[] allTypes;
@@ -26,37 +26,49 @@ namespace HierarchyDecorator
             customComponents = new List<CustomComponentType> ();
         }
 
+        public void OnInitialize()
+        {
+            isDirty = unityVersion != Application.unityVersion;
+
+            if (isDirty)
+            {
+                unityVersion = Application.unityVersion;
+                Debug.LogWarning ("HierarchyDecorator version changed, updating cached components.");
+            }
+        }
+
         /// <summary>
         /// Update Component Data
         /// </summary>
         public void UpdateData(bool updateCustomComponents = false)
         {
-            //Reflection for component types
             if (allTypes == null)
             {
                 allTypes = ReflectionUtility.GetTypesFromAllAssemblies (typeof (Component));
             }
 
-            if (unityVersion != Application.unityVersion)
-            {
-                Debug.LogWarning ("HierarchyDecorator Unity Version was invalid, searching for components.");
+            // Update the components if any are missing
+            isDirty = unityComponents.Count != allTypes.Length;
 
-                unityVersion = Application.unityVersion;
-                isDirty = true;
-            }
-            else
-            {
-                isDirty = unityComponents.Count != allTypes.Length;
-            }
-
-            // Update the components if required
             if (isDirty)
             {
+                // Clone old components to look up any that already exist
+                // Primarily for older version support
+                List<ComponentType> oldComponents = new List<ComponentType> (unityComponents);
                 unityComponents.Clear ();
 
                 for (int i = 0; i < allTypes.Length; i++)
                 {
-                    unityComponents.Add (new ComponentType (allTypes[i]));
+                    Type type = allTypes[i];
+
+                    // Look for pre-existing component - if it doesn't exist, create a one
+
+                    int oldIndex = oldComponents.FindIndex (t => t.name == type.Name);
+                    ComponentType component = (oldIndex == -1)
+                        ? new ComponentType (type) 
+                        : oldComponents[oldIndex];
+
+                    unityComponents.Add (component);
                 }
 
                 isDirty = false;

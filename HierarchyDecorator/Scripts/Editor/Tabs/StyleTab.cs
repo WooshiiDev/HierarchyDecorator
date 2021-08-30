@@ -231,18 +231,6 @@ namespace HierarchyDecorator
 
                 }
                 Handles.EndGUI ();
-
-
-                //Rect splitRect = rect;
-                //splitRect.x += 24f;
-                //splitRect.width -= 72f;
-
-                //Handles.DrawSolidRectangleWithOutline (splitRect, Color.clear, OUTLINE_COLOR);
-
-                //Rect deleteRect = rect;
-                //deleteRect.x = deleteRect.width - 72f;
-                //deleteRect.width = 44f;
-                //Handles.DrawSolidRectangleWithOutline (deleteRect, Color.cyan, OUTLINE_COLOR);
             }
             Handles.EndGUI ();
         }
@@ -317,10 +305,15 @@ namespace HierarchyDecorator
 
             rect.y += 2f;
             rect.height = 18f;
-#else
+#elif UNITY_2019_1_OR_NEWER
             rect.width -= 39f;
 
             rect.height = 17f;
+            rect.y++;
+#else
+            rect.width -= 35f;
+
+            rect.height = 15f;
             rect.y++;
 #endif
 
@@ -336,11 +329,16 @@ namespace HierarchyDecorator
 
             rect.x += 20f;
             rect.width -= 64f;
-#else
+#elif UNITY_2019_1_OR_NEWER
             rect.y -= 1f;
 
             rect.x += 4f;
             rect.width -= 48f;
+#else
+            rect.y -= 1f;
+
+            rect.x += 4f;
+            rect.width -= 44f;
 #endif
 
             //EditorGUI.DrawRect (rect, Color.white);
@@ -359,6 +357,10 @@ namespace HierarchyDecorator
 
 #if UNITY_2021_1_OR_NEWER
             rect.y += 2f;
+#elif UNITY_2019_1_OR_NEWER
+
+#else
+            rect.y++;
 #endif
 
             return rect;

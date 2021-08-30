@@ -1,20 +1,11 @@
-﻿using System;
-using UnityEngine;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEditor.Experimental.SceneManagement;
+using UnityEngine;
 
 namespace HierarchyDecorator
 {
     public class ToggleDrawer : HierarchyDrawer
     {
-        private const string TOGGLE_ON = "OL Toggle";
-
-#if UNITY_2019_1_OR_NEWER
-        private const string TOGGLE_MIXED = "OL ToggleMixed";
-#else
-        private const string TOGGLE_MIXED = "OL Toggle Mixed";
-#endif
-
         protected override void DrawInternal(Rect rect, GameObject instance, Settings _settings)
         {
             rect.width = 16f;
@@ -23,7 +14,7 @@ namespace HierarchyDecorator
             rect.x = 32;
 
             bool isActive = instance.activeInHierarchy;
-            GUIStyle toggleStyle = isActive ? TOGGLE_ON : TOGGLE_MIXED;
+            GUIStyle toggleStyle = isActive ? Style.Toggle : Style.ToggleMixed;
 
             EditorGUI.BeginChangeCheck ();
             {
@@ -35,7 +26,7 @@ namespace HierarchyDecorator
                 instance.SetActive (isActive);
             }
 #else
-            rect.x = 1;
+            rect.x = 1f;
             rect.y--;
 
             bool isActive = instance.activeInHierarchy;

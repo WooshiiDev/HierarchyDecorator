@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 namespace HierarchyDecorator
@@ -105,6 +104,13 @@ namespace HierarchyDecorator
         public static readonly GUIStyle LargeButtonStyle;
         public static readonly GUIStyle LargeButtonSmallTextStyle;
 
+        // Hierarchy Styles
+
+        public static readonly GUIStyle Toggle;
+        public static readonly GUIStyle ToggleMixed;
+
+        private const string TOGGLE_MIXED = "OL ToggleMixed";
+
         static Style()
         {
             FoldoutHeader = new GUIStyle (EditorStyles.foldout)
@@ -155,7 +161,7 @@ namespace HierarchyDecorator
                 fixedHeight = 21,
             };
 
-            InnerWindow = new GUIStyle(GUI.skin.window)
+            InnerWindow = new GUIStyle (GUI.skin.window)
             {
                 padding = new RectOffset (2, 0, 0, 0),
                 margin = new RectOffset (0, 0, 0, 0),
@@ -171,7 +177,24 @@ namespace HierarchyDecorator
                 fixedHeight = 32f,
                 fontSize = 12
             };
+
+            // Hierarchy Styles
+
+            Toggle = new GUIStyle ("OL Toggle");
+
+#if UNITY_2019_4_OR_NEWER
+            ToggleMixed = new GUIStyle (TOGGLE_MIXED)
+            {
+                focused =
+                {
+                    background = null,
+                    scaledBackgrounds = null,
+                },
+            };
+#else
+            ToggleMixed = new GUIStyle (Toggle);
+#endif
+
         }
     }
-
 }
