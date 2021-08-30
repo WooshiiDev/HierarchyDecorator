@@ -26,7 +26,7 @@ namespace HierarchyDecorator
                 instance.SetActive (isActive);
             }
 #else
-            rect.x = 1;
+            rect.x = 14f;
             rect.y--;
 
             bool isActive = instance.activeInHierarchy;
