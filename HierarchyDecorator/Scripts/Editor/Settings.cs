@@ -15,6 +15,11 @@ namespace HierarchyDecorator
 
         // Settings Creation
 
+        private void OnEnable()
+        {
+            componentData.OnInitialize ();
+        }
+
         /// <summary>
         /// Setup defaults for the new settings asset
         /// </summary>
