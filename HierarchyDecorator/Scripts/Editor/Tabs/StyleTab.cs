@@ -317,8 +317,13 @@ namespace HierarchyDecorator
 
             rect.y += 2f;
             rect.height = 18f;
-#else
+#elif UNITY_2019_1_OR_NEWER
             rect.width -= 39f;
+
+            rect.height = 17f;
+            rect.y++;
+#else
+            rect.width -= 35f;
 
             rect.height = 17f;
             rect.y++;
@@ -336,11 +341,16 @@ namespace HierarchyDecorator
 
             rect.x += 20f;
             rect.width -= 64f;
-#else
+#elif UNITY_2019_1_OR_NEWER
             rect.y -= 1f;
 
             rect.x += 4f;
             rect.width -= 48f;
+#else
+            rect.y -= 1f;
+
+            rect.x += 4f;
+            rect.width -= 44f;
 #endif
 
             //EditorGUI.DrawRect (rect, Color.white);
