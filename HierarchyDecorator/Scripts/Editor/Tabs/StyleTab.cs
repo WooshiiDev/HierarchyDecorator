@@ -231,18 +231,6 @@ namespace HierarchyDecorator
 
                 }
                 Handles.EndGUI ();
-
-
-                //Rect splitRect = rect;
-                //splitRect.x += 24f;
-                //splitRect.width -= 72f;
-
-                //Handles.DrawSolidRectangleWithOutline (splitRect, Color.clear, OUTLINE_COLOR);
-
-                //Rect deleteRect = rect;
-                //deleteRect.x = deleteRect.width - 72f;
-                //deleteRect.width = 44f;
-                //Handles.DrawSolidRectangleWithOutline (deleteRect, Color.cyan, OUTLINE_COLOR);
             }
             Handles.EndGUI ();
         }
