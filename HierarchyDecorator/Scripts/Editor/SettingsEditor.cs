@@ -38,8 +38,11 @@ namespace HierarchyDecorator
 
             DrawTitle ();
 
+#if UNITY_2019_1_OR_NEWER
             EditorGUILayout.Space ();
-
+#else
+            GUILayout.Space(16f);
+#endif
             foreach (SettingsTab tab in tabs)
             {
                 EditorGUI.indentLevel++;
