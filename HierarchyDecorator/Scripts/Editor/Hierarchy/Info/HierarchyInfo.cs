@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace HierarchyDecorator
 {
@@ -15,9 +15,12 @@ namespace HierarchyDecorator
         /// <param name="settings">Hierarchy settings</param>
         protected override void DrawInternal(Rect rect, GameObject instance, Settings settings)
         {
+            // Setup any data before drawing
+            OnDrawInit (instance, settings);
+
+            // Calculate initial rect
             int gridCount = GetGridCount ();
 
-            // Get intial position - at the end of the rect
             rect.x += rect.width - GetGridPosition();
             rect.width = INDENT_SIZE * gridCount;
 
@@ -35,6 +38,16 @@ namespace HierarchyDecorator
         /// <param name="instance">The instance to draw for</param>
         /// <param name="settings">Hierarchy settings</param>
         protected abstract void DrawInfo(Rect rect, GameObject instance, Settings settings);
+
+        /// <summary>
+        /// Method that provides any initialisation before drawing to the Hierarchy.
+        /// </summary>
+        /// <param name="instance">The target instance.</param>
+        /// <param name="settings">The settings.</param>
+        protected virtual void OnDrawInit(GameObject instance, Settings settings)
+        {
+
+        }
 
         /// <summary>
         /// Get the number of grid elements this info will use when drawing
