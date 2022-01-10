@@ -56,6 +56,7 @@ namespace HierarchyDecorator
 
         public void UpdateStyle(bool isDarkMode)
         {
+            style.name = name;
             style.fontStyle = fontStyle;
             style.fontSize = fontSize;
             style.alignment = fontAlignment;
