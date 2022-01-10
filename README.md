@@ -39,7 +39,7 @@ Hierarchy Decorator is an extension for Unity 2018.4 and higher to support custo
 
 ## Installation
 <p align="center">
-  <a href="https://github.com/WooshiiDev/HierarchyDecorator/releases">Releases</a> • <a href="https://github.com/WooshiiDev/HierarchyDecorator/releases/download/0.5.1.0/HierarchyDecorator.v0.5.1.0.unitypackage">Unity Package</a> • <a href="https://github.com/WooshiiDev/HierarchyDecorator/archive/0.5.1.0.zip">Zip</a> 
+  <a href="https://github.com/WooshiiDev/HierarchyDecorator/releases">Releases</a> • <a href="https://github.com/WooshiiDev/HierarchyDecorator/releases/download/v0.8.4/HierarchyDecorator.v0.8.4.unitypackage">Unity Package</a> • <a href="https://github.com/WooshiiDev/HierarchyDecorator/archive/0.5.1.0.zip">Zip</a> 
 </p>
 
 HierarchyDecorator can also be installed directly through the git url
