@@ -146,6 +146,11 @@ namespace HierarchyDecorator
         {
             rect = GetIconPosition (rect);
 
+            if (rect.x < (LabelRect.x + LabelRect.width))
+            {
+                return;
+            }
+
             content.tooltip = type.Name;
             content.text = "";
 
