@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 
 namespace HierarchyDecorator
@@ -7,6 +8,15 @@ namespace HierarchyDecorator
         protected const int INDENT_SIZE = 16;
         protected static int IndentIndex;
 
+        /// <summary>
+        /// Full width rect for the current hierarchy instance
+        /// </summary>
+        protected static Rect FullRect { get; private set; }
+
+        /// <summary>
+        /// The rect for the label
+        /// </summary>
+        protected static Rect LabelRect { get; private set; }
 
         /// <summary>
         /// Has this info drawer initalized for the current instance
@@ -21,6 +31,10 @@ namespace HierarchyDecorator
         /// <param name="settings">Hierarchy settings</param>
         protected override void DrawInternal(Rect rect, GameObject instance, Settings settings)
         {
+            // Full rect calculation 
+            FullRect = GetFullRect (rect);
+            LabelRect = GetLabelRect(rect, instance.name, settings);
+
             // Setup any data before drawing
             HasInitialized = false;
             OnDrawInit (instance, settings);
@@ -78,6 +92,80 @@ namespace HierarchyDecorator
         public static void ResetIndent()
         {
             IndentIndex = 0;
+        }
+        
+        // Helpers
+
+        private Rect GetFullRect(Rect rect)
+        {
+            float widthOffset = rect.x - 16f;
+            rect.x = 32f;
+            rect.width += widthOffset;
+
+            return rect;
+        }
+
+        private Rect GetLabelRect(Rect rect, string name, Settings settings)
+        {
+            GUIStyle labelStyle = null;
+            GUIContent labelGUI = new GUIContent();
+
+            bool hasStyle = settings.styleData.TryGetStyleFromPrefix (name, out HierarchyStyle style);
+
+            if (hasStyle)
+            {
+                labelStyle = style.style;
+
+                int len = style.prefix.Length;
+                name = name.Substring (len + 1, name.Length - len - 1).ToUpper();
+            }
+            else
+            {
+                labelStyle = EditorStyles.label;
+            }
+
+            labelGUI.text = name;
+            rect.width = labelStyle.CalcSize (labelGUI).x + 2f;
+
+            if (!hasStyle)
+            {
+                rect.width += 16f;
+            }
+            else
+            {
+                switch (labelStyle.alignment)
+                {
+                    case TextAnchor.UpperCenter:
+                    case TextAnchor.MiddleCenter:
+                    case TextAnchor.LowerCenter:
+
+                        // Calculations:
+                        // - Get the center of the full width
+                        // - Add the original offset
+                        // - Subtract half the content size
+                        // - Add 16f to shift over due to the toggle box area
+
+                        float width = (FullRect.width - 16f) * 0.5f;
+                        width += rect.x * 0.5f;
+                        width -= rect.width * 0.5f;
+                        width += 16f;
+
+                        rect.x = width;
+
+                        break;
+
+                    case TextAnchor.UpperRight:
+                    case TextAnchor.MiddleRight:
+                    case TextAnchor.LowerRight:
+
+                        rect.x = FullRect.width + 17f;
+                        rect.x -= rect.width;
+
+                        break;
+                }
+            }
+
+            return rect;
         }
     }
 }
