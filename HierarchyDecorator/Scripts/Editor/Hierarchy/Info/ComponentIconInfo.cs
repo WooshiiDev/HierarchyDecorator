@@ -17,16 +17,14 @@ namespace HierarchyDecorator
         private GUIContent warningGUI = EditorGUIUtility.IconContent ("console.warnicon");
 #endif
 
-        private bool hasInitialized = false;
-
         protected override int GetGridCount()
         {
-            if (hasInitialized)
+            if (!HasInitialized)
             {
-                return componentTypes.Count;
+                return components.Length;
             }
 
-            return components.Length;
+            return componentTypes.Count;
         }
 
         protected override bool DrawerIsEnabled(Settings settings, GameObject instance)
@@ -41,9 +39,6 @@ namespace HierarchyDecorator
 
         protected override void DrawInfo(Rect rect, GameObject instance, Settings settings)
         {
-            hasInitialized = true;
-            componentTypes.Clear ();
-
             for (int i = components.Length; i-- > 0;)
             {
                 Component component = components[i];
@@ -82,8 +77,10 @@ namespace HierarchyDecorator
         protected override void OnDrawInit(GameObject instance, Settings settings)
         {
             components = instance.GetComponents<Component> ();
-            hasInitialized = false;
+            componentTypes.Clear ();
         }
+
+        // GUI
 
         private void DrawMonobehaviour(Rect rect, Component component, Settings settings)
         {

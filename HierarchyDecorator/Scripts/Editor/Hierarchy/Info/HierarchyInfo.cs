@@ -7,6 +7,12 @@ namespace HierarchyDecorator
         protected const int INDENT_SIZE = 16;
         protected static int IndentIndex;
 
+
+        /// <summary>
+        /// Has this info drawer initalized for the current instance
+        /// </summary>
+        protected static bool HasInitialized { get; private set; }
+
         /// <summary>
         /// Apply the drawer GUI to the instance given
         /// </summary>
@@ -16,6 +22,7 @@ namespace HierarchyDecorator
         protected override void DrawInternal(Rect rect, GameObject instance, Settings settings)
         {
             // Setup any data before drawing
+            HasInitialized = false;
             OnDrawInit (instance, settings);
 
             // Calculate initial rect
@@ -23,6 +30,7 @@ namespace HierarchyDecorator
 
             rect.x += rect.width - GetGridPosition();
             rect.width = INDENT_SIZE * gridCount;
+            HasInitialized = true;
 
             // Draw Info
             DrawInfo (rect, instance, settings);
