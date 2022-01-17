@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -9,9 +9,7 @@ namespace HierarchyDecorator
     public class ComponentIconInfo : HierarchyInfo
     {
         private List<Type> componentTypes = new List<Type> ();
-        private Component[] components;
-
-        private bool hasInvalidType;
+        private Component[] components = new Component[0];
 
 #if UNITY_2019_1_OR_NEWER
         private GUIContent warningGUI = EditorGUIUtility.IconContent ("warning");
@@ -21,6 +19,11 @@ namespace HierarchyDecorator
 
         protected override int GetGridCount()
         {
+            if (!HasInitialized)
+            {
+                return components.Length;
+            }
+
             return componentTypes.Count;
         }
 
@@ -36,9 +39,6 @@ namespace HierarchyDecorator
 
         protected override void DrawInfo(Rect rect, GameObject instance, Settings settings)
         {
-            componentTypes.Clear ();
-            components = instance.GetComponents<Component> ();
-
             for (int i = components.Length; i-- > 0;)
             {
                 Component component = components[i];
@@ -73,6 +73,14 @@ namespace HierarchyDecorator
                 }
             }
         }
+
+        protected override void OnDrawInit(GameObject instance, Settings settings)
+        {
+            components = instance.GetComponents<Component> ();
+            componentTypes.Clear ();
+        }
+
+        // GUI
 
         private void DrawMonobehaviour(Rect rect, Component component, Settings settings)
         {
@@ -138,6 +146,11 @@ namespace HierarchyDecorator
         {
             rect = GetIconPosition (rect);
 
+            if (rect.x < (LabelRect.x + LabelRect.width))
+            {
+                return;
+            }
+
             content.tooltip = type.Name;
             content.text = "";
 
@@ -153,6 +166,8 @@ namespace HierarchyDecorator
 
             GUI.Label (rect, warningGUI, Style.ComponentIconStyle);
         }
+
+        // Position Helpers
 
         private Rect GetIconPosition(Rect rect, bool isInvalid = false)
         {

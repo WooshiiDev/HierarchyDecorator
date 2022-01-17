@@ -8,7 +8,7 @@ namespace HierarchyDecorator
     {
         // ====== Settings Strings ======
 
-        public const string PREF_GUID = "HD_GUID";
+        public static string PREF_GUID = Application.productName + "_HD_GUID";
 
         public const string SETTINGS_PATH = "Hierarchy Decorator";
 

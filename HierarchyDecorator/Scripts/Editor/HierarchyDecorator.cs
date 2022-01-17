@@ -8,6 +8,7 @@ namespace HierarchyDecorator
     internal static class HierarchyDecorator
     {
         public const string SETTINGS_TYPE_STRING = "Settings";
+        public const string SETTINGS_NAME_STRING = "Settings";
 
         private static Settings Settings;
 
@@ -26,25 +27,22 @@ namespace HierarchyDecorator
     
         static HierarchyDecorator()
         {
-            Settings = GetOrCreateSettings ();
-
-            if (Settings == null)
-            {
-                Debug.LogError ("Cannot initialize HierarchyDecorator because settings do not exist!");
-                return;
-            }
-
-            Settings.componentData.UpdateData (true);
-
             EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyItem;
             EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyItem;
         }
 
         private static void OnHierarchyItem(int instanceID, Rect selectionRect)
         {
+            if (EditorApplication.isUpdating)
+            {
+                return;
+            }
+
             if (Settings == null)
             {
                 Settings = GetOrCreateSettings ();
+                Settings.componentData.UpdateData (true);
+
                 return;
             }
 
@@ -97,7 +95,7 @@ namespace HierarchyDecorator
                 }
             }
 
-            Settings settings = AssetUtility.FindOrCreateScriptable<Settings> (SETTINGS_TYPE_STRING, Constants.SETTINGS_ASSET_FOLDER);
+            Settings settings = AssetUtility.FindOrCreateScriptable<Settings> (SETTINGS_TYPE_STRING, SETTINGS_NAME_STRING, Constants.SETTINGS_ASSET_FOLDER);
             settings.SetDefaults (EditorGUIUtility.isProSkin);
 
             path = AssetDatabase.GetAssetPath (settings);
