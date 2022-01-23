@@ -1,7 +1,3 @@
-<h2 align="center">
-Please note this is still in development! Check <a href="https://github.com/WooshiiDev/HierarchyDecorator/issues">Issues</a> for any current support issues or bugs that may exist!
-</h2>
-
 <h1 align="center">  
  <img src="https://wooshii.dev/img/work/hierarchydecorator.png">
  Hierarchy Decorator
@@ -28,6 +24,10 @@ Please note this is still in development! Check <a href="https://github.com/Woos
   <a href="#donate">Donate</a>
 </p>
 
+<h4 align="center">
+Please note this is still in development - Check <a href="https://github.com/WooshiiDev/HierarchyDecorator/issues">Issues</a> for any current support issues or bugs that may exist.
+</h4>
+  
 ## About
 
 
@@ -39,8 +39,9 @@ Hierarchy Decorator is an extension for Unity 2018.4 and higher to support custo
 
 ## Installation
 <p align="center">
-  <a href="https://github.com/WooshiiDev/HierarchyDecorator/releases">Releases</a> • <a href="https://github.com/WooshiiDev/HierarchyDecorator/releases/download/v0.8.4/HierarchyDecorator.v0.8.4.unitypackage">Unity Package</a> • <a href="https://github.com/WooshiiDev/HierarchyDecorator/archive/0.5.1.0.zip">Zip</a> 
+  <a href="https://github.com/WooshiiDev/HierarchyDecorator/releases">Releases</a> • <a href="https://github.com/WooshiiDev/HierarchyDecorator/releases/download/v0.8.5/HierarchyDecorator.v0.8.5.unitypackage">Unity Package</a> • <a href="https://github.com/WooshiiDev/HierarchyDecorator/archive/master.zip">Zip</a> 
 </p>
+  
 
 HierarchyDecorator can also be installed directly through the git url
 ```
@@ -133,9 +134,9 @@ Icons for custom Monobehaviours or Non-UnityEngine types have their own tab and 
 
 
 ## Support
-Please submit any queries, bugs or issues, to the [Issues](https://github.com/WooshiiDev/HierarchyDecorator/issues) page on this repository. All feedback is appreciated as it not just helps myself find problems I didn't otherwise see, but also helps improve the project. 
+Please submit any queries, bugs or issues, to the [Issues](https://github.com/WooshiiDev/HierarchyDecorator/issues) page on this repository. All feedback is appreciated as it not just helps myself find problems I didn't otherwise see, but also helps improves Hierarchy Decorator as a whole.
 
-A GitHub Project [Board](https://github.com/WooshiiDev/HierarchyDecorator/projects/1) for this project also exists showing all current progress and backlog information.
+A GitHub Project [Board](https://github.com/users/WooshiiDev/projects/1) for this also exists showing current development goals and future features.
 
 Reach out to me or see my other work through:
 
