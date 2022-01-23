@@ -1,5 +1,5 @@
 <h1 align="center">  
- <img src="https://wooshii.dev/img/work/hierarchydecorator.png">
+ <img src="https://user-images.githubusercontent.com/31889435/150690352-587c2e02-38f4-4a82-890d-0cd33f5929ca.png">
  Hierarchy Decorator
 </h1>
 
@@ -24,12 +24,7 @@
   <a href="#donate">Donate</a>
 </p>
 
-<h4 align="center">
-Please note this is still in development - Check <a href="https://github.com/WooshiiDev/HierarchyDecorator/issues">Issues</a> for any current support issues or bugs that may exist.
-</h4>
-  
 ## About
-
 
 Hierarchy Decorator is an extension for Unity 2018.4 and higher to support custom drawing within the Hierarchy window, and add extra information functionality. This provides easier and helpful structure to the Hierarchy without getting overly noisy or messy. 
 
