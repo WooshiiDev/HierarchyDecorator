@@ -7,8 +7,26 @@ namespace HierarchyDecorator
     {
         private readonly SettingGroup[] groups = new SettingGroup[]
         {
-            new SettingGroup("Features", new string[] {"showActiveToggles", "showComponentIcons", "twoToneBackground"}),
-            new SettingGroup("Layers", new string[] {"showLayers", "editableLayers", "applyChildLayers"}),
+            new SettingGroup("Features", new [] 
+            {
+                "showComponentIcons",
+                "twoToneBackground"
+            }),
+
+            new SettingGroup("Toggles", new [] 
+            {
+                "showActiveToggles",
+                "toggleClickDrag",
+                "toggleSameState",
+                "toggleSelectionOnly",
+                "depthMode"
+            }),
+            new SettingGroup("Layers", new [] 
+            {
+                "showLayers",
+                "editableLayers",
+                "applyChildLayers"
+            }),
         };
 
         public GeneralTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, serializedSettings.FindProperty ("globalData"), "General", "d_CustomTool")
@@ -23,8 +41,10 @@ namespace HierarchyDecorator
         {
             EditorGUI.BeginChangeCheck ();
 
-            groups[0].DisplaySettings (serializedTab);
-            groups[1].DisplaySettings (serializedTab);
+            for (int i = 0; i < groups.Length; i++)
+            {
+                groups[i].DisplaySettings (serializedTab);
+            }
 
             EditorGUILayout.Space ();
 

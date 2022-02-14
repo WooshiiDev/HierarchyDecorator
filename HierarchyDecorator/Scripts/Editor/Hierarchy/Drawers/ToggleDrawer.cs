@@ -8,6 +8,8 @@ namespace HierarchyDecorator
     public class ToggleDrawer : HierarchyDrawer
     {
         private bool isHolding = false;
+        private bool defaultState = false;
+        private int defaultDepth = 0;
 
         private Event CurrentEvent => Event.current;
         private List<Object> swipedInstances = new List<Object> ();
@@ -23,26 +25,29 @@ namespace HierarchyDecorator
             rect.y--;
 #endif
 
-            int button = CurrentEvent.button;
-            EventType eventType = CurrentEvent.type;
-
-            if (!isHolding)
+            if (settings.globalData.toggleClickDrag)
             {
-                isHolding = eventType == EventType.MouseDown && button == 0;
-            }
-            else
-            if (eventType == EventType.MouseUp)
-            {
-                isHolding = false;
-                swipedInstances.Clear ();
+                int button = CurrentEvent.button;
+                EventType eventType = CurrentEvent.type;
+
+                if (!isHolding)
+                {
+                    isHolding = eventType == EventType.MouseDown && button == 0;
+                }
+                else
+                if (eventType == EventType.MouseUp)
+                {
+                    isHolding = false;
+                    swipedInstances.Clear ();
+                }
+
+                if (isHolding)
+                {
+                    HandleSwiping (rect, instance, settings);
+                }
             }
 
-            if (isHolding)
-            {
-                HandleSwiping (rect, instance);
-            }
-
-            DrawToggles (rect, instance);
+            DrawToggles (rect, instance, !settings.globalData.toggleClickDrag);
         }
 
         protected override bool DrawerIsEnabled(Settings settings, GameObject instance)
@@ -50,17 +55,103 @@ namespace HierarchyDecorator
             return settings.globalData.showActiveToggles && PrefabStageUtility.GetCurrentPrefabStage () == null;
         }
 
-        private void HandleSwiping(Rect rect, GameObject instance)
+        private void DrawToggles(Rect rect, GameObject instance, bool canUpdate = true)
         {
-            int instanceID = instance.GetInstanceID ();
+            bool isActive = instance.activeSelf;
 
-            if (swipedInstances.Contains(instance))
+            EditorGUI.BeginChangeCheck ();
+            {
+#if UNITY_2019_1_OR_NEWER
+                isActive = EditorGUI.Toggle (rect, isActive, isActive ? Style.Toggle : Style.ToggleMixed);
+#else
+                isActive = EditorGUI.Toggle (rect, isActive);
+#endif
+            }
+            if (EditorGUI.EndChangeCheck ())
+            {
+                if (canUpdate)
+                {
+                    instance.SetActive (isActive);
+                }
+            }
+        }
+
+        private bool IsInteractable(Settings settings, GameObject instance)
+        {
+            // Just return early as there is no reason to check the other conditions
+
+            if (!settings.globalData.toggleClickDrag)
+            {
+                return true;
+            }
+
+            // If selectionOnly is enabled, check if the instance has been selected
+
+            if (settings.globalData.toggleSelectionOnly && Selection.gameObjects.Length > 1 && !Selection.Contains (instance))
+            {
+                return false;
+            }
+
+            // Setup defaults if instance
+
+            if (swipedInstances.Count == 0)
+            {
+                defaultState = instance.activeSelf;
+                defaultDepth = GetInstanceDepth (instance.transform);
+            }
+
+            // If states have to be the same, check for the same state as the first
+
+            if (settings.globalData.toggleSameState && defaultState != instance.activeSelf)
+            {
+                return false;
+            }
+            
+            // If depth has to be valid, calculate depth and check
+
+            if (settings.globalData.depthMode != DepthMode.All)
+            {    
+                bool isValid = false;
+                int depth = GetInstanceDepth (instance.transform);
+
+                switch (settings.globalData.depthMode)
+                {
+                    case DepthMode.SameDepth:
+                        isValid = depth == defaultDepth;
+                        break;
+
+                    case DepthMode.SameDepthOrLower:
+                        isValid = depth >= defaultDepth;
+                        break;
+                            
+                    case DepthMode.SameDepthOrHigher:
+                        isValid = depth <= defaultDepth;
+                        break;
+                }
+
+                if (!isValid)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private void HandleSwiping(Rect rect, GameObject instance, Settings settings)
+        {
+            if (swipedInstances.Contains (instance))
             {
                 return;
             }
 
-            if (rect.Contains(CurrentEvent.mousePosition))
+            if (rect.Contains (CurrentEvent.mousePosition))
             {
+                if (!IsInteractable (settings, instance))
+                {
+                    return;
+                }
+
                 Undo.RecordObject (instance, string.Format ("Changed the active state of an {0}", instance.name));
 
                 swipedInstances.Add (instance);
@@ -68,33 +159,17 @@ namespace HierarchyDecorator
             }
         }
 
-        private void DrawToggles(Rect rect, GameObject instance)
+        private int GetInstanceDepth(Transform transform)
         {
-            bool isActive = instance.activeSelf;
+            int depth = 0;
 
-#if UNITY_2019_1_OR_NEWER
-            GUIStyle toggleStyle = isActive ? Style.Toggle : Style.ToggleMixed;
+            while (transform.parent != null)
+            {
+                transform = transform.parent;
+                depth++;
+            }
 
-            EditorGUI.BeginChangeCheck ();
-            {
-                //isActive = 
-                    EditorGUI.Toggle (rect, isActive, toggleStyle);
-            }
-            if (EditorGUI.EndChangeCheck ())
-            {
-                Undo.RecordObject (instance, string.Format ("Changed the active state of an {0}", instance.name));
-                instance.SetActive (isActive);
-            }
-#else
-            EditorGUI.BeginChangeCheck ();
-            {
-                isActive = EditorGUI.Toggle (rect, isActive);
-            }
-            if (EditorGUI.EndChangeCheck ())
-            {
-                instance.SetActive (isActive);
-            }
-#endif
+            return depth;
         }
     }
 }
