@@ -25,7 +25,7 @@ namespace HierarchyDecorator
             rect.y--;
 #endif
 
-            if (settings.globalData.toggleClickDrag)
+            if (settings.globalData.activeSwiping)
             {
                 int button = CurrentEvent.button;
                 EventType eventType = CurrentEvent.type;
@@ -47,7 +47,7 @@ namespace HierarchyDecorator
                 }
             }
 
-            DrawToggles (rect, instance, !settings.globalData.toggleClickDrag);
+            DrawToggles (rect, instance, !settings.globalData.activeSwiping);
         }
 
         protected override bool DrawerIsEnabled(Settings settings, GameObject instance)
@@ -80,14 +80,14 @@ namespace HierarchyDecorator
         {
             // Just return early as there is no reason to check the other conditions
 
-            if (!settings.globalData.toggleClickDrag)
+            if (!settings.globalData.activeSwiping)
             {
                 return true;
             }
 
             // If selectionOnly is enabled, check if the instance has been selected
 
-            if (settings.globalData.toggleSelectionOnly && Selection.gameObjects.Length > 1 && !Selection.Contains (instance))
+            if (settings.globalData.swipeSelectionOnly && Selection.gameObjects.Length > 1 && !Selection.Contains (instance))
             {
                 return false;
             }
@@ -102,7 +102,7 @@ namespace HierarchyDecorator
 
             // If states have to be the same, check for the same state as the first
 
-            if (settings.globalData.toggleSameState && defaultState != instance.activeSelf)
+            if (settings.globalData.swipeSameState && defaultState != instance.activeSelf)
             {
                 return false;
             }

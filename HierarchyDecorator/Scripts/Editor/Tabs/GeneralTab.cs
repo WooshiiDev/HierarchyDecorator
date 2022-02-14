@@ -16,9 +16,9 @@ namespace HierarchyDecorator
             new SettingGroup("Toggles", new [] 
             {
                 "showActiveToggles",
-                "toggleClickDrag",
-                "toggleSameState",
-                "toggleSelectionOnly",
+                "activeSwiping",
+                "swipeSameState",
+                "swipeSelectionOnly",
                 "depthMode"
             }),
             new SettingGroup("Layers", new [] 
