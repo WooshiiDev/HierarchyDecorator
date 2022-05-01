@@ -7,12 +7,33 @@ namespace HierarchyDecorator
 {
     public class ToggleDrawer : HierarchyDrawer
     {
-        private bool isHolding = false;
-        private bool defaultState = false;
-        private int defaultDepth = 0;
+        // --- State 
+
+        private bool isHoldingMouse = false;
+        private bool isPressingShift = false;
+
+        // Target data for settings based off the first instance selected
+        
+        private GameObject targetInstance = null;
+
+        private bool targetActiveState = false;
+        private int targetDepth = 0;
+
+        // --- Selection
 
         private Event CurrentEvent => Event.current;
         private List<Object> swipedInstances = new List<Object> ();
+
+        // Properties
+
+        private GameObject[] SelectedInstances => Selection.gameObjects;
+
+        // Methods
+
+        protected override bool DrawerIsEnabled(Settings settings, GameObject instance)
+        {
+            return settings.globalData.showActiveToggles && PrefabStageUtility.GetCurrentPrefabStage () == null;
+        }
 
         protected override void DrawInternal(Rect rect, GameObject instance, Settings settings)
         {
@@ -25,39 +46,30 @@ namespace HierarchyDecorator
             rect.y--;
 #endif
 
-            if (settings.globalData.activeSwiping)
+            // Handle events if they're valid
+
+            HandleEvent (rect, instance, settings);
+
+            if (isPressingShift)
             {
-                int button = CurrentEvent.button;
-                EventType eventType = CurrentEvent.type;
-
-                if (!isHolding)
-                {
-                    isHolding = eventType == EventType.MouseDown && button == 0;
-                }
-                else
-                if (eventType == EventType.MouseUp)
-                {
-                    isHolding = false;
-                    swipedInstances.Clear ();
-                }
-
-                if (isHolding)
-                {
-                    HandleSwiping (rect, instance, settings);
-                }
+                HandleMultiToggle (rect, instance, settings);
+            }
+            else
+            if (isHoldingMouse)
+            {
+                HandleSwiping (rect, instance, settings);
             }
 
-            DrawToggles (rect, instance, !settings.globalData.activeSwiping);
-        }
+            // Draw toggles
 
-        protected override bool DrawerIsEnabled(Settings settings, GameObject instance)
-        {
-            return settings.globalData.showActiveToggles && PrefabStageUtility.GetCurrentPrefabStage () == null;
+            DrawToggles (rect, instance, !settings.globalData.activeSwiping);
         }
 
         private void DrawToggles(Rect rect, GameObject instance, bool canUpdate = true)
         {
             bool isActive = instance.activeSelf;
+
+            // Draw toggle
 
             EditorGUI.BeginChangeCheck ();
             {
@@ -76,87 +88,157 @@ namespace HierarchyDecorator
             }
         }
 
-        private bool IsInteractable(Settings settings, GameObject instance)
-        {
-            // Just return early as there is no reason to check the other conditions
-
-            if (!settings.globalData.activeSwiping)
-            {
-                return true;
-            }
-
-            // If selectionOnly is enabled, check if the instance has been selected
-
-            if (settings.globalData.swipeSelectionOnly && Selection.gameObjects.Length > 1 && !Selection.Contains (instance))
-            {
-                return false;
-            }
-
-            // Setup defaults if instance
-
-            if (swipedInstances.Count == 0)
-            {
-                defaultState = instance.activeSelf;
-                defaultDepth = GetInstanceDepth (instance.transform);
-            }
-
-            // If states have to be the same, check for the same state as the first
-
-            if (settings.globalData.swipeSameState && defaultState != instance.activeSelf)
-            {
-                return false;
-            }
-            
-            // If depth has to be valid, calculate depth and check
-
-            if (settings.globalData.depthMode != DepthMode.All)
-            {    
-                bool isValid = false;
-                int depth = GetInstanceDepth (instance.transform);
-
-                switch (settings.globalData.depthMode)
-                {
-                    case DepthMode.SameDepth:
-                        isValid = depth == defaultDepth;
-                        break;
-
-                    case DepthMode.SameDepthOrLower:
-                        isValid = depth >= defaultDepth;
-                        break;
-                            
-                    case DepthMode.SameDepthOrHigher:
-                        isValid = depth <= defaultDepth;
-                        break;
-                }
-
-                if (!isValid)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
+        // --- Behaviour 
 
         private void HandleSwiping(Rect rect, GameObject instance, Settings settings)
         {
+            // Ignore instance if the mouse is not interacting with it
+
+            if (!rect.Contains (CurrentEvent.mousePosition))
+            {
+                return;
+            }
+
+            // Do not reselect the instance
+
             if (swipedInstances.Contains (instance))
+            {
+                return;
+            }
+
+            // If swiping is allowed on the current instance, toggle and register the toggle
+
+            if (IsSwipingValid (settings, instance))
+            {
+                Undo.RecordObject (instance, string.Format ("Changed the active state of an {0}", instance.name));
+
+                swipedInstances.Add (instance);
+                instance.SetActive (!instance.activeSelf);
+            }
+        }
+
+        private void HandleMultiToggle(Rect rect, GameObject instance, Settings settings)
+        {
+            int instanceLen = SelectedInstances.Length;
+
+            // If there's only one or no instances selected we don't need to check selected
+
+            if (instanceLen <= 1f)
             {
                 return;
             }
 
             if (rect.Contains (CurrentEvent.mousePosition))
             {
-                if (!IsInteractable (settings, instance))
+                for (int i = 0; i < instanceLen; i++)
                 {
-                    return;
+                    instance.SetActive (targetActiveState);
+                }
+            }
+        }
+
+        private void HandleEvent(Rect rect, GameObject instance, Settings settings)
+        {
+            EventType eventType = CurrentEvent.type;
+
+            if (targetInstance == null && rect.Contains(CurrentEvent.mousePosition))
+            {
+                if (swipedInstances.Count > 0)
+                {
+                    swipedInstances.Clear ();
                 }
 
-                Undo.RecordObject (instance, string.Format ("Changed the active state of an {0}", instance.name));
+                // Check event conditions
 
-                swipedInstances.Add (instance);
-                instance.SetActive (!instance.activeSelf);
+                isPressingShift = CurrentEvent.keyCode == KeyCode.LeftShift;
+                isHoldingMouse = (eventType == EventType.MouseDown) && (CurrentEvent.button == 0);
+
+                if (isPressingShift || isHoldingMouse)
+                {
+                    targetInstance = instance;
+                    targetActiveState = targetInstance.activeSelf;
+                    targetDepth = GetInstanceDepth (targetInstance.transform);
+                }
             }
+            else
+            {
+                bool hasChanged = false;
+                if (isPressingShift)
+                {
+                    hasChanged = !(isPressingShift = eventType != EventType.KeyUp);
+                }
+
+                if (isHoldingMouse)
+                {
+                    hasChanged = !(isHoldingMouse = eventType != EventType.MouseUp);
+                }
+
+                // Reset variables
+
+                if (hasChanged)
+                {
+                    isPressingShift = false;
+                    isHoldingMouse = false;
+
+                    targetInstance = null;
+                    swipedInstances.Clear ();
+                }
+            }
+        }
+
+        // 
+
+        private bool IsSwipingValid(Settings settings, GameObject instance)
+        {
+            // --- Active Swiping
+
+            if (settings.globalData.activeSwiping)
+            {
+                // Cancel out early if we've not prepared and to allow normal functionality
+
+                if (targetInstance == null)
+                {
+                    return true;
+                }
+
+                // If selectionOnly is enabled, check if the instance has been selected
+
+                if (settings.globalData.swipeSelectionOnly)
+                {
+                    if (SelectedInstances.Length > 1 && !Selection.Contains (instance))
+                    {
+                        return false;
+                    }
+                }
+
+                // If states have to be the same, check for the same state as the first
+
+                if (settings.globalData.swipeSameState && targetActiveState != instance.activeSelf)
+                {                
+                    return false;
+                }
+
+                // If depth has to be valid, calculate depth and check
+
+                if (settings.globalData.depthMode != DepthMode.All)
+                {
+                    int depth = GetInstanceDepth (instance.transform);
+
+                    switch (settings.globalData.depthMode)
+                    {
+                        case DepthMode.SameDepth:
+                            return depth == targetDepth;
+
+                        case DepthMode.SameDepthOrLower:
+                            return depth >= targetDepth;
+
+                        case DepthMode.SameDepthOrHigher:
+                            return depth <= targetDepth;
+                    }
+                }
+            }
+
+            return true;
         }
 
         private int GetInstanceDepth(Transform transform)
