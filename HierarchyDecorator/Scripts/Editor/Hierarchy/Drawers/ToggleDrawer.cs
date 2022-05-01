@@ -7,15 +7,28 @@ namespace HierarchyDecorator
 {
     public class ToggleDrawer : HierarchyDrawer
     {
+        // --- State 
+
         private bool isHoldingMouse = false;
         private bool isPressingShift = false;
+
+        // Target data for settings based off the first instance selected
+        
+        private GameObject targetInstance = null;
 
         private bool targetActiveState = false;
         private int targetDepth = 0;
 
+        // --- Selection
+
         private Event CurrentEvent => Event.current;
         private List<Object> swipedInstances = new List<Object> ();
-        private GameObject targetInstance = null;
+
+        // Properties
+
+        private GameObject[] SelectedInstances => Selection.gameObjects;
+
+        // Methods
 
         protected override bool DrawerIsEnabled(Settings settings, GameObject instance)
         {
@@ -75,8 +88,17 @@ namespace HierarchyDecorator
             }
         }
 
+        // --- Behaviour 
+
         private void HandleSwiping(Rect rect, GameObject instance, Settings settings)
         {
+            // Ignore instance if the mouse is not interacting with it
+
+            if (!rect.Contains (CurrentEvent.mousePosition))
+            {
+                return;
+            }
+
             // Do not reselect the instance
 
             if (swipedInstances.Contains (instance))
@@ -84,12 +106,7 @@ namespace HierarchyDecorator
                 return;
             }
 
-            // 
-
-            if (!rect.Contains (CurrentEvent.mousePosition))
-            {
-                return;
-            }
+            // If swiping is allowed on the current instance, toggle and register the toggle
 
             if (IsSwipingValid (settings, instance))
             {
@@ -102,17 +119,17 @@ namespace HierarchyDecorator
 
         private void HandleMultiToggle(Rect rect, GameObject instance, Settings settings)
         {
-            GameObject[] instances = Selection.gameObjects;
-            int instanceLen = instances.Length;
+            int instanceLen = SelectedInstances.Length;
 
-            if (instanceLen < 2f)
+            // If there's only one or no instances selected we don't need to check selected
+
+            if (instanceLen <= 1f)
             {
                 return;
             }
 
             if (rect.Contains (CurrentEvent.mousePosition))
             {
-
                 for (int i = 0; i < instanceLen; i++)
                 {
                     instance.SetActive (targetActiveState);
@@ -169,6 +186,8 @@ namespace HierarchyDecorator
             }
         }
 
+        // 
+
         private bool IsSwipingValid(Settings settings, GameObject instance)
         {
             // --- Active Swiping
@@ -186,7 +205,7 @@ namespace HierarchyDecorator
 
                 if (settings.globalData.swipeSelectionOnly)
                 {
-                    if (Selection.gameObjects.Length > 1 && !Selection.Contains (instance))
+                    if (SelectedInstances.Length > 1 && !Selection.Contains (instance))
                     {
                         return false;
                     }
