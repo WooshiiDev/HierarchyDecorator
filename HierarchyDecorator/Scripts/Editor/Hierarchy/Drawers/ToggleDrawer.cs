@@ -48,7 +48,7 @@ namespace HierarchyDecorator
 #else
             var prefabStage = UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
 #endif
-           return _settings.globalData.showActiveToggles && prefabStage == null;
+            return _settings.globalData.showActiveToggles && prefabStage == null;
         }
     }
 }
