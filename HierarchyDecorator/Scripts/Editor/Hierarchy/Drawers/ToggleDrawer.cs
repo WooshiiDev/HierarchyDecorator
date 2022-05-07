@@ -1,5 +1,4 @@
 ﻿using UnityEditor;
-using UnityEditor.Experimental.SceneManagement;
 using UnityEngine;
 
 namespace HierarchyDecorator
@@ -44,7 +43,12 @@ namespace HierarchyDecorator
 
         protected override bool DrawerIsEnabled(Settings _settings, GameObject instace)
         {
-           return _settings.globalData.showActiveToggles && PrefabStageUtility.GetCurrentPrefabStage() == null;
+#if UNITY_2021_2_OR_NEWER
+            var prefabStage = UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
+#else
+            var prefabStage = UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
+#endif
+            return _settings.globalData.showActiveToggles && prefabStage == null;
         }
     }
 }
