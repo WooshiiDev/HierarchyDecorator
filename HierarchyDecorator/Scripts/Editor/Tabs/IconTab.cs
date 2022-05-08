@@ -7,7 +7,7 @@ using Object = UnityEngine.Object;
 
 namespace HierarchyDecorator
 {
-    [RegisterTab(1)]
+    [RegisterTab(2)]
     public class IconTab : SettingsTab
     {
         [Serializable]

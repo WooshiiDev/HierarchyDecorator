@@ -6,7 +6,7 @@ using UnityEditorInternal;
 
 namespace HierarchyDecorator
 {
-    [RegisterTab(0)]
+    [RegisterTab(1)]
     public class StyleTab : SettingsTab
     {
         private ReorderableList styleList;

@@ -3,7 +3,7 @@ using UnityEditor;
 
 namespace HierarchyDecorator
 {
-    [RegisterTab(2)]
+    [RegisterTab(0)]
     public class GeneralTab : SettingsTab
     {
         private readonly SettingGroup[] groups = new SettingGroup[]
