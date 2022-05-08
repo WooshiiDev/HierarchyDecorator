@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -7,10 +7,11 @@ using Object = UnityEngine.Object;
 
 namespace HierarchyDecorator
 {
+    [RegisterTab(1)]
     public class IconTab : SettingsTab
     {
         [Serializable]
-        private class IconInfo : IComparable<IconInfo>
+        private struct IconInfo : IComparable<IconInfo>
         {
             public readonly Type type;
             public SerializedProperty property;

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -6,6 +6,7 @@ using UnityEditorInternal;
 
 namespace HierarchyDecorator
 {
+    [RegisterTab(0)]
     public class StyleTab : SettingsTab
     {
         private ReorderableList styleList;

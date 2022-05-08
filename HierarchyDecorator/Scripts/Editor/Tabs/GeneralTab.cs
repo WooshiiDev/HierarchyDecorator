@@ -1,8 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEditor;
 
 namespace HierarchyDecorator
 {
+    [RegisterTab(2)]
     public class GeneralTab : SettingsTab
     {
         private readonly SettingGroup[] groups = new SettingGroup[]

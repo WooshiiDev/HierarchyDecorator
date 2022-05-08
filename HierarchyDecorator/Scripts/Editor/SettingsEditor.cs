@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,18 +11,12 @@ namespace HierarchyDecorator
     internal class SettingsEditor : Editor
     {
         private Settings t;
-
-        private List<SettingsTab> tabs;
+        private List<SettingsTab> tabs = new List<SettingsTab> ();
 
         private void OnEnable()
         {
             t = target as Settings;
-
-            tabs = new List<SettingsTab> ();
-
-            RegisterTab (new GeneralTab (t, serializedObject));
-            RegisterTab (new StyleTab (t, serializedObject));
-            RegisterTab (new IconTab (t, serializedObject));
+            RegisterTabs ();
         }
 
         private void OnDisable()
@@ -56,11 +52,6 @@ namespace HierarchyDecorator
             }
         }
 
-        private void RegisterTab(SettingsTab tab)
-        {
-            tabs.Add (tab);
-        }
-
         private void DrawTitle()
         {
             EditorGUILayout.BeginHorizontal ();
@@ -84,6 +75,43 @@ namespace HierarchyDecorator
                 EditorGUILayout.Space ();
             }
             EditorGUILayout.EndHorizontal ();
+        }
+
+        private void RegisterTabs()
+        {
+            // Get all types that have the RegisterTab attribute
+
+            foreach (Type type in GetTabs())
+            {
+                if (!type.IsSubclassOf (typeof (SettingsTab)))
+                {
+                    Debug.LogWarning ($"{type.Name} uses the RegisterTab attribute but does not inherit from SettingsTab.");
+                    continue;
+                }
+
+                // Get the priority from the attribute to know where it should appear
+
+                int priority = type.GetCustomAttribute<RegisterTabAttribute> ().priority;
+                SettingsTab tab = Activator.CreateInstance (type, t, serializedObject) as SettingsTab;
+
+                // Insert the tab if there is a slot for it, otherwise add it to the end
+
+                if (tabs.Count > priority)
+                {
+                    tabs.Insert (priority, tab);
+                }
+                else
+                {
+                    tabs.Add (tab);
+                }
+            }
+        }
+
+        private Type[] GetTabs()
+        {
+            return ReflectionUtility.GetTypesFromAssemblies (
+                t => t.GetCustomAttribute<RegisterTabAttribute> () != null
+                );
         }
     }
 }
