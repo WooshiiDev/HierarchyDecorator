@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -18,7 +18,7 @@ namespace HierarchyDecorator
         private SerializedProperty serializedStyles;
         private SettingGroup styleGlobalSettings;
 
-        public StyleTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, serializedSettings.FindProperty ("styleData"), "Styles", "d_InputField Icon")
+        public StyleTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, "styleData", "Styles", "d_InputField Icon")
         {
             serializedStyles = serializedTab.FindPropertyRelative ("styles");
 

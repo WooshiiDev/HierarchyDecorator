@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -41,7 +41,7 @@ namespace HierarchyDecorator
         private bool[] categoryFoldout;
         private int selection;
 
-        public IconTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, serializedSettings.FindProperty("componentData"), "Icons", "d_FilterByType")
+        public IconTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, "componentData", "Icons", "d_FilterByType")
         {
             // Setup References
             showAllProperty = serializedSettings.FindProperty ("globalData.showAllComponents");

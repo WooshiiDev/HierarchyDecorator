@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEditor;
 
 namespace HierarchyDecorator
@@ -11,7 +11,7 @@ namespace HierarchyDecorator
             new SettingGroup("Layers", new string[] {"showLayers", "editableLayers", "applyChildLayers"}),
         };
 
-        public GeneralTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, serializedSettings.FindProperty ("globalData"), "General", "d_CustomTool")
+        public GeneralTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, "globalData", "General", "d_CustomTool")
         {
 
         }

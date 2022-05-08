@@ -18,11 +18,11 @@ namespace HierarchyDecorator
         /// Constructor used to cache the data required
         /// </summary>
         /// <param name="settings">Current settings used for the hierarchy</param>
-        public SettingsTab(Settings settings, SerializedObject serializedSettings, SerializedProperty serializedTab, string name, string icon)
+        public SettingsTab(Settings settings, SerializedObject serializedSettings, string serializedTabName, string name, string icon)
         {
             this.settings = settings;
             this.serializedSettings = serializedSettings;
-            this.serializedTab = serializedTab;
+            this.serializedTab = serializedSettings.FindProperty(serializedTabName);
 
 #if UNITY_2019_4_OR_NEWER
             content = new GUIContent (name, GUIHelper.GetUnityIcon (icon));
