@@ -11,11 +11,21 @@ namespace HierarchyDecorator
     internal class SettingsEditor : Editor
     {
         private Settings t;
+
+        // Grid selection
+
+        private SettingsTab selectedTab;
+
         private List<SettingsTab> tabs = new List<SettingsTab> ();
+        private List<GUIContent> tabNames = new List<GUIContent> ();
+
+        private int selectedTabIndex = 0;
 
         private void OnEnable()
         {
             t = target as Settings;
+
+            SetupValues ();
             RegisterTabs ();
         }
 
@@ -28,32 +38,37 @@ namespace HierarchyDecorator
             }
         }
 
+        public override bool UseDefaultMargins()
+        {
+            return false;
+        }
+
         public override void OnInspectorGUI()
         {
+            EditorGUILayout.BeginVertical (Style.InspectorPadding);
+
             serializedObject.Update ();
 
             DrawTitle ();
 
-#if UNITY_2019_1_OR_NEWER
-            EditorGUILayout.Space ();
-#else
-            GUILayout.Space(16f);
-#endif
-            foreach (SettingsTab tab in tabs)
-            {
-                EditorGUI.indentLevel++;
-                tab.OnGUI ();
-                EditorGUI.indentLevel--;
-            }
+            selectedTab.OnGUI ();
 
             if (serializedObject.UpdateIfRequiredOrScript())
             {
                 EditorApplication.RepaintHierarchyWindow ();
             }
+
+            EditorGUILayout.EndVertical();
         }
 
         private void DrawTitle()
         {
+            // --- Header
+#if UNITY_2019_1_OR_NEWER
+            EditorGUILayout.BeginVertical (Style.TabBackground, GUILayout.MinHeight (32f));
+#else
+            EditorGUILayout.BeginVertical (Style.TabBackground, GUILayout.MinHeight (16f));
+#endif
             EditorGUILayout.BeginHorizontal ();
             {
                 EditorGUILayout.LabelField ("Hierarchy Settings", Style.Title);
@@ -64,17 +79,24 @@ namespace HierarchyDecorator
                 {
                     Application.OpenURL ("https://github.com/WooshiiDev/HierarchyDecorator/");
                 }
-
-                EditorGUILayout.Space ();
-
-                if (GUILayout.Button ("Twitter", EditorStyles.miniButtonMid))
-                {
-                    Application.OpenURL ("https://twitter.com/WooshiiDev");
-                }
-
-                EditorGUILayout.Space ();
             }
             EditorGUILayout.EndHorizontal ();
+
+            HierarchyGUI.Space ();
+
+            // --- Selection
+
+            EditorGUI.BeginChangeCheck ();
+            {
+                selectedTabIndex = GUILayout.SelectionGrid (selectedTabIndex, tabNames.ToArray (),
+                    Mathf.Min (3, tabs.Count), Style.LargeButtonSmallTextStyle);
+            }
+            if (EditorGUI.EndChangeCheck ())
+            {
+                selectedTab = tabs[selectedTabIndex];
+            }
+
+            EditorGUILayout.EndVertical ();
         }
 
         private void RegisterTabs()
@@ -99,12 +121,16 @@ namespace HierarchyDecorator
                 if (tabs.Count > priority)
                 {
                     tabs.Insert (priority, tab);
+                    tabNames.Insert (priority, tab.Content);
                 }
                 else
                 {
                     tabs.Add (tab);
+                    tabNames.Add (tab.Content);
                 }
             }
+
+            selectedTab = tabs[0];
         }
 
         private Type[] GetTabs()
@@ -112,6 +138,14 @@ namespace HierarchyDecorator
             return ReflectionUtility.GetTypesFromAssemblies (
                 t => t.GetCustomAttribute<RegisterTabAttribute> () != null
                 );
+        }
+
+        private void SetupValues()
+        {
+            tabs.Clear ();
+            tabNames.Clear ();
+
+            selectedTabIndex = 0;
         }
     }
 }

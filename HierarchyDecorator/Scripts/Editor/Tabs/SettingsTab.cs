@@ -5,14 +5,11 @@ namespace HierarchyDecorator
 {
     public abstract class SettingsTab
     {
-        //GUI
-        private bool isShown;
-        private readonly GUIContent content;
+        protected readonly Settings settings;
+        protected readonly SerializedObject serializedSettings;
+        protected readonly SerializedProperty serializedTab;
 
-        // References
-        protected Settings settings;
-        protected SerializedObject serializedSettings;
-        protected SerializedProperty serializedTab;
+        public readonly GUIContent Content;
 
         /// <summary>
         /// Constructor used to cache the data required
@@ -25,7 +22,7 @@ namespace HierarchyDecorator
             this.serializedTab = serializedSettings.FindProperty(serializedTabName);
 
 #if UNITY_2019_4_OR_NEWER
-            content = new GUIContent (name, GUIHelper.GetUnityIcon (icon));
+            Content = new GUIContent (name, GUIHelper.GetUnityIcon (icon));
 #else
             content = new GUIContent (name);
 #endif
@@ -42,21 +39,9 @@ namespace HierarchyDecorator
             EditorGUILayout.BeginVertical (Style.TabBackground, GUILayout.MinHeight (16f));
 #endif
 
-            if (IsShown ())
-            {
-                OnContentGUI ();
-                EditorGUILayout.Space ();
-            }
+            OnContentGUI ();
 
             EditorGUILayout.EndVertical ();
-        }
-
-        /// <summary>
-        /// Is the current tab open or closed, hiding the settings?
-        /// </summary>
-        protected bool IsShown()
-        {
-            return serializedTab.isExpanded = EditorGUILayout.Foldout (serializedTab.isExpanded, content, true, Style.FoldoutHeader);
         }
 
         /// <summary>
