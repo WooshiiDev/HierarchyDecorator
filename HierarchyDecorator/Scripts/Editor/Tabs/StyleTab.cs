@@ -67,8 +67,8 @@ namespace HierarchyDecorator
                 serializedSettings.ApplyModifiedProperties ();
             }
 
-            EditorGUILayout.Space ();
-            EditorGUILayout.LabelField ("Hierarchy Styles", EditorStyles.boldLabel);
+            HierarchyGUI.Space ();
+            GUILayout.Label("Hierarchy Styles", Style.SettingsTabHeader);
 
             styleList.DoLayoutList ();
         }

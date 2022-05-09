@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using UnityEditor;
+﻿using UnityEditor;
+using UnityEngine;
 
 namespace HierarchyDecorator
 {
@@ -24,10 +24,12 @@ namespace HierarchyDecorator
         {
             EditorGUI.BeginChangeCheck ();
 
-            groups[0].DisplaySettings (serializedTab);
-            groups[1].DisplaySettings (serializedTab);
-
-            EditorGUILayout.Space ();
+            int len = groups.Length;
+            for (int i = 0; i < len; i++)
+            {
+                groups[i].DisplaySettings (serializedTab);
+                HierarchyGUI.Space ();
+            }
 
             if (EditorGUI.EndChangeCheck())
             {

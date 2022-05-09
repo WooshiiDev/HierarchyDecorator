@@ -90,21 +90,28 @@ namespace HierarchyDecorator
         internal readonly static Texture2D Banner = Resources.Load<Texture2D> ("HierarchyDecoratorLogo");
     }
 
+    //TODO: [Wooshii] Add comment descriptions for styles.
     internal static class Style
     {
-        public static readonly GUIStyle FoldoutHeader;
-        public static readonly GUIStyle TabBackground;
         public static readonly GUIStyle CenteredBoldLabel;
+
         public static readonly GUIStyle SmallDropdown;
         public static readonly GUIStyle ComponentIconStyle;
-        public static readonly GUIStyle Title;
-        public static readonly GUIStyle InnerWindow;
 
-        // Foldouts
+        public static readonly GUIStyle Title;
+        public static readonly GUIStyle InspectorPadding;
+
+        // --- Setting Tabs
+
+        public static readonly GUIStyle TabBackground;
+        public static readonly GUIStyle SettingsTabHeader;
+
+        // --- Foldouts
+
         public static readonly GUIStyle LargeButtonStyle;
         public static readonly GUIStyle LargeButtonSmallTextStyle;
 
-        // Hierarchy Styles
+        // --- Hierarchy Styles
 
         public static readonly GUIStyle Toggle;
         public static readonly GUIStyle ToggleMixed;
@@ -113,13 +120,17 @@ namespace HierarchyDecorator
 
         static Style()
         {
-            FoldoutHeader = new GUIStyle (EditorStyles.foldout)
+            SettingsTabHeader = new GUIStyle (GUI.skin.box)
             {
 #if UNITY_2019_1_OR_NEWER
                 stretchHeight = true,
 #endif
                 fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.MiddleLeft,
+                alignment = TextAnchor.MiddleCenter,
+
+                fontSize = 12,
+
+                stretchWidth = true
             };
 
             TabBackground = new GUIStyle (EditorStyles.helpBox)
@@ -136,7 +147,7 @@ namespace HierarchyDecorator
             {
                 fontSize = 11,
                 fixedHeight = 0,
-                fontStyle = FontStyle.Bold
+                fontStyle = FontStyle.Bold,
             };
 
             SmallDropdown = new GUIStyle (EditorStyles.centeredGreyMiniLabel)
@@ -161,10 +172,9 @@ namespace HierarchyDecorator
                 fixedHeight = 21,
             };
 
-            InnerWindow = new GUIStyle (GUI.skin.window)
+            InspectorPadding = new GUIStyle (EditorStyles.inspectorFullWidthMargins)
             {
-                padding = new RectOffset (2, 0, 0, 0),
-                margin = new RectOffset (0, 0, 0, 0),
+                padding = new RectOffset (4, 4, 4, 4),
             };
 
             LargeButtonStyle = new GUIStyle (EditorStyles.miniButton)
@@ -175,7 +185,7 @@ namespace HierarchyDecorator
             LargeButtonSmallTextStyle = new GUIStyle (EditorStyles.miniButton)
             {
                 fixedHeight = 32f,
-                fontSize = 12
+                fontSize = 12,
             };
 
             // Hierarchy Styles

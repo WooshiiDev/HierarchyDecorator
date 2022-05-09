@@ -63,7 +63,7 @@ namespace HierarchyDecorator
             bool canHaveColumns = currentViewWidth > 500f;
             float horizIconWidth = (currentViewWidth * 0.75f) * 0.45f;
 
-            EditorGUILayout.Space ();
+            HierarchyGUI.Space ();
 
             EditorGUI.BeginChangeCheck ();
             EditorGUILayout.PropertyField (showMissingProperty);
@@ -72,7 +72,7 @@ namespace HierarchyDecorator
                 serializedSettings.ApplyModifiedProperties ();
             }
 
-            EditorGUILayout.Space ();
+            HierarchyGUI.Space ();
 
             EditorGUILayout.BeginHorizontal (GUILayout.MaxWidth (currentViewWidth));
             {
