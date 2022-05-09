@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 
 namespace HierarchyDecorator
@@ -101,6 +101,17 @@ namespace HierarchyDecorator
             {
                 return isEvenRow ? Constants.LightModeEvenColor : Constants.LightModeOddColor;
             }
+        }
+
+        // Version GUI Helpers
+
+        public static void Space()
+        {
+#if UNITY_2019_1_OR_NEWER
+            EditorGUILayout.Space ();
+#else
+            GUILayout.Space (9f);
+#endif
         }
     }
 }
