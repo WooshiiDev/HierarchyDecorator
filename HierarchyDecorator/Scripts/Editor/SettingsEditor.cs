@@ -51,7 +51,10 @@ namespace HierarchyDecorator
 
             DrawTitle ();
 
-            selectedTab.OnGUI ();
+            if (selectedTab != null)
+            {
+                selectedTab.OnGUI ();
+            }
 
             if (serializedObject.UpdateIfRequiredOrScript())
             {
