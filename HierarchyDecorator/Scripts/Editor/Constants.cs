@@ -125,12 +125,17 @@ namespace HierarchyDecorator
 #if UNITY_2019_1_OR_NEWER
                 stretchHeight = true,
 #endif
+                stretchWidth = true,
+
                 fontStyle = FontStyle.Bold,
                 alignment = TextAnchor.MiddleCenter,
 
                 fontSize = 12,
 
-                stretchWidth = true
+                normal =
+                {
+                   textColor = new Color(0.8f, 0.8f, 0.8f)
+                }
             };
 
             TabBackground = new GUIStyle (EditorStyles.helpBox)
