@@ -2,14 +2,13 @@
 
 namespace HierarchyDecorator
 {
-    public class ReorderableElement : DrawableElement<ReorderableList>
+    public class ReorderableDrawer : GUIDrawer<ReorderableList>
     {
-        public ReorderableElement(ReorderableList target) : base (target) { }
+        public ReorderableDrawer(ReorderableList target) : base (target) { }
 
         protected override void OnElementDraw()
         {
             Target.DoLayoutList ();
         }
     }
-
 }

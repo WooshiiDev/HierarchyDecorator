@@ -2,37 +2,19 @@
 
 namespace HierarchyDecorator
 {
+
     /// <summary>
-    /// An abstract class for drawing simple GUI elements.
+    /// A class for drawing GUI elements.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public abstract class DrawableElement<T> : IDrawable<T>
+    public abstract class GUIDrawer : IDrawable
     {
-        /// <summary>
-        /// The target data used for the GUI.
-        /// </summary>
-        public T Target
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Initializes a new DrawableElement.
-        /// </summary>
-        /// <param name="target">The target data object.</param>
-        public DrawableElement(T target)
-        {
-            Target = target;
-        }
-
         /// <summary>
         /// Draw this element.
         /// </summary>
         public void OnDraw()
         {
             EditorGUI.BeginDisabledGroup (!IsEnabled ());
-            
+
             OnElementDraw ();
 
             EditorGUI.EndDisabledGroup ();
@@ -52,5 +34,30 @@ namespace HierarchyDecorator
         /// Draw method used to setup how the element is displayed.
         /// </summary>
         protected abstract void OnElementDraw();
+    }
+
+    /// <summary>
+    /// A class for drawing GUI elements.
+    /// </summary>
+    /// <typeparam name="T">The target data type for this drawer to target.</typeparam>
+    public abstract class GUIDrawer<T> : GUIDrawer
+    {
+        /// <summary>
+        /// The target data used for the GUI.
+        /// </summary>
+        public T Target
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Initializes a new DrawableElement.
+        /// </summary>
+        /// <param name="target">The target data object.</param>
+        public GUIDrawer(T target)
+        {
+            Target = target;
+        }
     }
 }

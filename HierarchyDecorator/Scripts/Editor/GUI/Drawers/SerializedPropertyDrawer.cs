@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace HierarchyDecorator
 {
-    public class SerializedPropertyElement : DrawableElement<SerializedProperty>
+    public class SerializedPropertyElement : GUIDrawer<SerializedProperty>
     {
         public SerializedPropertyElement(SerializedProperty target) : base (target) { }
 

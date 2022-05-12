@@ -17,7 +17,7 @@ namespace HierarchyDecorator
         private string[] modes = new string[] { "Light Mode", "Dark Mode" };
 
         private SerializedProperty serializedStyles;
-        private SettingGroup styleGlobalSettings;
+        private DrawerGroup styleGlobalSettings;
 
         public StyleTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, "styleData", "Styles", "d_InputField Icon")
         {
@@ -50,27 +50,11 @@ namespace HierarchyDecorator
             }
 #endif
 
-            styleGlobalSettings = new SettingGroup ("Style Global Features", "displayLayers", "displayIcons");
-        }
+            CreateDrawableGroup ("Settings")
+                .RegisterSerializedProperty (serializedTab, "displayLayers", "displayIcons");
 
-        /// <summary>
-        /// The main content area for the settings
-        /// </summary>
-        protected override void OnContentGUI()
-        {
-            EditorGUI.BeginChangeCheck ();
-
-            styleGlobalSettings.DisplaySettings (serializedTab);
-
-            if (EditorGUI.EndChangeCheck())
-            {
-                serializedSettings.ApplyModifiedProperties ();
-            }
-
-            HierarchyGUI.Space ();
-            GUILayout.Label("Hierarchy Styles", Style.SettingsTabHeader);
-
-            styleList.DoLayoutList ();
+            CreateDrawableGroup ("Styles")
+                .RegisterReorderable (styleList);
         }
 
         // Reorderable List GUI

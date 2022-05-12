@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace HierarchyDecorator
@@ -10,6 +11,8 @@ namespace HierarchyDecorator
         protected readonly SerializedProperty serializedTab;
 
         public readonly GUIContent Content;
+
+        protected List<DrawerGroup> settingGroups = new List<DrawerGroup> ();
 
         /// <summary>
         /// Constructor used to cache the data required
@@ -39,14 +42,48 @@ namespace HierarchyDecorator
             EditorGUILayout.BeginVertical (Style.TabBackground, GUILayout.MinHeight (16f));
 #endif
 
-            OnContentGUI ();
+            EditorGUI.BeginChangeCheck ();
+            {
+                for (int i = 0; i < settingGroups.Count; i++)
+                {
+                    settingGroups[i].OnGUI ();
+                    HierarchyGUI.Space ();
+                }
+
+                OnContentGUI ();
+            }
+            if (EditorGUI.EndChangeCheck())
+            {
+                serializedSettings.ApplyModifiedProperties ();
+            }
 
             EditorGUILayout.EndVertical ();
         }
 
         /// <summary>
-        /// The main content area for the settings
+        /// GUI Method called after setting groups are drawn.
         /// </summary>
-        protected abstract void OnContentGUI();
+        protected virtual void OnContentGUI()
+        {
+
+        }
+
+        /// <summary>
+        /// Craete 
+        /// </summary>
+        /// <param name="title"></param>
+        /// <returns></returns>
+        protected DrawerGroup CreateDrawableGroup(string title)
+        {
+            DrawerGroup group = new DrawerGroup (title);
+            
+            if (settingGroups.FindIndex(i => i.Title == title) != -1)
+            {
+                Debug.LogWarning ("Attempt to add DrawableGroup with a title that already exists. Should specify each with different names.");
+            }
+
+            settingGroups.Add (group);
+            return group;
+        }
     }
 }

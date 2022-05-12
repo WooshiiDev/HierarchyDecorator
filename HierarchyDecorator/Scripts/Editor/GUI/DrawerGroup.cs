@@ -6,29 +6,29 @@ using System.Collections.Generic;
 namespace HierarchyDecorator
 {
     /// <summary>
-    /// Collection of drawers drawn with a title.
+    /// Stores a collection of <see cref="IDrawable"/>s and draws all under a single title.
     /// </summary>
-    public class DrawableGroup
+    public class DrawerGroup
     {
-        private readonly string title;
+        public readonly string Title;
         private List<IDrawable> drawers = new List<IDrawable> ();
 
         /// <summary>
         /// Create a new DrawableGroup with a given title.
         /// </summary>
         /// <param name="title">The title of the group.</param>
-        public DrawableGroup(string title)
+        public DrawerGroup(string title)
         {
-            this.title = title;
+            this.Title = title;
         }
-
+        
         /// <summary>
         /// Draw settings for this group.
         /// </summary>
         /// <param name="property"></param>
         public virtual void OnGUI()
         {
-            EditorGUILayout.LabelField (title, Style.SettingsTabHeader);
+            EditorGUILayout.LabelField (Title, Style.SettingsTabHeader);
 
             for (int i = 0; i < drawers.Count; i++)
             {
@@ -40,7 +40,7 @@ namespace HierarchyDecorator
         /// Register a drawer.
         /// </summary>
         /// <param name="drawable">The drawer to register.</param>
-        public DrawableGroup RegisterDrawable(IDrawable drawable)
+        public DrawerGroup RegisterDrawer(IDrawable drawable)
         {
             // Make sure it's not null
 
@@ -59,7 +59,7 @@ namespace HierarchyDecorator
         /// Register a <see cref="ReorderableList"/> drawer.
         /// </summary>
         /// <param name="list">The ReorderableList to register.</param>
-        public DrawableGroup RegisterReorderable(ReorderableList list)
+        public DrawerGroup RegisterReorderable(ReorderableList list)
         {
             if (list == null)
             {
@@ -67,7 +67,7 @@ namespace HierarchyDecorator
                 return this;
             }
 
-            drawers.Add (new ReorderableElement (list));
+            drawers.Add (new ReorderableDrawer (list));
             return this;
         }
 
@@ -76,7 +76,7 @@ namespace HierarchyDecorator
         /// </summary>
         /// <param name="property">The SerializedProperty.</param>
         /// <param name="names">The names of the child properties to find.</param>
-        public DrawableGroup RegisterSerializedPropertu(SerializedProperty property, params string[] names)
+        public DrawerGroup RegisterSerializedProperty(SerializedProperty property, params string[] names)
         {
             // Check if names is null
 
