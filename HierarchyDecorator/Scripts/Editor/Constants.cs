@@ -93,6 +93,8 @@ namespace HierarchyDecorator
     //TODO: [Wooshii] Add comment descriptions for styles.
     internal static class Style
     {
+        private const string TOGGLE_MIXED = "OL ToggleMixed";
+
         public static readonly GUIStyle CenteredBoldLabel;
 
         public static readonly GUIStyle SmallDropdown;
@@ -104,7 +106,7 @@ namespace HierarchyDecorator
         // --- Setting Tabs
 
         public static readonly GUIStyle TabBackground;
-        public static readonly GUIStyle SettingsTabHeader;
+        public static readonly GUIStyle BoxHeader;
 
         // --- Foldouts
 
@@ -116,11 +118,13 @@ namespace HierarchyDecorator
         public static readonly GUIStyle Toggle;
         public static readonly GUIStyle ToggleMixed;
 
-        private const string TOGGLE_MIXED = "OL ToggleMixed";
+        // --- Fields
+
+        public static readonly GUIStyle TextFieldShortStyle;
 
         static Style()
         {
-            SettingsTabHeader = new GUIStyle (GUI.skin.box)
+            BoxHeader = new GUIStyle (GUI.skin.box)
             {
 #if UNITY_2019_1_OR_NEWER
                 stretchHeight = true,
@@ -135,7 +139,7 @@ namespace HierarchyDecorator
                 normal =
                 {
                    textColor = new Color(0.8f, 0.8f, 0.8f)
-                }
+                }, 
             };
 
             TabBackground = new GUIStyle (EditorStyles.helpBox)

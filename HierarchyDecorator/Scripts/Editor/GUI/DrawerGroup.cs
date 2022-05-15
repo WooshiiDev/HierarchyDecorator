@@ -28,7 +28,7 @@ namespace HierarchyDecorator
         /// <param name="property"></param>
         public virtual void OnGUI()
         {
-            EditorGUILayout.LabelField (Title, Style.SettingsTabHeader);
+            EditorGUILayout.LabelField (Title, Style.BoxHeader);
 
             for (int i = 0; i < drawers.Count; i++)
             {
