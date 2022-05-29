@@ -11,7 +11,7 @@ namespace HierarchyDecorator
         public string name;
 
         public bool shown = false;
-        public Type type;
+        public Type type = typeof (DefaultAsset);
 
         public ComponentType(Type type)
         {
