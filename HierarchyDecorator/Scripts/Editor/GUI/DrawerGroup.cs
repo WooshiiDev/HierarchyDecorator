@@ -100,8 +100,21 @@ namespace HierarchyDecorator
                     continue;
                 }
 
-                drawers.Add (new SerializedPropertyElement (prop));
+                RegisterSerializedProperty (prop);
             }
+
+            return this;
+        }
+
+        public DrawerGroup RegisterSerializedProperty(SerializedProperty property)
+        {
+            if (property == null)
+            {
+                Debug.LogError ("Cannot register null serialized property");
+                return this;
+            }
+
+            drawers.Add (new SerializedPropertyElement (property));
 
             return this;
         }
