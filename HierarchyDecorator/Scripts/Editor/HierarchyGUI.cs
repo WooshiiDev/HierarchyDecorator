@@ -105,12 +105,12 @@ namespace HierarchyDecorator
 
         // Version GUI Helpers
 
-        public static void Space()
+        public static void Space(float width = 9f)
         {
 #if UNITY_2019_1_OR_NEWER
-            EditorGUILayout.Space ();
+            EditorGUILayout.Space (width);
 #else
-            GUILayout.Space (9f);
+            GUILayout.Space (width);
 #endif
         }
     }
