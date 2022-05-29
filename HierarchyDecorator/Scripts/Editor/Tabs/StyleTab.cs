@@ -63,7 +63,9 @@ namespace HierarchyDecorator
 #endif
 
             CreateDrawableGroup ("Settings")
-                .RegisterSerializedProperty (serializedTab, "displayLayers", "displayIcons")
+                .RegisterSerializedProperty (serializedTab, "displayLayers", "displayIcons");
+
+            CreateDrawableGroup ("Styles")
                 .RegisterReorderable (styleList);
         }
 
