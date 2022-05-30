@@ -222,6 +222,7 @@ namespace HierarchyDecorator
                     if (EditorGUI.EndChangeCheck())
                     {
                         serializedSettings.ApplyModifiedProperties ();
+                        settings.componentData.UpdateCustomComponentData ();
                     }
 
                     EditorGUI.indentLevel--;
