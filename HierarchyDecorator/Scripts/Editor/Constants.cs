@@ -138,7 +138,7 @@ namespace HierarchyDecorator
 
                 normal =
                 {
-                   textColor = new Color(0.8f, 0.8f, 0.8f)
+                    textColor = EditorStyles.label.normal.textColor,
                 }, 
             };
 
@@ -148,6 +148,7 @@ namespace HierarchyDecorator
                 fixedHeight = 0,
 
                 margin = new RectOffset (0, 0, 0, 0),
+                padding = new RectOffset(8, 8, 8, 8),
 
                 alignment = TextAnchor.MiddleLeft
             };
@@ -172,7 +173,10 @@ namespace HierarchyDecorator
             ComponentIconStyle = new GUIStyle (EditorStyles.label)
             {
                 padding = new RectOffset (0, 0, 0, 0),
-                margin = new RectOffset (0, 0, 0, 0)
+                margin = new RectOffset (0, 0, 0, 0),
+
+                wordWrap = false,
+                clipping = TextClipping.Clip
             };
 
             Title = new GUIStyle (EditorStyles.boldLabel)
@@ -199,15 +203,40 @@ namespace HierarchyDecorator
 
             // Hierarchy Styles
 
-            Toggle = new GUIStyle ("OL Toggle");
+            Toggle = new GUIStyle ("OL Toggle")
+            {
+                normal =
+                {
+                    textColor = EditorStyles.label.normal.textColor,
+                },
+            };
 
 #if UNITY_2019_4_OR_NEWER
             ToggleMixed = new GUIStyle (TOGGLE_MIXED)
             {
+                clipping = TextClipping.Clip,
+
+                normal =
+                {
+                    textColor = EditorStyles.label.normal.textColor,
+                },
+
+                active =
+                {
+                    textColor = EditorStyles.label.normal.textColor,
+                },
+
+                hover =
+                {
+                    textColor = EditorStyles.label.normal.textColor,
+                },
+
                 focused =
                 {
                     background = null,
                     scaledBackgrounds = null,
+
+                    textColor = EditorStyles.label.normal.textColor,
                 },
             };
 #else
