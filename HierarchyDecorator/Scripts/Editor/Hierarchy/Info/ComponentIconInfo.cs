@@ -63,9 +63,9 @@ namespace HierarchyDecorator
                     continue;
                 }
 
-                if (type.IsSubclassOf (typeof (MonoBehaviour)))
+                if (type.IsSubclassOf (typeof (MonoBehaviour)) && settings.componentData.FindCustomComponentFromType(type, out CustomComponentType componentType))
                 {
-                    DrawMonobehaviour (rect, component, settings);
+                    DrawMonobehaviour (rect, component, componentType, settings);
                 }
                 else
                 {
@@ -82,18 +82,12 @@ namespace HierarchyDecorator
 
         // GUI
 
-        private void DrawMonobehaviour(Rect rect, Component component, Settings settings)
+        private void DrawMonobehaviour(Rect rect, Component component, CustomComponentType componentType, Settings settings)
         {
             Type type = component.GetType ();
 
             if (!settings.globalData.showAllComponents)
             {
-                // Find custom component
-                if (!settings.componentData.FindCustomComponentFromType (type, out CustomComponentType componentType))
-                {
-                    return;
-                }
-
                 if (componentType.script == null)
                 {
                     return;
@@ -104,7 +98,6 @@ namespace HierarchyDecorator
                     return;
                 }
             }
-
 
             string path = AssetDatabase.GetAssetPath (MonoScript.FromMonoBehaviour (component as MonoBehaviour));
             GUIContent content = new GUIContent (AssetDatabase.GetCachedIcon (path));
