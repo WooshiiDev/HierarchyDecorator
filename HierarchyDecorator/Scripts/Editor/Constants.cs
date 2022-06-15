@@ -102,6 +102,7 @@ namespace HierarchyDecorator
 
         public static readonly GUIStyle Title;
         public static readonly GUIStyle InspectorPadding;
+        public static readonly GUIStyle NoPadding;
 
         // --- Setting Tabs
 
@@ -121,10 +122,17 @@ namespace HierarchyDecorator
         // --- Fields
 
         public static readonly GUIStyle TextFieldShortStyle;
+        public static readonly GUIStyle ToolbarNoSpace;
 
         static Style()
         {
-            BoxHeader = new GUIStyle (GUI.skin.box)
+            ToolbarNoSpace = new GUIStyle(EditorStyles.toolbar)
+            {
+                padding = new RectOffset(0, 0, 0, 0),
+                margin = new RectOffset(0, 0, 0, 0)
+            };
+
+            BoxHeader = new GUIStyle(GUI.skin.box)
             {
 #if UNITY_2019_1_OR_NEWER
                 stretchHeight = true,
@@ -139,7 +147,9 @@ namespace HierarchyDecorator
                 normal =
                 {
                     textColor = EditorStyles.label.normal.textColor,
-                }, 
+                },
+
+                margin = new RectOffset(0,0,0,0),
             };
 
             TabBackground = new GUIStyle (EditorStyles.helpBox)
@@ -190,9 +200,17 @@ namespace HierarchyDecorator
                 padding = new RectOffset (4, 4, 4, 4),
             };
 
+            NoPadding = new GUIStyle(EditorStyles.inspectorFullWidthMargins)
+            {
+
+            };
+
             LargeButtonStyle = new GUIStyle (EditorStyles.miniButton)
             {
-                fixedHeight = 32f
+                fixedHeight = 32f,
+                fixedWidth = 0,
+
+                clipping = TextClipping.Clip,
             };
 
             LargeButtonSmallTextStyle = new GUIStyle (EditorStyles.miniButton)
