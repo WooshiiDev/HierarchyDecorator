@@ -44,10 +44,15 @@ namespace HierarchyDecorator
 
             EditorGUI.BeginChangeCheck ();
             {
-                for (int i = 0; i < settingGroups.Count; i++)
+                int len = settingGroups.Count;
+                for (int i = 0; i < len; i++)
                 {
                     settingGroups[i].OnGUI ();
-                    HierarchyGUI.Space ();
+
+                    if (i != len - 1)
+                    {
+                        HierarchyGUI.Space ();
+                    }
                 }
 
                 OnContentGUI ();
