@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
@@ -11,6 +11,7 @@ namespace HierarchyDecorator
     internal class SettingsEditor : Editor
     {
         private Settings t;
+        private Settings settings;
 
         // Grid selection
 
@@ -24,7 +25,7 @@ namespace HierarchyDecorator
         private void OnEnable()
         {
             t = target as Settings;
-
+            settings = target as Settings;
             SetupValues ();
             RegisterTabs ();
         }
@@ -117,7 +118,7 @@ namespace HierarchyDecorator
                 // Get the priority from the attribute to know where it should appear
 
                 int priority = type.GetCustomAttribute<RegisterTabAttribute> ().priority;
-                SettingsTab tab = Activator.CreateInstance (type, t, serializedObject) as SettingsTab;
+                SettingsTab tab = Activator.CreateInstance (type, settings, serializedObject) as SettingsTab;
 
                 // Insert the tab if there is a slot for it, otherwise add it to the end
 
