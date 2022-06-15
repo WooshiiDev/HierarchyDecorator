@@ -6,7 +6,7 @@ namespace HierarchyDecorator
     {
         public int priority = 0;
 
-        public RegisterTabAttribute(int priority)
+        public RegisterTabAttribute(int priority = 0)
         {
             this.priority = priority;
         }
