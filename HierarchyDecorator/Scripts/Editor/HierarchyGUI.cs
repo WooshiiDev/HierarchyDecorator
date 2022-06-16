@@ -102,5 +102,16 @@ namespace HierarchyDecorator
                 return isEvenRow ? Constants.LightModeEvenColor : Constants.LightModeOddColor;
             }
         }
+
+        // Version GUI Helpers
+
+        public static void Space(float width = 9f)
+        {
+#if UNITY_2019_1_OR_NEWER
+            EditorGUILayout.Space (width);
+#else
+            GUILayout.Space (width);
+#endif
+        }
     }
 }

@@ -1,31 +1,31 @@
-﻿using UnityEditor;
+﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace HierarchyDecorator
 {
     public abstract class SettingsTab
     {
-        //GUI
-        private bool isShown;
-        private readonly GUIContent content;
+        protected readonly Settings settings;
+        protected readonly SerializedObject serializedSettings;
+        protected readonly SerializedProperty serializedTab;
 
-        // References
-        protected Settings settings;
-        protected SerializedObject serializedSettings;
-        protected SerializedProperty serializedTab;
+        public readonly GUIContent Content;
+
+        protected List<DrawerGroup> settingGroups = new List<DrawerGroup> ();
 
         /// <summary>
         /// Constructor used to cache the data required
         /// </summary>
         /// <param name="settings">Current settings used for the hierarchy</param>
-        public SettingsTab(Settings settings, SerializedObject serializedSettings, SerializedProperty serializedTab, string name, string icon)
+        public SettingsTab(Settings settings, SerializedObject serializedSettings, string serializedTabName, string name, string icon)
         {
             this.settings = settings;
             this.serializedSettings = serializedSettings;
-            this.serializedTab = serializedTab;
+            this.serializedTab = serializedSettings.FindProperty(serializedTabName);
 
 #if UNITY_2019_4_OR_NEWER
-            content = new GUIContent (name, GUIHelper.GetUnityIcon (icon));
+            Content = new GUIContent (name, GUIHelper.GetUnityIcon (icon));
 #else
             content = new GUIContent (name);
 #endif
@@ -42,26 +42,53 @@ namespace HierarchyDecorator
             EditorGUILayout.BeginVertical (Style.TabBackground, GUILayout.MinHeight (16f));
 #endif
 
-            if (IsShown ())
+            EditorGUI.BeginChangeCheck ();
             {
+                int len = settingGroups.Count;
+                for (int i = 0; i < len; i++)
+                {
+                    settingGroups[i].OnGUI ();
+
+                    if (i != len - 1)
+                    {
+                        HierarchyGUI.Space ();
+                    }
+                }
+
                 OnContentGUI ();
-                EditorGUILayout.Space ();
+            }
+            if (EditorGUI.EndChangeCheck())
+            {
+                serializedSettings.ApplyModifiedProperties ();
             }
 
             EditorGUILayout.EndVertical ();
         }
 
         /// <summary>
-        /// Is the current tab open or closed, hiding the settings?
+        /// GUI Method called after setting groups are drawn.
         /// </summary>
-        protected bool IsShown()
+        protected virtual void OnContentGUI()
         {
-            return serializedTab.isExpanded = EditorGUILayout.Foldout (serializedTab.isExpanded, content, true, Style.FoldoutHeader);
+
         }
 
         /// <summary>
-        /// The main content area for the settings
+        /// Craete 
         /// </summary>
-        protected abstract void OnContentGUI();
+        /// <param name="title"></param>
+        /// <returns></returns>
+        protected DrawerGroup CreateDrawableGroup(string title)
+        {
+            DrawerGroup group = new DrawerGroup (title);
+            
+            if (settingGroups.FindIndex(i => i.Title == title) != -1)
+            {
+                Debug.LogWarning ("Attempt to add DrawableGroup with a title that already exists. Should specify each with different names.");
+            }
+
+            settingGroups.Add (group);
+            return group;
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -7,10 +7,11 @@ using Object = UnityEngine.Object;
 
 namespace HierarchyDecorator
 {
+    [RegisterTab(2)]
     public class IconTab : SettingsTab
     {
         [Serializable]
-        private class IconInfo : IComparable<IconInfo>
+        private struct IconInfo : IComparable<IconInfo>
         {
             public readonly Type type;
             public SerializedProperty property;
@@ -41,7 +42,7 @@ namespace HierarchyDecorator
         private bool[] categoryFoldout;
         private int selection;
 
-        public IconTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, serializedSettings.FindProperty("componentData"), "Icons", "d_FilterByType")
+        public IconTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, "componentData", "Icons", "d_FilterByType")
         {
             // Setup References
             showAllProperty = serializedSettings.FindProperty ("globalData.showAllComponents");
@@ -62,7 +63,7 @@ namespace HierarchyDecorator
             bool canHaveColumns = currentViewWidth > 500f;
             float horizIconWidth = (currentViewWidth * 0.75f) * 0.45f;
 
-            EditorGUILayout.Space ();
+            HierarchyGUI.Space ();
 
             EditorGUI.BeginChangeCheck ();
             EditorGUILayout.PropertyField (showMissingProperty);
@@ -71,7 +72,7 @@ namespace HierarchyDecorator
                 serializedSettings.ApplyModifiedProperties ();
             }
 
-            EditorGUILayout.Space ();
+            HierarchyGUI.Space ();
 
             EditorGUILayout.BeginHorizontal (GUILayout.MaxWidth (currentViewWidth));
             {
