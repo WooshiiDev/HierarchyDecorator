@@ -44,7 +44,7 @@ namespace HierarchyDecorator
         {
             if (allTypes == null)
             {
-                allTypes = ReflectionUtility.GetTypesFromAllAssemblies (typeof (Component));
+                allTypes = ReflectionUtility.GetSubTypesFromAssemblies (typeof (Component));
             }
 
             // Update the components if any are missing
