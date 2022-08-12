@@ -15,6 +15,13 @@ namespace HierarchyDecorator
         public Color backgroundColour = Color.white;
     }
 
+    public enum TextFormatting
+    {
+        ToUpper,
+        ToLower,
+        DontChange
+    }
+
     [System.Serializable]
     public class HierarchyStyle
     {
@@ -26,6 +33,7 @@ namespace HierarchyDecorator
         public int fontSize = 11;
         public TextAnchor fontAlignment = TextAnchor.MiddleCenter;
         public FontStyle fontStyle = FontStyle.Bold;
+        public TextFormatting textFormatting = TextFormatting.ToUpper;
 
         public ModeOptions[] modes;
 
@@ -63,6 +71,24 @@ namespace HierarchyDecorator
 
             style.font = font;
             style.normal.textColor = GetCurrentMode(isDarkMode).fontColour;
+        }
+
+        public string FormatString(string text)
+        {
+            switch (textFormatting)
+            {
+            default:
+                throw new System.Exception("Unhandeled formatting type " + textFormatting);
+
+            case TextFormatting.ToUpper:
+                return text.ToUpper();
+                
+            case TextFormatting.ToLower:
+                return text.ToLower();
+                
+            case TextFormatting.DontChange:
+                return text;
+            }
         }
 
         public ModeOptions GetCurrentMode(bool isDarkMode)

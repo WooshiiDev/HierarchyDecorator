@@ -117,7 +117,7 @@ namespace HierarchyDecorator
                 labelStyle = style.style;
 
                 int len = style.prefix.Length;
-                name = name.Substring (len + 1, name.Length - len - 1).ToUpper();
+                name = style.FormatString(name.Substring (len + 1, name.Length - len - 1));
             }
             else
             {
