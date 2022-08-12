@@ -78,7 +78,7 @@ namespace HierarchyDecorator
             switch (textFormatting)
             {
             default:
-                throw new System.Exception("Unhandeled formatting type " + textFormatting);
+                throw new System.Exception("Unhandled formatting type " + textFormatting);
 
             case TextFormatting.ToUpper:
                 return text.ToUpper();
