@@ -9,6 +9,8 @@ namespace HierarchyDecorator
 
         protected override void OnElementDraw()
         {
+            EditorGUI.BeginChangeCheck();
+
             switch (Target.propertyType)
             {
                 default:
@@ -18,6 +20,11 @@ namespace HierarchyDecorator
                 case SerializedPropertyType.Boolean:
                     Target.boolValue = GUILayout.Toggle (Target.boolValue, Target.displayName);
                     break;
+            }
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                Target.serializedObject.ApplyModifiedProperties();
             }
         }
     }
