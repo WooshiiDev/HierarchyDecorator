@@ -8,6 +8,7 @@ namespace HierarchyDecorator
 
         protected override void OnElementDraw()
         {
+            HierarchyGUI.Space();
             Target.DoLayoutList ();
         }
     }
