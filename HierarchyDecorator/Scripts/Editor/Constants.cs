@@ -48,6 +48,8 @@ namespace HierarchyDecorator
 
         //====== Editor Settings ======
 
+        public readonly static CategoryFilter DefaultFilter = new CategoryFilter("Other", string.Empty, FilterType.NONE);
+
         public readonly static CategoryFilter[] ComponentFilters =
         {
             new CategoryFilter ("2D", "2D", FilterType.NAME),
