@@ -10,7 +10,6 @@ namespace HierarchyDecorator
     [CustomEditor (typeof (Settings))]
     internal class SettingsEditor : Editor
     {
-        private Settings t;
         private Settings settings;
 
         // Grid selection
@@ -24,7 +23,6 @@ namespace HierarchyDecorator
 
         private void OnEnable()
         {
-            t = target as Settings;
             settings = target as Settings;
             SetupValues ();
             RegisterTabs ();
