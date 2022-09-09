@@ -1,4 +1,4 @@
-﻿using UnityEditor;
+using UnityEditor;
 using UnityEngine;
 
 namespace HierarchyDecorator
@@ -188,7 +188,9 @@ namespace HierarchyDecorator
                 margin = new RectOffset (0, 0, 0, 0),
 
                 wordWrap = false,
-                clipping = TextClipping.Clip
+                clipping = TextClipping.Clip,
+                fixedHeight = 16,
+                fixedWidth = 16,
             };
 
             Title = new GUIStyle (EditorStyles.boldLabel)
