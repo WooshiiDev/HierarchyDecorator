@@ -78,6 +78,8 @@ namespace HierarchyDecorator
             isOnCustom = true;
         }
         
+        // Methods
+
         // --- Category Initialization
 
         private void CreateUnityCategories()
@@ -174,11 +176,7 @@ namespace HierarchyDecorator
         {
             HierarchyGUI.Space();
 
-            // Update the settings if required
-
-            serializedSettings.UpdateIfRequiredOrScript();
-
-            // Draw 
+            // Draw Content 
 
             EditorGUILayout.LabelField ("Icon Selection", Style.BoxHeader);
             HierarchyGUI.Space();
@@ -198,8 +196,10 @@ namespace HierarchyDecorator
             EditorGUI.BeginDisabledGroup(IsSearching());
             EditorGUILayout.BeginVertical(GUILayout.Width(48f));
             {
-                int index = categoryIndex;
-                bool onCustom = isOnCustom;
+                int index;
+                bool onCustom;
+
+                // Draw sidebar selection
 
                 EditorGUI.BeginChangeCheck();
                 {
@@ -213,6 +213,8 @@ namespace HierarchyDecorator
                 }
                 if (EditorGUI.EndChangeCheck())
                 {
+                    // Make sure the correct category is selected due to custom being handled individually
+
                     if (index != categoryIndex && index >= 0)
                     {
                         isOnCustom = false;
