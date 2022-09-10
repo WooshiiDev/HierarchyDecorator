@@ -228,7 +228,7 @@ namespace HierarchyDecorator
         private void DrawComponents()
         {
             EditorGUI.BeginDisabledGroup(ShowAllProperty.boolValue);
-            EditorGUILayout.BeginVertical();
+            EditorGUILayout.BeginVertical(Style.BoxHeader);
             {
                 // Filter components from search
 
