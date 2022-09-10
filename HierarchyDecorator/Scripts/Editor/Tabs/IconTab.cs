@@ -170,7 +170,7 @@ namespace HierarchyDecorator
             // Draw Content 
 
             EditorGUILayout.LabelField ("Icon Selection", Style.BoxHeader);
-            HierarchyGUI.Space();
+            HierarchyGUI.Space(4f);
 
             EditorGUILayout.BeginHorizontal();
             {
