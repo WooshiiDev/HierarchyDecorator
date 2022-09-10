@@ -128,6 +128,10 @@ namespace HierarchyDecorator
         public static readonly GUIStyle TextFieldShortStyle;
         public static readonly GUIStyle ToolbarNoSpace;
 
+        // --- Widgets
+
+        public static readonly GUIStyle ToolbarTextField;
+
         static Style()
         {
             ToolbarNoSpace = new GUIStyle(EditorStyles.toolbar)
@@ -273,6 +277,10 @@ namespace HierarchyDecorator
             ToggleMixed = new GUIStyle (Toggle);
 #endif
 
+            ToolbarTextField = new GUIStyle("ToolbarSeachTextField")
+            {
+                fixedWidth = 0,
+            };
         }
     }
 }
