@@ -286,7 +286,7 @@ namespace HierarchyDecorator
 
         private void DrawComponentLabel(GUIContent content)
         {
-            float labelWidth = columnWidth - sidebarWidth;
+            float labelWidth = columnWidth;
 
             string text = content.text;
 
