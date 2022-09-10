@@ -1,31 +1,108 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace HierarchyDecorator
 {
-    [System.Serializable]
+
+    //TODO: [Wooshii] Add XML Comments to new API
+    [Serializable]
     public class ComponentData
     {
-        public bool showMissingScriptsWarning;
+        // --- Editor Settings
 
-        // Collecitons
-        public List<ComponentType> unityComponents = new List<ComponentType> ();
-        public List<CustomComponentType> customComponents = new List<CustomComponentType> ();
+        private readonly static CategoryFilter DefaultFilter = new CategoryFilter("General", string.Empty, FilterType.NONE);
 
-        // Component Checks
+        public readonly static CategoryFilter[] ComponentFilters =
+        {
+            new CategoryFilter ("2D", "2D", FilterType.NAME),
+
+            // Animation
+            new CategoryFilter ("Animation", "Anim", FilterType.NAME),
+            new CategoryFilter ("Animation", "Constraint", FilterType.NAME),
+
+            // Audio
+            new CategoryFilter ("Audio", "Audio", FilterType.NAME),
+
+            // Mesh
+            new CategoryFilter ("Mesh", "Renderer", FilterType.NAME),
+            new CategoryFilter ("Mesh", "Mesh", FilterType.NAME),
+
+            // Physics
+            new CategoryFilter ("Physics", "Collider", FilterType.NAME),
+            new CategoryFilter ("Physics", "Joint", FilterType.NAME),
+            new CategoryFilter ("Physics", "Rigidbody", FilterType.NAME),
+
+            // Networking
+            new CategoryFilter ("Network", "Network", FilterType.NAME),
+
+            new CategoryFilter ("UI", "Canvas", FilterType.NAME),
+            new CategoryFilter ("UI", "UnityEngine.EventSystems.UIBehaviour, UnityEngine.UI", FilterType.TYPE),
+            new CategoryFilter ("UI", "UnityEngine.GUIElement, UnityEngine", FilterType.TYPE)
+        };
+
+        // --- Settings
+
+        [SerializeField] private bool showMissingScriptWarning;
+
+        [SerializeField] private ComponentGroup[] unityGroups = new ComponentGroup[0];
+        [SerializeField] private List<ComponentGroup> customGroups = new List<ComponentGroup>();
+
+        // --- Validition
+
         [SerializeField] private string unityVersion;
         [SerializeField] private bool isDirty;
 
-        // Reflected Types
+        // --- Reflection
+
         private Type[] allTypes;
-     
-        public ComponentData()
+
+        // --- Properties
+
+        /// <summary>
+        /// The number of Unity Components that have been found.
+        /// </summary>
+        public int UnityCount;
+
+        /// <summary>
+        /// Is the missing script warning on?
+        /// </summary>
+        public bool ShowMissingScriptWarning
         {
-            unityComponents = new List<ComponentType> ();
-            customComponents = new List<CustomComponentType> ();
+            get
+            {
+                return showMissingScriptWarning;
+            }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public ComponentGroup[] UnityGroups
+        {
+            get
+            {
+                return unityGroups;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public ComponentGroup[] CustomGroups
+        {
+            get
+            {
+                return customGroups.ToArray();
+            }
+        }
+
+        // --- 
+
+        /// <summary>
+        /// 
+        /// </summary>
         public void OnInitialize()
         {
             isDirty = unityVersion != Application.unityVersion;
@@ -35,106 +112,259 @@ namespace HierarchyDecorator
                 unityVersion = Application.unityVersion;
                 Debug.LogWarning ("HierarchyDecorator version changed, updating cached components.");
             }
+
+            UpdateData();
         }
 
         /// <summary>
         /// Update Component Data
         /// </summary>
-        public void UpdateData(bool updateCustomComponents = false)
+        public void UpdateData()
         {
             if (allTypes == null)
             {
-                allTypes = ReflectionUtility.GetSubTypesFromAssemblies (typeof (Component));
+                allTypes = ReflectionUtility.GetSubTypesFromAssemblies (typeof (Component))
+                    .OrderBy(component => component.Name)
+                    .ToArray();
             }
 
             // Update the components if any are missing
-            isDirty = unityComponents.Count != allTypes.Length;
 
+            if (!isDirty)
+            {
+                isDirty = UnityCount != allTypes.Length || unityGroups.Length == 0;
+            }
+            
             if (isDirty)
             {
-                // Clone old components to look up any that already exist
-                // Primarily for older version support
-                List<ComponentType> oldComponents = new List<ComponentType> (unityComponents);
-                unityComponents.Clear ();
+                // Get the count of unity types 
 
-                for (int i = 0; i < allTypes.Length; i++)
+                UnityCount = allTypes.Length;
+                Dictionary<string, ComponentGroup> cachedGroups = new Dictionary<string, ComponentGroup>();
+
+                for (int i = 0; i < UnityCount; i++)
                 {
+                    // Find the category for the type 
+                    // If the group doesn't exist, create one
+
                     Type type = allTypes[i];
+                    string category = GetTypeCategory(type);
 
-                    // Look for pre-existing component - if it doesn't exist, create a one
+                    // 
 
-                    int oldIndex = oldComponents.FindIndex (t => t.name == type.Name);
-                    ComponentType component = (oldIndex == -1)
-                        ? new ComponentType (type) 
-                        : oldComponents[oldIndex];
+                    if (!TryGetComponent(type, out ComponentType component))
+                    {
+                        component = new ComponentType(type, true);
+                    }
+                    
+                    // 
 
-                    unityComponents.Add (component);
+                    if (!cachedGroups.TryGetValue(category, out ComponentGroup group))
+                    {
+                        group = new ComponentGroup(category);
+                        cachedGroups.Add(category, group);
+                    }
+
+                    group.Add(component);
                 }
 
+                // 
+
+                unityGroups = cachedGroups.Values.ToArray();
                 isDirty = false;
             }
-            else
+        }
+        
+        /// <summary>
+        /// Update the components type and content.
+        /// </summary>
+        /// <param name="updateContent">Should the gui content be updated too?</param>
+        public void UpdateComponents(bool updateContent = true)
+        {
+            // Update built in components first
+            
+            for (int i = 0; i < unityGroups.Length; i++)
             {
-                for (int i = 0; i < allTypes.Length; i++)
-                {
-                    ComponentType component = unityComponents[i];
+                ComponentGroup group = unityGroups[i]; 
 
-                    if (component.type == null)
+                for (int j = 0; j < group.Count; j++)
+                {
+                    ComponentType component = group.Get(j);
+
+                    // Do not update if the component already has a type
+
+                    if (component.Type != null)
                     {
-                        component.UpdateType (allTypes[i]);
+                        continue;
+                    }
+
+                    // Find the type the component requires and assign it
+                    // Update the content if required too
+                    
+                    int index = Array.FindIndex(allTypes, type => type.Name == component.Name);
+                    component.UpdateType(allTypes[index], updateContent);
+                }
+            }
+
+            // Update custom components 
+
+            for (int i = 0; i < customGroups.Count; i++)
+            {
+                ComponentGroup group = customGroups[i];
+
+                for (int j = 0; j < group.Count; j++)
+                {
+                    ComponentType component = group.Get(j);
+
+                    // Do not update if the component already has a type
+
+                    if (component.Type != null || component.Script == null)
+                    {
+                        continue;
+                    }
+
+                    // Update the type and the content (if required)
+
+                    component.UpdateType(component.Script.GetClass(), updateContent);
+                }
+            }
+        }
+        
+        // --- Custom Components
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="group"></param>
+        public void AddCustomGroup(ComponentGroup group)
+        {
+            if (group == null)
+            {
+                return;
+            }
+
+            customGroups.Add(group);
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="component"></param>
+        public void AddCustomComponent(int index, ComponentType component)
+        {
+            customGroups[index].Add(component);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="index"></param>
+        public void RemoveCustomGroup(int index)
+        {
+            customGroups.RemoveAt(index);
+        }
+
+        // --- Queries
+
+        /// <summary>
+        /// Find a component with the given type.
+        /// </summary>
+        /// <param name="type">The type to find</param>
+        /// <param name="component">The component returned if one is found. Otherwise will be null.</param>
+        /// <returns>Returns true if a component was found, otherwise will return false.</returns>
+        public bool TryGetComponent(Type type, out ComponentType component)
+        {
+            for (int i = 0; i < customGroups.Count; i++)
+            {
+                ComponentGroup group = customGroups[i];
+
+                for (int j = 0; j < group.Count; j++)
+                {
+                    component = group.Get(j);
+                    
+                    //
+
+                    if (component.Type == type)
+                    {
+                        return true;
                     }
                 }
             }
 
-            if (updateCustomComponents)
-            {
-                UpdateCustomComponentData ();
-            }
-        }
-
-        /// <summary>
-        /// Find a custom component with the given type
-        /// </summary>
-        /// <param name="type">The type to find</param>
-        /// <param name="component">The component returned if one is found. Otherwise this will be null</param>
-        /// <returns>Returns a boolean based on if a component was found</returns>
-        public bool FindCustomComponentFromType(Type type, out CustomComponentType component)
-        {
-            for (int i = 0; i < customComponents.Count; i++)
-            {
-                CustomComponentType customComponent = customComponents[i];
-
-                if (customComponent.script == null || customComponent.type == null)
-                {
-                    customComponent.UpdateScriptType ();
-                }
-
-                if (customComponent.script == null)
-                {
-                    continue;
-                }
-
-                // Not a good work around
-                if (customComponent.type == type)
-                {
-                    component = customComponent;
-                    return true;
-                }
-            }
+            // 
 
             component = null;
             return false;
         }
 
         /// <summary>
-        /// Update the custom components
+        /// Find a custom component with the given type.
         /// </summary>
-        public void UpdateCustomComponentData()
+        /// <param name="type">The type to find</param>
+        /// <param name="component">The component returned if one is found. Otherwise this will be null.</param>
+        /// <returns>Returns true if a component was found, otherwise will return false.</returns>
+        public bool TryGetCustomComponent(Type type, out ComponentType component)
         {
-            for (int i = 0; i < customComponents.Count; i++)
+            for (int i = 0; i < customGroups.Count; i++)
             {
-                customComponents[i].UpdateScriptType ();
+                ComponentGroup group = customGroups[i];
+
+                for (int j = 0; j < group.Count; j++)
+                {
+                    component = group.Get(j);
+
+                    //
+
+                    if (component.Type == null || component.Script == null)
+                    {
+                        continue;
+                    }
+
+                    //
+                    
+                    if (component.Type == type)
+                    {
+                        return true;
+                    }
+                }
             }
+
+            //
+
+            component = null;
+            return false;
+        }
+
+        /// <summary>
+        /// Get the category the given type belongs to.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>Returns the category for the type provided.</returns>
+        private string GetTypeCategory(Type type)
+        {
+            //
+            
+            if (type == null)
+            {
+                return null;
+            }
+
+            // 
+
+            foreach (var filter in ComponentFilters)
+            {
+                //
+                
+                if (filter.IsValidFilter(type))
+                {
+                    return filter.Name;
+                }
+            }
+
+            // 
+           
+            return DefaultFilter.Name;
         }
     }
 }

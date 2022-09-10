@@ -7,24 +7,203 @@ namespace HierarchyDecorator
     [Serializable]
     public class ComponentType : IComparable<ComponentType>
     {
-        [HideInInspector]
-        public string name;
+        // Fields
 
-        public bool shown = false;
-        public Type type = typeof (DefaultAsset);
+        // --- Component information
 
-        public ComponentType(Type type)
+        [SerializeField] protected string name;
+        [SerializeField] protected GUIContent content;
+
+        // --- Settings
+
+        [SerializeField] protected bool shown = false;
+
+        //  --- Type Data
+
+        [SerializeField] private bool isBuiltIn;
+        [SerializeField] private MonoScript script;
+
+        // Properties
+        
+        /// <summary>
+        /// The full name of the component
+        /// </summary>
+        public string Name
         {
-            this.type = type;
-            this.name = type.Name;
+            get
+            {
+                return name;
+            }
+
+            set
+            {
+                name = value;
+            }
         }
 
-        public void UpdateType(Type type)
+        /// <summary>
+        /// The type of component.
+        /// </summary>
+        public Type Type { get; private set; } = typeof(DefaultAsset);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public MonoScript Script
         {
-            this.type = type;
-            this.name = type.Name;
+            get
+            {
+                return script;
+            }
+
+            set
+            {
+                script = value;
+            }
         }
 
+        /// <summary>
+        /// Is the component activated or not
+        /// </summary>
+        public bool Shown
+        {
+            get
+            {
+                return shown;
+            }
+
+            set
+            {
+                shown = value;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsBuiltIn
+        {
+            get
+            {
+                return isBuiltIn;
+            }
+        }
+
+        /// <summary>
+        /// The GUIContent displayed for this component.
+        /// </summary>
+        public GUIContent Content
+        {
+            get
+            {
+                return content;
+            }
+        }
+
+        // Constructor 
+
+        /// <summary>
+        /// ComponentType constructor.
+        /// </summary>
+        /// <param name="type">The type of component.</param>
+        public ComponentType(Type type, bool isBuiltIn)
+        {
+            Type = type;
+            name = type.Name;
+
+            this.isBuiltIn = isBuiltIn;
+        }
+         
+        // Methods
+
+        /// <summary>
+        /// Update the component
+        /// </summary>
+        /// <param name="type"></param>
+        public virtual void UpdateType(Type type, bool updateContent = false)
+        {
+            if (type == null)
+            {
+                Type = null;
+                name = "Undefined";
+
+                UpdateContent();
+                return;
+            }
+
+            if (!isBuiltIn && script == null)
+            {
+                return;
+            }
+
+            Type = type;
+            name = type.Name;
+
+            if (updateContent)
+            {
+                UpdateContent();
+            }
+        }
+
+        public void UpdateType(MonoScript monoScript)
+        {
+            script = monoScript;
+            
+            if (monoScript == null)
+            {
+                UpdateType(null, true);
+                return;
+            }
+
+            UpdateType(monoScript.GetClass(), true);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void UpdateContent()
+        {
+            content = GetTypeContent();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private GUIContent GetTypeContent()
+        {
+            if (Type == null)
+            {
+                return new GUIContent(GUIContent.none);
+            }
+
+            if (isBuiltIn)
+            {
+                GUIContent c = new GUIContent(EditorGUIUtility.ObjectContent(null, Type));
+
+                c.text = name;
+                c.tooltip = name;
+
+                return c;
+            }
+
+            string path = AssetDatabase.GetAssetPath(script);
+            Texture tex = AssetDatabase.GetCachedIcon(path);
+
+            GUIContent content = new GUIContent(name, tex, name);
+            content.text = name;
+            content.tooltip = name;
+
+            return content;
+        }
+
+        // --- Overrides
+
+        /// <summary>
+        /// Compare this component type to another.
+        /// </summary>
+        /// <param name="other">The other component type.</param>
+        /// <returns>Returns an integer based on their sort position.</returns>
         public int CompareTo(ComponentType other)
         {
             if (other == null)
@@ -34,26 +213,11 @@ namespace HierarchyDecorator
 
             return name.CompareTo (other.name);
         }
-    }
 
-    [Serializable]
-    public class CustomComponentType : ComponentType
-    {
-        public MonoScript script = null;
-
-        public CustomComponentType(Type type) : base (type)
+        public override string ToString()
         {
+            return $"Component Type - {name}, {Type}";
         }
 
-        public void UpdateScriptType()
-        {
-            if (script == null)
-            {
-                return;
-            }
-
-            this.type = script.GetClass ();
-            this.name = script.name;
-        }
     }
 }

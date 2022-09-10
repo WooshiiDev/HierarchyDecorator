@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using UnityEditor;
 using UnityEngine;
 
@@ -98,7 +99,8 @@ namespace HierarchyDecorator
         private const string TOGGLE_MIXED = "OL ToggleMixed";
 
         public static readonly GUIStyle CenteredBoldLabel;
-
+        public static readonly GUIStyle CenteredLabel;
+        
         public static readonly GUIStyle SmallDropdown;
         public static readonly GUIStyle ComponentIconStyle;
 
@@ -163,6 +165,12 @@ namespace HierarchyDecorator
                 padding = new RectOffset(8, 8, 8, 8),
 
                 alignment = TextAnchor.MiddleLeft
+            };
+
+            CenteredLabel = new GUIStyle(EditorStyles.boldLabel)
+            {
+                fixedHeight = 0,
+                alignment = TextAnchor.MiddleCenter
             };
 
             CenteredBoldLabel = new GUIStyle (EditorStyles.centeredGreyMiniLabel)

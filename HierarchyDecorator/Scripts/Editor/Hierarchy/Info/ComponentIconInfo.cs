@@ -45,7 +45,7 @@ namespace HierarchyDecorator
 
                 if (component == null)
                 {
-                    if (settings.componentData.showMissingScriptsWarning)
+                    if (settings.Components.ShowMissingScriptWarning)
                     {
                         DrawMissingComponent (rect);
                         return;
@@ -63,9 +63,9 @@ namespace HierarchyDecorator
                     continue;
                 }
 
-                if (type.IsSubclassOf (typeof (MonoBehaviour)) && settings.componentData.FindCustomComponentFromType(type, out CustomComponentType componentType))
+                if (type.IsSubclassOf (typeof (MonoBehaviour)) && settings.Components.TryGetCustomComponent(type, out ComponentType componentType))
                 {
-                    DrawMonobehaviour (rect, component, componentType, settings);
+                    DrawMonobehaviour(rect, component, componentType, settings);
                 }
                 else
                 {
@@ -76,63 +76,60 @@ namespace HierarchyDecorator
 
         protected override void OnDrawInit(GameObject instance, Settings settings)
         {
+
             components = instance.GetComponents<Component> ();
             componentTypes.Clear ();
         }
 
         // GUI
 
-        private void DrawMonobehaviour(Rect rect, Component component, CustomComponentType componentType, Settings settings)
+        private void DrawMonobehaviour(Rect rect, Component component, ComponentType componentType, Settings settings)
         {
             Type type = component.GetType ();
 
             if (!settings.globalData.showAllComponents)
             {
-                if (componentType.script == null)
+                if (componentType.Script == null)
                 {
                     return;
                 }
 
-                if (!componentType.shown)
+                if (!componentType.Shown)
                 {
                     return;
                 }
             }
 
             string path = AssetDatabase.GetAssetPath (MonoScript.FromMonoBehaviour (component as MonoBehaviour));
-            GUIContent content = new GUIContent (AssetDatabase.GetCachedIcon (path));
-
             componentTypes.Add (type);
-            DrawComponentIcon (rect, content, type);
+            DrawComponentIcon (rect, componentType.Content, type);
+
         }
 
         private void DrawComponent(Rect rect, Type type, GameObject instance, Settings settings)
         {
             // Need to check for specifics if globally all components are not on
-            if (!settings.globalData.showAllComponents)
+
+            ComponentType component = null;
+            if (!settings.Components.TryGetComponent(type, out component))
             {
-                ComponentType componentType = settings.componentData.unityComponents.FirstOrDefault (t => t.type == type);
-
-                if (componentType == null)
-                {
-                    componentType = settings.componentData.customComponents.FirstOrDefault (t => t.type == type);
-                }
-
-                if (componentType == null || !componentType.shown)
-                {
-                    return;
-                }
+                return;
             }
 
-            GUIContent content = EditorGUIUtility.ObjectContent (null, type);
+            if (!settings.globalData.showAllComponents && !component.Shown)
+            {
+                return;
+            }
+
+            GUIContent content = component.Content;
 
             if (content.image == null)
             {
                 return;
             }
 
-            componentTypes.Add (type);
-            DrawComponentIcon (rect, content, type);
+            componentTypes.Add(type);
+            DrawComponentIcon(rect, content, type);
         }
 
         private void DrawComponentIcon(Rect rect, GUIContent content, Type type)
