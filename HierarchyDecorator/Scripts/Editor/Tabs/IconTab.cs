@@ -185,7 +185,7 @@ namespace HierarchyDecorator
             // Disable the tabs if we're searching
 
             EditorGUI.BeginDisabledGroup(IsSearching());
-            Rect rect = EditorGUILayout.BeginVertical(GUILayout.Width(48f));
+            Rect rect = EditorGUILayout.BeginVertical(GUILayout.Width(70f));
             {
                 int index;
                 bool onCustom;
