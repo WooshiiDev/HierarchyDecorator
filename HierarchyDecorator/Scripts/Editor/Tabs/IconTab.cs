@@ -419,49 +419,45 @@ namespace HierarchyDecorator
 
         private void DrawCustomComponents()
         {
-            EditorGUILayout.BeginVertical(Style.BoxHeader);
+            for (int i = 0; i < components.CustomGroups.Length; i++)
             {
-                for (int i = 0; i < components.CustomGroups.Length; i++)
+                ComponentGroup group = components.CustomGroups[i];
+                SerializedProperty serializedGroup = SerializedCustomGroups[i];
+
+                // Draw the header
+
+                EditorGUILayout.BeginVertical(Style.BoxHeader);
+                EditorGUILayout.BeginHorizontal(Style.BoxHeader);
                 {
-                    ComponentGroup group = components.CustomGroups[i];
-                    SerializedProperty serializedGroup = SerializedCustomGroups[i];
-
-                    // Draw the header
-
-                    EditorGUILayout.BeginVertical(Style.BoxHeader);
-                    EditorGUILayout.BeginHorizontal(Style.BoxHeader);
-                    {
-                        DrawCustomGroupHeader(group, serializedGroup);
+                    DrawCustomGroupHeader(group, serializedGroup);
                         
-                        if (GUILayout.Button("Delete", EditorStyles.centeredGreyMiniLabel, GUILayout.ExpandHeight(true)))
-                        {
-                            components.RemoveCustomGroup(i);
-                            i--;
-
-                            EditorUtility.SetDirty(settings);
-                        }
-                    }
-                    EditorGUILayout.EndHorizontal();
-
-                    if (serializedGroup.isExpanded && group.Count > 0)
+                    if (GUILayout.Button("Delete", EditorStyles.centeredGreyMiniLabel, GUILayout.ExpandHeight(true)))
                     {
-                        DrawCustomGroup(group);
+                        components.RemoveCustomGroup(i);
+                        i--;
+
+                        EditorUtility.SetDirty(settings);
                     }
-                    EditorGUILayout.EndVertical();
                 }
+                EditorGUILayout.EndHorizontal();
 
-                GUILayout.FlexibleSpace();
-
-                if (GUILayout.Button("Add New Group"))
+                if (serializedGroup.isExpanded && group.Count > 0)
                 {
-                    components.AddCustomGroup(new ComponentGroup($"New Group"));
-                    EditorUtility.SetDirty(settings);
-
-                    serializedSettings.Update();
-                    SerializedCustomGroups = GetSerializedArrayElements("customGroups");
+                    DrawCustomGroup(group);
                 }
+                EditorGUILayout.EndVertical();
             }
-            EditorGUILayout.EndVertical();
+
+            GUILayout.FlexibleSpace();
+
+            if (GUILayout.Button("Add New Group", EditorStyles.miniButtonMid))
+            {
+                components.AddCustomGroup(new ComponentGroup($"New Group"));
+                EditorUtility.SetDirty(settings);
+
+                serializedSettings.Update();
+                SerializedCustomGroups = GetSerializedArrayElements("customGroups");
+            }
         }
 
         private void DrawCustomGroupHeader(ComponentGroup group, SerializedProperty serializedGroup)
