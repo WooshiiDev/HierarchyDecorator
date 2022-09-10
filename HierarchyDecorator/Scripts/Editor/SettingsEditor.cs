@@ -33,7 +33,6 @@ namespace HierarchyDecorator
             if (serializedObject != null)
             {
                 serializedObject.Dispose ();
-
             }
         }
 
@@ -44,23 +43,19 @@ namespace HierarchyDecorator
 
         public override void OnInspectorGUI()
         {
-            EditorGUILayout.BeginVertical (Style.InspectorPadding);
+            EditorGUILayout.BeginVertical(Style.InspectorPadding);
 
-            serializedObject.Update ();
+            serializedObject.Update();
 
-            DrawTitle ();
+            DrawTitle();
 
             if (selectedTab != null)
             {
-                selectedTab.OnGUI ();
-            }
-
-            if (serializedObject.UpdateIfRequiredOrScript())
-            {
-                EditorApplication.RepaintHierarchyWindow ();
+                selectedTab.OnGUI();
             }
 
             EditorGUILayout.EndVertical();
+            Repaint();
         }
 
         private void DrawTitle()
