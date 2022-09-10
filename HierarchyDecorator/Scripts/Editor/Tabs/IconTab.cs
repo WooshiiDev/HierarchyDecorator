@@ -399,6 +399,10 @@ namespace HierarchyDecorator
                 HierarchyGUI.Space(16f);
 
                 DrawComponentLabel(icon.Content);
+
+                // Add flexible space to push label to the left
+
+                GUILayout.FlexibleSpace();
             }
             EditorGUILayout.EndHorizontal();
         }
