@@ -252,9 +252,15 @@ namespace HierarchyDecorator
             EditorGUI.EndDisabledGroup();
         }
 
+
         private void DrawGroupHeader(IEnumerable<IconInfo> icons)
         {
-            searchText = EditorGUILayout.TextField("", searchText, "ToolbarSeachTextField");
+            // Draw search fieldf
+
+            searchText = EditorGUILayout.TextField(searchText, Style.ToolbarTextField);
+
+            // Draw toggle buttons for current icons to enable/disable
+
             EditorGUILayout.BeginHorizontal();
 
             if (GUILayout.Button("Enable All", Style.LargeButtonStyle))
@@ -304,16 +310,18 @@ namespace HierarchyDecorator
 
         private void DrawComponentsColumns(IconInfo[] types)
         {
-            // Draw header 
-
-            DrawGroupHeader(types);
-
             // For any reason we have no types, return out
 
             if (types.Length <= 0)
             {
                 return;
             }
+
+            // Draw header 
+
+            DrawGroupHeader(types);
+
+            // Draw Columns
 
             EditorGUILayout.BeginHorizontal ();
             {
@@ -560,8 +568,9 @@ namespace HierarchyDecorator
                 return content;
             }
 
-            string originalText = content.text;
             contentLen = GetIconContentVisibleLength(content, width - GetIconContentWidth(EllipsisContent));
+
+            // If text is visible, append an ellipsis to the end
 
             if (contentLen >= 0)
             {
