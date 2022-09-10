@@ -585,7 +585,7 @@ namespace HierarchyDecorator
             // Calculate the length difference between the width given and the style size of the content
 
             int len = content.text.Length;
-            float ratio = width / Style.ComponentIconStyle.CalcSize(content).x;
+            float ratio = width / EditorStyles.label.CalcSize(content).x;
 
             // Round it to fit into text length
 
