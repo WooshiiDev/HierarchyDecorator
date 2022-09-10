@@ -10,9 +10,11 @@ namespace HierarchyDecorator
     [RegisterTab ()]
     public class IconTab : SettingsTab
     {
-        // Readonly
+        // Const/Readonly
 
-        private readonly string[] INVALID_ASSET_TYPES =
+        private const string GLOBAL_GROUP_NAME = "All";
+
+        private static readonly string[] INVALID_ASSET_TYPES =
         {
             null,
             "d_DefaultAsset Icon",
@@ -21,18 +23,19 @@ namespace HierarchyDecorator
 
         private readonly static GUIContent EllipsisContent = new GUIContent("...");
 
-        private const string GLOBAL_CATEGORY_NAME = "All";
-
         // GUI Control
-
-        private string searchText = "";
-        private int categoryIndex = 0;
-
-        private float currentColumnWidth = 0;
 
         private bool isOnCustom;
 
+        private string searchText = "";
+        private int groupIndex;
+
+        private float columnWidth;
+        private float sidebarWidth;
+
         // References
+
+        private ComponentData components;
 
         private readonly SerializedProperty ShowAllProperty;
         private readonly SerializedProperty ShowMissingProperty;
@@ -40,19 +43,10 @@ namespace HierarchyDecorator
         private readonly SerializedProperty[] SerializedUnityGroups;
         private SerializedProperty[] SerializedCustomGroups;
         
-        private ReorderableList customComponentList;
-
         // Component Data
 
-        private string[] unityNames = new string[0];
-        private Dictionary<string, IconInfo[]> unityCategories = new Dictionary<string, IconInfo[]> ();
-        private Dictionary<string, List<IconInfo>> customCategories = new Dictionary<string, List<IconInfo>>();
-
-        // ===============
-
-        private ComponentData components;
-            
-        // ===============
+        private string[] groupNames = new string[0];
+        private Dictionary<string, IconInfo[]> unityGroups = new Dictionary<string, IconInfo[]> ();
 
         // Constructor
 
@@ -67,22 +61,19 @@ namespace HierarchyDecorator
             SerializedUnityGroups = GetSerializedArrayElements("unityGroups");
             SerializedCustomGroups = GetSerializedArrayElements("customGroups");
 
-            CreateUnityCategories();
-            //CreateCustomCategories();
+            CreateUnityGroups();
 
             // Register Groups
 
             CreateDrawableGroup("Settings")
                 .RegisterSerializedProperty (ShowMissingProperty);
-
-            isOnCustom = true;
         }
         
         // Methods
 
-        // --- Category Initialization
+        // --- Group Initialization
 
-        private void CreateUnityCategories()
+        private void CreateUnityGroups()
         {
             int groupLen = components.UnityGroups.Length;
 
@@ -91,7 +82,7 @@ namespace HierarchyDecorator
             List<string> names = new List<string>();
             List<IconInfo> allIcons = new List<IconInfo>();
 
-            unityCategories = new Dictionary<string, IconInfo[]>();
+            unityGroups = new Dictionary<string, IconInfo[]>();
 
             for (int i = 0; i < groupLen; i++)
             {
@@ -104,43 +95,43 @@ namespace HierarchyDecorator
                     continue;
                 }
 
-                // Iterate over all icons and add them to the category
+                // Iterate over all icons and add them to the group
 
                 SerializedProperty serializedGroup = SerializedUnityGroups[i];
                 IconInfo[] icons = GetIconsFromGroup(group, serializedGroup);
 
-                // If there are no registred icons, category is not required, skip over
+                // If there are no registred icons, group is not required, skip over
 
                 if (icons.Length == 0)
                 {
                     continue;
                 }
 
-                // Add category and icons to collections
+                // Add group and icons to collections
 
                 string name = group.Name;
 
                 names.Add(name);
-                unityCategories.Add(name, icons);
+                unityGroups.Add(name, icons);
 
                 // Add icons to global colection
 
                 allIcons.AddRange(icons);
             }
 
-            // Pass over all icons to category
+            // Pass over all icons to group
 
-            unityCategories.Add(GLOBAL_CATEGORY_NAME, allIcons.ToArray());
+            unityGroups.Add(GLOBAL_GROUP_NAME, allIcons.ToArray());
 
-            // Store category names
+            // Store group names
 
             names.Add("");
-            unityNames = names.ToArray();
-            Array.Sort(unityNames);
+            groupNames = names.ToArray();
+            Array.Sort(groupNames);
             
-            // Assign global category to 'All'
+            // Assign global group to 'All'
 
-            unityNames[0] = GLOBAL_CATEGORY_NAME;
+            groupNames[0] = GLOBAL_GROUP_NAME;
         }
 
         private IconInfo[] GetIconsFromGroup(ComponentGroup group, SerializedProperty serializedGroup)
@@ -194,7 +185,7 @@ namespace HierarchyDecorator
             // Disable the tabs if we're searching
 
             EditorGUI.BeginDisabledGroup(IsSearching());
-            EditorGUILayout.BeginVertical(GUILayout.Width(48f));
+            Rect rect = EditorGUILayout.BeginVertical(GUILayout.Width(48f));
             {
                 int index;
                 bool onCustom;
@@ -206,30 +197,32 @@ namespace HierarchyDecorator
                     ShowAllProperty.boolValue = GUILayout.Toggle(ShowAllProperty.boolValue, "Show All", Style.LargeButtonStyle);
                     GUIHelper.LineSpacer();
 
-                    index = GUILayout.SelectionGrid(categoryIndex, unityNames, 1, Style.LargeButtonStyle);
+                    index = GUILayout.SelectionGrid(groupIndex, groupNames, 1, Style.LargeButtonStyle);
                     GUIHelper.LineSpacer();
 
                     onCustom = GUILayout.Toggle(isOnCustom, "Custom", Style.LargeButtonStyle);
                 }
                 if (EditorGUI.EndChangeCheck())
                 {
-                    // Make sure the correct category is selected due to custom being handled individually
+                    // Make sure the correct group is selected due to custom being handled individually
 
-                    if (index != categoryIndex && index >= 0)
+                    if (index != groupIndex && index >= 0)
                     {
                         isOnCustom = false;
-                        categoryIndex = index;
+                        groupIndex = index;
                     }
                     else
                     if (onCustom)
                     {
                         isOnCustom = true;
-                        categoryIndex = -1;
+                        groupIndex = -1;
                     }
                 }
             }
             EditorGUILayout.EndVertical();
             EditorGUI.EndDisabledGroup();
+
+            sidebarWidth = rect.width;
         }
 
         private void DrawComponents()
@@ -237,71 +230,197 @@ namespace HierarchyDecorator
             EditorGUI.BeginDisabledGroup(ShowAllProperty.boolValue);
             EditorGUILayout.BeginVertical();
             {
+                // Filter components from search
+
                 if (IsSearching())
                 {
                     DrawFilteredComponents(searchText);
                 }
-                else
+                else // Draw custom component GUI if selected
                 if (isOnCustom)
                 {
                     DrawCustomComponents();
                 }
-                else
-                if (categoryIndex < unityNames.Length)
+                else // Draw the group if selected
+                if (groupIndex < groupNames.Length)
                 {
-                    categoryIndex = Mathf.Clamp(categoryIndex, 0, unityNames.Length);
-
-                    string category = unityNames[categoryIndex];
-
-                    if (unityCategories.TryGetValue(category, out IconInfo[] icons))
-                    {
-                        DrawComponentsColumns(icons);
-                    }
+                    string group = groupNames[groupIndex];
+                    DrawComponentsColumns(unityGroups[group]);
                 }
             }
             EditorGUILayout.EndVertical();
             EditorGUI.EndDisabledGroup();
         }
 
+        private void DrawGroupHeader(IEnumerable<IconInfo> icons)
+        {
+            searchText = EditorGUILayout.TextField("", searchText, "ToolbarSeachTextField");
+            EditorGUILayout.BeginHorizontal();
+
+            if (GUILayout.Button("Enable All", Style.LargeButtonStyle))
+            {
+                foreach (IconInfo icon in icons)
+                {
+                    SerializedProperty shown = icon.Property.FindPropertyRelative("shown");
+                    shown.boolValue = true;
+                }
+            }
+
+            if (GUILayout.Button("Disable All", Style.LargeButtonStyle))
+            {
+                foreach (IconInfo icon in icons)
+                {
+                    SerializedProperty shown = icon.Property.FindPropertyRelative("shown");
+                    shown.boolValue = false;
+                }
+            }
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        private void DrawComponentLabel(GUIContent content)
+        {
+            float labelWidth = columnWidth - sidebarWidth;
+
+            string text = content.text;
+
+            GUIContent labelContent = new GUIContent(text);
+            GUIContent iconContent = new GUIContent(content.image);
+
+            labelContent = GetComponentDisplayName(labelContent, labelWidth);
+
+            // Offset to take into account free-positioned toggle
+
+            if (iconContent.image != null)
+            {
+                EditorGUILayout.LabelField(iconContent, Style.ComponentIconStyle, GUILayout.Width(16f));
+            }
+
+            EditorGUILayout.LabelField(labelContent, GUILayout.Width(labelWidth));
+        }
+
+
         // --- Components
+
+        private void DrawComponentsColumns(IconInfo[] types)
+        {
+            // Draw header 
+
+            DrawGroupHeader(types);
+
+            // For any reason we have no types, return out
+
+            if (types.Length <= 0)
+            {
+                return;
+            }
+
+            EditorGUILayout.BeginHorizontal ();
+            {
+                // Get lengths, including the length of a single column
+
+                int len = types.Length;
+                int halfLen = len / 2;
+
+                if (len % 2 == 0)
+                {
+                    halfLen--;
+                }
+
+                columnWidth = EditorGUIUtility.currentViewWidth / 2 - 108f;
+
+                EditorGUILayout.BeginVertical ();
+                {
+                    for (int i = 0; i < len; i++)
+                    {
+                        IconInfo type = types[i];
+
+                        // Draw component
+
+                        DrawComponent (type);
+
+                        // Change to second column when first half of the components have been drawn
+
+                        if (i == halfLen)
+                        {
+                            EditorGUILayout.EndVertical ();
+                            EditorGUILayout.BeginVertical ();
+                        }
+                    }
+                }
+                EditorGUILayout.EndVertical ();
+            }
+            EditorGUILayout.EndHorizontal ();
+        }
+
+        private void DrawFilteredComponents(string filter)
+        {
+            filter = filter.ToLower ();
+            
+            IconInfo[] selectedTypes = unityGroups[GLOBAL_GROUP_NAME];
+            List<IconInfo> filteredTypes = new List<IconInfo>();
+
+            for (int i = 0; i < selectedTypes.Length; i++)
+            {
+                IconInfo type = selectedTypes[i];
+                string lowerName = type.Name.ToLower();
+
+                if (lowerName.Contains(filter))
+                {
+                    filteredTypes.Add(type);
+                }
+            }
+
+            DrawComponentsColumns (filteredTypes.ToArray());
+        }
+
+        private void DrawComponent(IconInfo icon)
+        {
+            if (icon.Property == null)
+            {
+                Debug.Log("IconInfo has null property. Have properties been cached correctly?");
+                return;
+            }
+
+            // Get properties
+
+            SerializedProperty property = icon.Property;
+            SerializedProperty shown = property.FindPropertyRelative("shown");
+
+            Rect rect = EditorGUILayout.BeginHorizontal(GUILayout.Width(columnWidth));
+            {
+                // Draw Toggle
+
+                rect.y += 3f;
+                rect.width = 32f;
+
+                shown.boolValue = EditorGUI.Toggle(rect, shown.boolValue, Style.ToggleMixed);
+
+                HierarchyGUI.Space(16f);
+
+                DrawComponentLabel(icon.Content);
+            }
+            EditorGUILayout.EndHorizontal();
+        }
         
+        // --- Custom Componments
+
         private void DrawCustomComponents()
         {
-            for (int i = 0; i < components.CustomGroups.Length; i++)
+            EditorGUILayout.BeginVertical(Style.BoxHeader);
             {
-                ComponentGroup group = components.CustomGroups[i];
-                SerializedProperty serializedGroup = SerializedCustomGroups[i]; 
-
-                // Draw the header
-
-                EditorGUILayout.BeginVertical(Style.BoxHeader, GUILayout.Height(16f));
+                for (int i = 0; i < components.CustomGroups.Length; i++)
                 {
-                    EditorGUILayout.BeginHorizontal(Style.BoxHeader, GUILayout.ExpandHeight(true));
+                    ComponentGroup group = components.CustomGroups[i];
+                    SerializedProperty serializedGroup = SerializedCustomGroups[i];
+
+                    // Draw the header
+
+                    EditorGUILayout.BeginVertical(Style.BoxHeader);
+                    EditorGUILayout.BeginHorizontal(Style.BoxHeader);
                     {
-                        serializedGroup.isExpanded = EditorGUILayout.Toggle(serializedGroup.isExpanded, EditorStyles.foldout, GUILayout.Width(16f), GUILayout.ExpandHeight(true));
-
-                        string name = EditorGUILayout.TextField(group.Name, EditorStyles.boldLabel, GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(false));
-
-                        if (string.IsNullOrWhiteSpace(name))
-                        {
-                            name = "Unnamed Group";
-                        }
-                            
-                        group.Name = name;
+                        DrawCustomGroupHeader(group, serializedGroup);
                         
-                        GUILayout.FlexibleSpace();
-
-                        if (GUILayout.Button("Add Icon", EditorStyles.centeredGreyMiniLabel, GUILayout.ExpandHeight(true)))
-                        {
-                            ComponentType component = new ComponentType(typeof(DefaultAsset), false);
-                            component.UpdateContent();
-                            group.Add(component);
-
-                            EditorUtility.SetDirty(settings);
-
-                            serializedGroup.isExpanded = true;
-                        }
-
                         if (GUILayout.Button("Delete", EditorStyles.centeredGreyMiniLabel, GUILayout.ExpandHeight(true)))
                         {
                             components.RemoveCustomGroup(i);
@@ -311,29 +430,56 @@ namespace HierarchyDecorator
                         }
                     }
                     EditorGUILayout.EndHorizontal();
-                   
+
                     if (serializedGroup.isExpanded && group.Count > 0)
                     {
-                        DrawCustomComponents(group);
+                        DrawCustomGroup(group);
                     }
+                    EditorGUILayout.EndVertical();
                 }
-                EditorGUILayout.EndVertical();
+
+                GUILayout.FlexibleSpace();
+
+                if (GUILayout.Button("Add New Group"))
+                {
+                    components.AddCustomGroup(new ComponentGroup($"New Group"));
+                    EditorUtility.SetDirty(settings);
+
+                    serializedSettings.Update();
+                    SerializedCustomGroups = GetSerializedArrayElements("customGroups");
+                }
             }
+            EditorGUILayout.EndVertical();
+        }
+
+        private void DrawCustomGroupHeader(ComponentGroup group, SerializedProperty serializedGroup)
+        {
+            serializedGroup.isExpanded = EditorGUILayout.Toggle(serializedGroup.isExpanded, EditorStyles.foldout, GUILayout.Width(16f), GUILayout.ExpandHeight(true));
+
+            string name = EditorGUILayout.TextField(group.Name, EditorStyles.boldLabel, GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(false));
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = "Unnamed Group";
+            }
+
+            group.Name = name;
 
             GUILayout.FlexibleSpace();
 
-            if (GUILayout.Button("Add New Group"))
+            if (GUILayout.Button("Add Icon", EditorStyles.centeredGreyMiniLabel, GUILayout.ExpandHeight(true)))
             {
-                components.AddCustomGroup(new ComponentGroup($"New Group"));
+                ComponentType component = new ComponentType(typeof(DefaultAsset), false);
+                component.UpdateContent();
+                group.Add(component);
+
                 EditorUtility.SetDirty(settings);
 
-                serializedSettings.Update();
-                SerializedCustomGroups = GetSerializedArrayElements("customGroups");
+                serializedGroup.isExpanded = true;
             }
-
         }
 
-        private void DrawCustomComponents(ComponentGroup group)
+        private void DrawCustomGroup(ComponentGroup group)
         {
             if (group == null)
             {
@@ -346,14 +492,14 @@ namespace HierarchyDecorator
                 ComponentType component = group[i];
 
                 bool shown = component.Shown;
-                MonoScript script = component.Script;
+                MonoScript script;
                 GUIStyle toggleStyle = shown ? Style.Toggle : Style.ToggleMixed;
 
                 EditorGUI.BeginChangeCheck();
                 {
                     Rect rect = EditorGUILayout.BeginHorizontal();
                     {
-                        rect.x-= 2f;
+                        rect.x -= 2f;
                         rect.y += 2f;
                         rect.width = 32f;
 
@@ -361,7 +507,8 @@ namespace HierarchyDecorator
 
                         int indent = EditorGUI.indentLevel;
                         EditorGUI.indentLevel += 1;
-                        script = (MonoScript)EditorGUILayout.ObjectField(component.Script, typeof(MonoScript), false, GUILayout.ExpandWidth(true));;
+                        script = (MonoScript)EditorGUILayout.ObjectField(component.Script, typeof(MonoScript), false, GUILayout.ExpandWidth(true));
+                        ;
                         EditorGUI.indentLevel = indent;
 
                         if (GUILayout.Button("X", Style.CenteredBoldLabel, GUILayout.Width(24f), GUILayout.ExpandHeight(true)))
@@ -385,162 +532,18 @@ namespace HierarchyDecorator
             }
         }
 
-        private void DrawComponentsColumns(IconInfo[] types)
-        {
-            DrawCategoryHeader(types);
-
-            if (types.Length <= 0)
-            {
-                return;
-            }
-
-            EditorGUILayout.BeginHorizontal ();
-            {
-                // Get lengths, including the length of a single column
-
-                int len = types.Length;
-                int halfLen = len / 2;
-
-                if (len % 2 == 0)
-                {
-                    halfLen--;
-                }
-
-                EditorGUILayout.BeginVertical ();
-                {
-                    for (int i = 0; i < len; i++)
-                    {
-                        if (!isOnCustom)
-                        {
-                            currentColumnWidth = EditorGUIUtility.currentViewWidth / 2 - 106f;
-                        }
-
-                        IconInfo type = types[i];
-
-                        DrawComponent (type);
-
-                        // Second column
-
-                        if (i == halfLen && !isOnCustom)
-                        {
-                            EditorGUILayout.EndVertical ();
-                            EditorGUILayout.BeginVertical ();
-                        }
-                    }
-                }
-                EditorGUILayout.EndVertical ();
-            }
-            EditorGUILayout.EndHorizontal ();
-        }
-
-        private void DrawFilteredComponents(string filter)
-        {
-            filter = filter.ToLower ();
-            IconInfo[] selectedTypes = isOnCustom 
-                ? customCategories[GLOBAL_CATEGORY_NAME].ToArray()
-                : unityCategories[GLOBAL_CATEGORY_NAME];
-
-            List<IconInfo> filteredTypes = new List<IconInfo>();
-            for (int i = 0; i < selectedTypes.Length; i++)
-            {
-                IconInfo type = selectedTypes[i];
-                string lowerName = type.Name.ToLower();
-
-                if (lowerName.Contains(filter))
-                {
-                    filteredTypes.Add(type);
-                }
-            }
-
-            DrawComponentsColumns (filteredTypes.ToArray());
-        }
-
-        private void DrawComponent(IconInfo type)
-        {
-            if (type.Property == null)
-            {
-                Debug.Log("IconInfo has null property. Have properties been cached correctly?");
-                return;
-            }
-
-            SerializedProperty property = type.Property;
-            SerializedProperty shown = property.FindPropertyRelative("shown");
-
-            Rect rect = EditorGUILayout.BeginHorizontal(GUILayout.Width(currentColumnWidth));
-            {
-                // Draw Toggle
-
-                rect.y += 3f;
-                rect.width = 32f;
-
-                shown.boolValue = EditorGUI.Toggle(rect, shown.boolValue, Style.ToggleMixed);
-
-                HierarchyGUI.Space(16f);
-
-                DrawComponentLabel(type.Content);
-                GUILayout.FlexibleSpace();
-            }
-            EditorGUILayout.EndHorizontal();
-        }
-
-        private void DrawComponentLabel(GUIContent content)
-        {
-            float labelWidth = currentColumnWidth;
-
-            string text = content.text;
-
-            GUIContent labelContent = new GUIContent(text);
-            GUIContent iconContent = new GUIContent(content.image);
-
-            labelContent = GetComponentDisplayName(labelContent, labelWidth);
-
-            // Offset to take into account free-positioned toggle
-
-            if (iconContent.image != null)
-            {
-                EditorGUILayout.LabelField(iconContent, Style.ComponentIconStyle, GUILayout.Width(16f));
-            }
-            
-            EditorGUILayout.LabelField(labelContent, GUILayout.Width(labelWidth));
-        }
-
         // --- GUI Elements
 
-        private void DrawCategoryHeader(IEnumerable<IconInfo> types)
-        {
-            searchText = EditorGUILayout.TextField("", searchText, "ToolbarSeachTextField");
-            DrawButtonToggle(types);
-        }
-
-        private void DrawButtonToggle(IEnumerable<IconInfo> icons)
-        {
-            EditorGUILayout.BeginHorizontal();
-
-            if (GUILayout.Button("Enable All", Style.LargeButtonStyle))
-            {
-                foreach (IconInfo icon in icons)
-                { 
-                    SerializedProperty shown = icon.Property.FindPropertyRelative("shown");
-                    shown.boolValue = true;
-                }
-            }
-
-            if (GUILayout.Button("Disable All", Style.LargeButtonStyle))
-            {
-                foreach (IconInfo icon in icons)
-                {
-                    SerializedProperty shown = icon.Property.FindPropertyRelative("shown");
-                    shown.boolValue = false;
-                }
-            }
-
-            EditorGUILayout.EndHorizontal();
-        }
 
         // --- Icon Content
 
         private GUIContent GetComponentDisplayName(GUIContent content, float width)
         {
+            if (string.IsNullOrEmpty(content.text))
+            {
+                return GUIContent.none;
+            }
+
             // Get current length of content 
 
             int textLength = content.text.Length;
