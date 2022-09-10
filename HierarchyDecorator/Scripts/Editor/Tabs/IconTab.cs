@@ -39,18 +39,14 @@ namespace HierarchyDecorator
 
         private readonly SerializedProperty[] SerializedUnityGroups;
         private SerializedProperty[] SerializedCustomGroups;
-
+        
         private ReorderableList customComponentList;
 
         // Component Data
 
         private string[] unityNames = new string[0];
         private Dictionary<string, IconInfo[]> unityCategories = new Dictionary<string, IconInfo[]> ();
-
-        private string[] customNames;
         private Dictionary<string, List<IconInfo>> customCategories = new Dictionary<string, List<IconInfo>>();
-
-        private TextAsset bbb;
 
         // ===============
 
@@ -176,7 +172,13 @@ namespace HierarchyDecorator
 
         protected override void OnContentGUI()
         {
+            HierarchyGUI.Space();
+
+            // Update the settings if required
+
             serializedSettings.UpdateIfRequiredOrScript();
+
+            // Draw 
 
             EditorGUILayout.LabelField ("Icon Selection", Style.BoxHeader);
             HierarchyGUI.Space();
@@ -191,39 +193,40 @@ namespace HierarchyDecorator
 
         private void DrawSidebar()
         {
-            EditorGUI.BeginDisabledGroup(IsSearching());
-            {
-                EditorGUILayout.BeginVertical(GUILayout.Width(60f));
-                {
-                    EditorGUI.BeginChangeCheck();
+            // Disable the tabs if we're searching
 
+            EditorGUI.BeginDisabledGroup(IsSearching());
+            EditorGUILayout.BeginVertical(GUILayout.Width(48f));
+            {
+                int index = categoryIndex;
+                bool onCustom = isOnCustom;
+
+                EditorGUI.BeginChangeCheck();
+                {
                     ShowAllProperty.boolValue = GUILayout.Toggle(ShowAllProperty.boolValue, "Show All", Style.LargeButtonStyle);
                     GUIHelper.LineSpacer();
 
-                    int index = GUILayout.SelectionGrid(categoryIndex, unityNames, 1, Style.LargeButtonStyle);
-
+                    index = GUILayout.SelectionGrid(categoryIndex, unityNames, 1, Style.LargeButtonStyle);
                     GUIHelper.LineSpacer();
 
-                    bool toggleBool = GUILayout.Toggle(isOnCustom, "Custom", Style.LargeButtonStyle);
-
-                    if (EditorGUI.EndChangeCheck())
+                    onCustom = GUILayout.Toggle(isOnCustom, "Custom", Style.LargeButtonStyle);
+                }
+                if (EditorGUI.EndChangeCheck())
+                {
+                    if (index != categoryIndex && index >= 0)
                     {
-                        if (index != categoryIndex && index >= 0)
-                        {
-                            isOnCustom = false;
-                            categoryIndex = index;
-                        }
-                        else
-                        if (toggleBool)
-                        {
-                            isOnCustom = true;
-                            categoryIndex = -1;
-                        }
-
+                        isOnCustom = false;
+                        categoryIndex = index;
+                    }
+                    else
+                    if (onCustom)
+                    {
+                        isOnCustom = true;
+                        categoryIndex = -1;
                     }
                 }
-                EditorGUILayout.EndVertical();
             }
+            EditorGUILayout.EndVertical();
             EditorGUI.EndDisabledGroup();
         }
 
@@ -259,8 +262,7 @@ namespace HierarchyDecorator
         }
 
         // --- Components
-
-        int aa = 1;
+        
         private void DrawCustomComponents()
         {
             for (int i = 0; i < components.CustomGroups.Length; i++)
