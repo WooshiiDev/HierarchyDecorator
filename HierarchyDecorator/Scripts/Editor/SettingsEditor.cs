@@ -45,22 +45,26 @@ namespace HierarchyDecorator
         {
             EditorGUILayout.BeginVertical(Style.InspectorPadding);
 
-            serializedObject.Update();
-
             DrawTitle();
+            selectedTab?.OnGUI();
 
-            if (selectedTab != null)
+            if (serializedObject.UpdateIfRequiredOrScript())
             {
-                selectedTab.OnGUI();
+                EditorApplication.RepaintHierarchyWindow();
             }
 
             EditorGUILayout.EndVertical();
-            Repaint();
+            
+            if (Event.current.type == EventType.Repaint)
+            {
+                Repaint();
+            }
         }
 
         private void DrawTitle()
         {
-            // --- Header
+            // Draw Header
+            
 #if UNITY_2019_1_OR_NEWER
             EditorGUILayout.BeginVertical (Style.TabBackground, GUILayout.MinHeight (32f));
 #else
@@ -71,6 +75,8 @@ namespace HierarchyDecorator
                 EditorGUILayout.LabelField ("Hierarchy Settings", Style.Title);
 
                 GUILayout.FlexibleSpace ();
+
+                // Link to Repo for convenience
 
                 if (GUILayout.Button ("GitHub Repository", EditorStyles.miniButtonMid))
                 {
@@ -102,6 +108,8 @@ namespace HierarchyDecorator
 
             foreach (Type type in GetTabs())
             {
+                // If we find any type that is not a SettingsTab alert the user
+
                 if (!type.IsSubclassOf (typeof (SettingsTab)))
                 {
                     Debug.LogWarning ($"{type.Name} uses the RegisterTab attribute but does not inherit from SettingsTab.");
