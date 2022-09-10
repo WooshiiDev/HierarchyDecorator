@@ -335,7 +335,7 @@ namespace HierarchyDecorator
                     halfLen--;
                 }
 
-                columnWidth = EditorGUIUtility.currentViewWidth / 2 - 108f;
+                columnWidth = EditorGUIUtility.currentViewWidth / 2 - 100f;
 
                 EditorGUILayout.BeginVertical ();
                 {
