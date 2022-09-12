@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -275,9 +275,9 @@ namespace HierarchyDecorator
         /// <returns>Returns true if a component was found, otherwise will return false.</returns>
         public bool TryGetComponent(Type type, out ComponentType component)
         {
-            for (int i = 0; i < customGroups.Count; i++)
+            for (int i = 0; i < unityGroups.Length; i++)
             {
-                ComponentGroup group = customGroups[i];
+                ComponentGroup group = unityGroups[i];
 
                 for (int j = 0; j < group.Count; j++)
                 {
