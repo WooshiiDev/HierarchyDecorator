@@ -1,27 +1,62 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEditor;
 using UnityEngine;
-using UnityEditorInternal;
-using System.ComponentModel;
 
 namespace HierarchyDecorator
 {
     [RegisterTab ()]
     public class IconTab : SettingsTab
     {
+        private static class Labels
+        {
+            // --- Title
+
+            public const string TITLE = "Icon Selection";
+
+            // --- Controls
+
+            public const string SHOW_ALL_LABEL = "Show All";
+
+            // --- Sidebar group names
+
+            public const string ALL_COMPONENTS_LABEL = "All";
+            public const string CUSTOM_COMPONENTS_LABEL = "Custom";
+
+            // --- Unity component enable/disable all
+
+            public const string ENABLE_LABEL = "Enable All";
+            public const string DISABLE_LABEL = "Disable All";
+
+            // --- Custom group labels
+
+            public const string ADD_GROUP_LABEL = "Add New Group";
+            public const string DELETE_GROUP_LABEL = "Delete";
+
+            public const string DEFAULT_GROUP_LABEL = "Unnamed Group";
+
+            // --- Custom component labels
+
+            public const string ADD_COMPONENT_LABEL = "Add Icon";
+            public const string DELETE_COMPONENT_LABEL = "X";
+        }
+
+        private static class Values
+        {
+            public const float COLUMN_WIDTH_OFFSET = 100f;
+        }
+
         // Const/Readonly
 
-        private const string GLOBAL_GROUP_NAME = "All";
+        private readonly GUIContent ELLIPSIS_CONTENT = new GUIContent("...");
 
-        private static readonly string[] INVALID_ASSET_TYPES =
+        private readonly string[] INVALID_ASSET_TYPES =
         {
             null,
             "d_DefaultAsset Icon",
             "DefaultAsset Icon"
         };
-
-        private readonly static GUIContent EllipsisContent = new GUIContent("...");
 
         // GUI Control
 
@@ -121,7 +156,7 @@ namespace HierarchyDecorator
 
             // Pass over all icons to group
 
-            unityGroups.Add(GLOBAL_GROUP_NAME, allIcons.ToArray());
+            unityGroups.Add(Labels.ALL_COMPONENTS_LABEL, allIcons.ToArray());
 
             // Store group names
 
@@ -131,7 +166,7 @@ namespace HierarchyDecorator
             
             // Assign global group to 'All'
 
-            groupNames[0] = GLOBAL_GROUP_NAME;
+            groupNames[0] = Labels.ALL_COMPONENTS_LABEL;
         }
 
         private IconInfo[] GetIconsFromGroup(ComponentGroup group, SerializedProperty serializedGroup)
@@ -169,7 +204,7 @@ namespace HierarchyDecorator
 
             // Draw Content 
 
-            EditorGUILayout.LabelField ("Icon Selection", Style.BoxHeader);
+            EditorGUILayout.LabelField (Labels.TITLE, Style.BoxHeader);
             HierarchyGUI.Space(4f);
 
             EditorGUILayout.BeginHorizontal();
@@ -194,13 +229,13 @@ namespace HierarchyDecorator
 
                 EditorGUI.BeginChangeCheck();
                 {
-                    ShowAllProperty.boolValue = GUILayout.Toggle(ShowAllProperty.boolValue, "Show All", Style.LargeButtonStyle);
+                    ShowAllProperty.boolValue = GUILayout.Toggle(ShowAllProperty.boolValue, Labels.SHOW_ALL_LABEL, Style.LargeButtonStyle);
                     GUIHelper.LineSpacer();
 
                     index = GUILayout.SelectionGrid(groupIndex, groupNames, 1, Style.LargeButtonStyle);
                     GUIHelper.LineSpacer();
 
-                    onCustom = GUILayout.Toggle(isOnCustom, "Custom", Style.LargeButtonStyle);
+                    onCustom = GUILayout.Toggle(isOnCustom, Labels.CUSTOM_COMPONENTS_LABEL, Style.LargeButtonStyle);
                 }
                 if (EditorGUI.EndChangeCheck())
                 {
@@ -263,7 +298,7 @@ namespace HierarchyDecorator
 
             EditorGUILayout.BeginHorizontal();
 
-            if (GUILayout.Button("Enable All", Style.LargeButtonStyle))
+            if (GUILayout.Button(Labels.ENABLE_LABEL, Style.LargeButtonStyle))
             {
                 foreach (IconInfo icon in icons)
                 {
@@ -272,7 +307,7 @@ namespace HierarchyDecorator
                 }
             }
 
-            if (GUILayout.Button("Disable All", Style.LargeButtonStyle))
+            if (GUILayout.Button(Labels.DISABLE_LABEL, Style.LargeButtonStyle))
             {
                 foreach (IconInfo icon in icons)
                 {
@@ -305,7 +340,6 @@ namespace HierarchyDecorator
             EditorGUILayout.LabelField(labelContent, GUILayout.Width(labelWidth));
         }
 
-
         // --- Components
 
         private void DrawComponentsColumns(IconInfo[] types)
@@ -335,7 +369,7 @@ namespace HierarchyDecorator
                     halfLen--;
                 }
 
-                columnWidth = EditorGUIUtility.currentViewWidth / 2 - 100f;
+                columnWidth = EditorGUIUtility.currentViewWidth / 2 - Values.COLUMN_WIDTH_OFFSET;
 
                 EditorGUILayout.BeginVertical ();
                 {
@@ -365,7 +399,7 @@ namespace HierarchyDecorator
         {
             filter = filter.ToLower ();
             
-            IconInfo[] selectedTypes = unityGroups[GLOBAL_GROUP_NAME];
+            IconInfo[] selectedTypes = unityGroups[Labels.ALL_COMPONENTS_LABEL];
             List<IconInfo> filteredTypes = new List<IconInfo>();
 
             for (int i = 0; i < selectedTypes.Length; i++)
@@ -431,7 +465,7 @@ namespace HierarchyDecorator
                 {
                     DrawCustomGroupHeader(group, serializedGroup);
                         
-                    if (GUILayout.Button("Delete", EditorStyles.centeredGreyMiniLabel, GUILayout.ExpandHeight(true)))
+                    if (GUILayout.Button(Labels.DELETE_GROUP_LABEL, EditorStyles.centeredGreyMiniLabel, GUILayout.ExpandHeight(true)))
                     {
                         components.RemoveCustomGroup(i);
                         i--;
@@ -450,7 +484,7 @@ namespace HierarchyDecorator
 
             GUILayout.FlexibleSpace();
 
-            if (GUILayout.Button("Add New Group", EditorStyles.miniButtonMid))
+            if (GUILayout.Button(Labels.ADD_GROUP_LABEL, EditorStyles.miniButtonMid))
             {
                 components.AddCustomGroup(new ComponentGroup($"New Group"));
                 EditorUtility.SetDirty(settings);
@@ -468,14 +502,14 @@ namespace HierarchyDecorator
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                name = "Unnamed Group";
+                name = Labels.DEFAULT_GROUP_LABEL;
             }
 
             group.Name = name;
 
             GUILayout.FlexibleSpace();
 
-            if (GUILayout.Button("Add Icon", EditorStyles.centeredGreyMiniLabel, GUILayout.ExpandHeight(true)))
+            if (GUILayout.Button(Labels.ADD_COMPONENT_LABEL, EditorStyles.centeredGreyMiniLabel, GUILayout.ExpandHeight(true)))
             {
                 ComponentType component = new ComponentType(typeof(DefaultAsset), false);
                 component.UpdateContent();
@@ -507,19 +541,14 @@ namespace HierarchyDecorator
                 {
                     Rect rect = EditorGUILayout.BeginHorizontal();
                     {
-                        rect.x -= 2f;
-                        rect.y += 2f;
-                        rect.width = 32f;
-
-                        shown = EditorGUI.Toggle(rect, GUIContent.none, shown, toggleStyle);
+                        shown = EditorGUI.Toggle(GetCustomToggleRect(rect), GUIContent.none, shown, toggleStyle);
 
                         int indent = EditorGUI.indentLevel;
                         EditorGUI.indentLevel += 1;
                         script = (MonoScript)EditorGUILayout.ObjectField(component.Script, typeof(MonoScript), false, GUILayout.ExpandWidth(true));
-                        ;
                         EditorGUI.indentLevel = indent;
 
-                        if (GUILayout.Button("X", Style.CenteredBoldLabel, GUILayout.Width(24f), GUILayout.ExpandHeight(true)))
+                        if (GUILayout.Button(Labels.DELETE_COMPONENT_LABEL, Style.CenteredBoldLabel, GUILayout.Width(24f), GUILayout.ExpandHeight(true)))
                         {
                             group.Remove(i);
                             EditorUtility.SetDirty(settings);
@@ -539,9 +568,6 @@ namespace HierarchyDecorator
                 }
             }
         }
-
-        // --- GUI Elements
-
 
         // --- Icon Content
 
@@ -564,13 +590,13 @@ namespace HierarchyDecorator
                 return content;
             }
 
-            contentLen = GetIconContentVisibleLength(content, width - GetIconContentWidth(EllipsisContent));
+            contentLen = GetIconContentVisibleLength(content, width - GetIconContentWidth(ELLIPSIS_CONTENT));
 
             // If text is visible, append an ellipsis to the end
 
             if (contentLen >= 0)
             {
-                content.text = content.text.Substring(0, contentLen) + "...";
+                content.text = content.text.Substring(0, contentLen) + ELLIPSIS_CONTENT.text;
             }
 
             return content;
@@ -611,6 +637,17 @@ namespace HierarchyDecorator
         private bool IsSearching()
         {
             return !string.IsNullOrWhiteSpace(searchText);
+        }
+
+        // --- Rects
+
+        private Rect GetCustomToggleRect(Rect rect) 
+        {
+            rect.x -= 2f;
+            rect.y += 2f;
+            rect.width = 32f;
+
+            return rect;
         }
     }
 }
