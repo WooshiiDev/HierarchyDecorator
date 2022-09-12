@@ -50,10 +50,8 @@ namespace HierarchyDecorator
                         DrawMissingComponent (rect);
                         return;
                     }
-                    else
-                    {
-                        continue;
-                    }
+
+                    continue;
                 }
 
                 Type type = component.GetType ();
@@ -108,7 +106,7 @@ namespace HierarchyDecorator
 
         private void DrawComponent(Rect rect, Type type, GameObject instance, Settings settings)
         {
-            // Need to check for specifics if globally all components are not on
+            // Get the corresponding component type
 
             ComponentType component = null;
             if (!settings.Components.TryGetComponent(type, out component))
