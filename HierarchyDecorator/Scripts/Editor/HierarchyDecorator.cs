@@ -46,7 +46,6 @@ namespace HierarchyDecorator
                 return;
             }
             
-
             // Skip over the instance 
             // - normally if it's a Scene instance rather than a GameObject
 
