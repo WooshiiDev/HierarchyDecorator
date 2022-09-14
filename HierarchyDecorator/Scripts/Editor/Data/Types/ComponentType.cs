@@ -216,7 +216,7 @@ namespace HierarchyDecorator
 
         public override string ToString()
         {
-            return $"Component Type - {name}, {Type}";
+            return $"Component Type: {name}, {Type}";
         }
 
     }
