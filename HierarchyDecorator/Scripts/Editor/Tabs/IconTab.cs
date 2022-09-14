@@ -287,7 +287,6 @@ namespace HierarchyDecorator
             EditorGUI.EndDisabledGroup();
         }
 
-
         private void DrawGroupHeader(IEnumerable<IconInfo> icons)
         {
             // Draw search fieldf
