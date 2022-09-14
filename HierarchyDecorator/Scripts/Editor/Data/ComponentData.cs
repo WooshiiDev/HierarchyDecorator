@@ -191,6 +191,16 @@ namespace HierarchyDecorator
                 {
                     ComponentType component = group.Get(j);
 
+                    // Take into account any deleted components, remove and deincrement the loop
+
+                    if (component == null)
+                    {
+                        group.Remove(component);
+                        j--;
+
+                        continue;
+                    }
+
                     // Do not update if the component already has a type
 
                     if (component.Type != null)
