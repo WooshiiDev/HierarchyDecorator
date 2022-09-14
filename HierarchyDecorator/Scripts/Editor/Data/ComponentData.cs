@@ -121,12 +121,15 @@ namespace HierarchyDecorator
         /// </summary>
         public void UpdateData()
         {
-            if (allTypes == null)
+            // Generate all types found in the Unity project
+
+            if (allTypes == null || isDirty)
             {
-                allTypes = ReflectionUtility.GetSubTypesFromAssemblies (typeof (Component))
+                allTypes = ReflectionUtility.GetSubTypesFromAssemblies(typeof(Component))
                     .OrderBy(component => component.Name)
                     .ToArray();
             }
+
 
             // Update the components if any are missing
 
@@ -134,7 +137,7 @@ namespace HierarchyDecorator
             {
                 isDirty = UnityCount != allTypes.Length || unityGroups.Length == 0;
             }
-            
+
             if (isDirty)
             {
                 // Get the count of unity types 
@@ -240,6 +243,14 @@ namespace HierarchyDecorator
             }
         }
         
+        /// <summary>
+        /// Set component data to dirty. 
+        /// </summary>
+        public void SetDirty()
+        {
+            isDirty = true;
+        }
+
         // --- Custom Components
 
         /// <summary>
