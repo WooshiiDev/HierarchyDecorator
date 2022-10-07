@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -120,7 +120,7 @@ namespace HierarchyDecorator
         /// Update the component
         /// </summary>
         /// <param name="type"></param>
-        public virtual void UpdateType(Type type, bool updateContent = false)
+        public void UpdateType(Type type, bool updateContent = false)
         {
             if (type == null)
             {
