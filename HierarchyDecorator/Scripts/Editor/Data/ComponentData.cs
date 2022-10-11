@@ -130,7 +130,6 @@ namespace HierarchyDecorator
                     .ToArray();
             }
 
-
             // Update the components if any are missing
 
             if (!isDirty)
