@@ -466,7 +466,7 @@ namespace HierarchyDecorator
                         
                     if (GUILayout.Button(Labels.DELETE_GROUP_LABEL, EditorStyles.centeredGreyMiniLabel, GUILayout.ExpandHeight(true)))
                     {
-                        components.RemoveCustomGroup(i);
+                        components.DeleteCustomGroup(i);
                         i--;
 
                         EditorUtility.SetDirty(settings);
@@ -485,7 +485,7 @@ namespace HierarchyDecorator
 
             if (GUILayout.Button(Labels.ADD_GROUP_LABEL, EditorStyles.miniButtonMid))
             {
-                components.AddCustomGroup(new ComponentGroup($"New Group"));
+                components.AddCustomGroup("New Group");
                 EditorUtility.SetDirty(settings);
 
                 serializedSettings.Update();

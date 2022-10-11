@@ -256,25 +256,31 @@ namespace HierarchyDecorator
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="group"></param>
-        public void AddCustomGroup(ComponentGroup group)
+        /// <param name="name"></param>
+        public void AddCustomGroup(string name)
         {
-            if (group == null)
+            if (string.IsNullOrEmpty(name))
             {
+                Debug.LogError("Attempted to add a custom group with no name.");
                 return;
             }
 
-            customGroups.Add(group);
+            customGroups.Add(new ComponentGroup(name));
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="index"></param>
-        /// <param name="component"></param>
-        public void AddCustomComponent(int index, ComponentType component)
+        public void DeleteCustomGroup(int index)
         {
-            customGroups[index].Add(component);
+            if (index < 0 || index >= customGroups.Count)
+            {
+                Debug.LogError($"Index out of range of customGroup collection size.");
+                return;
+            }
+
+            customGroups.RemoveAt(index);
         }
 
         /// <summary>
