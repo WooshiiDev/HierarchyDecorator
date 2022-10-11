@@ -47,7 +47,9 @@ namespace HierarchyDecorator
         [SerializeField] private bool showMissingScriptWarning;
 
         [SerializeField] private ComponentGroup[] unityGroups = new ComponentGroup[0];
+
         [SerializeField] private List<ComponentGroup> customGroups = new List<ComponentGroup>();
+        [SerializeField] private ComponentGroup allCustomComponents = new ComponentGroup("All");
 
         // --- Validition
 
@@ -95,6 +97,14 @@ namespace HierarchyDecorator
             get
             {
                 return customGroups.ToArray();
+            }
+        }
+
+        public ComponentGroup AllCustomComponents
+        {
+            get
+            {
+                return allCustomComponents;
             }
         }
 
@@ -221,6 +231,12 @@ namespace HierarchyDecorator
 
             // Update custom components 
 
+            for (int i = 0; i < allCustomComponents.Count; i++)
+            {
+                ComponentType component = allCustomComponents.Get(i);
+                component.UpdateType(component.Script.GetClass(), updateContent);
+            }
+
             for (int i = 0; i < customGroups.Count; i++)
             {
                 ComponentGroup group = customGroups[i];
@@ -286,10 +302,24 @@ namespace HierarchyDecorator
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="index"></param>
-        public void RemoveCustomGroup(int index)
+        /// <param name="component"></param>
+        public void RegisterCustomComponent(ComponentType component)
         {
-            customGroups.RemoveAt(index);
+            Debug.Log(component);
+
+            if (component == null)
+            {
+
+                return;
+            }
+
+            if (allCustomComponents.Contains(component))
+            {
+
+                return;
+            }
+
+            allCustomComponents.Add(component);
         }
 
         // --- Queries
@@ -333,31 +363,26 @@ namespace HierarchyDecorator
         /// <returns>Returns true if a component was found, otherwise will return false.</returns>
         public bool TryGetCustomComponent(Type type, out ComponentType component)
         {
-            for (int i = 0; i < customGroups.Count; i++)
+            if (type == null)
             {
-                ComponentGroup group = customGroups[i];
-
-                for (int j = 0; j < group.Count; j++)
-                {
-                    component = group.Get(j);
-
-                    //
-
-                    if (component.Type == null || component.Script == null)
-                    {
-                        continue;
-                    }
-
-                    //
-                    
-                    if (component.Type == type)
-                    {
-                        return true;
-                    }
-                }
+                component = null;
+                return false;
             }
 
-            //
+            for (int i = 0; i < allCustomComponents.Count; i++)
+            {
+                component = allCustomComponents.Get(i);
+
+                if (component.Script == null)
+                {
+                    continue;
+                }
+
+                if (component.Type == type)
+                {
+                    return true;
+                }
+            }
 
             component = null;
             return false;
