@@ -16,8 +16,6 @@ namespace HierarchyDecorator
         [SerializeField] protected string name;
         [SerializeField] protected List<ComponentType> components = new List<ComponentType>();
 
-        private HashSet<ComponentType> a;
-
         // Properties
 
         /// <summary>
