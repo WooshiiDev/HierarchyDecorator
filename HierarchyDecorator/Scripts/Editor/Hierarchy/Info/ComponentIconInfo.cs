@@ -61,13 +61,26 @@ namespace HierarchyDecorator
                     continue;
                 }
 
-                if (type.IsSubclassOf (typeof (MonoBehaviour)) && settings.Components.TryGetCustomComponent(type, out ComponentType componentType))
+                if (settings.Components.TryGetComponent(type, out ComponentType unityType))
                 {
-                    DrawMonobehaviour(rect, component, componentType, settings);
+                    DrawComponent(rect, type, instance, settings);
                 }
                 else
                 {
-                    DrawComponent (rect, type, instance, settings);
+
+                    if (!settings.Components.TryGetCustomComponent(type, out ComponentType customType))
+                    {
+                        customType = new ComponentType(type, false);
+
+                        MonoScript script = MonoScript.FromMonoBehaviour(component as MonoBehaviour);
+                        customType.UpdateType(script);
+
+                        settings.Components.RegisterCustomComponent(customType);
+                    }
+                    else
+                    {
+                        DrawMonobehaviour(rect, component, customType, settings);
+                    }
                 }
             }
         }
