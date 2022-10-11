@@ -121,12 +121,13 @@ namespace HierarchyDecorator
         /// </summary>
         public void UpdateData()
         {
+
             // Generate all types found in the Unity project
 
             if (allTypes == null || isDirty)
             {
-                allTypes = ReflectionUtility.GetSubTypesFromAssemblies(typeof(Component))
-                    .OrderBy(component => component.Name)
+                allTypes = ReflectionUtility.GetSubTypesFromAssemblies(typeof(Component), t => t.Assembly.FullName.Contains("Unity"))
+                    .OrderBy(t => t.Name)
                     .ToArray();
             }
 
