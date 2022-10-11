@@ -98,7 +98,6 @@ namespace HierarchyDecorator
                 }
             }
 
-            string path = AssetDatabase.GetAssetPath (MonoScript.FromMonoBehaviour (component as MonoBehaviour));
             componentTypes.Add (type);
             DrawComponentIcon (rect, componentType.Content, type);
 
