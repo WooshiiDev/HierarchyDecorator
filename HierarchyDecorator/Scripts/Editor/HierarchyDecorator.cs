@@ -42,7 +42,7 @@ namespace HierarchyDecorator
             if (Settings == null)
             {
                 Settings = GetOrCreateSettings ();
-                Settings.Components.UpdateComponents(true);
+                UpdateComponentData();
                 return;
             }
             
@@ -128,6 +128,12 @@ namespace HierarchyDecorator
             }
 
             Drawers.Add (drawer);
+        }
+
+        public static void UpdateComponentData()
+        {
+            Settings.Components.UpdateData();
+            Settings.Components.UpdateComponents(true);
         }
     }
 }
