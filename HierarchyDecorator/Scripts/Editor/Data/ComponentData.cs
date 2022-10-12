@@ -5,8 +5,9 @@ using UnityEngine;
 
 namespace HierarchyDecorator
 {
-
-    //TODO: [Wooshii] Add XML Comments to new API
+    /// <summary>
+    /// Contains all information required for components.
+    /// </summary>
     [Serializable]
     public class ComponentData
     {
@@ -79,7 +80,7 @@ namespace HierarchyDecorator
         }
 
         /// <summary>
-        /// 
+        /// Component groups regarding built-in Unity types.
         /// </summary>
         public ComponentGroup[] UnityGroups
         {
@@ -90,7 +91,7 @@ namespace HierarchyDecorator
         }
 
         /// <summary>
-        /// 
+        /// Component groups regarding custom components.
         /// </summary>
         public ComponentGroup[] CustomGroups
         {
@@ -100,6 +101,9 @@ namespace HierarchyDecorator
             }
         }
 
+        /// <summary>
+        /// A component group containing all custom components.
+        /// </summary>
         public ComponentGroup AllCustomComponents
         {
             get
@@ -108,10 +112,8 @@ namespace HierarchyDecorator
             }
         }
 
-        // --- 
-
         /// <summary>
-        /// 
+        /// Initialize component data.
         /// </summary>
         public void OnInitialize()
         {
@@ -131,7 +133,6 @@ namespace HierarchyDecorator
         /// </summary>
         public void UpdateData()
         {
-
             // Generate all types found in the Unity project
 
             if (allTypes == null || isDirty)
@@ -163,14 +164,14 @@ namespace HierarchyDecorator
                     Type type = allTypes[i];
                     string category = GetTypeCategory(type);
 
-                    // 
+                    // If the component does not already exist in a group, create one
 
                     if (!TryGetComponent(type, out ComponentType component))
                     {
                         component = new ComponentType(type, true);
                     }
                     
-                    // 
+                    // Create a group if one does not exist already
 
                     if (!cachedGroups.TryGetValue(category, out ComponentGroup group))
                     {
@@ -181,7 +182,7 @@ namespace HierarchyDecorator
                     group.Add(component);
                 }
 
-                // 
+                // Assign the new groups and end dirty
 
                 unityGroups = cachedGroups.Values.ToArray();
                 isDirty = false;
@@ -270,9 +271,9 @@ namespace HierarchyDecorator
         // --- Custom Components
 
         /// <summary>
-        /// 
+        /// Add a custom group.
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="name">The name of the group.</param>
         public void AddCustomGroup(string name)
         {
             if (string.IsNullOrEmpty(name))
@@ -285,14 +286,16 @@ namespace HierarchyDecorator
         }
 
         /// <summary>
-        /// 
+        /// Delete a custom group.
         /// </summary>
-        /// <param name="index"></param>
+        /// <param name="index">The index of the group.</param>
         public void DeleteCustomGroup(int index)
         {
+            // Make sure index is in range before attempting to remove
+
             if (index < 0 || index >= customGroups.Count)
             {
-                Debug.LogError($"Index out of range of customGroup collection size.");
+                Debug.LogError($"Index out of range of custom groups.");
                 return;
             }
 
@@ -300,22 +303,24 @@ namespace HierarchyDecorator
         }
 
         /// <summary>
-        /// 
+        /// Register a custom component to <see cref="AllCustomComponents"/>.
         /// </summary>
-        /// <param name="component"></param>
+        /// <param name="component"The component to register.></param>
         public void RegisterCustomComponent(ComponentType component)
         {
-            Debug.Log(component);
+            // Cannot register null components
 
             if (component == null)
             {
-
+                Debug.LogError($"Attempted to register null component.");
                 return;
             }
 
+            // Do not register the component if it already exists
+
             if (allCustomComponents.Contains(component))
             {
-
+                Debug.LogError($"Attempted to register a component that already exists.");
                 return;
             }
 
@@ -331,7 +336,15 @@ namespace HierarchyDecorator
         /// <param name="component">The component returned if one is found. Otherwise will be null.</param>
         /// <returns>Returns true if a component was found, otherwise will return false.</returns>
         public bool TryGetComponent(Type type, out ComponentType component)
-        {
+        {  
+            // If the given type is null, there is nothing to look for
+
+            if (type == null)
+            {
+                component = null;
+                return false;
+            }
+
             for (int i = 0; i < unityGroups.Length; i++)
             {
                 ComponentGroup group = unityGroups[i];
@@ -340,7 +353,7 @@ namespace HierarchyDecorator
                 {
                     component = group.Get(j);
                     
-                    //
+                    // Found component with required type, return
 
                     if (component.Type == type)
                     {
@@ -349,7 +362,7 @@ namespace HierarchyDecorator
                 }
             }
 
-            // 
+            // Did not find component type, return false
 
             component = null;
             return false;
@@ -358,11 +371,13 @@ namespace HierarchyDecorator
         /// <summary>
         /// Find a custom component with the given type.
         /// </summary>
-        /// <param name="type">The type to find</param>
+        /// <param name="type">The type to find.</param>
         /// <param name="component">The component returned if one is found. Otherwise this will be null.</param>
         /// <returns>Returns true if a component was found, otherwise will return false.</returns>
         public bool TryGetCustomComponent(Type type, out ComponentType component)
         {
+            // If the given type is null, there is nothing to look for
+
             if (type == null)
             {
                 component = null;
@@ -373,16 +388,22 @@ namespace HierarchyDecorator
             {
                 component = allCustomComponents.Get(i);
 
+                // Ignore undefined components, probably custom but nothing assigned so far
+
                 if (component.Script == null)
                 {
                     continue;
                 }
+
+                // If the component is what we need, return it
 
                 if (component.Type == type)
                 {
                     return true;
                 }
             }
+
+            // Did not find a component with the required type, return false
 
             component = null;
             return false;
@@ -395,18 +416,16 @@ namespace HierarchyDecorator
         /// <returns>Returns the category for the type provided.</returns>
         private string GetTypeCategory(Type type)
         {
-            //
+            // Cannot categorise null type.
             
             if (type == null)
             {
                 return null;
             }
 
-            // 
-
             foreach (var filter in ComponentFilters)
             {
-                //
+                // Return the filter name if the type is valid
                 
                 if (filter.IsValidFilter(type))
                 {
@@ -414,7 +433,7 @@ namespace HierarchyDecorator
                 }
             }
 
-            // 
+            // Return the default filter, so the type can still be categorised
            
             return DefaultFilter.Name;
         }
