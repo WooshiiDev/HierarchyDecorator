@@ -185,10 +185,11 @@ namespace HierarchyDecorator
 
             if (isBuiltIn)
             {
-                GUIContent c = new GUIContent(EditorGUIUtility.ObjectContent(null, Type));
-
-                c.text = name;
-                c.tooltip = name;
+                GUIContent c = new GUIContent(EditorGUIUtility.ObjectContent(null, Type))
+                {
+                    text = name,
+                    tooltip = name
+                };
 
                 return c;
             }
