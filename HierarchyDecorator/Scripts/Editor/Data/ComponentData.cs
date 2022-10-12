@@ -218,7 +218,7 @@ namespace HierarchyDecorator
 
                     // Do not update if the component already has a type
 
-                    if (component.Type != null)
+                    if (component.IsValid())
                     {
                         continue;
                     }

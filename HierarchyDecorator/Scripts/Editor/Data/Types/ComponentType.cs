@@ -116,6 +116,12 @@ namespace HierarchyDecorator
          
         // Methods
 
+        public bool IsValid()
+        {
+            // Need to check type and content to validate GUI
+            return Type != null && !string.IsNullOrEmpty(Content.text);
+        }
+
         /// <summary>
         /// Update the component
         /// </summary>
