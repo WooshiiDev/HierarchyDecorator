@@ -137,7 +137,8 @@ namespace HierarchyDecorator
 
             if (allTypes == null || isDirty)
             {
-                allTypes = ReflectionUtility.GetSubTypesFromAssemblies(typeof(Component), t => t.Assembly.FullName.Contains("Unity"))
+                allTypes = ReflectionUtility.GetSubTypesFromAssemblies(typeof(Component), 
+                        t => t.Assembly.FullName.StartsWith("Unity"))
                     .OrderBy(t => t.Name)
                     .ToArray();
             }
