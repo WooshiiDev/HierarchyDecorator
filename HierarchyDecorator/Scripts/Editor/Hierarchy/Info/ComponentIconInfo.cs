@@ -152,7 +152,6 @@ namespace HierarchyDecorator
             }
 
             content.tooltip = type.Name;
-            content.text = "";
 
             //GUI.DrawTexture (rect, content.image, ScaleMode.ScaleToFit);
             GUI.Label (rect, content, Style.ComponentIconStyle);

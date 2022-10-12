@@ -199,10 +199,10 @@ namespace HierarchyDecorator
                 padding = new RectOffset (0, 0, 0, 0),
                 margin = new RectOffset (0, 0, 0, 0),
 
-                wordWrap = false,
-                clipping = TextClipping.Clip,
                 fixedHeight = 16,
                 fixedWidth = 16,
+
+                imagePosition = ImagePosition.ImageOnly
             };
 
             Title = new GUIStyle (EditorStyles.boldLabel)
