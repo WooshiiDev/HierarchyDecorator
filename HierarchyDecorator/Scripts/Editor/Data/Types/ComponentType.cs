@@ -119,7 +119,13 @@ namespace HierarchyDecorator
         public bool IsValid()
         {
             // Need to check type and content to validate GUI
-            return Type != null && !string.IsNullOrEmpty(Content.text);
+
+            if (!IsBuiltIn && script == null)
+            {
+                return false;
+            }
+
+            return Type != null;
         }
 
         /// <summary>
