@@ -395,34 +395,32 @@ namespace HierarchyDecorator
         {
             // If the given type is null, there is nothing to look for
 
+            component = null;
+
             if (type == null)
             {
-                component = null;
                 return false;
             }
 
-            for (int i = 0; i < allCustomComponents.Count; i++)
+            // Check all components if showAll is on, otherwise check groups
+
+            if (!showAllComponents)
             {
-                component = allCustomComponents.Get(i);
-
-                // Ignore undefined components, probably custom but nothing assigned so far
-
-                if (component.Script == null)
+                for (int i = 0; i < customGroups.Count; i++)
                 {
-                    continue;
-                }
+                    ComponentGroup group = customGroups[i];
 
-                // If the component is what we need, return it
-
-                if (component.Type == type)
-                {
-                    return true;
+                    if (group.TryGetComponent(type, out component))
+                    {
+                        return true;
+                    }
                 }
             }
+            else
+            {
+                return allCustomComponents.TryGetComponent(type, out component);
+            }
 
-            // Did not find a component with the required type, return false
-
-            component = null;
             return false;
         }
 
