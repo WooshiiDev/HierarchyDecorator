@@ -157,7 +157,7 @@ namespace HierarchyDecorator
             {
                 component = components[i];
 
-                if (component.Type == type)
+                if (component.Type == type && component.IsValid())
                 {
                     return true;
                 }
