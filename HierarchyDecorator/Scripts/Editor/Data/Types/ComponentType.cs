@@ -125,7 +125,7 @@ namespace HierarchyDecorator
                 return false;
             }
 
-            return Type != null;
+            return Type != null && content.image != null;
         }
 
         /// <summary>
