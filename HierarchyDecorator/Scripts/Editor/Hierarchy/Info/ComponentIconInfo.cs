@@ -68,7 +68,12 @@ namespace HierarchyDecorator
                 else
                 {
 
-                    if (!settings.Components.TryGetCustomComponent(type, out ComponentType customType))
+                    if (settings.Components.TryGetCustomComponent(type, out ComponentType customType))
+                    {
+                        DrawMonobehaviour(rect, component, customType, settings);
+                    }
+                    else
+                    if (settings.Components.ShowAllComponents)
                     {
                         customType = new ComponentType(type, false);
 
@@ -76,10 +81,6 @@ namespace HierarchyDecorator
                         customType.UpdateType(script);
 
                         settings.Components.RegisterCustomComponent(customType);
-                    }
-                    else
-                    {
-                        DrawMonobehaviour(rect, component, customType, settings);
                     }
                 }
             }
