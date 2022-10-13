@@ -160,9 +160,6 @@ namespace HierarchyDecorator
         private void DrawMissingComponent(Rect rect)
         {
             rect = GetIconPosition (rect, true);
-
-            warningGUI.text = "";
-
             GUI.Label (rect, warningGUI, Style.ComponentIconStyle);
         }
 
