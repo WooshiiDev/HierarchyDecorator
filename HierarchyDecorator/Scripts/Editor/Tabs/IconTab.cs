@@ -90,7 +90,7 @@ namespace HierarchyDecorator
             // Setup References
             components = settings.Components;
 
-            ShowAllProperty = serializedSettings.FindProperty ("globalData.showAllComponents");
+            ShowAllProperty = serializedSettings.FindProperty ("components.showAllComponents");
             ShowMissingProperty = serializedTab.FindPropertyRelative ("showMissingScriptWarning");
 
             SerializedUnityGroups = GetSerializedArrayElements("unityGroups");

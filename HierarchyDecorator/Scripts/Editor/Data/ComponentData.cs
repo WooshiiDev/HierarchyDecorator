@@ -45,6 +45,7 @@ namespace HierarchyDecorator
 
         // --- Settings
 
+        [SerializeField] private bool showAllComponents = true;
         [SerializeField] private bool showMissingScriptWarning;
 
         [SerializeField] private ComponentGroup[] unityGroups = new ComponentGroup[0];
@@ -67,6 +68,17 @@ namespace HierarchyDecorator
         /// The number of Unity Components that have been found.
         /// </summary>
         public int UnityCount;
+
+        /// <summary>
+        /// Are all components shown enabled currently?
+        /// </summary>
+        public bool ShowAllComponents
+        {
+            get
+            {
+                return showAllComponents;
+            }
+        }
 
         /// <summary>
         /// Is the missing script warning on?
@@ -111,6 +123,10 @@ namespace HierarchyDecorator
                 return allCustomComponents;
             }
         }
+
+        // --- Methods
+
+        // --- Initialization
 
         /// <summary>
         /// Initialize component data.

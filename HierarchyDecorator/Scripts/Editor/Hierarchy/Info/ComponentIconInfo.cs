@@ -98,7 +98,7 @@ namespace HierarchyDecorator
         {
             Type type = component.GetType ();
 
-            if (!settings.globalData.showAllComponents)
+            if (!settings.Components.ShowAllComponents)
             {
                 if (componentType.Script == null)
                 {
@@ -126,7 +126,7 @@ namespace HierarchyDecorator
                 return;
             }
 
-            if (!settings.globalData.showAllComponents && !component.Shown)
+            if (!settings.Components.ShowAllComponents && !component.Shown)
             {
                 return;
             }
