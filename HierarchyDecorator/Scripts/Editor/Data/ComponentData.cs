@@ -222,7 +222,7 @@ namespace HierarchyDecorator
                 {
                     ComponentType component = group.Get(j);
 
-                    // Take into account any deleted components, remove and deincrement the loop
+                    // Null component, remove 
 
                     if (component == null)
                     {
@@ -243,6 +243,16 @@ namespace HierarchyDecorator
                     // Update the content if required too
                     
                     int index = Array.FindIndex(allTypes, type => type.Name == component.Name);
+
+                    // The type probably does not exist anymore, remove
+
+                    if (index == -1)
+                    {
+                        group.Remove(component);
+                        j--;
+                        continue;
+                    }
+
                     component.UpdateType(allTypes[index], updateContent);
                 }
             }
@@ -252,6 +262,15 @@ namespace HierarchyDecorator
             for (int i = 0; i < allCustomComponents.Count; i++)
             {
                 ComponentType component = allCustomComponents.Get(i);
+
+                // Script does not exist, remove it
+
+                if (component.Script == null)
+                {
+                    allCustomComponents.Remove(i);
+                    i--;
+                }
+
                 component.UpdateType(component.Script.GetClass(), updateContent);
             }
 
@@ -265,7 +284,18 @@ namespace HierarchyDecorator
 
                     // Do not update if the component already has a type
 
-                    if (component.Type != null || component.Script == null)
+                    if (component == null)
+                    {
+                        group.Remove(j);
+                        j--;
+
+                        continue;
+                    }
+
+                    // No need to update custom components with no assignment
+                    // Likewise, do not update components that have valid information
+
+                    if (component.Script == null || component.IsValid())
                     {
                         continue;
                     }
