@@ -534,13 +534,12 @@ namespace HierarchyDecorator
 
                 bool shown = component.Shown;
                 MonoScript script;
-                GUIStyle toggleStyle = shown ? Style.Toggle : Style.ToggleMixed;
 
                 EditorGUI.BeginChangeCheck();
                 {
                     Rect rect = EditorGUILayout.BeginHorizontal();
                     {
-                        shown = EditorGUI.Toggle(GetCustomToggleRect(rect), GUIContent.none, shown, toggleStyle);
+                        shown = EditorGUI.Toggle(GetCustomToggleRect(rect), GUIContent.none, shown, Style.ToggleMixed);
 
                         int indent = EditorGUI.indentLevel;
                         EditorGUI.indentLevel += 1;
