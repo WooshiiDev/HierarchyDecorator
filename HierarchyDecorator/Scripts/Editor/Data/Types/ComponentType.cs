@@ -183,23 +183,19 @@ namespace HierarchyDecorator
                 return new GUIContent(GUIContent.none);
             }
 
+            GUIContent content = new GUIContent(name, name);
+            Texture texture;
             if (isBuiltIn)
             {
-                GUIContent c = new GUIContent(EditorGUIUtility.ObjectContent(null, Type))
-                {
-                    text = name,
-                    tooltip = name
-                };
-
-                return c;
+                texture = EditorGUIUtility.ObjectContent(null, Type).image;
+            }
+            else
+            {
+                string path = AssetDatabase.GetAssetPath(script);
+                texture = AssetDatabase.GetCachedIcon(path);
             }
 
-            string path = AssetDatabase.GetAssetPath(script);
-            Texture tex = AssetDatabase.GetCachedIcon(path);
-
-            GUIContent content = new GUIContent(name, tex, name);
-            content.text = name;
-            content.tooltip = name;
+            content.image = texture;
 
             return content;
         }
