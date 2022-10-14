@@ -15,6 +15,9 @@ namespace HierarchyDecorator
         public Color backgroundColour = Color.white;
     }
 
+    /// <summary>
+    /// Formatting options used by <see cref="HierarchyStyle"/> to format style text
+    /// </summary>
     public enum TextFormatting
     {
         ToUpper,
@@ -73,6 +76,11 @@ namespace HierarchyDecorator
             style.normal.textColor = GetCurrentMode(isDarkMode).fontColour;
         }
 
+        /// <summary>
+        /// Returns string formatted according to styling options of <see cref="HierarchyStyle"/> instance
+        /// </summary>
+        /// <returns>Formatted string if formatting is required, otherwise same string</returns>
+        /// <exception cref="System.Exception">In case instance has invalid parameters</exception>
         public string FormatString(string text)
         {
             switch (textFormatting)
