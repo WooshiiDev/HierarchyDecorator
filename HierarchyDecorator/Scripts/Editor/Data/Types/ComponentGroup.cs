@@ -160,6 +160,18 @@ namespace HierarchyDecorator
             components.Sort();
         }
 
+        /// <summary>
+        /// Set show on all components.
+        /// </summary>
+        /// <param name="shown">Show value on all components.</param>
+        public void SetAllShown(bool shown)
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                components[i].Shown = shown;
+            }
+        }
+
         // Queries
 
         /// <summary>
