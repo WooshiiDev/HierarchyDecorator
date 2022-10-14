@@ -269,6 +269,7 @@ namespace HierarchyDecorator
                 {
                     allCustomComponents.Remove(i);
                     i--;
+                    continue;
                 }
 
                 component.UpdateType(component.Script.GetClass(), updateContent);
