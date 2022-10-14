@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using System.Collections.Generic;
 
@@ -64,6 +64,19 @@ namespace HierarchyDecorator
         }
 
         // Methods
+
+        /// <summary>
+        /// Add an empty component type. Useful when needing a dummy or creating custom types.
+        /// </summary>
+        /// <param name="builtIn">Is the component built in? Most likely will not be touched.</param>
+        /// <returns>Returns the created component for any use thereafter.</returns>
+        public ComponentType AddEmpty(bool builtIn = false)
+        {
+            ComponentType component = new ComponentType(typeof(MonoScript), builtIn);
+            Add(component);
+
+            return component;
+        }
 
         /// <summary>
         /// Add an element to the group.
