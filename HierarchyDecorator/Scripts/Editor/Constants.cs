@@ -221,12 +221,13 @@ namespace HierarchyDecorator
 
             };
 
-            LargeButtonStyle = new GUIStyle (EditorStyles.miniButton)
+            LargeButtonStyle = new GUIStyle(EditorStyles.miniButton)
             {
                 fixedHeight = 32f,
                 fixedWidth = 0,
 
                 clipping = TextClipping.Clip,
+                margin = new RectOffset(1, 1, 1, 1)
             };
 
             LargeButtonSmallTextStyle = new GUIStyle (EditorStyles.miniButton)
