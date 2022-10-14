@@ -99,7 +99,7 @@ namespace HierarchyDecorator
         private float columnWidth;
         private float sidebarWidth;
 
-        private GUIContent[] toolbarContent = new GUIContent[]
+        private Vector2 scroll;
         {
             Icons.AddComponent,
             Icons.EnableAll,
@@ -236,6 +236,7 @@ namespace HierarchyDecorator
         }
 
         // --- GUI
+
 
         protected override void OnContentGUI()
         {
@@ -395,6 +396,7 @@ namespace HierarchyDecorator
 
             // Draw Columns
 
+            scroll = EditorGUILayout.BeginScrollView(scroll);
             EditorGUILayout.BeginHorizontal ();
             {
                 // Get lengths, including the length of a single column
@@ -427,10 +429,13 @@ namespace HierarchyDecorator
                             EditorGUILayout.BeginVertical ();
                         }
                     }
+
+                    HierarchyGUI.Space();
                 }
                 EditorGUILayout.EndVertical ();
             }
             EditorGUILayout.EndHorizontal ();
+            EditorGUILayout.EndScrollView();
         }
 
         private void DrawFilteredComponents(string filter)
@@ -491,8 +496,6 @@ namespace HierarchyDecorator
 
         private void DrawCustomComponents(Rect windowRect)
         {
-       
-
             Rect groupRect = windowRect;
             groupRect.height = Values.TOOLBAR_HEIGHT;
 
