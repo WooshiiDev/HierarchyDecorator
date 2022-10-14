@@ -580,8 +580,16 @@ namespace HierarchyDecorator
                     deleteRect.width = 24f;
                     deleteRect.x += componentRect.width - deleteRect.width - 2f;
 
-                    for (int j = 0; j < group.Count; j++)
+                    int count = group.Count;
+                    for (int j = 0; j < count; j++)
                     {
+                        // Required here for group size checks
+
+                        if (j >= group.Count)
+                        {
+                            return;
+                        }
+
                         ComponentType component = group.Get(j);
 
                         toggleRect.y = componentRect.y + 2;
