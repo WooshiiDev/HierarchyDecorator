@@ -375,6 +375,30 @@ namespace HierarchyDecorator
             allCustomComponents.Add(component);
         }
 
+        public void MoveCustomGroup(int index, int newIndex)
+        {
+            if (index == newIndex)
+            {
+                return;
+            }
+
+            if (index < 0 || index >= customGroups.Count)
+            {
+                Debug.LogError("Invalid");
+                return;
+            }
+
+            if (newIndex < 0 || newIndex >= customGroups.Count)
+            {
+                Debug.LogError("Invalid");
+                return;
+            }
+
+            ComponentGroup previousGroup = customGroups[newIndex];
+            customGroups[newIndex] = customGroups[index];
+            customGroups[index] = previousGroup;
+        }
+
         // --- Queries
 
         /// <summary>
