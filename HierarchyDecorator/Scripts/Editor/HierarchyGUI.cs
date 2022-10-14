@@ -15,7 +15,7 @@ namespace HierarchyDecorator
             ModeOptions styleSetting = style.GetCurrentMode (EditorGUIUtility.isProSkin);
 
             EditorGUI.DrawRect (styleRect, styleSetting.backgroundColour);
-            EditorGUI.LabelField (labelRect, label.ToUpper (), style.style);
+            EditorGUI.LabelField (labelRect, style.FormatString(label), style.style);
         }
 
         public static void DrawStandardContent(Rect rect, GameObject instance)
