@@ -99,7 +99,7 @@ namespace HierarchyDecorator
         /// Remove an element from the group.
         /// </summary>
         /// <param name="component">The component to remove.</param>
-        /// <returns>Returns a bool based on if the instance was remove from the group successfully.</returns>
+        /// <returns>Returns true if a component was removed, otherwise will return false.</returns>
         public bool Remove(ComponentType component)
         {
             // Cannot remove a null component, even if null components exist, it's not explict enough.
@@ -119,6 +119,11 @@ namespace HierarchyDecorator
             return true;
         }
 
+        /// <summary>
+        /// Remove an element from the group.
+        /// </summary>
+        /// <param name="index">The index of the component.</param>
+        /// <returns>Returns true if a component was removed, otherwise will return false.</returns>
         public bool Remove(int index)
         {
             if (index < 0 || index >= Count)
@@ -130,7 +135,6 @@ namespace HierarchyDecorator
             components.RemoveAt(index);
             return true;
         }
-
 
         /// <summary>
         /// Get a component element in the group.
