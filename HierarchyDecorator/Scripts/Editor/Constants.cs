@@ -158,6 +158,7 @@ namespace HierarchyDecorator
                 },
 
                 margin = new RectOffset(0,0,0,0),
+                padding = new RectOffset(0,0,0,0)
             };
 
             TabBackground = new GUIStyle (EditorStyles.helpBox)
