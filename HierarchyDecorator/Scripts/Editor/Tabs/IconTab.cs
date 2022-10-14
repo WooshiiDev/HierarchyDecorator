@@ -99,6 +99,14 @@ namespace HierarchyDecorator
         private float columnWidth;
         private float sidebarWidth;
 
+        private GUIContent[] toolbarContent = new GUIContent[]
+        {
+            Icons.AddComponent,
+            Icons.EnableAll,
+            Icons.DisableAll,
+            Icons.Menu
+        };
+
         // References
 
         private ComponentData components;
@@ -133,8 +141,6 @@ namespace HierarchyDecorator
 
             CreateDrawableGroup("Settings")
                 .RegisterSerializedProperty (ShowMissingProperty);
-
-            isOnCustom = true;
         }
         
         // Methods
@@ -485,13 +491,7 @@ namespace HierarchyDecorator
 
         private void DrawCustomComponents(Rect windowRect)
         {
-            GUIContent[] toolbarContent = new GUIContent[]
-            {
-                Icons.AddComponent,
-                Icons.EnableAll,
-                Icons.DisableAll,
-                Icons.Menu
-            };
+       
 
             Rect groupRect = windowRect;
             groupRect.height = Values.TOOLBAR_HEIGHT;
