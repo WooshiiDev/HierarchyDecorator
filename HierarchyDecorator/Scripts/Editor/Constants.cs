@@ -127,6 +127,7 @@ namespace HierarchyDecorator
 
         public static readonly GUIStyle TextFieldShortStyle;
         public static readonly GUIStyle ToolbarNoSpace;
+        public static readonly GUIStyle ToolbarButtonLeft;
 
         // --- Widgets
 
@@ -138,6 +139,11 @@ namespace HierarchyDecorator
             {
                 padding = new RectOffset(0, 0, 0, 0),
                 margin = new RectOffset(0, 0, 0, 0)
+            }
+
+            ToolbarButtonLeft = new GUIStyle(EditorStyles.toolbarButton)
+            {
+                alignment = TextAnchor.MiddleLeft,
             };
 
             BoxHeader = new GUIStyle(GUI.skin.box)
