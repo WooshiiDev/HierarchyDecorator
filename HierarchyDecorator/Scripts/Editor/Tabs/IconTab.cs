@@ -100,6 +100,8 @@ namespace HierarchyDecorator
         private float sidebarWidth;
 
         private Vector2 scroll;
+
+        private readonly GUIContent[] toolbarContent = new GUIContent[]
         {
             Icons.AddComponent,
             Icons.EnableAll,
@@ -505,23 +507,12 @@ namespace HierarchyDecorator
                 ComponentGroup group = components.CustomGroups[i];
                 SerializedProperty serializedGroup = SerializedCustomGroups[i];
 
-                // Foldout Rect 
+                // Header Rect 
 
-                Rect foldoutRect = groupRect;
-                foldoutRect.x += 16f;
-                foldoutRect.width = 16f;
-
-                Rect labelRect = groupRect;
-                labelRect.x += 20f;
-                labelRect.width -= (toolbarContent.Length + 1) * 26f;
-
-                // Menu Rect
-
-                Rect toolbarRect = groupRect;
-                toolbarRect.x += windowRect.width - (toolbarContent.Length * 26f);
-                toolbarRect.height = Values.TOOLBAR_HEIGHT;
-                toolbarRect.width = groupRect.width - (toolbarRect.x - groupRect.x);
-
+                Rect foldoutRect = GetCustomFoldoutRect(groupRect);
+                Rect labelRect = GetCustomHeaderRect(groupRect);
+                Rect toolbarRect = GetCustomToolbarRect(windowRect, groupRect);
+               
                 // Draw background
 
                 GUI.Box(groupRect, GUIContent.none, EditorStyles.toolbar);
@@ -776,13 +767,29 @@ namespace HierarchyDecorator
 
         // --- Rects
 
-        private Rect GetCustomToggleRect(Rect rect) 
+        private Rect GetCustomFoldoutRect(Rect rect)
         {
-            rect.x -= 2f;
-            rect.y += 2f;
-            rect.width = 32f;
+            rect.x += 16f;
+            rect.width = 16f;
 
             return rect;
+        }
+
+        private Rect GetCustomHeaderRect(Rect rect)
+        {
+            rect.x += 20f;
+            rect.width -= (toolbarContent.Length + 1) * 26f;
+            return rect;
+        }
+
+        private Rect GetCustomToolbarRect(Rect windowRect, Rect rect)
+        {
+            Rect toolbarRect = rect;
+            toolbarRect.x += windowRect.width - (toolbarContent.Length * 26f);
+            toolbarRect.height = Values.TOOLBAR_HEIGHT;
+            toolbarRect.width = rect.width - (toolbarRect.x - rect.x);
+
+            return toolbarRect;
         }
     }
 }
