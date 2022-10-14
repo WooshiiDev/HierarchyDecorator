@@ -139,7 +139,7 @@ namespace HierarchyDecorator
             {
                 padding = new RectOffset(0, 0, 0, 0),
                 margin = new RectOffset(0, 0, 0, 0)
-            }
+            };
 
             ToolbarButtonLeft = new GUIStyle(EditorStyles.toolbarButton)
             {
