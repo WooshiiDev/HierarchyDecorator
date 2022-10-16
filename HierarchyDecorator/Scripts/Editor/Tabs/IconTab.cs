@@ -241,17 +241,16 @@ namespace HierarchyDecorator
 
         // --- GUI
 
-
         protected override void OnContentGUI()
         {
-            HierarchyGUI.Space();
 
             // Draw Content 
 
-            EditorGUILayout.LabelField (Labels.TITLE, Style.BoxHeader);
-            HierarchyGUI.Space(4f);
+            HierarchyGUI.Space();
+            EditorGUILayout.LabelField(Labels.TITLE, Style.BoxHeader, GUILayout.Height(19f));
+            HierarchyGUI.Space();
 
-            EditorGUILayout.BeginHorizontal(Style.BoxHeader);
+            EditorGUILayout.BeginHorizontal();
             {
                 DrawSidebar();
                 DrawComponents();
