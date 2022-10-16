@@ -349,6 +349,8 @@ namespace HierarchyDecorator
                     string group = groupNames[groupIndex];
                     DrawComponentsColumns(unityGroups[group]);
                 }
+
+                DrawBorder(windowRect);
             }
             EditorGUILayout.EndVertical();
             EditorGUI.EndDisabledGroup();
@@ -655,6 +657,8 @@ namespace HierarchyDecorator
                 HandleEventsOnGroup(fullRect, group);
 
                 groupRect.y += Values.TOOLBAR_HEIGHT;
+
+                DrawBorder(fullRect);
             }
             GUILayout.FlexibleSpace();
 
