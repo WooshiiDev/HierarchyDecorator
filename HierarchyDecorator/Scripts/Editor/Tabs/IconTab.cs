@@ -263,22 +263,17 @@ namespace HierarchyDecorator
             // Disable the tabs if we're searching
 
             EditorGUI.BeginDisabledGroup(IsSearching());
-            Rect rect = EditorGUILayout.BeginVertical(GUILayout.Width(70f));
+            Rect rect = EditorGUILayout.BeginVertical(Style.ToolbarNoSpace, GUILayout.Width(70f), GUILayout.MinHeight(300f));
             {
                 int index;
                 bool onCustom;
 
-                // Draw sidebar selection
+                GUILayout.Label("Categories", EditorStyles.boldLabel, GUILayout.Height(19f));
 
                 EditorGUI.BeginChangeCheck();
                 {
-                    ShowAllProperty.boolValue = GUILayout.Toggle(ShowAllProperty.boolValue, Labels.SHOW_ALL_LABEL, Style.LargeButtonStyle);
-                    GUIHelper.LineSpacer();
-
-                    index = GUILayout.SelectionGrid(groupIndex, groupNames, 1, Style.LargeButtonStyle);
-                    GUIHelper.LineSpacer();
-
-                    onCustom = GUILayout.Toggle(isOnCustom, Labels.CUSTOM_COMPONENTS_LABEL, Style.LargeButtonStyle);
+                    index = GUILayout.SelectionGrid(groupIndex, groupNames, 1, Style.ToolbarButtonLeft);
+                    onCustom = GUILayout.Toggle(isOnCustom, Labels.CUSTOM_COMPONENTS_LABEL, Style.ToolbarButtonLeft);
                 }
                 if (EditorGUI.EndChangeCheck())
                 {
@@ -297,10 +292,39 @@ namespace HierarchyDecorator
                     }
                 }
             }
+            GUILayout.FlexibleSpace();
+
+            if (groupIndex >= 0 && groupIndex < groupNames.Length)
+            {
+                string group = groupNames[groupIndex];
+                IconInfo[] icons = unityGroups[group];
+                if (GUILayout.Button(Labels.ENABLE_LABEL, Style.ToolbarButtonLeft, GUILayout.ExpandWidth(true)))
+                {
+                    foreach (IconInfo icon in icons)
+                    {
+                        SerializedProperty shown = icon.Property.FindPropertyRelative("shown");
+                        shown.boolValue = true;
+                    }
+                }
+
+                if (GUILayout.Button(Labels.DISABLE_LABEL, Style.ToolbarButtonLeft, GUILayout.ExpandWidth(true)))
+                {
+                    foreach (IconInfo icon in icons)
+                    {
+                        SerializedProperty shown = icon.Property.FindPropertyRelative("shown");
+                        shown.boolValue = false;
+                    }
+                }
+
+            }
+
+            DrawBorder(rect);
+
             EditorGUILayout.EndVertical();
             EditorGUI.EndDisabledGroup();
 
-            sidebarWidth = rect.width;
+            sidebarWidth = rect.width; 
+
         }
 
         private void DrawComponents()
@@ -308,10 +332,6 @@ namespace HierarchyDecorator
             EditorGUI.BeginDisabledGroup(ShowAllProperty.boolValue);
             windowRect = EditorGUILayout.BeginVertical();
             {
-                Handles.BeginGUI();
-                Handles.DrawSolidRectangleWithOutline(windowRect, Color.clear, new Color(0.125f, 0.125f, 0.125f));
-                Handles.EndGUI();
-
                 // Filter components from search
 
                 if (IsSearching())
@@ -338,30 +358,8 @@ namespace HierarchyDecorator
         {
             // Draw search fieldf
 
+            Rect rect = EditorGUILayout.BeginHorizontal(Style.ToolbarNoSpace, GUILayout.Height(19f));
             searchText = EditorGUILayout.TextField(searchText, Style.ToolbarTextField);
-
-            // Draw toggle buttons for current icons to enable/disable
-
-            EditorGUILayout.BeginHorizontal();
-
-            if (GUILayout.Button(Labels.ENABLE_LABEL, Style.LargeButtonStyle))
-            {
-                foreach (IconInfo icon in icons)
-                {
-                    SerializedProperty shown = icon.Property.FindPropertyRelative("shown");
-                    shown.boolValue = true;
-                }
-            }
-
-            if (GUILayout.Button(Labels.DISABLE_LABEL, Style.LargeButtonStyle))
-            {
-                foreach (IconInfo icon in icons)
-                {
-                    SerializedProperty shown = icon.Property.FindPropertyRelative("shown");
-                    shown.boolValue = false;
-                }
-            }
-
             EditorGUILayout.EndHorizontal();
         }
 
@@ -384,6 +382,13 @@ namespace HierarchyDecorator
             }
 
             EditorGUILayout.LabelField(labelContent, GUILayout.Width(labelWidth));
+        }
+
+        private void DrawBorder(Rect rect)
+        {
+            Handles.BeginGUI();
+            Handles.DrawSolidRectangleWithOutline(rect, Color.clear, new Color(0.125f, 0.125f, 0.125f));
+            Handles.EndGUI();
         }
 
         // --- Components
