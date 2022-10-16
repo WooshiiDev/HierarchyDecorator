@@ -517,178 +517,178 @@ namespace HierarchyDecorator
         private void DrawCustomComponents(Rect windowRect)
         {
             EditorGUILayout.BeginVertical(Style.ToolbarNoSpace);
-            GUILayout.FlexibleSpace();
-
-            if (GUILayout.Button(Labels.ADD_GROUP_LABEL, GUI.skin.button))
             {
-                components.AddCustomGroup("New Group");
-                EditorUtility.SetDirty(settings);
+                GUILayout.FlexibleSpace();
 
-                serializedSettings.Update();
-                SerializedCustomGroups = GetSerializedArrayElements("customGroups");
-            }
+                float newHeight = 0;
 
-            EditorGUILayout.EndVertical();
-
-            float newHeight = 0;
-
-            windowRect.width -= 1f;
-            windowRect.height = Values.ICON_WINDOW_HEIGHT - Values.TOOLBAR_HEIGHT;
-            scrollPosition = GUI.BeginScrollView(windowRect, scrollPosition, new Rect(0, 0, windowRect.width - 13f, customScrollHeight));
-            {
-                Rect groupRect = new Rect(0, 0, windowRect.width - 13f, Values.TOOLBAR_HEIGHT);
-                int customLen = components.CustomGroups.Length;
-
-                for (int i = 0; i < customLen; i++)
+                windowRect.width -= 1f;
+                windowRect.height = Values.ICON_WINDOW_HEIGHT - Values.TOOLBAR_HEIGHT;
+                scrollPosition = GUI.BeginScrollView(windowRect, scrollPosition, new Rect(0, 0, windowRect.width - 13f, customScrollHeight));
                 {
-                    ComponentGroup group = components.CustomGroups[i];
-                    SerializedProperty serializedGroup = SerializedCustomGroups[i];
+                    Rect groupRect = new Rect(0, 0, windowRect.width - 13f, Values.TOOLBAR_HEIGHT);
+                    int customLen = components.CustomGroups.Length;
 
-                    //GUI.Box(groupRect, GUIContent.none, EditorStyles.toolbar);
-                    //EditorGUI.LabelField(toolbarRect, Labels.DISABLE_LABEL);
-
-                    Rect foldoutRect = GetCustomFoldoutRect(groupRect);
-                    Rect labelRect = GetCustomHeaderRect(groupRect);
-                    Rect toolbarRect = GetCustomToolbarRect(windowRect, groupRect);
-
-                    Rect fullRect = groupRect;
-
-                    // Draw background
-
-                    GUI.Box(groupRect, GUIContent.none, EditorStyles.toolbar);
-
-                    // Foldout
-
-                    bool toggleFold = EditorGUI.Foldout(foldoutRect, serializedGroup.isExpanded, GUIContent.none, false);
-
-                    if ((toggleFold != serializedGroup.isExpanded))
+                    for (int i = 0; i < customLen; i++)
                     {
-                        serializedGroup.isExpanded = toggleFold;
-                    }
+                        ComponentGroup group = components.CustomGroups[i];
+                        SerializedProperty serializedGroup = SerializedCustomGroups[i];
 
-                    // Label
+                        Rect foldoutRect = GetCustomFoldoutRect(groupRect);
+                        Rect labelRect = GetCustomHeaderRect(groupRect);
+                        Rect toolbarRect = GetCustomToolbarRect(windowRect, groupRect);
 
-                    string name = EditorGUI.DelayedTextField(labelRect, group.Name, EditorStyles.boldLabel);
+                        Rect fullRect = groupRect;
 
-                    group.Name = name;
+                        // Draw background
 
-                    int index = GUI.Toolbar(toolbarRect, -1, toolbarContent, EditorStyles.toolbarButton);
+                        GUI.Box(groupRect, GUIContent.none, EditorStyles.toolbar);
 
-                    switch (index)
-                    {
-                        case 0: // Add component
-                            group.AddEmpty();
-                            break;
+                        // Foldout
 
-                        case 1:
-                            group.SetAllShown(true);
-                            break;
+                        bool toggleFold = EditorGUI.Foldout(foldoutRect, serializedGroup.isExpanded, GUIContent.none, false);
 
-                        case 2:
-                            group.SetAllShown(false);
-                            break;
-
-                        case 3: // Other options
-                            ShowCustomGroupMenu(toolbarRect, i, group);
-                            break;
-                    }
-
-                    if (toggleFold)
-                    {
-                        Rect componentRect = groupRect;
-                        componentRect.y += 21f;
-                        componentRect.height = 19f;
-                        componentRect.x += 2f;
-                        componentRect.width -= 2f;
-
-                        Rect toggleRect = componentRect;
-                        toggleRect.width = 24f;
-
-                        Rect scriptRect = toggleRect;
-                        scriptRect.height = 16f;
-                        scriptRect.width = componentRect.width - toggleRect.width - 22f;
-                        scriptRect.x += 20f;
-
-                        Rect deleteRect = toggleRect;
-                        deleteRect.width = 24f;
-                        deleteRect.x += componentRect.width - deleteRect.width - 2f;
-
-                        int count = group.Count;
-                        for (int j = 0; j < count; j++)
+                        if ((toggleFold != serializedGroup.isExpanded))
                         {
-                            // Required here for group size checks
+                            serializedGroup.isExpanded = toggleFold;
+                        }
 
-                            if (j >= group.Count)
+                        // Label
+
+                        string name = EditorGUI.DelayedTextField(labelRect, group.Name, EditorStyles.boldLabel);
+
+                        group.Name = name;
+
+                        int index = GUI.Toolbar(toolbarRect, -1, toolbarContent, EditorStyles.toolbarButton);
+
+                        switch (index)
+                        {
+                            case 0: // Add component
+                                group.AddEmpty();
+                                break;
+
+                            case 1:
+                                group.SetAllShown(true);
+                                break;
+
+                            case 2:
+                                group.SetAllShown(false);
+                                break;
+
+                            case 3: // Other options
+                                ShowCustomGroupMenu(toolbarRect, i, group);
+                                break;
+                        }
+
+                        if (toggleFold)
+                        {
+                            Rect componentRect = groupRect;
+                            componentRect.y += 21f;
+                            componentRect.height = 19f;
+                            componentRect.x += 2f;
+                            componentRect.width -= 2f;
+
+                            Rect toggleRect = componentRect;
+                            toggleRect.width = 24f;
+
+                            Rect scriptRect = toggleRect;
+                            scriptRect.height = 16f;
+                            scriptRect.width = componentRect.width - toggleRect.width - 22f;
+                            scriptRect.x += 20f;
+
+                            Rect deleteRect = toggleRect;
+                            deleteRect.width = 24f;
+                            deleteRect.x += componentRect.width - deleteRect.width - 2f;
+
+                            int count = group.Count;
+                            for (int j = 0; j < count; j++)
                             {
-                                return;
-                            }
+                                // Required here for group size checks
 
-                            ComponentType component = group.Get(j);
-
-                            toggleRect.y = componentRect.y + 2;
-                            scriptRect.y = componentRect.y;
-                            deleteRect.y = componentRect.y;
-
-                            component.Shown = EditorGUI.Toggle(toggleRect, component.Shown, Style.ToggleMixed);
-
-                            int controlID = GUIUtility.GetControlID(FocusType.Keyboard);
-
-                            if (GUI.Button(scriptRect, component.Content, Style.ToolbarButtonLeft))
-                            {
-                                scriptSelectionIndex = j;
-                                EditorGUIUtility.ShowObjectPicker<MonoScript>(component.Script, false, "", controlID);
-                            }
-
-                            if (EditorGUIUtility.GetObjectPickerControlID() == controlID && j == scriptSelectionIndex)
-                            {
-                                string commandName = Event.current.commandName;
-                                if (commandName == "ObjectSelectorUpdated")
+                                if (j >= group.Count)
                                 {
-                                    MonoScript script = EditorGUIUtility.GetObjectPickerObject() as MonoScript;
-                                    if (component.Script != script)
+                                    return;
+                                }
+
+                                ComponentType component = group.Get(j);
+
+                                toggleRect.y = componentRect.y + 2;
+                                scriptRect.y = componentRect.y;
+                                deleteRect.y = componentRect.y;
+
+                                component.Shown = EditorGUI.Toggle(toggleRect, component.Shown, Style.ToggleMixed);
+
+                                int controlID = GUIUtility.GetControlID(FocusType.Keyboard);
+
+                                if (GUI.Button(scriptRect, component.Content, Style.ToolbarButtonLeft))
+                                {
+                                    scriptSelectionIndex = j;
+                                    EditorGUIUtility.ShowObjectPicker<MonoScript>(component.Script, false, "", controlID);
+                                }
+
+                                if (EditorGUIUtility.GetObjectPickerControlID() == controlID && j == scriptSelectionIndex)
+                                {
+                                    string commandName = Event.current.commandName;
+                                    if (commandName == "ObjectSelectorUpdated")
                                     {
-                                        component.UpdateType(script);
+                                        MonoScript script = EditorGUIUtility.GetObjectPickerObject() as MonoScript;
+                                        if (component.Script != script)
+                                        {
+                                            component.UpdateType(script);
+                                        }
+                                    }
+                                    else
+                                    if (commandName == "ObjectSelectorClosed")
+                                    {
+                                        scriptSelectionIndex = -1;
                                     }
                                 }
-                                else
-                                if (commandName == "ObjectSelectorClosed")
+
+                                if (GUI.Button(deleteRect, Labels.DELETE_COMPONENT_LABEL, Style.CenteredBoldLabel))
                                 {
-                                    scriptSelectionIndex = -1;
+                                    group.Remove(j);
+                                    j--;
+
+                                    EditorUtility.SetDirty(settings);
+                                    serializedSettings.Update();
                                 }
+
+                                componentRect.y += 20f;
+                                groupRect.y += 20f;
+
+                                fullRect.height += 20f;
+                                newHeight += 20f;
                             }
-
-                            if (GUI.Button(deleteRect, Labels.DELETE_COMPONENT_LABEL, Style.CenteredBoldLabel))
-                            {
-                                group.Remove(j);
-                                j--;
-
-                                EditorUtility.SetDirty(settings);
-                                serializedSettings.Update();
-                            }
-
-                            componentRect.y += 20f;
-                            groupRect.y += 20f;
-
-                            fullRect.height += 20f;
-                            newHeight += 20f;
                         }
+
+                        HandleEventsOnGroup(fullRect, group);
+                        DrawBorder(fullRect);
+
+                        groupRect.y += Values.TOOLBAR_HEIGHT;
+                        newHeight += Values.TOOLBAR_HEIGHT;
                     }
-                    
-                    HandleEventsOnGroup(fullRect, group);
-                    DrawBorder(fullRect);
-
-                    groupRect.y += Values.TOOLBAR_HEIGHT;
-                    newHeight += Values.TOOLBAR_HEIGHT;
                 }
+
+                // End the scroll view that we began above.
+
+                GUI.EndScrollView();
+                customScrollHeight = newHeight;
+
+                EditorGUILayout.BeginHorizontal(Style.ToolbarNoSpace);
+                if (GUILayout.Button(Labels.ADD_GROUP_LABEL, Style.ToolbarButtonResizable))
+                {
+                    components.AddCustomGroup("New Group");
+                    EditorUtility.SetDirty(settings);
+
+                    serializedSettings.Update();
+                    SerializedCustomGroups = GetSerializedArrayElements("customGroups");
+                }
+                EditorGUILayout.EndHorizontal();
             }
-
-            // End the scroll view that we began above.
-
-            GUI.EndScrollView();
+            EditorGUILayout.EndVertical();
 
             // Assign the scroll height for the next draw call
 
-            customScrollHeight = newHeight;
         }
 
         private void ShowCustomGroupMenu(Rect rect, int index, ComponentGroup group)
