@@ -295,37 +295,12 @@ namespace HierarchyDecorator
             }
             GUILayout.FlexibleSpace();
 
-            if (groupIndex >= 0 && groupIndex < groupNames.Length)
-            {
-                string group = groupNames[groupIndex];
-                IconInfo[] icons = unityGroups[group];
-                if (GUILayout.Button(Labels.ENABLE_LABEL, Style.ToolbarButtonLeft, GUILayout.ExpandWidth(true)))
-                {
-                    foreach (IconInfo icon in icons)
-                    {
-                        SerializedProperty shown = icon.Property.FindPropertyRelative("shown");
-                        shown.boolValue = true;
-                    }
-                }
-
-                if (GUILayout.Button(Labels.DISABLE_LABEL, Style.ToolbarButtonLeft, GUILayout.ExpandWidth(true)))
-                {
-                    foreach (IconInfo icon in icons)
-                    {
-                        SerializedProperty shown = icon.Property.FindPropertyRelative("shown");
-                        shown.boolValue = false;
-                    }
-                }
-
-            }
-
             DrawBorder(rect);
 
             EditorGUILayout.EndVertical();
             EditorGUI.EndDisabledGroup();
 
             sidebarWidth = rect.width; 
-
         }
 
         private void DrawComponents()
@@ -361,9 +336,28 @@ namespace HierarchyDecorator
         {
             // Draw search fieldf
 
-            Rect rect = EditorGUILayout.BeginHorizontal(Style.ToolbarNoSpace, GUILayout.Height(19f));
+            Rect rect = EditorGUILayout.BeginHorizontal(Style.ToolbarNoSpace, GUILayout.Height(21f));
             searchText = EditorGUILayout.TextField(searchText, Style.ToolbarTextField);
-            EditorGUILayout.EndHorizontal();
+
+            if (GUILayout.Button(Labels.ENABLE_LABEL, Style.ToolbarButtonResizable))
+            {
+                foreach (IconInfo icon in icons)
+                {
+                    SerializedProperty shown = icon.Property.FindPropertyRelative("shown");
+                    shown.boolValue = true;
+                }
+            }
+
+            if (GUILayout.Button(Labels.DISABLE_LABEL, Style.ToolbarButtonResizable))
+            {
+                foreach (IconInfo icon in icons)
+                {
+                    SerializedProperty shown = icon.Property.FindPropertyRelative("shown");
+                    shown.boolValue = false;
+                }
+            }
+
+            EditorGUILayout.EndHorizontal(); 
         }
 
         private void DrawComponentLabel(GUIContent content)
