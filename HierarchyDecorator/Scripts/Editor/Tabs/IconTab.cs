@@ -133,7 +133,7 @@ namespace HierarchyDecorator
             // Setup References
             components = settings.Components;
 
-            ShowAllProperty = serializedSettings.FindProperty ("components.showAllComponents");
+            ShowAllProperty = serializedTab.FindPropertyRelative("showAllComponents");
             ShowMissingProperty = serializedTab.FindPropertyRelative ("showMissingScriptWarning");
 
             SerializedUnityGroups = GetSerializedArrayElements("unityGroups");
@@ -144,7 +144,8 @@ namespace HierarchyDecorator
             // Register Groups
 
             CreateDrawableGroup("Settings")
-                .RegisterSerializedProperty (ShowMissingProperty);
+                .RegisterSerializedProperty(ShowAllProperty)
+                .RegisterSerializedProperty(ShowMissingProperty);
         }
         
         // Methods
