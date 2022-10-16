@@ -124,6 +124,8 @@ namespace HierarchyDecorator
         private string[] groupNames = new string[0];
         private Dictionary<string, IconInfo[]> unityGroups = new Dictionary<string, IconInfo[]> ();
 
+        private Rect windowRect;
+
         // Constructor
 
         public IconTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, "components", "Icons", "d_FilterByType")
@@ -305,8 +307,12 @@ namespace HierarchyDecorator
         private void DrawComponents()
         {
             EditorGUI.BeginDisabledGroup(ShowAllProperty.boolValue);
-            Rect windowRect = EditorGUILayout.BeginVertical();
+            windowRect = EditorGUILayout.BeginVertical();
             {
+                Handles.BeginGUI();
+                Handles.DrawSolidRectangleWithOutline(windowRect, Color.clear, new Color(0.125f, 0.125f, 0.125f));
+                Handles.EndGUI();
+
                 // Filter components from search
 
                 if (IsSearching())
@@ -493,7 +499,7 @@ namespace HierarchyDecorator
             }
             EditorGUILayout.EndHorizontal();
         }
-        
+
         // --- Custom Componments
 
         private void DrawCustomComponents(Rect windowRect)
@@ -512,7 +518,9 @@ namespace HierarchyDecorator
                 Rect foldoutRect = GetCustomFoldoutRect(groupRect);
                 Rect labelRect = GetCustomHeaderRect(groupRect);
                 Rect toolbarRect = GetCustomToolbarRect(windowRect, groupRect);
-               
+
+                Rect fullRect = groupRect;
+
                 // Draw background
 
                 GUI.Box(groupRect, GUIContent.none, EditorStyles.toolbar);
@@ -635,15 +643,18 @@ namespace HierarchyDecorator
 
                         componentRect.y += 20f;
                         groupRect.y += 20f;
+
+                        fullRect.height += 20f;
                     }
                 }
 
+                HandleEventsOnGroup(fullRect, group);
+
                 groupRect.y += Values.TOOLBAR_HEIGHT;
             }
-
             GUILayout.FlexibleSpace();
 
-            if (GUILayout.Button(Labels.ADD_GROUP_LABEL, EditorStyles.miniButtonMid))
+            if (GUILayout.Button(Labels.ADD_GROUP_LABEL, EditorStyles.toolbarButton))
             {
                 components.AddCustomGroup("New Group");
                 EditorUtility.SetDirty(settings);
@@ -701,6 +712,89 @@ namespace HierarchyDecorator
 
             menu.DropDown(menuRect);
 
+        }
+
+        private bool performDrag = false;
+
+        private void HandleEventsOnGroup(Rect groupRect, ComponentGroup group)
+        {
+            if (Selection.objects.Length == 0)
+            {
+                return;
+            }
+
+            Event ev = Event.current;
+            bool isOver = groupRect.Contains(ev.mousePosition);
+
+            if (isOver)
+            {
+                switch (ev.type)
+                {
+                    case EventType.DragPerform:
+                    case EventType.DragUpdated:
+
+                        DragAndDrop.AcceptDrag();
+
+                        if (!performDrag)
+                        {
+                            bool isValid = true;
+                            foreach (var item in DragAndDrop.objectReferences)
+                            {
+                                if (!(item is MonoScript))
+                                {
+                                    //if (item is DefaultAsset)
+                                    //{
+                                    //    string path = AssetDatabase.GetAssetPath(item);
+                                    //    if (!AssetDatabase.IsValidFolder(path))
+                                    //    {
+                                    //        isValid = false;
+                                    //    }
+                                    //}
+                                    //else
+                                    //{
+                                    //    isValid = false;
+                                    //}
+                                    isValid = false;
+                                    break;
+                                }                                
+                            }
+
+                            performDrag = isValid;
+                        }
+
+
+                        break;
+
+                    case EventType.DragExited when performDrag:
+
+                        foreach (var item in DragAndDrop.objectReferences)
+                        {
+                            ComponentType component = new ComponentType(typeof(MonoScript), false);
+                            component.UpdateType(item as MonoScript);
+
+                            if (component.IsValid())
+                            {
+                                group.Add(component);
+                            }
+                        }
+                        performDrag = false;
+                        break;
+                }
+
+                if (performDrag)
+                {
+                    Handles.BeginGUI();
+                    {
+                        Handles.DrawSolidRectangleWithOutline(groupRect, Color.clear, Color.white);
+                    }
+                    Handles.EndGUI();
+                }
+            }
+        }
+
+        private void HandleEvents(Rect windowRect)
+        {
+            
         }
 
         // --- Icon Content
