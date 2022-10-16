@@ -265,8 +265,10 @@ namespace HierarchyDecorator
         {
             // Disable the tabs if we're searching
 
+            float height = isOnCustom ? Values.ICON_WINDOW_HEIGHT : 300f;
+
             EditorGUI.BeginDisabledGroup(IsSearching());
-            Rect rect = EditorGUILayout.BeginVertical(Style.ToolbarNoSpace, GUILayout.Width(70f), GUILayout.MinHeight(300f));
+            Rect rect = EditorGUILayout.BeginVertical(Style.ToolbarNoSpace, GUILayout.Width(70f), GUILayout.MinHeight(height));
             {
                 int index;
                 bool onCustom;
