@@ -36,7 +36,7 @@ namespace HierarchyDecorator
 
             // --- Custom group labels
 
-            public const string ADD_GROUP_LABEL = "Add New Group";
+            public const string ADD_GROUP_LABEL = "Add Group";
             public const string DELETE_GROUP_LABEL = "Delete";
 
             public const string DEFAULT_GROUP_LABEL = "Unnamed Group";
