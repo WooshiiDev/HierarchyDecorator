@@ -268,10 +268,11 @@ namespace HierarchyDecorator
                 int index;
                 bool onCustom;
 
-                GUILayout.Label("Categories", EditorStyles.boldLabel, GUILayout.Height(19f));
+                GUILayout.Label("Categories", EditorStyles.boldLabel, GUILayout.Height(21f));
 
                 EditorGUI.BeginChangeCheck();
                 {
+
                     index = GUILayout.SelectionGrid(groupIndex, groupNames, 1, Style.ToolbarButtonLeft);
                     onCustom = GUILayout.Toggle(isOnCustom, Labels.CUSTOM_COMPONENTS_LABEL, Style.ToolbarButtonLeft);
                 }
