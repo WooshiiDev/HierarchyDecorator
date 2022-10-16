@@ -341,7 +341,7 @@ namespace HierarchyDecorator
         {
             // Draw search fieldf
 
-            Rect rect = EditorGUILayout.BeginHorizontal(Style.ToolbarNoSpace, GUILayout.Height(21f));
+            EditorGUILayout.BeginHorizontal(Style.ToolbarNoSpace, GUILayout.Height(21f));
             searchText = EditorGUILayout.TextField(searchText, Style.ToolbarTextField);
 
             if (GUILayout.Button(Labels.ENABLE_LABEL, Style.ToolbarButtonResizable))
