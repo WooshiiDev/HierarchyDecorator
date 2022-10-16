@@ -392,6 +392,11 @@ namespace HierarchyDecorator
 
         private void DrawComponentsColumns(IconInfo[] types)
         {
+
+            // Draw header 
+
+            DrawGroupHeader(types);
+
             // For any reason we have no types, return out
 
             if (types.Length <= 0)
@@ -399,9 +404,6 @@ namespace HierarchyDecorator
                 return;
             }
 
-            // Draw header 
-
-            DrawGroupHeader(types);
 
             // Draw Columns
 
