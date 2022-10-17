@@ -576,53 +576,13 @@ namespace HierarchyDecorator
 
         private Rect DrawCustomGroup(Rect rect, int groupIndex, ComponentGroup group, SerializedProperty serializedGroup)
         {
-            Rect foldoutRect = GetCustomFoldoutRect(rect);
-            Rect labelRect = GetCustomHeaderRect(rect);
-            Rect toolbarRect = GetCustomToolbarRect(windowRect, rect);
-
             Rect fullRect = rect;
 
             // Draw background
 
             GUI.Box(rect, GUIContent.none, EditorStyles.toolbar);
 
-            // Foldout
-
-            bool toggleFold = EditorGUI.Foldout(foldoutRect, serializedGroup.isExpanded, GUIContent.none, false);
-
-            if ((toggleFold != serializedGroup.isExpanded))
-            {
-                serializedGroup.isExpanded = toggleFold;
-            }
-
-            // Label
-
-            string name = EditorGUI.DelayedTextField(labelRect, group.Name, EditorStyles.boldLabel);
-
-            group.Name = name;
-
-            int index = GUI.Toolbar(toolbarRect, -1, toolbarContent, EditorStyles.toolbarButton);
-
-            switch (index)
-            {
-                case 0: // Add component
-                    group.AddEmpty();
-                    break;
-
-                case 1:
-                    group.SetAllShown(true);
-                    break;
-
-                case 2:
-                    group.SetAllShown(false);
-                    break;
-
-                case 3: // Other options
-                    ShowCustomGroupMenu(toolbarRect, groupIndex, group);
-                    break;
-            }
-
-            if (toggleFold)
+            if (DrawCustomGroupHeader(rect, group, serializedGroup))
             {
                 Rect componentRect = rect;
                 componentRect.y += 21f;
@@ -708,6 +668,53 @@ namespace HierarchyDecorator
             return fullRect;
         }
 
+        private bool DrawCustomGroupHeader(Rect rect, ComponentGroup group, SerializedProperty serializedGroup)
+        {
+            // Positioning 
+
+            Rect foldoutRect = GetCustomFoldoutRect(rect);
+            Rect labelRect = GetCustomHeaderRect(rect);
+            Rect toolbarRect = GetCustomToolbarRect(windowRect, rect);
+
+            // Foldout
+
+            bool toggleFold = EditorGUI.Foldout(foldoutRect, serializedGroup.isExpanded, GUIContent.none, false);
+
+            if ((toggleFold != serializedGroup.isExpanded))
+            {
+                serializedGroup.isExpanded = toggleFold;
+            }
+
+            // Label
+
+            string name = EditorGUI.DelayedTextField(labelRect, group.Name, EditorStyles.boldLabel);
+
+            group.Name = name;
+
+            int index = GUI.Toolbar(toolbarRect, -1, toolbarContent, EditorStyles.toolbarButton);
+
+            switch (index)
+            {
+                case 0: // Add component
+                    group.AddEmpty();
+                    break;
+
+                case 1:
+                    group.SetAllShown(true);
+                    break;
+
+                case 2:
+                    group.SetAllShown(false);
+                    break;
+
+                case 3: // Other options
+                    ShowCustomGroupMenu(toolbarRect, groupIndex, group);
+                    break;
+            }
+
+            return serializedGroup.isExpanded;
+        }
+
         private void ShowCustomGroupMenu(Rect rect, int index, ComponentGroup group)
         {
             GUIContent moveUp = new GUIContent("Move Up");
@@ -755,7 +762,6 @@ namespace HierarchyDecorator
             menuRect.x = mousePosition.x;
 
             menu.DropDown(menuRect);
-
         }
 
         private bool performDrag = false;
