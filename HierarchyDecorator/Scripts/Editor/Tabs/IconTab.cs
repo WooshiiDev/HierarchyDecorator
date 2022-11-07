@@ -131,6 +131,11 @@ namespace HierarchyDecorator
 
         private Rect windowRect;
 
+        // Component GUI
+
+        private GUIContent componentLabel = new GUIContent();
+        private GUIContent componentIcon = new GUIContent();
+
         // Custom group GUI 
 
         private bool performDrag = false;
@@ -381,19 +386,19 @@ namespace HierarchyDecorator
 
             string text = content.text;
 
-            GUIContent labelContent = new GUIContent(text);
-            GUIContent iconContent = new GUIContent(content.image);
+            componentLabel.text = text;
+            componentIcon.image = content.image;
 
-            labelContent = GetComponentDisplayName(labelContent, labelWidth);
+            componentLabel = GetComponentDisplayName(componentLabel, labelWidth);
 
             // Offset to take into account free-positioned toggle
 
-            if (iconContent.image != null)
+            if (componentIcon.image != null)
             {
-                EditorGUILayout.LabelField(iconContent, Style.ComponentIconStyle, GUILayout.Width(16f));
+                EditorGUILayout.LabelField(componentIcon, Style.ComponentIconStyle, GUILayout.Width(16f));
             }
 
-            EditorGUILayout.LabelField(labelContent, GUILayout.Width(labelWidth));
+            EditorGUILayout.LabelField(componentLabel, GUILayout.Width(labelWidth));
         }
 
         private void DrawBorder(Rect rect)
