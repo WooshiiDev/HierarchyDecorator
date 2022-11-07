@@ -539,7 +539,7 @@ namespace HierarchyDecorator
 
                         if (group == null || serializedGroup == null)
                         {
-                            Debug.LogError("Missing group.");
+                            Debug.LogError("Custom component groups are null, have the groups been modified incorrectly?");
                             continue;
                         }
 
