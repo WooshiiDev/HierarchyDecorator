@@ -323,7 +323,7 @@ namespace HierarchyDecorator
                 else // Draw custom component GUI if selected
                 if (isOnCustom)
                 {
-                    DrawCustomGroups(windowRect);
+                    DrawCustomGroups();
                 }
                 else // Draw the group if selected
                 if (categoryIndex < groupNames.Length)
@@ -515,22 +515,49 @@ namespace HierarchyDecorator
         private Vector2 scrollPosition;
         private float customScrollHeight;
 
-        private void DrawCustomGroups(Rect windowRect)
+        private void DrawCustomGroups()
         {
-            EditorGUILayout.BeginVertical(Style.ToolbarNoSpace);
+            windowRect = EditorGUILayout.BeginVertical(Style.ToolbarNoSpace);
             {
                 GUILayout.FlexibleSpace();
 
                 float newHeight = 0;
 
-                windowRect.width -= 1f;
-                windowRect.height = Values.ICON_WINDOW_HEIGHT - Values.TOOLBAR_HEIGHT;
-                scrollPosition = GUI.BeginScrollView(windowRect, scrollPosition, new Rect(0, 0, windowRect.width - 13f, customScrollHeight));
-                {
-                    Rect groupRect = new Rect(0, 0, windowRect.width - 13f, Values.TOOLBAR_HEIGHT);
-                    int customLen = components.CustomGroups.Length;
+                // Set the height of the group window, but keep space for the add group button at the bottom
+                windowRect.height = Values.ICON_WINDOW_HEIGHT - Values.TOOLBAR_HEIGHT + 2;
 
-                    for (int i = 0; i < customLen; i++)
+                // Scroll viewport - customScrollHeight calculated from previous drawn frame 
+
+                Rect scrollViewport = windowRect;
+                scrollViewport.position = Vector2.zero;
+                scrollViewport.height = customScrollHeight;
+
+                // Overflow/Scroll checks to shift over gui width 
+
+                bool hasOverflow = customScrollHeight > windowRect.height;
+
+                if (hasOverflow)
+                {
+                    scrollViewport.width -= 13f;
+                }
+
+                // Wrap groups in scroll
+
+                scrollPosition = GUI.BeginScrollView(windowRect, scrollPosition, scrollViewport);
+                {
+                    // Shrink the width if scrollbar exists
+
+                    if (hasOverflow)
+                    {
+                        windowRect.width -= 13f;
+                    }
+
+                    // Create basic group rect with the height set for the toolbar
+
+                    Rect groupRect = scrollViewport;
+                    groupRect.height = Values.TOOLBAR_HEIGHT;
+
+                    for (int i = 0; i < components.CustomGroups.Length; i++)
                     {
                         ComponentGroup group = components.CustomGroups[i];
                         SerializedProperty serializedGroup = SerializedCustomGroups[i];
