@@ -97,7 +97,7 @@ namespace HierarchyDecorator
         private int scriptSelectionIndex;
 
         private string searchText = "";
-        private int groupIndex;
+        private int categoryIndex;
 
         private float columnWidth;
         private float sidebarWidth;
@@ -279,23 +279,23 @@ namespace HierarchyDecorator
                 EditorGUI.BeginChangeCheck();
                 {
 
-                    index = GUILayout.SelectionGrid(groupIndex, groupNames, 1, Style.ToolbarButtonLeft);
+                    index = GUILayout.SelectionGrid(categoryIndex, groupNames, 1, Style.ToolbarButtonLeft);
                     onCustom = GUILayout.Toggle(isOnCustom, Labels.CUSTOM_COMPONENTS_LABEL, Style.ToolbarButtonLeft);
                 }
                 if (EditorGUI.EndChangeCheck())
                 {
                     // Make sure the correct group is selected due to custom being handled individually
 
-                    if (index != groupIndex && index >= 0)
+                    if (index != categoryIndex && index >= 0)
                     {
                         isOnCustom = false;
-                        groupIndex = index;
+                        categoryIndex = index;
                     }
                     else
                     if (onCustom)
                     {
                         isOnCustom = true;
-                        groupIndex = -1;
+                        categoryIndex = -1;
                     }
                 }
             }
@@ -326,9 +326,9 @@ namespace HierarchyDecorator
                     DrawCustomGroups(windowRect);
                 }
                 else // Draw the group if selected
-                if (groupIndex < groupNames.Length)
+                if (categoryIndex < groupNames.Length)
                 {
-                    string group = groupNames[groupIndex];
+                    string group = groupNames[categoryIndex];
                     DrawComponentsColumns(unityGroups[group]);
                 }
 
