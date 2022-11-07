@@ -66,6 +66,8 @@ namespace HierarchyDecorator
             public static float TOOLBAR_HEIGHT => 21f;
 
             public static float ICON_WINDOW_HEIGHT = 400f;
+
+            public static float CUSTOM_TOOLBAR_WIDTH = 128f;
         }
 
         private static class Icons
@@ -977,16 +979,16 @@ namespace HierarchyDecorator
         private Rect GetCustomHeaderRect(Rect rect)
         {
             rect.x += 20f;
-            rect.width -= (toolbarContent.Length + 1) * 26f;
+            rect.width -= Values.CUSTOM_TOOLBAR_WIDTH + 19f;
             return rect;
         }
 
         private Rect GetCustomToolbarRect(Rect windowRect, Rect rect)
         {
             Rect toolbarRect = rect;
-            toolbarRect.x += windowRect.width - 128f;
             toolbarRect.height = Values.TOOLBAR_HEIGHT;
-            toolbarRect.width = rect.width - (toolbarRect.x - rect.x);
+            toolbarRect.width = Values.CUSTOM_TOOLBAR_WIDTH;
+            toolbarRect.x += windowRect.width - Values.CUSTOM_TOOLBAR_WIDTH;
 
             return toolbarRect;
         }
