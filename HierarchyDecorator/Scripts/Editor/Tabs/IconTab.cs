@@ -693,6 +693,11 @@ namespace HierarchyDecorator
 
             int index = GUI.Toolbar(toolbarRect, -1, toolbarContent, EditorStyles.toolbarButton);
 
+            if (index != -1)
+            {
+                GUI.FocusControl(null);
+            }
+
             switch (index)
             {
                 case 0: // Add component
