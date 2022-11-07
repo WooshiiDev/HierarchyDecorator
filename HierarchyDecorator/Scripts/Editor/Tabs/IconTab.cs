@@ -133,6 +133,8 @@ namespace HierarchyDecorator
 
         // Custom group GUI 
 
+        private bool performDrag = false;
+
         private Vector2 scrollPosition;
         private float customScrollHeight;
 
@@ -804,8 +806,6 @@ namespace HierarchyDecorator
             }
         }
 
-        private bool performDrag = false;
-
         private void HandleEventsOnGroup(Rect groupRect, ComponentGroup group)
         {
             if (Selection.objects.Length == 0)
@@ -880,11 +880,6 @@ namespace HierarchyDecorator
                     Handles.EndGUI();
                 }
             }
-        }
-
-        private void HandleEvents(Rect windowRect)
-        {
-            
         }
 
         // --- Icon Content
