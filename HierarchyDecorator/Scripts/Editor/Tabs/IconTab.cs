@@ -261,7 +261,6 @@ namespace HierarchyDecorator
 
         protected override void OnContentGUI()
         {
-
             // Draw Content 
 
             HierarchyGUI.Space();
@@ -292,7 +291,6 @@ namespace HierarchyDecorator
 
                 EditorGUI.BeginChangeCheck();
                 {
-
                     index = GUILayout.SelectionGrid(categoryIndex, groupNames, 1, Style.ToolbarButtonLeft);
                     onCustom = GUILayout.Toggle(isOnCustom, Labels.CUSTOM_COMPONENTS_LABEL, Style.ToolbarButtonLeft);
                 }
@@ -582,7 +580,6 @@ namespace HierarchyDecorator
 
                         // Draw each group individually 
 
-
                         Rect currentRect = DrawCustomGroup(groupRect, i, group, serializedGroup);
 
                         // Update positioning
@@ -598,7 +595,6 @@ namespace HierarchyDecorator
 
                         DrawBorder(borderRect);
                     }
-
                 }
 
                 // End the scroll view that we began above.
@@ -837,18 +833,6 @@ namespace HierarchyDecorator
                             {
                                 if (!(item is MonoScript))
                                 {
-                                    //if (item is DefaultAsset)
-                                    //{
-                                    //    string path = AssetDatabase.GetAssetPath(item);
-                                    //    if (!AssetDatabase.IsValidFolder(path))
-                                    //    {
-                                    //        isValid = false;
-                                    //    }
-                                    //}
-                                    //else
-                                    //{
-                                    //    isValid = false;
-                                    //}
                                     isValid = false;
                                     break;
                                 }                                
@@ -856,8 +840,6 @@ namespace HierarchyDecorator
 
                             performDrag = isValid;
                         }
-
-
                         break;
 
                     case EventType.DragExited when performDrag:
