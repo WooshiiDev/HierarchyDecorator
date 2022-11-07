@@ -121,23 +121,23 @@ namespace HierarchyDecorator
 
         private readonly SerializedProperty[] SerializedUnityGroups;
         private SerializedProperty[] SerializedCustomGroups;
-        
+
         // Component Data
 
         private string[] groupNames = new string[0];
-        private Dictionary<string, IconInfo[]> unityGroups = new Dictionary<string, IconInfo[]> ();
+        private Dictionary<string, IconInfo[]> unityGroups = new Dictionary<string, IconInfo[]>();
 
         private Rect windowRect;
 
         // Constructor
 
-        public IconTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, "components", "Icons", "d_FilterByType")
+        public IconTab(Settings settings, SerializedObject serializedSettings) : base(settings, serializedSettings, "components", "Icons", "d_FilterByType")
         {
             // Setup References
             components = settings.Components;
 
             ShowAllProperty = serializedTab.FindPropertyRelative("showAllComponents");
-            ShowMissingProperty = serializedTab.FindPropertyRelative ("showMissingScriptWarning");
+            ShowMissingProperty = serializedTab.FindPropertyRelative("showMissingScriptWarning");
 
             SerializedUnityGroups = GetSerializedArrayElements("unityGroups");
             SerializedCustomGroups = GetSerializedArrayElements("customGroups");
