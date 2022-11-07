@@ -131,6 +131,11 @@ namespace HierarchyDecorator
 
         private Rect windowRect;
 
+        // Custom group GUI 
+
+        private Vector2 scrollPosition;
+        private float customScrollHeight;
+
         // Constructor
 
         public IconTab(Settings settings, SerializedObject serializedSettings) : base(settings, serializedSettings, "components", "Icons", "d_FilterByType")
@@ -512,10 +517,6 @@ namespace HierarchyDecorator
         }
 
         // --- Custom Componments
-
-        private Vector2 customScroll;
-        private Vector2 scrollPosition;
-        private float customScrollHeight;
 
         private void DrawCustomGroups()
         {
