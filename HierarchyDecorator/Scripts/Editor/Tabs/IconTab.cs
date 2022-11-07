@@ -572,11 +572,23 @@ namespace HierarchyDecorator
 
                         // Draw each group individually 
 
+
                         Rect currentRect = DrawCustomGroup(groupRect, i, group, serializedGroup);
+
+                        // Update positioning
+
                         float currentHeight = currentRect.height;
                         groupRect.y += currentHeight;
                         newHeight += currentHeight;
+                        
+                        // Draw border to finish off the groups
+
+                        Rect borderRect = groupRect;
+                        borderRect.height = 0f;
+
+                        DrawBorder(borderRect);
                     }
+
                 }
 
                 // End the scroll view that we began above.
@@ -584,7 +596,8 @@ namespace HierarchyDecorator
                 GUI.EndScrollView();
                 customScrollHeight = newHeight;
 
-                EditorGUILayout.BeginHorizontal(Style.ToolbarNoSpace);
+                
+                Rect buttonRect = EditorGUILayout.BeginHorizontal(Style.ToolbarNoSpace);
                 if (GUILayout.Button(Labels.ADD_GROUP_LABEL, Style.ToolbarButtonResizable))
                 {
                     components.AddCustomGroup("New Group");
@@ -594,14 +607,16 @@ namespace HierarchyDecorator
                     SerializedCustomGroups = GetSerializedArrayElements("customGroups");
                 }
                 EditorGUILayout.EndHorizontal();
+                DrawBorder(buttonRect);
             }
             EditorGUILayout.EndVertical();
+
 
             // Assign the scroll height for the next draw call
 
         }
 
-        private Rect DrawCustomGroup(Rect rect, int groupIndex, ComponentGroup group, SerializedProperty serializedGroup)
+        private Rect DrawCustomGroup(Rect rect, int customIndex, ComponentGroup group, SerializedProperty serializedGroup)
         {
             Rect fullRect = rect;
 
