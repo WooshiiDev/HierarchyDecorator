@@ -96,7 +96,7 @@ namespace HierarchyDecorator
         // GUI Control
 
         private bool isOnCustom;
-        private int scriptSelectionIndex;
+        private int selectedComponentIndex;
 
         private string searchText = "";
         private int categoryIndex;
@@ -626,26 +626,8 @@ namespace HierarchyDecorator
 
             GUI.Box(rect, GUIContent.none, EditorStyles.toolbar);
 
-            if (DrawCustomGroupHeader(rect, group, serializedGroup))
+            if (DrawCustomGroupHeader(rect, customIndex, group, serializedGroup))
             {
-                Rect componentRect = rect;
-                componentRect.y += 21f;
-                componentRect.height = 19f;
-                componentRect.x += 2f;
-                componentRect.width -= 2f;
-
-                Rect toggleRect = componentRect;
-                toggleRect.width = 24f;
-
-                Rect scriptRect = toggleRect;
-                scriptRect.height = 16f;
-                scriptRect.width = componentRect.width - toggleRect.width - 22f;
-                scriptRect.x += 20f;
-
-                Rect deleteRect = toggleRect;
-                deleteRect.width = 24f;
-                deleteRect.x += componentRect.width - deleteRect.width - 2f;
-
                 int count = group.Count;
                 for (int i = 0; i < count; i++)
                 {
@@ -657,62 +639,29 @@ namespace HierarchyDecorator
                     }
 
                     ComponentType component = group.Get(i);
+                    DrawCustomComponent(rect, customIndex, group, component);
 
-                    toggleRect.y = componentRect.y + 2;
-                    scriptRect.y = componentRect.y;
-                    deleteRect.y = componentRect.y;
+                    // Deleted component, decrement loop
 
-                    component.Shown = EditorGUI.Toggle(toggleRect, component.Shown, Style.ToggleMixed);
-
-                    int controlID = GUIUtility.GetControlID(FocusType.Keyboard);
-
-                    if (GUI.Button(scriptRect, component.Content, Style.ToolbarButtonLeft))
+                    if (component == null)
                     {
-                        scriptSelectionIndex = i;
-                        EditorGUIUtility.ShowObjectPicker<MonoScript>(component.Script, false, "", controlID);
-                    }
-
-                    if (EditorGUIUtility.GetObjectPickerControlID() == controlID && i == scriptSelectionIndex)
-                    {
-                        string commandName = Event.current.commandName;
-                        if (commandName == "ObjectSelectorUpdated")
-                        {
-                            MonoScript script = EditorGUIUtility.GetObjectPickerObject() as MonoScript;
-                            if (component.Script != script)
-                            {
-                                component.UpdateType(script);
-                            }
-                        }
-                        else
-                        if (commandName == "ObjectSelectorClosed")
-                        {
-                            scriptSelectionIndex = -1;
-                        }
-                    }
-
-                    if (GUI.Button(deleteRect, Labels.DELETE_COMPONENT_LABEL, Style.CenteredBoldLabel))
-                    {
-                        group.Remove(i);
+                        count--;
                         i--;
-
-                        EditorUtility.SetDirty(settings);
-                        serializedSettings.Update();
+                        continue;
                     }
 
-                    componentRect.y += 20f;
                     rect.y += 20f;
-
                     fullRect.height += 20f;
                 }
             }
 
             HandleEventsOnGroup(fullRect, group);
-            DrawBorder(fullRect);
+            //DrawBorder(fullRect);
 
             return fullRect;
         }
 
-        private bool DrawCustomGroupHeader(Rect rect, ComponentGroup group, SerializedProperty serializedGroup)
+        private bool DrawCustomGroupHeader(Rect rect, int groupIndex, ComponentGroup group, SerializedProperty serializedGroup)
         {
             // Positioning 
 
@@ -811,6 +760,47 @@ namespace HierarchyDecorator
             menuRect.x = mousePosition.x;
 
             menu.DropDown(menuRect);
+        }
+
+        private void DrawCustomComponent(Rect rect, int index, ComponentGroup group, ComponentType component)
+        {
+            component.Shown = EditorGUI.Toggle(GetCustomToggleRect(rect), component.Shown, Style.ToggleMixed);
+
+            int controlID = GUIUtility.GetControlID(FocusType.Keyboard);
+
+            if (GUI.Button(GetCustomScriptRect(rect), component.Content, Style.ToolbarButtonLeft))
+            {
+                selectedComponentIndex = index;
+                EditorGUIUtility.ShowObjectPicker<MonoScript>(component.Script, false, "", controlID);
+            }
+
+            if (selectedComponentIndex != -1)
+            {
+                if (EditorGUIUtility.GetObjectPickerControlID() == controlID && selectedComponentIndex == index)
+                {
+                    string commandName = Event.current.commandName;
+                    if (commandName == "ObjectSelectorUpdated")
+                    {
+                        MonoScript script = EditorGUIUtility.GetObjectPickerObject() as MonoScript;
+                        if (component.Script != script)
+                        {
+                            component.UpdateType(script);
+                        }
+                    }
+                    else
+                    if (commandName == "ObjectSelectorClosed")
+                    {
+                        selectedComponentIndex = -1;
+                    }
+                }
+            }
+
+            if (GUI.Button(GetCustomDeleteRect(rect), Labels.DELETE_COMPONENT_LABEL, Style.ToolbarButtonResizable))
+            {
+                group.Remove(component);
+                EditorUtility.SetDirty(settings);
+                serializedSettings.Update();
+            }
         }
 
         private bool performDrag = false;
@@ -991,6 +981,44 @@ namespace HierarchyDecorator
             toolbarRect.x += windowRect.width - Values.CUSTOM_TOOLBAR_WIDTH;
 
             return toolbarRect;
+        }
+
+        // --- Custom Component Rects
+
+        private Rect GetCustomComponentRect(Rect rect)
+        {
+            rect.y += 21f;
+            rect.x += 2f;
+            rect.width -= 2f;
+
+            return rect;
+        }
+
+        private Rect GetCustomToggleRect(Rect rect)
+        {
+            rect = GetCustomComponentRect(rect);
+            rect.width = 24f;
+            rect.y += 2f;
+
+            return rect;
+        }
+
+        private Rect GetCustomScriptRect(Rect rect)
+        {
+            rect = GetCustomComponentRect(rect);
+            rect.x += 20f;
+            rect.width -= (Values.CUSTOM_TOOLBAR_WIDTH / toolbarContent.Length) + 19f;
+
+            return rect;
+        }
+
+        private Rect GetCustomDeleteRect(Rect rect)
+        {
+            rect = GetCustomComponentRect(rect);
+            rect.width = Values.CUSTOM_TOOLBAR_WIDTH/toolbarContent.Length;
+            rect.x = windowRect.width - rect.width;
+
+            return rect;
         }
     }
 }
