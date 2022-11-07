@@ -8,6 +8,7 @@ namespace HierarchyDecorator
     public class ComponentData
     {
         public bool showMissingScriptsWarning;
+        public bool forceAllScriptsDisplay;
 
         // Collecitons
         public List<ComponentType> unityComponents = new List<ComponentType> ();

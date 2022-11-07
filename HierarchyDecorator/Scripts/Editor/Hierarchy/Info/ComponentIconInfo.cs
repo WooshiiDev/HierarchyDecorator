@@ -63,13 +63,17 @@ namespace HierarchyDecorator
                     continue;
                 }
 
-                if (type.IsSubclassOf (typeof (MonoBehaviour)) && settings.componentData.FindCustomComponentFromType(type, out CustomComponentType componentType))
+                if (type.IsSubclassOf(typeof(MonoBehaviour)) && settings.componentData.forceAllScriptsDisplay)
                 {
-                    DrawMonobehaviour (rect, component, componentType, settings);
+                    DrawMonobehaviour(rect, component, settings);
+                }
+                else if (type.IsSubclassOf(typeof(MonoBehaviour)) && settings.componentData.FindCustomComponentFromType(type, out CustomComponentType componentType))
+                {
+                    DrawMonobehaviour(rect, component, componentType, settings);
                 }
                 else
                 {
-                    DrawComponent (rect, type, instance, settings);
+                    DrawComponent(rect, type, instance, settings);
                 }
             }
         }
@@ -84,8 +88,7 @@ namespace HierarchyDecorator
 
         private void DrawMonobehaviour(Rect rect, Component component, CustomComponentType componentType, Settings settings)
         {
-            Type type = component.GetType ();
-
+            
             if (!settings.globalData.showAllComponents)
             {
                 if (componentType.script == null)
@@ -99,11 +102,20 @@ namespace HierarchyDecorator
                 }
             }
 
-            string path = AssetDatabase.GetAssetPath (MonoScript.FromMonoBehaviour (component as MonoBehaviour));
-            GUIContent content = new GUIContent (AssetDatabase.GetCachedIcon (path));
+            DrawFetchedMonoBehaviourInfo(rect, component, settings);
+        }
 
-            componentTypes.Add (type);
-            DrawComponentIcon (rect, content, type);
+        private void DrawMonobehaviour(Rect rect, Component component, Settings settings) => DrawFetchedMonoBehaviourInfo(rect, component, settings);
+
+        private void DrawFetchedMonoBehaviourInfo(Rect rect, Component component, Settings settings)
+        {
+            Type type = component.GetType();
+
+            string path = AssetDatabase.GetAssetPath(MonoScript.FromMonoBehaviour(component as MonoBehaviour));
+            GUIContent content = new GUIContent(AssetDatabase.GetCachedIcon(path));
+
+            componentTypes.Add(type);
+            DrawComponentIcon(rect, content, type);
         }
 
         private void DrawComponent(Rect rect, Type type, GameObject instance, Settings settings)

@@ -30,6 +30,7 @@ namespace HierarchyDecorator
         // References
         private readonly SerializedProperty showAllProperty;
         private readonly SerializedProperty showMissingProperty;
+        private readonly SerializedProperty forceShowAllScriptsProperty;
 
         private readonly SerializedProperty serializedCustomComponents;
         private readonly SerializedProperty serializedUnityComponents;
@@ -46,6 +47,7 @@ namespace HierarchyDecorator
             // Setup References
             showAllProperty = serializedSettings.FindProperty ("globalData.showAllComponents");
             showMissingProperty = serializedTab.FindPropertyRelative ("showMissingScriptsWarning");
+            forceShowAllScriptsProperty = serializedTab.FindPropertyRelative("forceAllScriptsDisplay");
 
             serializedUnityComponents = serializedTab.FindPropertyRelative ("unityComponents");
             serializedCustomComponents = serializedTab.FindPropertyRelative ("customComponents");
@@ -66,6 +68,7 @@ namespace HierarchyDecorator
 
             EditorGUI.BeginChangeCheck ();
             EditorGUILayout.PropertyField (showMissingProperty);
+            EditorGUILayout.PropertyField (forceShowAllScriptsProperty);
             if (EditorGUI.EndChangeCheck ())
             {
                 serializedSettings.ApplyModifiedProperties ();
