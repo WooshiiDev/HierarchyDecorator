@@ -1,14 +1,8 @@
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Xml.Schema;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.TestTools;
-using UnityScript.Core;
+using Object = UnityEngine.Object;
 
 namespace HierarchyDecorator
 {
@@ -164,7 +158,7 @@ namespace HierarchyDecorator
                 .RegisterSerializedProperty(ShowAllProperty)
                 .RegisterSerializedProperty(ShowMissingProperty);
         }
-        
+
         // Methods
 
         // --- Group Initialization
@@ -185,7 +179,7 @@ namespace HierarchyDecorator
                 ComponentGroup group = components.UnityGroups[i];
 
                 // Ignore groups with no components
-                
+
                 if (group.Count == 0)
                 {
                     continue;
@@ -224,7 +218,7 @@ namespace HierarchyDecorator
             names.Add("");
             groupNames = names.ToArray();
             Array.Sort(groupNames);
-            
+
             // Assign global group to 'All'
 
             groupNames[0] = Labels.ALL_COMPONENTS_LABEL;
@@ -238,7 +232,7 @@ namespace HierarchyDecorator
             {
                 ComponentType component = group.Get(i);
                 SerializedProperty serializedComponent = serializedGroup.GetArrayElementAtIndex(i);
-                
+
                 // Check the content validity - we cannot use default or internal types as they're not exposed for use
 
                 GUIContent content = component.Content;
@@ -318,7 +312,7 @@ namespace HierarchyDecorator
             EditorGUILayout.EndVertical();
             EditorGUI.EndDisabledGroup();
 
-            sidebarWidth = rect.width; 
+            sidebarWidth = rect.width;
         }
 
         private void DrawComponents()
@@ -375,7 +369,7 @@ namespace HierarchyDecorator
                 }
             }
 
-            EditorGUILayout.EndHorizontal(); 
+            EditorGUILayout.EndHorizontal();
         }
 
         private void DrawComponentLabel(GUIContent content)
@@ -426,7 +420,7 @@ namespace HierarchyDecorator
             // Draw Columns
 
             scroll = EditorGUILayout.BeginScrollView(scroll);
-            EditorGUILayout.BeginHorizontal ();
+            EditorGUILayout.BeginHorizontal();
             {
                 // Get lengths, including the length of a single column
 
@@ -440,7 +434,7 @@ namespace HierarchyDecorator
 
                 columnWidth = EditorGUIUtility.currentViewWidth / 2 - Values.COLUMN_WIDTH_OFFSET;
 
-                EditorGUILayout.BeginVertical ();
+                EditorGUILayout.BeginVertical();
                 {
                     for (int i = 0; i < len; i++)
                     {
@@ -448,29 +442,29 @@ namespace HierarchyDecorator
 
                         // Draw component
 
-                        DrawComponent (type);
+                        DrawComponent(type);
 
                         // Change to second column when first half of the components have been drawn
 
                         if (i == halfLen)
                         {
-                            EditorGUILayout.EndVertical ();
-                            EditorGUILayout.BeginVertical ();
+                            EditorGUILayout.EndVertical();
+                            EditorGUILayout.BeginVertical();
                         }
                     }
 
                     HierarchyGUI.Space();
                 }
-                EditorGUILayout.EndVertical ();
+                EditorGUILayout.EndVertical();
             }
-            EditorGUILayout.EndHorizontal ();
+            EditorGUILayout.EndHorizontal();
             EditorGUILayout.EndScrollView();
         }
 
         private void DrawFilteredComponents(string filter)
         {
-            filter = filter.ToLower ();
-            
+            filter = filter.ToLower();
+
             IconInfo[] selectedTypes = unityGroups[Labels.ALL_COMPONENTS_LABEL];
             List<IconInfo> filteredTypes = new List<IconInfo>();
 
@@ -485,7 +479,7 @@ namespace HierarchyDecorator
                 }
             }
 
-            DrawComponentsColumns (filteredTypes.ToArray());
+            DrawComponentsColumns(filteredTypes.ToArray());
         }
 
         private void DrawComponent(IconInfo icon)
@@ -587,7 +581,7 @@ namespace HierarchyDecorator
                         float currentHeight = currentRect.height;
                         groupRect.y += currentHeight;
                         newHeight += currentHeight;
-                        
+
                         // Draw border to finish off the groups
 
                         Rect borderRect = groupRect;
@@ -602,7 +596,7 @@ namespace HierarchyDecorator
                 GUI.EndScrollView();
                 customScrollHeight = newHeight;
 
-                
+
                 Rect buttonRect = EditorGUILayout.BeginHorizontal(Style.ToolbarNoSpace);
                 if (GUILayout.Button(Labels.ADD_GROUP_LABEL, Style.ToolbarButtonResizable))
                 {
@@ -616,7 +610,6 @@ namespace HierarchyDecorator
                 DrawBorder(buttonRect);
             }
             EditorGUILayout.EndVertical();
-
 
             // Assign the scroll height for the next draw call
 
@@ -660,7 +653,6 @@ namespace HierarchyDecorator
             }
 
             HandleEventsOnGroup(fullRect, group);
-            //DrawBorder(fullRect);
 
             return fullRect;
         }
@@ -835,7 +827,7 @@ namespace HierarchyDecorator
                                 {
                                     isValid = false;
                                     break;
-                                }                                
+                                }
                             }
 
                             performDrag = isValid;
@@ -933,7 +925,7 @@ namespace HierarchyDecorator
 
             return elements;
         }
-        
+
         private bool IsSearching()
         {
             return !string.IsNullOrWhiteSpace(searchText);
@@ -998,7 +990,7 @@ namespace HierarchyDecorator
         private Rect GetCustomDeleteRect(Rect rect)
         {
             rect = GetCustomComponentRect(rect);
-            rect.width = Values.CUSTOM_TOOLBAR_WIDTH/toolbarContent.Length;
+            rect.width = Values.CUSTOM_TOOLBAR_WIDTH / toolbarContent.Length;
             rect.x = windowRect.width - rect.width;
 
             return rect;
