@@ -9,6 +9,12 @@ namespace HierarchyDecorator
     [RegisterTab ()]
     public class IconTab : SettingsTab
     {
+        private static class LabelContents
+        {
+            public static readonly GUIContent MoveUp = new GUIContent("Move Up");
+            public static readonly GUIContent MoveDown = new GUIContent("Move Down");
+            public static readonly GUIContent DeleteGroup = new GUIContent("Delete Group");
+        }
         private static class Labels
         {
             // --- Title
@@ -728,13 +734,14 @@ namespace HierarchyDecorator
 
         private void ShowCustomGroupMenu(Rect rect, int index, ComponentGroup group)
         {
-            GUIContent moveUp = new GUIContent("Move Up");
-            GUIContent moveDown = new GUIContent("Move Down");
-            GUIContent delete = new GUIContent("Delete Group");
-
+      
             GenericMenu menu = new GenericMenu();
 
             // Move up
+
+            GUIContent moveUp = LabelContents.MoveUp;
+            GUIContent moveDown = LabelContents.MoveDown;
+            GUIContent delete = LabelContents.DeleteGroup;
 
             if (index != 0)
             {
