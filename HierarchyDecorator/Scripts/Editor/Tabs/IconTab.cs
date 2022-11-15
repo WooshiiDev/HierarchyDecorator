@@ -142,6 +142,10 @@ namespace HierarchyDecorator
         private Vector2 scrollPosition;
         private float customScrollHeight;
 
+        // Properties
+
+        private Event Event => Event.current;
+
         // Constructor
 
         public IconTab(Settings settings, SerializedObject serializedSettings) : base(settings, serializedSettings, "components", "Icons", "d_FilterByType")
