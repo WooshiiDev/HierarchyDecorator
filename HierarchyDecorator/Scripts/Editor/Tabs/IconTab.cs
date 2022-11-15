@@ -134,6 +134,11 @@ namespace HierarchyDecorator
 
         private bool performDrag = false;
 
+        private ComponentGroup hoveredGroup;
+        private Rect hoveredRect;
+
+        private List<MonoScript> selectedScripts = new List<MonoScript>();
+
         private Vector2 scrollPosition;
         private float customScrollHeight;
 
@@ -589,6 +594,8 @@ namespace HierarchyDecorator
 
                         DrawBorder(borderRect);
                     }
+
+                    HandleGroupEvents();
                 }
 
                 // End the scroll view that we began above.
@@ -652,7 +659,13 @@ namespace HierarchyDecorator
                 }
             }
 
-            HandleEventsOnGroup(fullRect, group);
+            DrawBorder(fullRect);
+
+            if (hoveredGroup != group && fullRect.Contains(Event.mousePosition))
+            {
+                hoveredRect = fullRect;
+                hoveredGroup = group;
+            }
 
             return fullRect;
         }
@@ -799,67 +812,65 @@ namespace HierarchyDecorator
             }
         }
 
-        private void HandleEventsOnGroup(Rect groupRect, ComponentGroup group)
+        private void HandleGroupEvents()
         {
-            if (Selection.objects.Length == 0)
+            if (hoveredGroup == null)
             {
                 return;
             }
-
-            Event ev = Event.current;
-            bool isOver = groupRect.Contains(ev.mousePosition);
-
-            if (isOver)
+            switch (Event.type)
             {
-                switch (ev.type)
-                {
-                    case EventType.DragPerform:
-                    case EventType.DragUpdated:
+                // Cache all MonoTypes
 
-                        DragAndDrop.AcceptDrag();
-
-                        if (!performDrag)
-                        {
-                            bool isValid = true;
-                            foreach (var item in DragAndDrop.objectReferences)
-                            {
-                                if (!(item is MonoScript))
-                                {
-                                    isValid = false;
-                                    break;
-                                }
-                            }
-
-                            performDrag = isValid;
-                        }
-                        break;
-
-                    case EventType.DragExited when performDrag:
-
-                        foreach (var item in DragAndDrop.objectReferences)
-                        {
-                            ComponentType component = new ComponentType(typeof(MonoScript), false);
-                            component.UpdateType(item as MonoScript);
-
-                            if (component.IsValid())
-                            {
-                                group.Add(component);
-                            }
-                        }
-                        performDrag = false;
-                        break;
-                }
-
-                if (performDrag)
-                {
-                    Handles.BeginGUI();
+                case EventType.DragPerform:
+                case EventType.DragUpdated:
+                    if (!performDrag)
                     {
-                        Handles.DrawSolidRectangleWithOutline(groupRect, Color.clear, Color.white);
+                        foreach (var reference in DragAndDrop.objectReferences)
+                        {
+                            MonoScript script = (MonoScript)reference;
+
+                            if (script == null)
+                            {
+                                continue;
+                            }
+
+                            selectedScripts.Add(script);
+
+                        }
+
+                        performDrag = selectedScripts.Count > 0;
                     }
-                    Handles.EndGUI();
-                }
+                    break;
+
+                case EventType.DragExited when performDrag:
+
+                    foreach (MonoScript script in selectedScripts)
+                    {
+                        ComponentType component = new ComponentType(typeof(MonoScript), false);
+                        component.UpdateType(script);
+
+                        if (!hoveredGroup.Contains(component) && component.IsValid())
+                        {
+                            hoveredGroup.Add(component);
+                        }
+                    }
+
+                    performDrag = false;
+                    hoveredGroup = null;
+                    selectedScripts.Clear();
+
+                    break;
+            }
+
+            if (performDrag)
+            {
+                Handles.BeginGUI();
+                Handles.DrawSolidRectangleWithOutline(GetGroupHoverRect(hoveredRect), Color.clear, Color.white);
+                Handles.EndGUI();
             }
         }
+
 
         // --- Icon Content
 
@@ -992,6 +1003,16 @@ namespace HierarchyDecorator
             rect = GetCustomComponentRect(rect);
             rect.width = Values.CUSTOM_TOOLBAR_WIDTH / toolbarContent.Length;
             rect.x = windowRect.width - rect.width;
+
+            return rect;
+        }
+
+        private Rect GetGroupHoverRect(Rect rect)
+        {
+            rect.x++;
+            rect.width -= 2;
+            rect.y++;
+            rect.height--;
 
             return rect;
         }
