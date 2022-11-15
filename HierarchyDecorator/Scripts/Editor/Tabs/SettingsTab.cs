@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -27,7 +27,7 @@ namespace HierarchyDecorator
 #if UNITY_2019_4_OR_NEWER
             Content = new GUIContent (name, GUIHelper.GetUnityIcon (icon));
 #else
-            content = new GUIContent (name);
+            Content = new GUIContent (name);
 #endif
         }
 
