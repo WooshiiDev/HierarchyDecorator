@@ -228,5 +228,16 @@ namespace HierarchyDecorator
             return $"Component Type: {name}, {Type}";
         }
 
+        public override bool Equals(object obj)
+        {
+            ComponentType other = obj as ComponentType;
+
+            if (other == null)
+            {
+                return false;
+            }
+
+            return name.Equals(other.name);
+        }
     }
 }
