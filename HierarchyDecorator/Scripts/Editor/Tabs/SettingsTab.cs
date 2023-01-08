@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -74,21 +74,50 @@ namespace HierarchyDecorator
         }
 
         /// <summary>
-        /// Craete 
+        /// Create a drawable group.
         /// </summary>
-        /// <param name="title"></param>
-        /// <returns></returns>
+        /// <param name="title">The group title.</param>
+        /// <returns>Returns the created group.</returns>
         protected DrawerGroup CreateDrawableGroup(string title)
         {
             DrawerGroup group = new DrawerGroup (title);
-            
-            if (settingGroups.FindIndex(i => i.Title == title) != -1)
+            AddDrawerGroup(group);
+            return group;
+        }
+
+        /// <summary>
+        /// Register a drawer group.
+        /// </summary>
+        /// <param name="drawer">The drawer to add.</param>
+        public void AddDrawerGroup(DrawerGroup drawer)
+        {
+            if (drawer == null)
             {
-                Debug.LogWarning ("Attempt to add DrawableGroup with a title that already exists. Should specify each with different names.");
+                Debug.LogError("Attempt to add null drawer to settings tab.");
+                return;
             }
 
-            settingGroups.Add (group);
-            return group;
+            if (ContainsGroup(drawer))
+            {
+                Debug.LogWarning("Attempt to add DrawableGroup with a title that already exists. Should specify each with different names.");
+            }
+
+            settingGroups.Add(drawer);
+        }
+
+        /// <summary>
+        /// Check if the given group already has been registered to the settings tab.
+        /// </summary>
+        /// <param name="group">The group to check</param>
+        /// <returns>Returns true if the group has been registered otherwise, will return false.</returns>
+        public bool ContainsGroup(DrawerGroup group)
+        {
+            if (group == null)
+            {
+                return false;
+            }
+
+            return settingGroups.FindIndex(i => i.Title == group.Title) != -1;
         }
     }
 }
