@@ -7,7 +7,7 @@ namespace HierarchyDecorator
     {
         public SerializedPropertyElement(SerializedProperty target) : base (target) { }
 
-        protected override void OnElementDraw()
+        protected override void OnGUI()
         {
             EditorGUI.BeginChangeCheck();
 
@@ -26,6 +26,11 @@ namespace HierarchyDecorator
             {
                 Target.serializedObject.ApplyModifiedProperties();
             }
+        }
+
+        protected override float GetHeight()
+        {
+            return EditorGUI.GetPropertyHeight(Target, Target.isExpanded);
         }
     }
 }

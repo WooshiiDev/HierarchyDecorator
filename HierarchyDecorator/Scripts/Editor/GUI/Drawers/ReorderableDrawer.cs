@@ -6,10 +6,15 @@ namespace HierarchyDecorator
     {
         public ReorderableDrawer(ReorderableList target) : base (target) { }
 
-        protected override void OnElementDraw()
+        protected override void OnGUI()
         {
             HierarchyGUI.Space();
             Target.DoLayoutList ();
+        }
+
+        protected override float GetHeight()
+        {
+            return Target.GetHeight();
         }
     }
 }
