@@ -6,7 +6,7 @@ using Object = UnityEngine.Object;
 
 namespace HierarchyDecorator
 {
-    [RegisterTab ()]
+    [RegisterTab(2)]
     public class IconTab : SettingsTab
     {
         private static class LabelContents
