@@ -875,7 +875,6 @@ namespace HierarchyDecorator
             }
         }
 
-
         // --- Icon Content
 
         private GUIContent GetComponentDisplayName(GUIContent content, float width)
