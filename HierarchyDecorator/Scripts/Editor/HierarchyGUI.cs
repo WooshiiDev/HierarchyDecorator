@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 
 namespace HierarchyDecorator
@@ -15,7 +15,7 @@ namespace HierarchyDecorator
             ModeOptions styleSetting = style.GetCurrentMode (EditorGUIUtility.isProSkin);
 
             EditorGUI.DrawRect (styleRect, styleSetting.backgroundColour);
-            EditorGUI.LabelField (labelRect, label.ToUpper (), style.style);
+            EditorGUI.LabelField (labelRect, style.FormatString(label), style.style);
         }
 
         public static void DrawStandardContent(Rect rect, GameObject instance)
@@ -24,7 +24,7 @@ namespace HierarchyDecorator
             bool isPrefab = PrefabUtility.GetNearestPrefabInstanceRoot (instance) == instance;
 
             GUIContent content = GetStandardContent (rect, instance, isPrefab);
-            GUIStyle style = new GUIStyle (Style.ComponentIconStyle);
+            GUIStyle style = new GUIStyle (EditorStyles.label);
 
             if (isPrefab)
             {

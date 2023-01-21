@@ -7,16 +7,29 @@ namespace HierarchyDecorator
     /// </summary>
     public class Settings : ScriptableObject, ISerializationCallbackReceiver
     {
-        // Settings
+        // Fields
+
         public GlobalData globalData = new GlobalData ();
         public HierarchyStyleData styleData = new HierarchyStyleData ();
-        public ComponentData componentData = new ComponentData ();
+
+        [SerializeField]
+        private ComponentData components = new ComponentData ();
+
+        // Properties
+
+        public ComponentData Components
+        {
+            get
+            {
+                return components;
+            }
+        }
 
         // Settings Creation
 
         private void OnEnable()
         {
-            componentData.OnInitialize ();
+            components.OnInitialize ();
         }
 
         /// <summary>
@@ -24,7 +37,7 @@ namespace HierarchyDecorator
         /// </summary>
         internal void SetDefaults(bool isDarkMode)
         {
-            componentData.UpdateData ();
+            components.UpdateData ();
             styleData.UpdateStyles (isDarkMode);
         }
 
@@ -32,12 +45,12 @@ namespace HierarchyDecorator
 
         public void OnBeforeSerialize()
         {
-            componentData.UpdateData ();
+            components.UpdateData ();
         }
 
         public void OnAfterDeserialize()
         {
-            componentData.UpdateData ();
+            components.UpdateData ();
         }
     }
 }

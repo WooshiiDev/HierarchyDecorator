@@ -7,8 +7,10 @@ namespace HierarchyDecorator
     {
         public SerializedPropertyElement(SerializedProperty target) : base (target) { }
 
-        protected override void OnElementDraw()
+        protected override void OnGUI()
         {
+            EditorGUI.BeginChangeCheck();
+
             switch (Target.propertyType)
             {
                 default:
@@ -19,6 +21,16 @@ namespace HierarchyDecorator
                     Target.boolValue = GUILayout.Toggle (Target.boolValue, Target.displayName);
                     break;
             }
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                Target.serializedObject.ApplyModifiedProperties();
+            }
+        }
+
+        protected override float GetHeight()
+        {
+            return EditorGUI.GetPropertyHeight(Target, Target.isExpanded);
         }
     }
 }

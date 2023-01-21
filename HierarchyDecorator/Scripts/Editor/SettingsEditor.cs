@@ -10,7 +10,6 @@ namespace HierarchyDecorator
     [CustomEditor (typeof (Settings))]
     internal class SettingsEditor : Editor
     {
-        private Settings t;
         private Settings settings;
 
         // Grid selection
@@ -24,7 +23,6 @@ namespace HierarchyDecorator
 
         private void OnEnable()
         {
-            t = target as Settings;
             settings = target as Settings;
             SetupValues ();
             RegisterTabs ();
@@ -35,7 +33,6 @@ namespace HierarchyDecorator
             if (serializedObject != null)
             {
                 serializedObject.Dispose ();
-
             }
         }
 
@@ -46,28 +43,28 @@ namespace HierarchyDecorator
 
         public override void OnInspectorGUI()
         {
-            EditorGUILayout.BeginVertical (Style.InspectorPadding);
+            EditorGUILayout.BeginVertical(Style.InspectorPadding);
 
-            serializedObject.Update ();
-
-            DrawTitle ();
-
-            if (selectedTab != null)
-            {
-                selectedTab.OnGUI ();
-            }
+            DrawTitle();
+            selectedTab?.OnGUI();
 
             if (serializedObject.UpdateIfRequiredOrScript())
             {
-                EditorApplication.RepaintHierarchyWindow ();
+                EditorApplication.RepaintHierarchyWindow();
             }
 
             EditorGUILayout.EndVertical();
+            
+            if (Event.current.type == EventType.Repaint)
+            {
+                Repaint();
+            }
         }
 
         private void DrawTitle()
         {
-            // --- Header
+            // Draw Header
+            
 #if UNITY_2019_1_OR_NEWER
             EditorGUILayout.BeginVertical (Style.TabBackground, GUILayout.MinHeight (32f));
 #else
@@ -78,6 +75,8 @@ namespace HierarchyDecorator
                 EditorGUILayout.LabelField ("Hierarchy Settings", Style.Title);
 
                 GUILayout.FlexibleSpace ();
+
+                // Link to Repo for convenience
 
                 if (GUILayout.Button ("GitHub Repository", EditorStyles.miniButtonMid))
                 {
@@ -109,6 +108,8 @@ namespace HierarchyDecorator
 
             foreach (Type type in GetTabs())
             {
+                // If we find any type that is not a SettingsTab alert the user
+
                 if (!type.IsSubclassOf (typeof (SettingsTab)))
                 {
                     Debug.LogWarning ($"{type.Name} uses the RegisterTab attribute but does not inherit from SettingsTab.");

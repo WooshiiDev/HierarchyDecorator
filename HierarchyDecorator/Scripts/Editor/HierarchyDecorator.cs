@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEditor;
 using UnityEngine;
 
@@ -41,13 +42,13 @@ namespace HierarchyDecorator
             if (Settings == null)
             {
                 Settings = GetOrCreateSettings ();
-                Settings.componentData.UpdateData (true);
-
+                UpdateComponentData();
                 return;
             }
-
+            
             // Skip over the instance 
             // - normally if it's a Scene instance rather than a GameObject
+
             GameObject instance = EditorUtility.InstanceIDToObject (instanceID) as GameObject;
             
             if (instance == null)
@@ -127,6 +128,12 @@ namespace HierarchyDecorator
             }
 
             Drawers.Add (drawer);
+        }
+
+        public static void UpdateComponentData()
+        {
+            Settings.Components.UpdateData();
+            Settings.Components.UpdateComponents(true);
         }
     }
 }

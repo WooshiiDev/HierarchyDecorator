@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+using System.Runtime.CompilerServices;
+using UnityEditor;
 using UnityEngine;
 
 namespace HierarchyDecorator
@@ -48,6 +49,8 @@ namespace HierarchyDecorator
 
         //====== Editor Settings ======
 
+        public readonly static CategoryFilter DefaultFilter = new CategoryFilter("Other", string.Empty, FilterType.NONE);
+
         public readonly static CategoryFilter[] ComponentFilters =
         {
             new CategoryFilter ("2D", "2D", FilterType.NAME),
@@ -96,7 +99,8 @@ namespace HierarchyDecorator
         private const string TOGGLE_MIXED = "OL ToggleMixed";
 
         public static readonly GUIStyle CenteredBoldLabel;
-
+        public static readonly GUIStyle CenteredLabel;
+        
         public static readonly GUIStyle SmallDropdown;
         public static readonly GUIStyle ComponentIconStyle;
 
@@ -122,14 +126,36 @@ namespace HierarchyDecorator
         // --- Fields
 
         public static readonly GUIStyle TextFieldShortStyle;
+
         public static readonly GUIStyle ToolbarNoSpace;
+        public static readonly GUIStyle ToolbarButtonLeft;
+        public static readonly GUIStyle ToolbarButtonResizable;
+
+        // --- Widgets
+
+        public static readonly GUIStyle ToolbarTextField;
 
         static Style()
         {
             ToolbarNoSpace = new GUIStyle(EditorStyles.toolbar)
             {
                 padding = new RectOffset(0, 0, 0, 0),
-                margin = new RectOffset(0, 0, 0, 0)
+                margin = new RectOffset(0, 0, 0, 0),
+
+                fixedHeight = 0,
+                fixedWidth = 0,
+            };
+
+            ToolbarButtonLeft = new GUIStyle(EditorStyles.toolbarButton)
+            {
+                alignment = TextAnchor.MiddleLeft,
+            };
+
+            ToolbarButtonResizable = new GUIStyle(EditorStyles.toolbarButton)
+            {
+                fixedWidth = 0,
+                fixedHeight = 0,
+                alignment = TextAnchor.MiddleCenter
             };
 
             BoxHeader = new GUIStyle(GUI.skin.box)
@@ -150,6 +176,7 @@ namespace HierarchyDecorator
                 },
 
                 margin = new RectOffset(0,0,0,0),
+                padding = new RectOffset(0,0,0,0)
             };
 
             TabBackground = new GUIStyle (EditorStyles.helpBox)
@@ -161,6 +188,12 @@ namespace HierarchyDecorator
                 padding = new RectOffset(8, 8, 8, 8),
 
                 alignment = TextAnchor.MiddleLeft
+            };
+
+            CenteredLabel = new GUIStyle(EditorStyles.boldLabel)
+            {
+                fixedHeight = 0,
+                alignment = TextAnchor.MiddleCenter
             };
 
             CenteredBoldLabel = new GUIStyle (EditorStyles.centeredGreyMiniLabel)
@@ -185,8 +218,10 @@ namespace HierarchyDecorator
                 padding = new RectOffset (0, 0, 0, 0),
                 margin = new RectOffset (0, 0, 0, 0),
 
-                wordWrap = false,
-                clipping = TextClipping.Clip
+                fixedHeight = 16,
+                fixedWidth = 16,
+
+                imagePosition = ImagePosition.ImageOnly
             };
 
             Title = new GUIStyle (EditorStyles.boldLabel)
@@ -205,12 +240,13 @@ namespace HierarchyDecorator
 
             };
 
-            LargeButtonStyle = new GUIStyle (EditorStyles.miniButton)
+            LargeButtonStyle = new GUIStyle(EditorStyles.miniButton)
             {
                 fixedHeight = 32f,
                 fixedWidth = 0,
 
                 clipping = TextClipping.Clip,
+                margin = new RectOffset(1, 1, 1, 1)
             };
 
             LargeButtonSmallTextStyle = new GUIStyle (EditorStyles.miniButton)
@@ -261,6 +297,10 @@ namespace HierarchyDecorator
             ToggleMixed = new GUIStyle (Toggle);
 #endif
 
+            ToolbarTextField = new GUIStyle("ToolbarSeachTextField")
+            {
+                fixedWidth = 0,
+            };
         }
     }
 }
