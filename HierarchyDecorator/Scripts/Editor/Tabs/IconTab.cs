@@ -15,6 +15,7 @@ namespace HierarchyDecorator
             public static readonly GUIContent MoveDown = new GUIContent("Move Down");
             public static readonly GUIContent DeleteGroup = new GUIContent("Delete Group");
         }
+
         private static class Labels
         {
             // --- Title
@@ -361,7 +362,7 @@ namespace HierarchyDecorator
 
         private void DrawGroupHeader(IEnumerable<IconInfo> icons)
         {
-            // Draw search fieldf
+            // Draw search field
 
             EditorGUILayout.BeginHorizontal(Style.ToolbarNoSpace, GUILayout.Height(21f));
             searchText = EditorGUILayout.TextField(searchText, Style.ToolbarTextField);
@@ -530,7 +531,7 @@ namespace HierarchyDecorator
             EditorGUILayout.EndHorizontal();
         }
 
-        // --- Custom Componments
+        // --- Custom Components
 
         private void DrawCustomGroups()
         {
