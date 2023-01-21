@@ -206,7 +206,7 @@ namespace HierarchyDecorator
                 SerializedProperty serializedGroup = SerializedUnityGroups[i];
                 IconInfo[] icons = GetIconsFromGroup(group, serializedGroup);
 
-                // If there are no registred icons, group is not required, skip over
+                // If there are no registered icons, group is not required, skip over
 
                 if (icons.Length == 0)
                 {
@@ -220,7 +220,7 @@ namespace HierarchyDecorator
                 names.Add(name);
                 unityGroups.Add(name, icons);
 
-                // Add icons to global colection
+                // Add icons to global collection
 
                 allIcons.AddRange(icons);
             }
@@ -297,30 +297,31 @@ namespace HierarchyDecorator
                 EditorGUI.BeginChangeCheck();
 
                 int index = GUILayout.SelectionGrid(categoryIndex, groupNames, 1, Style.ToolbarButtonLeft);
-                isOnCustom = GUILayout.Toggle(isOnCustom, Labels.CUSTOM_COMPONENTS_LABEL, Style.ToolbarButtonLeft);
+                bool isCustom = GUILayout.Toggle(isOnCustom, Labels.CUSTOM_COMPONENTS_LABEL, Style.ToolbarButtonLeft);
 
                 if (EditorGUI.EndChangeCheck())
                 {
-                    if (isOnCustom)
-                    {
-                        categoryIndex = -1;
-                    }
-                    else
-                    if (index != categoryIndex)
+                    if (index != categoryIndex && index >= 0)
                     {
                         categoryIndex = index;
                         isOnCustom = false;
+                    }
+                    else
+                    if (isCustom)
+                    {
+                        isOnCustom = true;
+                        categoryIndex = -1;
                     }
                 }
             }
             GUILayout.FlexibleSpace();
 
+            rect.x--;
             DrawBorder(rect);
+
 
             EditorGUILayout.EndVertical();
             EditorGUI.EndDisabledGroup();
-
-            sidebarWidth = rect.width;
         }
 
         private void DrawComponents()
