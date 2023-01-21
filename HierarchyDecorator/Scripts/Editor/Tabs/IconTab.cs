@@ -839,7 +839,7 @@ namespace HierarchyDecorator
                     {
                         foreach (var reference in DragAndDrop.objectReferences)
                         {
-                            MonoScript script = (MonoScript)reference;
+                            MonoScript script = reference as MonoScript;
 
                             if (script == null)
                             {
