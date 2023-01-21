@@ -45,15 +45,13 @@ namespace HierarchyDecorator
 
                 if (component == null)
                 {
-                    if (settings.componentData.showMissingScriptsWarning)
+                    if (settings.Components.ShowMissingScriptWarning)
                     {
                         DrawMissingComponent (rect);
                         return;
                     }
-                    else
-                    {
-                        continue;
-                    }
+
+                    continue;
                 }
 
                 Type type = component.GetType ();
@@ -63,76 +61,86 @@ namespace HierarchyDecorator
                     continue;
                 }
 
-                if (type.IsSubclassOf (typeof (MonoBehaviour)) && settings.componentData.FindCustomComponentFromType(type, out CustomComponentType componentType))
+                if (settings.Components.TryGetComponent(type, out ComponentType unityType))
                 {
-                    DrawMonobehaviour (rect, component, componentType, settings);
+                    DrawComponent(rect, type, instance, settings);
                 }
                 else
                 {
-                    DrawComponent (rect, type, instance, settings);
+
+                    if (settings.Components.TryGetCustomComponent(type, out ComponentType customType))
+                    {
+                        DrawMonobehaviour(rect, component, customType, settings);
+                    }
+                    else
+                    if (settings.Components.ShowAllComponents)
+                    {
+                        customType = new ComponentType(type, false);
+
+                        MonoScript script = MonoScript.FromMonoBehaviour(component as MonoBehaviour);
+                        customType.UpdateType(script);
+
+                        settings.Components.RegisterCustomComponent(customType);
+                    }
                 }
             }
         }
 
         protected override void OnDrawInit(GameObject instance, Settings settings)
         {
+
             components = instance.GetComponents<Component> ();
             componentTypes.Clear ();
         }
 
         // GUI
 
-        private void DrawMonobehaviour(Rect rect, Component component, CustomComponentType componentType, Settings settings)
+        private void DrawMonobehaviour(Rect rect, Component component, ComponentType componentType, Settings settings)
         {
             Type type = component.GetType ();
 
-            if (!settings.globalData.showAllComponents)
+            if (!settings.Components.ShowAllComponents)
             {
-                if (componentType.script == null)
+                if (componentType.Script == null)
                 {
                     return;
                 }
 
-                if (!componentType.shown)
+                if (!componentType.Shown)
                 {
                     return;
                 }
             }
 
-            string path = AssetDatabase.GetAssetPath (MonoScript.FromMonoBehaviour (component as MonoBehaviour));
-            GUIContent content = new GUIContent (AssetDatabase.GetCachedIcon (path));
-
             componentTypes.Add (type);
-            DrawComponentIcon (rect, content, type);
+            DrawComponentIcon (rect, componentType.Content, type);
+
         }
 
         private void DrawComponent(Rect rect, Type type, GameObject instance, Settings settings)
         {
-            // Need to check for specifics if globally all components are not on
-            if (!settings.globalData.showAllComponents)
+            // Get the corresponding component type
+
+            ComponentType component = null;
+            if (!settings.Components.TryGetComponent(type, out component))
             {
-                ComponentType componentType = settings.componentData.unityComponents.FirstOrDefault (t => t.type == type);
-
-                if (componentType == null)
-                {
-                    componentType = settings.componentData.customComponents.FirstOrDefault (t => t.type == type);
-                }
-
-                if (componentType == null || !componentType.shown)
-                {
-                    return;
-                }
+                return;
             }
 
-            GUIContent content = EditorGUIUtility.ObjectContent (null, type);
+            if (!settings.Components.ShowAllComponents && !component.Shown)
+            {
+                return;
+            }
+
+            GUIContent content = component.Content;
 
             if (content.image == null)
             {
                 return;
             }
 
-            componentTypes.Add (type);
-            DrawComponentIcon (rect, content, type);
+            componentTypes.Add(type);
+            DrawComponentIcon(rect, content, type);
         }
 
         private void DrawComponentIcon(Rect rect, GUIContent content, Type type)
@@ -145,7 +153,6 @@ namespace HierarchyDecorator
             }
 
             content.tooltip = type.Name;
-            content.text = "";
 
             //GUI.DrawTexture (rect, content.image, ScaleMode.ScaleToFit);
             GUI.Label (rect, content, Style.ComponentIconStyle);
@@ -154,9 +161,6 @@ namespace HierarchyDecorator
         private void DrawMissingComponent(Rect rect)
         {
             rect = GetIconPosition (rect, true);
-
-            warningGUI.text = "";
-
             GUI.Label (rect, warningGUI, Style.ComponentIconStyle);
         }
 

@@ -10,16 +10,33 @@ namespace HierarchyDecorator
 
     public struct CategoryFilter
     {
-        public string name;
-        public string filter;
-        public FilterType type;
+        public readonly string Name;
+        public readonly string Filter;
+        public readonly FilterType FilterType;
 
-        public CategoryFilter(string name, string filter, FilterType type)
+        public CategoryFilter(string name, string filter, FilterType filterType)
         {
-            this.name = name;
-            this.filter = filter;
-            this.type = type;
+            this.Name = name;
+            this.Filter = filter;
+            this.FilterType = filterType;
+        }
+        
+        public bool IsValidFilter(Type type)
+        {
+            switch (FilterType)
+            {
+                case FilterType.NONE:
+                    return false;
+
+                case FilterType.NAME:
+                    return type.FullName.Contains (Filter);
+
+                case FilterType.TYPE:
+                    Type baseType = Type.GetType (Filter);
+                    return type.IsAssignableFrom (baseType) || type.IsSubclassOf (baseType);
+            }
+
+            return false;
         }
     }
-
 }

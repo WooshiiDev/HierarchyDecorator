@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 
 namespace HierarchyDecorator
@@ -24,7 +24,7 @@ namespace HierarchyDecorator
             bool isPrefab = PrefabUtility.GetNearestPrefabInstanceRoot (instance) == instance;
 
             GUIContent content = GetStandardContent (rect, instance, isPrefab);
-            GUIStyle style = new GUIStyle (Style.ComponentIconStyle);
+            GUIStyle style = new GUIStyle (EditorStyles.label);
 
             if (isPrefab)
             {

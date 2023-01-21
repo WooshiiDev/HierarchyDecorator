@@ -2,7 +2,6 @@
 
 namespace HierarchyDecorator
 {
-
     /// <summary>
     /// A class for drawing GUI elements.
     /// </summary>
@@ -15,7 +14,7 @@ namespace HierarchyDecorator
         {
             EditorGUI.BeginDisabledGroup (!IsEnabled ());
 
-            OnElementDraw ();
+            OnGUI ();
 
             EditorGUI.EndDisabledGroup ();
         }
@@ -33,7 +32,9 @@ namespace HierarchyDecorator
         /// <summary>
         /// Draw method used to setup how the element is displayed.
         /// </summary>
-        protected abstract void OnElementDraw();
+        protected abstract void OnGUI();
+
+        protected abstract float GetHeight();
     }
 
     /// <summary>
