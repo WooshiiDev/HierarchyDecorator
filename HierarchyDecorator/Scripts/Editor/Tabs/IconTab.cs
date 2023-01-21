@@ -294,30 +294,22 @@ namespace HierarchyDecorator
             EditorGUI.BeginDisabledGroup(IsSearching());
             Rect rect = EditorGUILayout.BeginVertical(Style.ToolbarNoSpace, GUILayout.Width(70f), GUILayout.MinHeight(height));
             {
-                int index;
-                bool onCustom;
-
-                GUILayout.Label("Categories", EditorStyles.boldLabel, GUILayout.Height(21f));
-
                 EditorGUI.BeginChangeCheck();
-                {
-                    index = GUILayout.SelectionGrid(categoryIndex, groupNames, 1, Style.ToolbarButtonLeft);
-                    onCustom = GUILayout.Toggle(isOnCustom, Labels.CUSTOM_COMPONENTS_LABEL, Style.ToolbarButtonLeft);
-                }
+
+                int index = GUILayout.SelectionGrid(categoryIndex, groupNames, 1, Style.ToolbarButtonLeft);
+                isOnCustom = GUILayout.Toggle(isOnCustom, Labels.CUSTOM_COMPONENTS_LABEL, Style.ToolbarButtonLeft);
+
                 if (EditorGUI.EndChangeCheck())
                 {
-                    // Make sure the correct group is selected due to custom being handled individually
-
-                    if (index != categoryIndex && index >= 0)
+                    if (isOnCustom)
                     {
-                        isOnCustom = false;
-                        categoryIndex = index;
+                        categoryIndex = -1;
                     }
                     else
-                    if (onCustom)
+                    if (index != categoryIndex)
                     {
-                        isOnCustom = true;
-                        categoryIndex = -1;
+                        categoryIndex = index;
+                        isOnCustom = false;
                     }
                 }
             }
