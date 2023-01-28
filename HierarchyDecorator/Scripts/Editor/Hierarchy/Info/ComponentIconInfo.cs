@@ -8,14 +8,20 @@ namespace HierarchyDecorator
 {
     public class ComponentIconInfo : HierarchyInfo
     {
+        private readonly Type MonoType = typeof(MonoBehaviour);
+        private readonly GUIContent MonoContent = EditorGUIUtility.IconContent("cs Script Icon");
+
         private List<Type> componentTypes = new List<Type> ();
         private Component[] components = new Component[0];
+
+        private bool hasMonoBehaviour = false;
 
 #if UNITY_2019_1_OR_NEWER
         private GUIContent warningGUI = EditorGUIUtility.IconContent ("warning");
 #else
         private GUIContent warningGUI = EditorGUIUtility.IconContent ("console.warnicon");
 #endif
+
 
         protected override int GetGridCount()
         {
@@ -55,8 +61,18 @@ namespace HierarchyDecorator
                 }
 
                 Type type = component.GetType ();
+                
+                bool isInvalid = componentTypes.Contains(type);
 
-                if (componentTypes.Contains (type))
+                if (!isInvalid)
+                {
+                    if (hasMonoBehaviour && settings.Components.IconBehaviour == ScriptIconBehaviour.StackMonobehaviours)
+                    {
+                        isInvalid = type.IsSubclassOf(typeof(MonoBehaviour));
+                    }
+                }
+
+                if (isInvalid)
                 {
                     continue;
                 }
@@ -67,7 +83,6 @@ namespace HierarchyDecorator
                 }
                 else
                 {
-
                     if (settings.Components.TryGetCustomComponent(type, out ComponentType customType))
                     {
                         DrawMonobehaviour(rect, component, customType, settings);
@@ -83,14 +98,19 @@ namespace HierarchyDecorator
                         settings.Components.RegisterCustomComponent(customType);
                     }
                 }
+
+                if (!hasMonoBehaviour)
+                {
+                    hasMonoBehaviour = type.IsSubclassOf(typeof(MonoBehaviour));
+                }
             }
         }
 
         protected override void OnDrawInit(GameObject instance, Settings settings)
         {
-
             components = instance.GetComponents<Component> ();
             componentTypes.Clear ();
+            hasMonoBehaviour = false;
         }
 
         // GUI
@@ -112,9 +132,17 @@ namespace HierarchyDecorator
                 }
             }
 
-            componentTypes.Add (type);
-            DrawComponentIcon (rect, componentType.Content, type);
+            componentTypes.Add(type);
 
+            GUIContent content = componentType.Content;
+
+            if (settings.Components.IconBehaviour == ScriptIconBehaviour.StackMonobehaviours && type.IsSubclassOf(typeof(MonoBehaviour)))
+            {
+                type = MonoType;
+                content = MonoContent;
+            }
+
+            DrawComponentIcon (rect, content, type);
         }
 
         private void DrawComponent(Rect rect, Type type, GameObject instance, Settings settings)
