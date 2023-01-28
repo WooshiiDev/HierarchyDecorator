@@ -162,6 +162,12 @@ namespace HierarchyDecorator
 
             GUIContent content = component.Content;
 
+            if (settings.Components.IconBehaviour == ScriptIconBehaviour.StackMonobehaviours && type.IsSubclassOf(typeof(MonoBehaviour)))
+            {
+                type = MonoType;
+                content = MonoContent;
+            }
+
             if (content.image == null)
             {
                 return;
