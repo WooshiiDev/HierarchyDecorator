@@ -573,17 +573,7 @@ namespace HierarchyDecorator
 
                 GUILayout.FlexibleSpace();
 
-                Rect buttonRect = EditorGUILayout.BeginHorizontal();
-                if (GUILayout.Button(Labels.ADD_GROUP_LABEL, Style.ToolbarButtonResizable))
-                {
-                    components.AddCustomGroup("New Group");
-                    EditorUtility.SetDirty(settings);
-
-                    serializedSettings.Update();
-                    SerializedCustomGroups = GetSerializedArrayElements("customGroups");
-                }
-                EditorGUILayout.EndHorizontal();
-                DrawBorder(buttonRect);
+                DrawAddGroupButton();
             }
             EditorGUILayout.EndVertical();
         }
@@ -752,6 +742,30 @@ namespace HierarchyDecorator
                 }
             }
             EditorGUILayout.EndHorizontal();
+        }
+
+        private void DrawAddGroupButton()
+        {
+            Rect buttonRect = EditorGUILayout.BeginHorizontal();
+
+            if (GUILayout.Button(Labels.ADD_GROUP_LABEL, Style.ToolbarButtonResizable))
+            {
+                // Create new group
+
+                components.AddCustomGroup(Labels.DEFAULT_GROUP_LABEL);
+
+                // Update settings object
+
+                EditorUtility.SetDirty(settings);
+                serializedSettings.Update();
+
+                // Update cached groups
+
+                SerializedCustomGroups = GetSerializedArrayElements("customGroups");
+            }
+            EditorGUILayout.EndHorizontal();
+
+            DrawBorder(buttonRect);
         }
 
         private void HandleGroupEvents()
