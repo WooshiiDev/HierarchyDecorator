@@ -111,7 +111,6 @@ namespace HierarchyDecorator
         private int categoryIndex;
 
         private float columnWidth;
-        private float sidebarWidth;
 
         private Vector2 scroll;
 
@@ -153,9 +152,6 @@ namespace HierarchyDecorator
         private Rect hoveredRect;
 
         private List<MonoScript> selectedScripts = new List<MonoScript>();
-
-        private Vector2 scrollPosition;
-        private float customScrollHeight;
 
         // Properties
 
@@ -433,7 +429,6 @@ namespace HierarchyDecorator
 
         private void DrawComponentsColumns(IconInfo[] types)
         {
-
             // Draw header 
 
             DrawGroupHeader(types);
@@ -651,7 +646,7 @@ namespace HierarchyDecorator
             return isExpanded;
         }
 
-        private void ShowCustomGroupMenu(int index, ComponentGroup group)
+        private void ShowCustomGroupMenu(int index)
         {
             GenericMenu menu = new GenericMenu();
 
