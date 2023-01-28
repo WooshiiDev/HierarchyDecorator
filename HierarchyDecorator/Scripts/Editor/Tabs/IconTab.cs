@@ -6,7 +6,7 @@ using Object = UnityEngine.Object;
 
 namespace HierarchyDecorator
 {
-    [RegisterTab ()]
+    [RegisterTab(2)]
     public class IconTab : SettingsTab
     {
         private static class LabelContents
@@ -81,6 +81,14 @@ namespace HierarchyDecorator
 
             public static readonly GUIContent EnableAll = EditorGUIUtility.IconContent("d_scenevis_visible_hover@2x");
             public static readonly GUIContent DisableAll = EditorGUIUtility.IconContent("d_SceneViewVisibility@2x");
+
+#if UNITY_2019_1_OR_NEWER
+            private static readonly GUIContent WarningGUI = new GUIContent(EditorGUIUtility.IconContent("warning"));
+#else
+            private static readonly GUIContent WarningGUI = EditorGUIUtility.IconContent ("console.warnicon");
+#endif
+
+            public static readonly GUIContent EmptyComponent = new GUIContent("<No Component>", WarningGUI.image);
         }
 
         // Const/Readonly
@@ -103,7 +111,6 @@ namespace HierarchyDecorator
         private int categoryIndex;
 
         private float columnWidth;
-        private float sidebarWidth;
 
         private Vector2 scroll;
 
@@ -145,9 +152,6 @@ namespace HierarchyDecorator
         private Rect hoveredRect;
 
         private List<MonoScript> selectedScripts = new List<MonoScript>();
-
-        private Vector2 scrollPosition;
-        private float customScrollHeight;
 
         // Properties
 
@@ -206,7 +210,7 @@ namespace HierarchyDecorator
                 SerializedProperty serializedGroup = SerializedUnityGroups[i];
                 IconInfo[] icons = GetIconsFromGroup(group, serializedGroup);
 
-                // If there are no registred icons, group is not required, skip over
+                // If there are no registered icons, group is not required, skip over
 
                 if (icons.Length == 0)
                 {
@@ -220,7 +224,7 @@ namespace HierarchyDecorator
                 names.Add(name);
                 unityGroups.Add(name, icons);
 
-                // Add icons to global colection
+                // Add icons to global collection
 
                 allIcons.AddRange(icons);
             }
@@ -292,35 +296,47 @@ namespace HierarchyDecorator
             float height = isOnCustom ? Values.ICON_WINDOW_HEIGHT : 300f;
 
             EditorGUI.BeginDisabledGroup(IsSearching());
-            Rect rect = EditorGUILayout.BeginVertical(Style.ToolbarNoSpace, GUILayout.Width(70f), GUILayout.MinHeight(height));
+            Rect rect = EditorGUILayout.BeginVertical(Style.BoxHeader, GUILayout.MaxWidth(71f), GUILayout.MinHeight(height));
             {
                 EditorGUI.BeginChangeCheck();
 
-                int index = GUILayout.SelectionGrid(categoryIndex, groupNames, 1, Style.ToolbarButtonLeft);
-                isOnCustom = GUILayout.Toggle(isOnCustom, Labels.CUSTOM_COMPONENTS_LABEL, Style.ToolbarButtonLeft);
+                int index = categoryIndex;
+                for (int i = 0; i < groupNames.Length; i++)
+                {
+                    string name = groupNames[i];
+
+                    if (GUILayout.Toggle(index == i, name, Style.ToolbarButtonLeft))
+                    {
+                        index = i;
+                    }
+                }
+
+                //int index = GUILayout.SelectionGrid(categoryIndex, groupNames, 1, Style.ToolbarButtonLeft);
+                bool isCustom = GUILayout.Toggle(isOnCustom, Labels.CUSTOM_COMPONENTS_LABEL, Style.ToolbarButtonLeft);
 
                 if (EditorGUI.EndChangeCheck())
                 {
-                    if (isOnCustom)
-                    {
-                        categoryIndex = -1;
-                    }
-                    else
-                    if (index != categoryIndex)
+                    if (index != categoryIndex && index >= 0)
                     {
                         categoryIndex = index;
                         isOnCustom = false;
+                    }
+                    else
+                    if (isCustom)
+                    {
+                        isOnCustom = true;
+                        categoryIndex = -1;
                     }
                 }
             }
             GUILayout.FlexibleSpace();
 
+            rect.x--;
+            rect.width++;
             DrawBorder(rect);
 
             EditorGUILayout.EndVertical();
             EditorGUI.EndDisabledGroup();
-
-            sidebarWidth = rect.width;
         }
 
         private void DrawComponents()
@@ -356,7 +372,8 @@ namespace HierarchyDecorator
         {
             // Draw search field
 
-            EditorGUILayout.BeginHorizontal(Style.ToolbarNoSpace, GUILayout.Height(21f));
+            EditorGUILayout.BeginHorizontal();
+
             searchText = EditorGUILayout.TextField(searchText, Style.ToolbarTextField);
 
             if (GUILayout.Button(Labels.ENABLE_LABEL, Style.ToolbarButtonResizable))
@@ -412,7 +429,6 @@ namespace HierarchyDecorator
 
         private void DrawComponentsColumns(IconInfo[] types)
         {
-
             // Draw header 
 
             DrawGroupHeader(types);
@@ -423,7 +439,6 @@ namespace HierarchyDecorator
             {
                 return;
             }
-
 
             // Draw Columns
 
@@ -529,205 +544,110 @@ namespace HierarchyDecorator
         {
             windowRect = EditorGUILayout.BeginVertical(Style.ToolbarNoSpace);
             {
-                GUILayout.FlexibleSpace();
+                scroll = EditorGUILayout.BeginScrollView(scroll);
 
-                float newHeight = 0;
-
-                // Set the height of the group window, but keep space for the add group button at the bottom
-                windowRect.height = Values.ICON_WINDOW_HEIGHT - Values.TOOLBAR_HEIGHT + 2;
-
-                // Scroll viewport - customScrollHeight calculated from previous drawn frame 
-
-                Rect scrollViewport = windowRect;
-                scrollViewport.position = Vector2.zero;
-                scrollViewport.height = customScrollHeight;
-
-                // Overflow/Scroll checks to shift over gui width 
-
-                bool hasOverflow = customScrollHeight > windowRect.height;
-
-                if (hasOverflow)
+                for (int i = 0; i < components.CustomGroups.Length; i++)
                 {
-                    scrollViewport.width -= 13f;
-                }
+                    ComponentGroup group = components.CustomGroups[i];
+                    SerializedProperty serializedGroup = SerializedCustomGroups[i];
 
-                // Wrap groups in scroll
+                    // Should not happen, but just in case something goes wrong
 
-                scrollPosition = GUI.BeginScrollView(windowRect, scrollPosition, scrollViewport);
-                {
-                    // Shrink the width if scrollbar exists
-
-                    if (hasOverflow)
+                    if (group == null || serializedGroup == null)
                     {
-                        windowRect.width -= 13f;
-                    }
-
-                    // Create basic group rect with the height set for the toolbar
-
-                    Rect groupRect = scrollViewport;
-                    groupRect.height = Values.TOOLBAR_HEIGHT;
-
-                    for (int i = 0; i < components.CustomGroups.Length; i++)
-                    {
-                        ComponentGroup group = components.CustomGroups[i];
-                        SerializedProperty serializedGroup = SerializedCustomGroups[i];
-
-                        // Should not happen, but just in case something goes wrong
-
-                        if (group == null || serializedGroup == null)
-                        {
-                            Debug.LogError("Custom component group is null, have custom groups been modified incorrectly?");
-                            continue;
-                        }
-
-                        // Draw each group individually 
-
-                        Rect currentRect = DrawCustomGroup(groupRect, i, group, serializedGroup);
-
-                        // Update positioning
-
-                        float currentHeight = currentRect.height;
-                        groupRect.y += currentHeight;
-                        newHeight += currentHeight;
-
-                        // Draw border to finish off the groups
-
-                        Rect borderRect = groupRect;
-                        borderRect.height = 0f;
-
-                        DrawBorder(borderRect);
-                    }
-
-                    HandleGroupEvents();
-                }
-
-                // End the scroll view that we began above.
-
-                GUI.EndScrollView();
-                customScrollHeight = newHeight;
-
-
-                Rect buttonRect = EditorGUILayout.BeginHorizontal(Style.ToolbarNoSpace);
-                if (GUILayout.Button(Labels.ADD_GROUP_LABEL, Style.ToolbarButtonResizable))
-                {
-                    components.AddCustomGroup("New Group");
-                    EditorUtility.SetDirty(settings);
-
-                    serializedSettings.Update();
-                    SerializedCustomGroups = GetSerializedArrayElements("customGroups");
-                }
-                EditorGUILayout.EndHorizontal();
-                DrawBorder(buttonRect);
-            }
-            EditorGUILayout.EndVertical();
-
-            // Assign the scroll height for the next draw call
-
-        }
-
-        private Rect DrawCustomGroup(Rect rect, int customIndex, ComponentGroup group, SerializedProperty serializedGroup)
-        {
-            Rect fullRect = rect;
-
-            // Draw background
-
-            GUI.Box(rect, GUIContent.none, EditorStyles.toolbar);
-
-            if (DrawCustomGroupHeader(rect, customIndex, group, serializedGroup))
-            {
-                int count = group.Count;
-                for (int i = 0; i < count; i++)
-                {
-                    // Required here for group size checks
-
-                    if (i >= group.Count)
-                    {
-                        return rect;
-                    }
-
-                    ComponentType component = group.Get(i);
-                    DrawCustomComponent(rect, customIndex, group, component);
-
-                    // Deleted component, decrement loop
-
-                    if (component == null)
-                    {
-                        count--;
-                        i--;
+                        Debug.LogError("Custom component group is null, have custom groups been modified incorrectly?");
                         continue;
                     }
 
-                    rect.y += 20f;
-                    fullRect.height += 20f;
+                    // Draw each group individually 
+
+                    DrawCustomGroup(i);
+                }
+
+                EditorGUILayout.EndScrollView();
+
+                GUILayout.FlexibleSpace();
+
+                DrawAddGroupButton();
+            }
+            EditorGUILayout.EndVertical();
+        }
+
+        private void DrawCustomGroup(int index)
+        {
+            ComponentGroup group = components.CustomGroups[index];
+            SerializedProperty serializedGroup = SerializedCustomGroups[index];
+
+            Rect groupRect = EditorGUILayout.BeginVertical();
+            {
+                serializedGroup.isExpanded = DrawCustomGroupHeader(index, group, serializedGroup.isExpanded);
+
+                if (serializedGroup.isExpanded)
+                {
+                    int count = group.Count;
+                    for (int i = 0; i < count; i++)
+                    {
+                        if (i >= group.Count)
+                        {
+                            break;
+                        }
+
+                        DrawCustomComponent(i, group);
+                    }
                 }
             }
+            EditorGUILayout.EndVertical();
 
-            DrawBorder(fullRect);
+            HandleGroupEvents();
 
-            if (hoveredGroup != group && fullRect.Contains(Event.mousePosition))
+            if (hoveredGroup != group && groupRect.Contains(Event.mousePosition))
             {
-                hoveredRect = fullRect;
+                hoveredRect = groupRect;
                 hoveredGroup = group;
             }
-
-            return fullRect;
         }
 
-        private bool DrawCustomGroupHeader(Rect rect, int groupIndex, ComponentGroup group, SerializedProperty serializedGroup)
+        private bool DrawCustomGroupHeader(int index, ComponentGroup group, bool isExpanded)
         {
-            // Positioning 
-
-            Rect foldoutRect = GetCustomFoldoutRect(rect);
-            Rect labelRect = GetCustomHeaderRect(rect);
-            Rect toolbarRect = GetCustomToolbarRect(windowRect, rect);
-
-            // Foldout
-
-            bool toggleFold = EditorGUI.Foldout(foldoutRect, serializedGroup.isExpanded, GUIContent.none, false);
-
-            if ((toggleFold != serializedGroup.isExpanded))
+            Rect header = EditorGUILayout.BeginHorizontal();
             {
-                serializedGroup.isExpanded = toggleFold;
+                isExpanded = EditorGUILayout.Toggle(isExpanded, Style.Foldout, GUILayout.Width(16f), GUILayout.Height(15f));
+
+                group.Name = EditorGUILayout.DelayedTextField(group.Name, Style.BoldLabel);
+
+                GUILayout.FlexibleSpace();
+
+                int toolbarIndex = GUILayout.Toolbar(-1, toolbarContent, EditorStyles.toolbarButton);
+                switch (toolbarIndex)
+                {
+                    case 0: // Add component
+                        group.AddEmpty();
+                        break;
+
+                    case 1:
+                        group.SetAllShown(true);
+                        break;
+
+                    case 2:
+                        group.SetAllShown(false);
+                        break;
+
+                    case 3: // Other options
+                        ShowCustomGroupMenu(index, group);
+                        break;
+                }
             }
+            EditorGUILayout.EndHorizontal();
 
-            // Label
+            header.x -= 3f;
+            header.width += 3;
+            DrawBorder(header);
 
-            string name = EditorGUI.DelayedTextField(labelRect, group.Name, EditorStyles.boldLabel);
-
-            group.Name = name;
-
-            int index = GUI.Toolbar(toolbarRect, -1, toolbarContent, EditorStyles.toolbarButton);
-
-            if (index != -1)
-            {
-                GUI.FocusControl(null);
-            }
-
-            switch (index)
-            {
-                case 0: // Add component
-                    group.AddEmpty();
-                    break;
-
-                case 1:
-                    group.SetAllShown(true);
-                    break;
-
-                case 2:
-                    group.SetAllShown(false);
-                    break;
-
-                case 3: // Other options
-                    ShowCustomGroupMenu(toolbarRect, groupIndex, group);
-                    break;
-            }
-
-            return serializedGroup.isExpanded;
+            return isExpanded;
         }
 
-        private void ShowCustomGroupMenu(Rect rect, int index, ComponentGroup group)
+        private void ShowCustomGroupMenu(int index)
         {
-      
             GenericMenu menu = new GenericMenu();
 
             // Move up
@@ -767,53 +687,80 @@ namespace HierarchyDecorator
 
             // Refine menu position
 
-            Vector2 mousePosition = Event.current.mousePosition;
-
-            Rect menuRect = rect;
-            menuRect.x = mousePosition.x;
-
-            menu.DropDown(menuRect);
+            menu.ShowAsContext();
         }
 
-        private void DrawCustomComponent(Rect rect, int index, ComponentGroup group, ComponentType component)
+        private void DrawCustomComponent(int index, ComponentGroup group)
         {
-            component.Shown = EditorGUI.Toggle(GetCustomToggleRect(rect), component.Shown, Style.ToggleMixed);
-
-            int controlID = GUIUtility.GetControlID(FocusType.Keyboard);
-
-            if (GUI.Button(GetCustomScriptRect(rect), component.Content, Style.ToolbarButtonLeft))
+            EditorGUILayout.BeginHorizontal();
             {
-                selectedComponentIndex = index;
-                EditorGUIUtility.ShowObjectPicker<MonoScript>(component.Script, false, "", controlID);
-            }
+                ComponentType component = group.Get(index);
+                component.Shown = EditorGUILayout.Toggle(component.Shown, Style.ToggleMixed, GUILayout.Width(16f));
 
-            if (selectedComponentIndex != -1)
-            {
-                if (EditorGUIUtility.GetObjectPickerControlID() == controlID && selectedComponentIndex == index)
+                int controlID = GUIUtility.GetControlID(FocusType.Keyboard);
+
+                GUIContent content = component.IsValid() ? component.Content : Icons.EmptyComponent;
+
+                if (GUILayout.Button(content, Style.ToolbarButtonLeft, GUILayout.ExpandWidth(true)))
                 {
-                    string commandName = Event.current.commandName;
-                    if (commandName == "ObjectSelectorUpdated")
+                    selectedComponentIndex = index;
+                    EditorGUIUtility.ShowObjectPicker<MonoScript>(component.Script, false, "", controlID);
+                }
+
+                if (selectedComponentIndex != -1)
+                {
+                    if (EditorGUIUtility.GetObjectPickerControlID() == controlID && selectedComponentIndex == index)
                     {
-                        MonoScript script = EditorGUIUtility.GetObjectPickerObject() as MonoScript;
-                        if (component.Script != script)
+                        string commandName = Event.current.commandName;
+                        if (commandName == "ObjectSelectorUpdated")
                         {
-                            component.UpdateType(script);
+                            MonoScript script = EditorGUIUtility.GetObjectPickerObject() as MonoScript;
+                            if (component.Script != script)
+                            {
+                                component.UpdateType(script);
+                            }
+                        }
+                        else
+                        if (commandName == "ObjectSelectorClosed")
+                        {
+                            selectedComponentIndex = -1;
                         }
                     }
-                    else
-                    if (commandName == "ObjectSelectorClosed")
-                    {
-                        selectedComponentIndex = -1;
-                    }
+                }
+
+                float deleteWidth = Values.CUSTOM_TOOLBAR_WIDTH / (toolbarContent.Length + 1);
+                if (GUILayout.Button(Labels.DELETE_COMPONENT_LABEL, Style.ToolbarButtonResizable, GUILayout.Width(deleteWidth)))
+                {
+                    group.Remove(component);
+                    EditorUtility.SetDirty(settings);
+                    serializedSettings.Update();
                 }
             }
+            EditorGUILayout.EndHorizontal();
+        }
 
-            if (GUI.Button(GetCustomDeleteRect(rect), Labels.DELETE_COMPONENT_LABEL, Style.ToolbarButtonResizable))
+        private void DrawAddGroupButton()
+        {
+            Rect buttonRect = EditorGUILayout.BeginHorizontal();
+
+            if (GUILayout.Button(Labels.ADD_GROUP_LABEL, Style.ToolbarButtonResizable))
             {
-                group.Remove(component);
+                // Create new group
+
+                components.AddCustomGroup(Labels.DEFAULT_GROUP_LABEL);
+
+                // Update settings object
+
                 EditorUtility.SetDirty(settings);
                 serializedSettings.Update();
+
+                // Update cached groups
+
+                SerializedCustomGroups = GetSerializedArrayElements("customGroups");
             }
+            EditorGUILayout.EndHorizontal();
+
+            DrawBorder(buttonRect);
         }
 
         private void HandleGroupEvents()
@@ -822,6 +769,7 @@ namespace HierarchyDecorator
             {
                 return;
             }
+
             switch (Event.type)
             {
                 // Cache all MonoTypes
@@ -945,76 +893,12 @@ namespace HierarchyDecorator
             return !string.IsNullOrWhiteSpace(searchText);
         }
 
-        // --- Rects
-
-        private Rect GetCustomFoldoutRect(Rect rect)
-        {
-            rect.x += 16f;
-            rect.width = 16f;
-
-            return rect;
-        }
-
-        private Rect GetCustomHeaderRect(Rect rect)
-        {
-            rect.x += 20f;
-            rect.width -= Values.CUSTOM_TOOLBAR_WIDTH + 19f;
-            return rect;
-        }
-
-        private Rect GetCustomToolbarRect(Rect windowRect, Rect rect)
-        {
-            Rect toolbarRect = rect;
-            toolbarRect.height = Values.TOOLBAR_HEIGHT;
-            toolbarRect.width = Values.CUSTOM_TOOLBAR_WIDTH;
-            toolbarRect.x += windowRect.width - Values.CUSTOM_TOOLBAR_WIDTH;
-
-            return toolbarRect;
-        }
-
         // --- Custom Component Rects
-
-        private Rect GetCustomComponentRect(Rect rect)
-        {
-            rect.y += 21f;
-            rect.x += 2f;
-            rect.width -= 2f;
-
-            return rect;
-        }
-
-        private Rect GetCustomToggleRect(Rect rect)
-        {
-            rect = GetCustomComponentRect(rect);
-            rect.width = 24f;
-            rect.y += 2f;
-
-            return rect;
-        }
-
-        private Rect GetCustomScriptRect(Rect rect)
-        {
-            rect = GetCustomComponentRect(rect);
-            rect.x += 20f;
-            rect.width -= (Values.CUSTOM_TOOLBAR_WIDTH / toolbarContent.Length) + 19f;
-
-            return rect;
-        }
-
-        private Rect GetCustomDeleteRect(Rect rect)
-        {
-            rect = GetCustomComponentRect(rect);
-            rect.width = Values.CUSTOM_TOOLBAR_WIDTH / toolbarContent.Length;
-            rect.x = windowRect.width - rect.width;
-
-            return rect;
-        }
 
         private Rect GetGroupHoverRect(Rect rect)
         {
-            rect.x++;
-            rect.width -= 2;
-            rect.y++;
+            rect.x -= 2f;
+            rect.width++;
             rect.height--;
 
             return rect;

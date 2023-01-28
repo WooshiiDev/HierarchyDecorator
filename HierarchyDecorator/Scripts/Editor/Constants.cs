@@ -98,6 +98,10 @@ namespace HierarchyDecorator
     {
         private const string TOGGLE_MIXED = "OL ToggleMixed";
 
+        public static readonly GUIStyle Label;
+        public static readonly GUIStyle BoldLabel;
+        public static readonly GUIStyle Foldout;
+
         public static readonly GUIStyle CenteredBoldLabel;
         public static readonly GUIStyle CenteredLabel;
         
@@ -131,12 +135,31 @@ namespace HierarchyDecorator
         public static readonly GUIStyle ToolbarButtonLeft;
         public static readonly GUIStyle ToolbarButtonResizable;
 
+        public static readonly GUIStyle SelectionLabel;
+
         // --- Widgets
 
         public static readonly GUIStyle ToolbarTextField;
 
         static Style()
         {
+            // Labels 
+
+            Label = new GUIStyle(EditorStyles.label)
+            {
+                alignment = TextAnchor.UpperLeft
+            };
+
+            BoldLabel = new GUIStyle(Label)
+            {
+                fontStyle = FontStyle.Bold
+            };
+
+            Foldout = new GUIStyle(EditorStyles.foldout)
+            {
+                alignment = TextAnchor.UpperLeft,
+            };
+
             ToolbarNoSpace = new GUIStyle(EditorStyles.toolbar)
             {
                 padding = new RectOffset(0, 0, 0, 0),
@@ -146,12 +169,12 @@ namespace HierarchyDecorator
                 fixedWidth = 0,
             };
 
-            ToolbarButtonLeft = new GUIStyle(EditorStyles.toolbarButton)
+            ToolbarButtonLeft = new GUIStyle("ToolbarButtonLeft")
             {
                 alignment = TextAnchor.MiddleLeft,
             };
 
-            ToolbarButtonResizable = new GUIStyle(EditorStyles.toolbarButton)
+            ToolbarButtonResizable = new GUIStyle(ToolbarButtonLeft)
             {
                 fixedWidth = 0,
                 fixedHeight = 0,
@@ -300,6 +323,8 @@ namespace HierarchyDecorator
             ToolbarTextField = new GUIStyle("ToolbarSeachTextField")
             {
                 fixedWidth = 0,
+                margin = new RectOffset(2, 1, 1, 0),
+
             };
         }
     }
