@@ -633,7 +633,7 @@ namespace HierarchyDecorator
                         break;
 
                     case 3: // Other options
-                        ShowCustomGroupMenu(index, group);
+                        ShowCustomGroupMenu(index);
                         break;
                 }
             }
