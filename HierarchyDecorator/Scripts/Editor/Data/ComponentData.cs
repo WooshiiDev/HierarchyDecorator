@@ -5,6 +5,19 @@ using UnityEngine;
 
 namespace HierarchyDecorator
 {
+    public enum ScriptIconBehaviour 
+    { 
+        /// <summary>
+        /// Draw each icon individually.
+        /// </summary>
+        Individual, 
+
+        /// <summary>
+        /// Draw all but stack Monobehaviour icons.
+        /// </summary>
+        StackMonobehaviours, 
+    }
+
     /// <summary>
     /// Contains all information required for components.
     /// </summary>
@@ -47,13 +60,14 @@ namespace HierarchyDecorator
 
         [SerializeField] private bool showAllComponents = true;
         [SerializeField] private bool showMissingScriptWarning;
+        [SerializeField] private ScriptIconBehaviour iconBehaviour;
 
         [SerializeField] private ComponentGroup[] unityGroups = new ComponentGroup[0];
 
         [SerializeField] private List<ComponentGroup> customGroups = new List<ComponentGroup>();
         [SerializeField] private ComponentGroup allCustomComponents = new ComponentGroup("All");
 
-        // --- Validition
+        // --- Validation
 
         [SerializeField] private string unityVersion;
         [SerializeField] private bool isDirty;
@@ -88,6 +102,18 @@ namespace HierarchyDecorator
             get
             {
                 return showMissingScriptWarning;
+            }
+        }
+
+        /// <summary>
+        /// How scripts are drawn in the hierarchy.
+        /// <val
+        /// </summary>
+        public ScriptIconBehaviour IconBehaviour
+        {
+            get
+            {
+                return iconBehaviour;
             }
         }
 
