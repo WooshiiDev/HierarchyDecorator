@@ -175,8 +175,7 @@ namespace HierarchyDecorator
             // Register Groups
 
             CreateDrawableGroup("Settings")
-                .RegisterSerializedProperty(ShowAllProperty)
-                .RegisterSerializedProperty(ShowMissingProperty);
+                .RegisterSerializedProperty(serializedTab, "showAllComponents", "showMissingScriptWarning", "iconBehaviour");
         }
 
         // Methods
@@ -633,7 +632,7 @@ namespace HierarchyDecorator
                         break;
 
                     case 3: // Other options
-                        ShowCustomGroupMenu(index, group);
+                        ShowCustomGroupMenu(index);
                         break;
                 }
             }
