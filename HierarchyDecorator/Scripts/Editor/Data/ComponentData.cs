@@ -512,7 +512,7 @@ namespace HierarchyDecorator
         /// <returns>Returns the category for the type provided.</returns>
         private string GetTypeCategory(Type type)
         {
-            // Cannot categorise null type.
+            // Cannot categorize null type.
             
             if (type == null)
             {
@@ -529,7 +529,7 @@ namespace HierarchyDecorator
                 }
             }
 
-            // Return the default filter, so the type can still be categorised
+            // Return the default filter, so the type can still be categorized
            
             return DefaultFilter.Name;
         }
