@@ -77,25 +77,24 @@ namespace HierarchyDecorator
                     continue;
                 }
 
+                // Draw built in component
+
                 if (settings.Components.TryGetComponent(type, out ComponentType unityType))
                 {
                     DrawComponent(rect, type, instance, settings);
                 }
                 else
                 {
+                    // If no built in component is found, attempt to draw as custom
+
                     if (settings.Components.TryGetCustomComponent(type, out ComponentType customType))
                     {
                         DrawMonobehaviour(rect, component, customType, settings);
                     }
                     else
-                    if (settings.Components.ShowAllComponents)
+                    if (settings.Components.ShowAllComponents) // Has not been registered, so draw all
                     {
-                        customType = new ComponentType(type, false);
-
-                        MonoScript script = MonoScript.FromMonoBehaviour(component as MonoBehaviour);
-                        customType.UpdateType(script);
-
-                        settings.Components.RegisterCustomComponent(customType);
+                        settings.Components.RegisterCustomComponent(component);
                     }
                 }
 

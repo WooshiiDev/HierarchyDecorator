@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace HierarchyDecorator
@@ -223,6 +224,7 @@ namespace HierarchyDecorator
                     }
 
                     group.Add(component);
+                    RegisterCustomComponent(component);
                 }
 
                 // Assign the new groups and end dirty
@@ -379,7 +381,26 @@ namespace HierarchyDecorator
         /// <summary>
         /// Register a custom component to <see cref="AllCustomComponents"/>.
         /// </summary>
-        /// <param name="component"The component to register.></param>
+        /// <param name="component">The component to register.</param>
+        public void RegisterCustomComponent(Component component)
+        {
+            if (component == null)
+            {
+                Debug.LogError("Cannot register null component.");
+                return;
+            }
+
+            MonoScript script = MonoScript.FromMonoBehaviour(component as MonoBehaviour);
+            ComponentType type = new ComponentType(component.GetType(), false);
+            type.UpdateType(script);
+            
+            RegisterCustomComponent(type);
+        }
+
+        /// <summary>
+        /// Register a custom component to <see cref="AllCustomComponents"/>.
+        /// </summary>
+        /// <param name="component">The component to register.</param>
         public void RegisterCustomComponent(ComponentType component)
         {
             // Cannot register null components
