@@ -5,6 +5,10 @@ namespace HierarchyDecorator
 {
     public static class HierarchyGUI
     {
+        private static GUIStyle TextStyle = new GUIStyle(EditorStyles.label);
+        private static readonly Color DarkModeText = new Color(0.48f, 0.67f, 0.95f, 1f);
+        private static readonly Color WhiteModeText = new Color(0.1f, 0.3f, 0.7f, 1f);
+
         public static void DrawHierarchyStyle(HierarchyStyle style, Rect styleRect, Rect labelRect, string label, bool removePrefix = true)
         {
             if (removePrefix)
@@ -20,31 +24,50 @@ namespace HierarchyDecorator
 
         public static void DrawStandardContent(Rect rect, GameObject instance)
         {
-            // Draw standard content on top of drawn background
+            // Get prefab info
+
             bool isPrefab = PrefabUtility.IsPartOfAnyPrefab(instance);
-            bool isPrefabParent = PrefabUtility.GetNearestPrefabInstanceRoot(instance) == instance;
+            
+            GameObject prefabRoot = PrefabUtility.GetNearestPrefabInstanceRoot(instance);
+            bool isPrefabParent = prefabRoot == instance;
+
+            // Get the content needed for the icon
 
             GUIContent content = GetStandardContent (rect, instance, isPrefab && isPrefabParent);
-            GUIStyle style = new GUIStyle (EditorStyles.label);
+
+            // Handle colours
 
             if (isPrefab)
             {
-                if (isPrefabParent)
-                {
-                    DrawPrefabArrow(rect);
-                }
-
-                style.normal.textColor = (EditorGUIUtility.isProSkin)
-                    ? new Color (0.48f, 0.67f, 0.95f, 1f)
-                    : new Color (0.1f, 0.3f, 0.7f, 1f);
+                TextStyle.normal.textColor = (EditorGUIUtility.isProSkin) ? DarkModeText : WhiteModeText;
             }
-
-            if (Selection.Contains (instance))
+            else
+            if (Selection.Contains(instance))
             {
-                style.normal.textColor = Color.white;
+                TextStyle.normal.textColor = Color.white;
+            }
+            else
+            {
+                TextStyle.normal.textColor = EditorStyles.label.normal.textColor;
             }
 
-            DrawStandardLabel (rect, content, instance.name, style);
+            // Draw prefab context icon
+
+            if (isPrefabParent)
+            {
+                DrawPrefabArrow(rect);
+            }
+
+            // Draw label
+
+            DrawStandardLabel (rect, content, instance.name, TextStyle);
+
+            // Add the small prefab indicator if required
+
+            if (!isPrefab && PrefabUtility.IsAddedGameObjectOverride(instance))
+            {
+                EditorGUI.LabelField(rect, EditorGUIUtility.IconContent("PrefabOverlayAdded Icon"));
+            }
         }
 
         private static void DrawStandardLabel(Rect rect, GUIContent icon, string label, GUIStyle style)
