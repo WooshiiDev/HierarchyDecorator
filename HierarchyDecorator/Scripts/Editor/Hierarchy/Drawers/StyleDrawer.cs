@@ -76,7 +76,7 @@ namespace HierarchyDecorator
 
             // Draw style, and then drawn selection on top
 
-            int instanceID = currentTransform.GetInstanceID ();
+            int instanceID = currentTransform.gameObject.GetInstanceID();
             bool hasChildren = currentTransform.childCount > 0;
 
             bool hasStyle = settings.globalData.twoToneBackground;
