@@ -6,6 +6,67 @@ using Object = UnityEngine.Object;
 
 namespace HierarchyDecorator
 {
+    public class StateDrawer : HierarchyDrawer
+    {
+        private static readonly Color SelectionColour = new Color(0.214f, 0.42f, 0.76f, 0.2f);
+        private static readonly Color HoverColour = new Color(0.3f, 0.3f, 0.3f, 0.2f);
+
+        protected override bool DrawerIsEnabled(Settings _settings, GameObject instance)
+        {
+            return _settings.styleData.Count > 0 || _settings.globalData.twoToneBackground;
+        }
+
+        protected override void DrawInternal(Rect rect, GameObject instance, Settings settings)
+        {
+            if (settings.globalData.twoToneBackground || settings.styleData.HasStyle(instance.name))
+            {
+                DrawSelection(rect, instance.transform);
+            }
+        }
+
+        // --- GUI
+
+        private void DrawSelection(Rect rect, Transform transform)
+        {
+            Vector2 mousePosition = Event.current.mousePosition;
+            rect = GetActualHierarchyWidth(rect);
+
+            bool hasIndex = Array.IndexOf(Selection.transforms, transform) != -1;
+
+            if (hasIndex)
+            {
+                EditorGUI.DrawRect(rect, SelectionColour);
+
+            }
+            else
+            if (rect.Contains(mousePosition))
+            {
+                EditorGUI.DrawRect(rect, HoverColour);
+            }
+
+            if (!transform.gameObject.activeInHierarchy)
+            {
+                Handles.DrawSolidRectangleWithOutline(rect, Constants.InactiveColour, Constants.InactiveColour);
+            }
+        }
+
+        // --- Rects
+
+        private Rect GetActualHierarchyWidth(Rect rect)
+        {
+            rect.width += rect.x;
+
+#if UNITY_2019_1_OR_NEWER
+            rect.x = 32f;
+#else
+            rect.x = 0;
+            rect.width += 32f;
+#endif
+
+            return rect;
+        }
+    }
+
     public class StyleDrawer : HierarchyDrawer
     {
         private Transform firstTransform;
@@ -24,9 +85,11 @@ namespace HierarchyDecorator
             currentTransform = instance.transform;
 
             // We've went back to the start
+
             if (firstTransform == currentTransform)
             {
                 // Find all invalid keys and remove
+
                 List<int> invalidKeys = new List<int> ();
                 foreach (var key in foldoutCache.Keys)
                 {
@@ -42,10 +105,12 @@ namespace HierarchyDecorator
                 }
 
                 // Clear the valid cache for the next check
+
                 validFoldoutCache.Clear ();
             }
 
             // First transform will have the lowest index and no parent
+
             if (currentTransform.parent == null && currentTransform.GetSiblingIndex () == 0)
             {
                 firstTransform = currentTransform;
@@ -53,6 +118,7 @@ namespace HierarchyDecorator
             }
 
             // Draw previous transform
+
             if (previousTransform != null)
             {
                 int previousInstanceID = previousTransform.GetInstanceID ();
@@ -80,8 +146,6 @@ namespace HierarchyDecorator
             if (settings.globalData.twoToneBackground)
             {
                 DrawTwoToneContent (rect, instance, settings);
-                DrawSelection(rect, currentTransform);
-
                 hasStyle = true;
             }
 
@@ -95,8 +159,6 @@ namespace HierarchyDecorator
                     : GetActualHierarchyWidth (rect);
 
                 HierarchyGUI.DrawHierarchyStyle (prefix, styleRect, rect, instance.name);
-                DrawSelection (rect, currentTransform);
-
                 hasStyle = true;
             }
 
