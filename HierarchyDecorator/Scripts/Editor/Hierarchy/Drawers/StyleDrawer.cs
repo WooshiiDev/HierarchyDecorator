@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -12,10 +12,7 @@ namespace HierarchyDecorator
 
         private bool previousNeedsFoldout;
         private Transform previousTransform;
-        private Rect previousRect;
-
         private Transform currentTransform;
-        private Transform finalTransform;
 
         private int instanceIndex;
 
@@ -29,11 +26,7 @@ namespace HierarchyDecorator
             // We've went back to the start
             if (firstTransform == currentTransform)
             {
-                // Safe to assume the previous instance was the final
-                finalTransform = previousTransform;
-
-                // Find all invalid keys...
-                //... remove all of them
+                // Find all invalid keys and remove
                 List<int> invalidKeys = new List<int> ();
                 foreach (var key in foldoutCache.Keys)
                 {
@@ -77,9 +70,9 @@ namespace HierarchyDecorator
 
             // Draw style, and then drawn selection on top
 
-            int instanceID = currentTransform.gameObject.GetInstanceID();
-            bool hasChildren = currentTransform.childCount > 0;
+            int instanceID = currentTransform.GetInstanceID();
 
+            bool hasChildren = currentTransform.childCount > 0;
             bool hasStyle = settings.globalData.twoToneBackground;
 
             // Only draw the two tone background if there's no style override
@@ -137,22 +130,6 @@ namespace HierarchyDecorator
         }
 
         // Standards
-
-        private GUIContent GetStandardContent(Rect rect, GameObject instance, bool isPrefab)
-        {
-            string contentType = "";
-
-            if (isPrefab)
-            {
-                contentType = "Prefab Icon";
-            }
-            else
-            {
-                contentType = "GameObject Icon";
-            }
-
-            return EditorGUIUtility.IconContent (contentType);
-        }
 
         private void DrawFoldout(Rect rect, bool foldout)
         {
