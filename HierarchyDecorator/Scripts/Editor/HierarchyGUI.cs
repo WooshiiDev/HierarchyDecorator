@@ -21,14 +21,18 @@ namespace HierarchyDecorator
         public static void DrawStandardContent(Rect rect, GameObject instance)
         {
             // Draw standard content on top of drawn background
-            bool isPrefab = PrefabUtility.GetNearestPrefabInstanceRoot (instance) == instance;
+            bool isPrefab = PrefabUtility.IsPartOfAnyPrefab(instance);
+            bool isPrefabParent = PrefabUtility.GetNearestPrefabInstanceRoot(instance) == instance;
 
-            GUIContent content = GetStandardContent (rect, instance, isPrefab);
+            GUIContent content = GetStandardContent (rect, instance, isPrefab && isPrefabParent);
             GUIStyle style = new GUIStyle (EditorStyles.label);
 
             if (isPrefab)
             {
-                DrawPrefabArrow (rect);
+                if (isPrefabParent)
+                {
+                    DrawPrefabArrow(rect);
+                }
 
                 style.normal.textColor = (EditorGUIUtility.isProSkin)
                     ? new Color (0.48f, 0.67f, 0.95f, 1f)
