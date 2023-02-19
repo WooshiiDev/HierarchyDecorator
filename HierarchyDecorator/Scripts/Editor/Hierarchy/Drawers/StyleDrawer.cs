@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -86,7 +87,7 @@ namespace HierarchyDecorator
             if (settings.globalData.twoToneBackground)
             {
                 DrawTwoToneContent (rect, instance, settings);
-                DrawSelection (rect, instanceID);
+                DrawSelection(rect, currentTransform);
 
                 hasStyle = true;
             }
@@ -101,14 +102,13 @@ namespace HierarchyDecorator
                     : GetActualHierarchyWidth (rect);
 
                 HierarchyGUI.DrawHierarchyStyle (prefix, styleRect, rect, instance.name);
-                DrawSelection (rect, instanceID);
+                DrawSelection (rect, currentTransform);
 
                 hasStyle = true;
             }
 
             // Cache values for next instance
 
-            previousRect = rect;
             previousTransform = currentTransform;
             previousNeedsFoldout = hasStyle && hasChildren;
 
@@ -161,12 +161,14 @@ namespace HierarchyDecorator
 
         // Rect GUI
 
-        private void DrawSelection(Rect rect, int instanceID)
+        private void DrawSelection(Rect rect, Transform transform)
         {
             Vector2 mousePosition = Event.current.mousePosition;
             rect = GetActualHierarchyWidth (rect);
 
-            if (Selection.Contains (instanceID))
+            bool hasIndex = Array.IndexOf(Selection.transforms, transform) != -1;
+
+            if (hasIndex)
             {
                 EditorGUI.DrawRect (rect, new Color (0.214f, 0.42f, 0.76f, 0.2f));
 
@@ -176,6 +178,11 @@ namespace HierarchyDecorator
             {
                 EditorGUI.DrawRect (rect, new Color (0.3f, 0.3f, 0.3f, 0.2f));
             }
+
+            if (!transform.gameObject.activeInHierarchy)
+            {
+                Handles.DrawSolidRectangleWithOutline(rect, Constants.InactiveColour, Constants.InactiveColour);
+            }
         }
 
         private void DrawTwoToneContent(Rect rect, GameObject instance, Settings _settings)
@@ -184,11 +191,6 @@ namespace HierarchyDecorator
 
             Handles.DrawSolidRectangleWithOutline (twoToneRect, HierarchyGUI.GetTwoToneColour (instanceIndex), Color.clear);
             HierarchyGUI.DrawStandardContent (rect, instance);
-
-            if (!instance.activeInHierarchy)
-            {
-                Handles.DrawSolidRectangleWithOutline (twoToneRect, Constants.InactiveColour, Constants.InactiveColour);
-            }
         }
 
         // Helpers
