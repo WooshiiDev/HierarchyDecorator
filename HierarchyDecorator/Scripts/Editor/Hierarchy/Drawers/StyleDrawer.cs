@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -31,7 +31,7 @@ namespace HierarchyDecorator
             Vector2 mousePosition = Event.current.mousePosition;
             rect = GetActualHierarchyWidth(rect);
 
-            bool hasIndex = Array.IndexOf(Selection.transforms, transform) != -1;
+            bool hasIndex = Array.IndexOf(Selection.gameObjects, transform.gameObject) != -1;
 
             if (!transform.gameObject.activeInHierarchy)
             {
