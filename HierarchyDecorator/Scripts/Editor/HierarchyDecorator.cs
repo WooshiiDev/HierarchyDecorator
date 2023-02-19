@@ -15,11 +15,17 @@ namespace HierarchyDecorator
 
         // Drawers 
 
-        private static List<HierarchyDrawer> Drawers = new List<HierarchyDrawer> ()
+        private static HierarchyDrawer[] Drawers = new HierarchyDrawer[]
         {
             new StyleDrawer(),
-            new ToggleDrawer(),
         };
+
+        private static HierarchyDrawer[] OverlayDrawers = new HierarchyDrawer[]
+        {
+            new StateDrawer(),
+            new ToggleDrawer()
+        };
+
         private static HierarchyInfo[] Info = new HierarchyInfo[]    
         {
             new LayerInfo(),
@@ -62,14 +68,20 @@ namespace HierarchyDecorator
 
             // Draw GUI
 
-            for (int i = 0; i < Drawers.Count; i++)
+            int i = 0;
+            for (i = 0; i < Drawers.Length; i++)
             {
                 Drawers[i].Draw (selectionRect, instance, Settings);
             }
 
-            for (int i = 0; i < Info.Length; i++)
+            for (i = 0; i < Info.Length; i++)
             {
-                Info[i].Draw (selectionRect, instance, Settings);
+                Info[i].Draw(selectionRect, instance, Settings);
+            }
+
+            for (i = 0; i < OverlayDrawers.Length; i++)
+            {
+                OverlayDrawers[i].Draw(selectionRect, instance, Settings);
             }
 
             HierarchyInfo.ResetIndent ();
@@ -118,17 +130,6 @@ namespace HierarchyDecorator
         }
 
         // Drawers
-
-        public static void RegisterDrawer(HierarchyDrawer drawer)
-        {
-            if (Drawers.Contains (drawer))
-            {
-                Debug.LogError (string.Format ("Drawer of {0} already exists!", drawer.GetType ().Name));
-                return;
-            }
-
-            Drawers.Add (drawer);
-        }
 
         public static void UpdateComponentData()
         {
