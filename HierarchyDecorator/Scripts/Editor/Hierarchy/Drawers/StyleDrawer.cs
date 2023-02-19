@@ -33,20 +33,19 @@ namespace HierarchyDecorator
 
             bool hasIndex = Array.IndexOf(Selection.transforms, transform) != -1;
 
+            if (!transform.gameObject.activeInHierarchy)
+            {
+                Handles.DrawSolidRectangleWithOutline(rect, Constants.InactiveColour, Constants.InactiveColour);
+            }
+
             if (hasIndex)
             {
                 EditorGUI.DrawRect(rect, SelectionColour);
-
             }
             else
             if (rect.Contains(mousePosition))
             {
                 EditorGUI.DrawRect(rect, HoverColour);
-            }
-
-            if (!transform.gameObject.activeInHierarchy)
-            {
-                Handles.DrawSolidRectangleWithOutline(rect, Constants.InactiveColour, Constants.InactiveColour);
             }
         }
 
@@ -199,30 +198,6 @@ namespace HierarchyDecorator
         }
 
         // Rect GUI
-
-        private void DrawSelection(Rect rect, Transform transform)
-        {
-            Vector2 mousePosition = Event.current.mousePosition;
-            rect = GetActualHierarchyWidth (rect);
-
-            bool hasIndex = Array.IndexOf(Selection.transforms, transform) != -1;
-
-            if (hasIndex)
-            {
-                EditorGUI.DrawRect (rect, new Color (0.214f, 0.42f, 0.76f, 0.2f));
-
-            }
-            else
-            if (rect.Contains (mousePosition))
-            {
-                EditorGUI.DrawRect (rect, new Color (0.3f, 0.3f, 0.3f, 0.2f));
-            }
-
-            if (!transform.gameObject.activeInHierarchy)
-            {
-                Handles.DrawSolidRectangleWithOutline(rect, Constants.InactiveColour, Constants.InactiveColour);
-            }
-        }
 
         private void DrawTwoToneContent(Rect rect, GameObject instance, Settings _settings)
         {
