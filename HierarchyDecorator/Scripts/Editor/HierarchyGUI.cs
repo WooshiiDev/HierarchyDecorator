@@ -37,19 +37,18 @@ namespace HierarchyDecorator
 
             // Handle colours
 
+            Color textColour = EditorStyles.label.normal.textColor;
             if (isPrefab)
             {
-                TextStyle.normal.textColor = (EditorGUIUtility.isProSkin) ? DarkModeText : WhiteModeText;
+                textColour = (EditorGUIUtility.isProSkin) ? DarkModeText : WhiteModeText;
             }
-            else
+
             if (Selection.Contains(instance))
             {
-                TextStyle.normal.textColor = Color.white;
+                textColour = Color.white;
             }
-            else
-            {
-                TextStyle.normal.textColor = EditorStyles.label.normal.textColor;
-            }
+
+            TextStyle.normal.textColor = textColour;
 
             // Draw prefab context icon
 
