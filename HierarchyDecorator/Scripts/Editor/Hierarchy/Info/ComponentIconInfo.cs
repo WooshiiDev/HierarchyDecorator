@@ -79,7 +79,7 @@ namespace HierarchyDecorator
 
                 // Draw built in component
 
-                if (settings.Components.TryGetComponent(type, out ComponentType unityType))
+                if (settings.Components.TryGetComponent(type, out _))
                 {
                     DrawComponent(rect, type, instance, settings);
                 }
@@ -92,7 +92,7 @@ namespace HierarchyDecorator
                         DrawMonobehaviour(rect, component, customType, settings);
                     }
                     else
-                    if (settings.Components.ShowAllComponents) // Has not been registered, so draw all
+                    if (!EditorApplication.isCompiling && settings.Components.ShowAllComponents) // Has not been registered, so draw all
                     {
                         settings.Components.RegisterCustomComponent(component);
                     }
