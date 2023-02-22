@@ -5,17 +5,18 @@ using UnityEngine;
 
 namespace HierarchyDecorator
 {
-    public enum ScriptIconBehaviour 
-    { 
+    [Flags]
+    public enum DisplayMode
+    {
         /// <summary>
-        /// Draw each icon individually.
+        /// Draw both MonoBehaviours and built in.
         /// </summary>
-        Individual, 
-
+        BuiltIn = 1,
+        
         /// <summary>
-        /// Draw all but stack Monobehaviour icons.
+        /// Display MonoBehaviours
         /// </summary>
-        StackMonobehaviours, 
+        Scripts = 2,
     }
 
     /// <summary>
@@ -58,9 +59,9 @@ namespace HierarchyDecorator
 
         // --- Settings
 
-        [SerializeField] private bool showAllComponents = true;
         [SerializeField] private bool showMissingScriptWarning;
-        [SerializeField] private ScriptIconBehaviour iconBehaviour;
+        [SerializeField] private DisplayMode showAll;
+        [SerializeField] private bool stackMonoBehaviours;
 
         [SerializeField] private ComponentGroup[] unityGroups = new ComponentGroup[0];
 
@@ -84,17 +85,6 @@ namespace HierarchyDecorator
         public int UnityCount;
 
         /// <summary>
-        /// Are all components shown enabled currently?
-        /// </summary>
-        public bool ShowAllComponents
-        {
-            get
-            {
-                return showAllComponents;
-            }
-        }
-
-        /// <summary>
         /// Is the missing script warning on?
         /// </summary>
         public bool ShowMissingScriptWarning
@@ -105,17 +95,34 @@ namespace HierarchyDecorator
             }
         }
 
+        public bool StackScripts => stackMonoBehaviours;
+
         /// <summary>
         /// How scripts are drawn in the hierarchy.
         /// <val
         /// </summary>
-        public ScriptIconBehaviour IconBehaviour
+        public DisplayMode DisplayMode
         {
             get
             {
-                return iconBehaviour;
+                return showAll;
             }
         }
+
+        /// <summary>
+        /// Are all components shown enabled currently?
+        /// </summary>
+        public bool DisplayAll => showAll.HasFlag(DisplayMode.BuiltIn | DisplayMode.Scripts);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool DisplayBuiltIn => showAll.HasFlag(DisplayMode.BuiltIn);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool DisplayMonoScripts => showAll.HasFlag(DisplayMode.Scripts);
 
         /// <summary>
         /// Component groups regarding built-in Unity types.
@@ -485,7 +492,7 @@ namespace HierarchyDecorator
 
             // Check all components if showAll is on, otherwise check groups
 
-            if (!showAllComponents)
+            if (!DisplayMonoScripts)
             {
                 for (int i = 0; i < customGroups.Count; i++)
                 {
