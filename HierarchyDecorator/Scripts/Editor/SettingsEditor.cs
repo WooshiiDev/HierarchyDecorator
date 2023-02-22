@@ -14,6 +14,7 @@ namespace HierarchyDecorator
 
         // Grid selection
 
+        private bool hasInitialized = false;
         private SettingsTab selectedTab;
 
         private List<SettingsTab> tabs = new List<SettingsTab> ();
@@ -24,8 +25,7 @@ namespace HierarchyDecorator
         private void OnEnable()
         {
             settings = target as Settings;
-            SetupValues ();
-            RegisterTabs ();
+            EditorApplication.delayCall += Initialize;
         }
 
         private void OnDisable()
@@ -35,6 +35,16 @@ namespace HierarchyDecorator
                 serializedObject.Dispose ();
             }
         }
+
+        private void Initialize()
+        {
+            SetupValues();
+            RegisterTabs();
+
+            hasInitialized = true;
+            EditorApplication.delayCall -= Initialize;
+        }
+
 
         public override bool UseDefaultMargins()
         {
