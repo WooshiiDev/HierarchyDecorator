@@ -126,9 +126,6 @@ namespace HierarchyDecorator
 
         private ComponentData components;
 
-        private readonly SerializedProperty ShowAllProperty;
-        private readonly SerializedProperty ShowMissingProperty;
-
         private readonly SerializedProperty[] SerializedUnityGroups;
         private SerializedProperty[] SerializedCustomGroups;
 
@@ -153,6 +150,8 @@ namespace HierarchyDecorator
 
         private List<MonoScript> selectedScripts = new List<MonoScript>();
 
+        private EnumFlagToggleDrawer<DisplayMode> display;
+
         // Properties
 
         private Event Event => Event.current;
@@ -164,9 +163,6 @@ namespace HierarchyDecorator
             // Setup References
             components = settings.Components;
 
-            ShowAllProperty = serializedTab.FindPropertyRelative("showAllComponents");
-            ShowMissingProperty = serializedTab.FindPropertyRelative("showMissingScriptWarning");
-
             SerializedUnityGroups = GetSerializedArrayElements("unityGroups");
             SerializedCustomGroups = GetSerializedArrayElements("customGroups");
 
@@ -174,8 +170,12 @@ namespace HierarchyDecorator
 
             // Register Groups
 
+            SerializedProperty displayProp = serializedTab.FindPropertyRelative("showAll");
+            display = new EnumFlagToggleDrawer<DisplayMode>(displayProp);
+            display.ToggleStyle = Style.ToolbarButtonLeft;
+
             CreateDrawableGroup("Settings")
-                .RegisterSerializedProperty(serializedTab, "showAllComponents", "showMissingScriptWarning", "iconBehaviour");
+                .RegisterSerializedProperty(serializedTab, "stackMonoBehaviours", "showMissingScriptWarning");
         }
 
         // Methods
@@ -297,7 +297,11 @@ namespace HierarchyDecorator
             EditorGUI.BeginDisabledGroup(IsSearching());
             Rect rect = EditorGUILayout.BeginVertical(Style.BoxHeader, GUILayout.MaxWidth(71f), GUILayout.MinHeight(height));
             {
+                display.OnDraw();
+
                 EditorGUI.BeginChangeCheck();
+
+                EditorGUILayout.LabelField("Groups", Style.CenteredLabel, GUILayout.MinWidth(0));
 
                 int index = categoryIndex;
                 for (int i = 0; i < groupNames.Length; i++)
@@ -330,8 +334,6 @@ namespace HierarchyDecorator
             }
             GUILayout.FlexibleSpace();
 
-            rect.x--;
-            rect.width++;
             DrawBorder(rect);
 
             EditorGUILayout.EndVertical();
@@ -340,7 +342,7 @@ namespace HierarchyDecorator
 
         private void DrawComponents()
         {
-            EditorGUI.BeginDisabledGroup(ShowAllProperty.boolValue);
+            EditorGUI.BeginDisabledGroup(settings.Components.DisplayAll);
             windowRect = EditorGUILayout.BeginVertical();
             {
                 // Filter components from search
