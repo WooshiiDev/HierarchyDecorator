@@ -25,7 +25,7 @@ namespace HierarchyDecorator
         private void OnEnable()
         {
             settings = target as Settings;
-            EditorApplication.delayCall += Initialize;
+            hasInitialized = false;
         }
 
         private void OnDisable()
@@ -42,9 +42,7 @@ namespace HierarchyDecorator
             RegisterTabs();
 
             hasInitialized = true;
-            EditorApplication.delayCall -= Initialize;
         }
-
 
         public override bool UseDefaultMargins()
         {
@@ -53,6 +51,12 @@ namespace HierarchyDecorator
 
         public override void OnInspectorGUI()
         {
+            if (!hasInitialized)
+            {
+                Initialize();
+                return;
+            }
+
             EditorGUILayout.BeginVertical(Style.InspectorPadding);
 
             DrawTitle();
