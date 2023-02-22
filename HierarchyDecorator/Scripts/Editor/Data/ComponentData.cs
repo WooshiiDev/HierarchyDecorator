@@ -11,12 +11,12 @@ namespace HierarchyDecorator
         /// <summary>
         /// Draw both MonoBehaviours and built in.
         /// </summary>
-        BuiltIn = 1,
+        Unity = 1,
         
         /// <summary>
         /// Display MonoBehaviours
         /// </summary>
-        Scripts = 2,
+        Custom = 2,
     }
 
     /// <summary>
@@ -112,17 +112,17 @@ namespace HierarchyDecorator
         /// <summary>
         /// Are all components shown enabled currently?
         /// </summary>
-        public bool DisplayAll => showAll.HasFlag(DisplayMode.BuiltIn | DisplayMode.Scripts);
+        public bool DisplayAll => showAll.HasFlag(DisplayMode.Unity | DisplayMode.Custom);
 
         /// <summary>
         /// 
         /// </summary>
-        public bool DisplayBuiltIn => showAll.HasFlag(DisplayMode.BuiltIn);
+        public bool DisplayBuiltIn => showAll.HasFlag(DisplayMode.Unity);
 
         /// <summary>
         /// 
         /// </summary>
-        public bool DisplayMonoScripts => showAll.HasFlag(DisplayMode.Scripts);
+        public bool DisplayMonoScripts => showAll.HasFlag(DisplayMode.Custom);
 
         /// <summary>
         /// Component groups regarding built-in Unity types.
