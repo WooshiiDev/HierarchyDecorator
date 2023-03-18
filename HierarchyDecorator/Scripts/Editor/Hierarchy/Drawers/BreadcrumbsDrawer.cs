@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
@@ -16,7 +16,7 @@ namespace HierarchyDecorator
             var scene = HierarchyCache.Target;
             var current = scene.Current;
 
-            if (current.Parent == null)
+            if (_settings.styleData.TryGetStyleFromPrefix(instance.name, out HierarchyStyle prefix))
             {
                 return;
             }
