@@ -3,6 +3,9 @@ using System.ComponentModel;
 using UnityEditor;
 using UnityEngine;
 
+using UnityEngine.SceneManagement;
+using UnityEditor.SceneManagement;
+
 namespace HierarchyDecorator
 {
     [InitializeOnLoad]
