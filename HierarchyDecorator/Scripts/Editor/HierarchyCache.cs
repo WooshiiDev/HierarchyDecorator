@@ -16,6 +16,8 @@ namespace HierarchyDecorator
 
             public bool HasChildren => Transform.childCount > 0;
 
+            public Transform Parent => Transform.parent;
+
             public HierarchyData(Transform transform)
             {
                 ID = transform.GetInstanceID();

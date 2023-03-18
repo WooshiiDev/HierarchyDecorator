@@ -26,7 +26,8 @@ namespace HierarchyDecorator
         private static HierarchyDrawer[] OverlayDrawers = new HierarchyDrawer[]
         {
             new StateDrawer(),
-            new ToggleDrawer()
+            new ToggleDrawer(),
+            new BreadcrumbsDrawer()
         };
 
         private static HierarchyInfo[] Info = new HierarchyInfo[]    
