@@ -36,6 +36,32 @@ namespace HierarchyDecorator
         {
             EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyItem;
             EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyItem;
+
+            // Hierarchy Init
+
+            EditorSceneManager.sceneOpened -= AddScene;
+            EditorSceneManager.sceneOpened += AddScene;
+            EditorSceneManager.sceneClosed -= RemoveScene;
+            EditorSceneManager.sceneClosed += RemoveScene;
+
+            int count = SceneManager.sceneCount;
+            for (int i = 0; i < count; i++)
+            {
+                Scene scene = SceneManager.GetSceneAt(i);
+                AddScene(scene, OpenSceneMode.Single);
+            }
+        }
+
+        private static void AddScene(Scene scene, OpenSceneMode mode)
+        {
+            HierarchyCache.RegisterScene(scene);
+            Debug.Log("Added scene " + scene.name + " to Hierarchy.");
+        }
+
+        private static void RemoveScene(Scene scene)
+        {
+            HierarchyCache.RemoveScene(scene);
+            Debug.Log("Removed scene " + scene.name + " from Hierarchy.");
         }
 
         private static void OnHierarchyItem(int instanceID, Rect selectionRect)
@@ -56,11 +82,15 @@ namespace HierarchyDecorator
             // - normally if it's a Scene instance rather than a GameObject
 
             GameObject instance = EditorUtility.InstanceIDToObject (instanceID) as GameObject;
-            
+
             if (instance == null)
             {
                 return;
             }
+
+            HierarchyCache
+                .SetTarget(instance.scene)
+                .SetTarget(instance.transform);
 
 #if UNITY_2019_1_OR_NEWER
             selectionRect.height = 16f;

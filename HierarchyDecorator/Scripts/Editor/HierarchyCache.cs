@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace HierarchyDecorator
 {
-    [InitializeOnLoad]
     public static class HierarchyCache
     {
         public class HierarchyData
@@ -171,13 +170,6 @@ namespace HierarchyDecorator
 
         public static SceneCache Target;
 
-        static HierarchyCache() { }
-
-        public static bool TryGetScene(Scene scene, out SceneCache cache)
-        {
-            return Scenes.TryGetValue(scene, out cache);
-        }
-
         public static bool RegisterScene(Scene scene)
         {
             if (!scene.IsValid())
@@ -202,6 +194,21 @@ namespace HierarchyDecorator
             }
 
             return true;
+        }
+
+        public static bool RemoveScene(Scene scene)
+        {
+            if (!Exists(scene))
+            {
+                return false;
+            }
+
+            return Scenes.Remove(scene);
+        }
+
+        public static bool TryGetScene(Scene scene, out SceneCache cache)
+        {
+            return Scenes.TryGetValue(scene, out cache);
         }
 
         public static bool Exists(Scene scene)
