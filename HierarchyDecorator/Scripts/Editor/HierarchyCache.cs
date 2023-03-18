@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -22,6 +22,48 @@ namespace HierarchyDecorator
             {
                 ID = transform.GetInstanceID();
                 Transform = transform;
+            }
+
+            public int GetSiblingIndex(SceneCache scene)
+            {
+                if (Parent == null)
+                {
+                    GameObject[] roots = scene.Scene.GetRootGameObjects();
+
+                    for (int i = 0; i < roots.Length; i++)
+                    {
+                        if (roots[i] == Transform.gameObject)
+                        {
+                            return i;
+                        }
+                    }
+                }
+
+                return Transform.GetSiblingIndex();
+            }
+
+            public bool IsLastSibling(SceneCache scene)
+            {
+                if (Parent == null)
+                {
+                    GameObject[] roots = scene.Scene.GetRootGameObjects();
+                    return Array.IndexOf(roots, Transform.gameObject) == roots.Length - 1;
+                }
+
+                return Transform.GetSiblingIndex() == Parent.childCount - 1;
+            }
+
+            public int CalculateDepth()
+            {
+                Transform p = Parent;
+                int index = 0;
+                while (p != null)
+                {
+                    p = p.parent;
+                    index++;
+                }
+
+                return index;
             }
         }
 
