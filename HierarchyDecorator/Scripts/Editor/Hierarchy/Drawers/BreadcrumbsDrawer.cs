@@ -50,16 +50,19 @@ namespace HierarchyDecorator
 
             int index = data.Transform.GetSiblingIndex();
 
-            float offset = 1f;
-            if (index == 0)
+            if (depth == 0)
             {
-                rect.y += offset;
-                rect.height -= offset;
-            }
+                float offset = 1f;
+                if (index == 0)
+                {
+                    rect.y += offset;
+                    rect.height -= offset;
+                }
 
-            if (depth == 0 && data.IsLastSibling(scene))
-            {
-                rect.height *= 0.5f;
+                if (depth == 0 && data.IsLastSibling(scene))
+                {
+                    rect.height = Mathf.Floor(rect.height / 2);
+                }
             }
 
             return rect;
