@@ -13,41 +13,80 @@ namespace HierarchyDecorator
         
         protected override void DrawInternal(Rect rect, GameObject instance, Settings _settings)
         {
-            var current = HierarchyCache.Target.Current;
+            var scene = HierarchyCache.Target;
+            var current = scene.Current;
 
             if (current.Parent == null)
             {
                 return;
             }
 
-            Handles.color = Color.grey;
+            Transform transform = current.Transform;
 
-            Rect a = GetVerticalLineRect(rect);
-            Rect b = GetHorizontalLineRect(rect, current.Transform);
-            Handles.DrawLine(a.min, a.max);
-            Handles.DrawLine(b.min, b.max);
+            Handles.color = new Color(0.7f, 0.7f, 0.7f);
+
+            int depth = current.CalculateDepth();
+            int startingDepth = (transform.childCount == 0) ? 0 : 1;
+
+            for (int i = startingDepth; i <= depth; i++)
+            {
+                Rect a = GetVerticalLineRect(rect, i, scene, current);
+                Rect b = GetHorizontalLineRect(rect, i, scene, current);
+
+                Handles.DrawLine(a.min, a.max);
+                Handles.DrawLine(b.min, b.max);
+            }
 
             Handles.color = Color.white;
         }
 
-        private static Rect GetVerticalLineRect(Rect rect)
+        const float HORIZONTAL_OFFSET = 7f;
+        const float HORIZONTAL_WIDTH = 5f;
+
+        private static Rect GetVerticalLineRect(Rect rect, int depth, HierarchyCache.SceneCache scene, HierarchyCache.HierarchyData data)
         {
             rect.width = 0f;
-            rect.x -= 22f;
+            rect.x -= GetDepthOffset(depth);
+
+            int index = data.Transform.GetSiblingIndex();
+
+            float offset = 1f;
+            if (index == 0)
+            {
+                rect.y += offset;
+                rect.height -= offset;
+            }
+
+            if (depth == 0 && data.IsLastSibling(scene))
+            {
+                rect.height *= 0.5f;
+            }
 
             return rect;
         }
 
-        private static Rect GetHorizontalLineRect(Rect rect, Transform transform)
+        private static Rect GetHorizontalLineRect(Rect rect, int depth, HierarchyCache.SceneCache scene, HierarchyCache.HierarchyData data)
         {
-            rect = GetVerticalLineRect(rect);
-            rect.y += rect.height/2;
+            rect.y += rect.height / 2;
+            rect.height = 0;
 
-            float w = rect.width;
-            rect.width = (transform.childCount > 0) ? rect.height/2 : rect.height;
-            rect.height = 0f;
+            rect.x -= GetDepthOffset(depth);
+            rect.width = HORIZONTAL_WIDTH;
 
             return rect;
+        }
+
+        private static Rect GetVerticalChildRect(Rect rect)
+        {
+            rect.width = 0f;
+            rect.x += 22f;
+
+            return rect;
+        }
+
+        private static float GetDepthOffset(int depth)
+        {
+            return HORIZONTAL_OFFSET * (depth + 1) + (7f * depth);
         }
     }
 }
