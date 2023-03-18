@@ -23,21 +23,55 @@ namespace HierarchyDecorator
 
             Transform transform = current.Transform;
 
-            Handles.color = new Color(0.7f, 0.7f, 0.7f);
-
             int depth = current.CalculateDepth();
             int startingDepth = (transform.childCount == 0) ? 0 : 1;
 
             for (int i = startingDepth; i <= depth; i++)
             {
-                Rect a = GetVerticalLineRect(rect, i, scene, current);
-                Rect b = GetHorizontalLineRect(rect, i, scene, current);
+                Rect verticalRect = GetVerticalLineRect(rect, i, scene, current);
 
-                Handles.DrawLine(a.min, a.max);
-                Handles.DrawLine(b.min, b.max);
+                if (i == 0)
+                {
+                    Rect horizontalRect = GetHorizontalLineRect(rect, i, scene, current);
+                  
+                    Handles.color = new Color(0.7f, 0.7f, 0.7f);
+                    Handles.DrawLine(verticalRect.min, verticalRect.max);
+                    Handles.DrawLine(horizontalRect.min, horizontalRect.max);
+                }
+                else
+                {
+                    Handles.color = Color.gray;
+
+                    Rect dottedRect = verticalRect;
+                    dottedRect.y = rect.y;
+                    dottedRect.height = rect.height;
+
+                    DrawDottedLine(dottedRect);
+                }
             }
 
             Handles.color = Color.white;
+        }
+
+        const float DOT_LENGTH = 1f;
+
+        private void DrawDottedLine(Rect rect)
+        {
+            rect.y += DOT_LENGTH;
+
+            Vector2 len = rect.max - rect.min;
+            Vector2 seg = len / 4;
+
+            for (int i = 0; i < 4; i++)
+            {
+                Vector2 a = rect.min + (seg * i);
+                a.y -= DOT_LENGTH;
+
+                Vector2 b = rect.min + (seg * i);
+                b.y += DOT_LENGTH;
+
+                Handles.DrawLine(a, b);
+            }
         }
 
         const float HORIZONTAL_OFFSET = 7f;
