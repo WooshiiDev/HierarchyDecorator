@@ -59,13 +59,13 @@ namespace HierarchyDecorator
         private static void AddScene(Scene scene, OpenSceneMode mode)
         {
             HierarchyCache.RegisterScene(scene);
-            Debug.Log("Added scene " + scene.name + " to Hierarchy.");
+            //Debug.Log("Added scene " + scene.name + " to Hierarchy.");
         }
 
         private static void RemoveScene(Scene scene)
         {
             HierarchyCache.RemoveScene(scene);
-            Debug.Log("Removed scene " + scene.name + " from Hierarchy.");
+            //Debug.Log("Removed scene " + scene.name + " from Hierarchy.");
         }
 
         private static void OnHierarchyItem(int instanceID, Rect selectionRect)
