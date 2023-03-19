@@ -497,6 +497,7 @@ namespace HierarchyDecorator
         {
             if (isOnCustom)
             {
+                GUI.FocusControl(string.Empty);
                 searchText = string.Empty;
                 return;
             }
