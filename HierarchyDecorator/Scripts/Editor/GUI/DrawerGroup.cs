@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
 using System.Collections.Generic;
@@ -116,6 +116,35 @@ namespace HierarchyDecorator
 
             drawers.Add (new SerializedPropertyElement (property));
 
+            return this;
+        }
+
+        public DrawerGroup RegisterSerializedGroup(SerializedProperty property, string title, params string[] names)
+        {
+            if (names == null)
+            {
+                Debug.LogError("Passing null property names. Cannot create setting drawers.");
+                return this;
+
+            }
+            SerializedProperty[] props = new SerializedProperty[names.Length];
+
+            for (int i = 0; i < names.Length; i++)
+            {
+                SerializedProperty prop = property.FindPropertyRelative(names[i]);
+
+                // Call a warning in case of changes or incorrect names given
+
+                if (prop == null)
+                {
+                    Debug.LogWarning($"Cannot find child property {names[i]} in property {property.displayName}");
+                    continue;
+                }
+
+                props[i] = prop;
+            }
+
+            drawers.Add(new SerializedGroupDrawer(title, props));
             return this;
         }
     }
