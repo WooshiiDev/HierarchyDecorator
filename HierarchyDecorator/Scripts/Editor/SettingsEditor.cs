@@ -87,7 +87,7 @@ namespace HierarchyDecorator
 
                 GUILayout.FlexibleSpace ();
 
-                // Link to Repo for convenience
+                // Link to repo for convenience
 
                 if (GUILayout.Button ("GitHub Repository", EditorStyles.miniButtonMid))
                 {
