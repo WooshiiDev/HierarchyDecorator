@@ -7,11 +7,11 @@ namespace HierarchyDecorator
     {
         protected override void DrawInternal(Rect rect, GameObject instance, Settings settings)
         {
-            bool hasStyle = settings.globalData.twoToneBackground;
+            bool hasStyle = settings.styleData.twoToneBackground;
 
             // Only draw the two tone background if there's no style override
 
-            if (settings.globalData.twoToneBackground)
+            if (hasStyle)
             {
                 DrawTwoToneContent(rect, instance, settings);
                 hasStyle = true;
@@ -41,7 +41,7 @@ namespace HierarchyDecorator
 
         protected override bool DrawerIsEnabled(Settings _settings, GameObject instance)
         {
-            return _settings.styleData.Count > 0 || _settings.globalData.twoToneBackground;
+            return _settings.styleData.Count > 0 || _settings.styleData.twoToneBackground;
         }
 
         // Standards

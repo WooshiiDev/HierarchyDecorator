@@ -4,6 +4,31 @@ using UnityEngine;
 namespace HierarchyDecorator
 {
     [System.Serializable]
+    public class ColorSetting
+    {
+        [SerializeField] private Color colorOne;
+        [SerializeField] private Color colorTwo;
+
+        public ColorSetting(Color a, Color b)
+        {
+            colorOne = a;
+            colorTwo = b;
+        }
+
+        public Color GetColor(Rect rect)
+        {
+            int y = Mathf.RoundToInt(rect.y);
+            
+            if (y % 32 == 0)
+            {
+                return colorOne;
+            }
+
+            return colorTwo;
+        }
+    }
+
+    [System.Serializable]
     public class HierarchyStyleData
     {
         public bool displayLayers = true;
@@ -67,6 +92,16 @@ namespace HierarchyDecorator
 
         public int Count => styles.Count;
 
+        // Background
+        
+        public bool twoToneBackground = true;
+        public ColorSetting lightMode = new ColorSetting(new Color(0.8f, 0.8f, 0.8f, 1f), new Color(0.765f, 0.765f, 0.765f, 1f));
+        public ColorSetting darkMode = new ColorSetting(new Color(0.245f, 0.245f, 0.245f, 1f), new Color(0.225f, 0.225f, 0.225f, 1f));
+
+        // --- Methods
+
+        // Styles
+
         public void UpdateStyles(bool isDarkMode)
         {
             foreach (HierarchyStyle style in styles)
@@ -118,6 +153,18 @@ namespace HierarchyDecorator
             }
 
             return false;
+        }
+
+        // Color Mode
+
+        public ColorSetting GetColorMode(bool isPro)
+        {
+            if (isPro)
+            {
+                return darkMode;
+            }
+
+            return lightMode;
         }
 
         public HierarchyStyle this[int i]

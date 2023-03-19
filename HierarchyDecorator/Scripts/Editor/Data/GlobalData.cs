@@ -28,7 +28,6 @@ namespace HierarchyDecorator
         // General 
 
         public bool showComponentIcons = true;
-        public bool twoToneBackground = true;
 
         // Toggles
 
@@ -58,7 +57,7 @@ namespace HierarchyDecorator
 
         // Breadcrumbs
 
-        public bool showBreadcrumbs;
+        public bool showBreadcrumbs = true;
 
         public BreadcrumbSettings instanceBreadcrumbs;
         public BreadcrumbSettings fullDepthBreadcrumbs = new BreadcrumbSettings()
@@ -66,5 +65,6 @@ namespace HierarchyDecorator
             style = BreadcrumbStyle.Dash,
             displayHorizontal = false,
         };
+
     }
 }
