@@ -350,7 +350,13 @@ namespace HierarchyDecorator
 
         private void DrawComponents()
         {
-            EditorGUI.BeginDisabledGroup(settings.Components.DisplayAll);
+            string group = "";
+            if (categoryIndex != -1)
+            {
+                group = groupNames[categoryIndex];
+            }
+
+            EditorGUI.BeginDisabledGroup(settings.Components.DisplayAll && group != "Excluded");
             windowRect = EditorGUILayout.BeginVertical();
             {
                 // Filter components from search
