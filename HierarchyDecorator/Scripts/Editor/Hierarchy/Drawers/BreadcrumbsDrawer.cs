@@ -5,10 +5,15 @@ using System.Collections.Generic;
 namespace HierarchyDecorator
 {
     public class BreadcrumbsDrawer : HierarchyDrawer
-    {     
+    {
+        const float DOT_LENGTH = 1f;
+
+        const float HORIZONTAL_OFFSET = 7f;
+        const float HORIZONTAL_WIDTH = 5f;
+
         protected override bool DrawerIsEnabled(Settings _settings, GameObject instance)
         {
-            return true;
+            return _settings.globalData.showBreadcrumbs;
         }
         
         protected override void DrawInternal(Rect rect, GameObject instance, Settings _settings)
@@ -26,59 +31,76 @@ namespace HierarchyDecorator
             Transform transform = current.Transform;
 
             int depth = current.CalculateDepth();
-            int startingDepth = (transform.childCount == 0) ? 0 : 1;
 
-            for (int i = startingDepth; i <= depth; i++)
+            int start = (transform.childCount == 0) ? 0 : 1;
+            int end = data.displayForFullDepth ? depth : 0;
+
+            for (int i = start; i <= end; i++)
             {
                 Rect verticalRect = GetVerticalLineRect(rect, i, scene, current);
 
                 if (i == 0)
                 {
                     Rect horizontalRect = GetHorizontalLineRect(rect, i, scene, current);
-                  
-                    Handles.color = new Color(0.7f, 0.7f, 0.7f);
-                    Handles.DrawLine(verticalRect.min, verticalRect.max);
-                    Handles.DrawLine(horizontalRect.min, horizontalRect.max);
+
+                    Handles.color = data.breadcrumbColor;
+                    DrawLine(verticalRect, data.breadcrumbStyle);
+                    DrawLine(horizontalRect, BreadcrumbStyle.Solid);
                 }
                 else
                 {
-                    Handles.color = Color.gray;
+                    Handles.color = data.fullDepthColor;
 
                     Rect dottedRect = verticalRect;
                     dottedRect.y = rect.y;
                     dottedRect.height = rect.height;
 
-                    DrawDottedLine(dottedRect);
+                    DrawLine(dottedRect, data.depthStyle);
                 }
             }
 
             Handles.color = Color.white;
         }
 
-        const float DOT_LENGTH = 1f;
+        private void DrawLine(Rect rect, BreadcrumbStyle style)
+        {
+            if (style == BreadcrumbStyle.Solid)
+            {
+                DrawRectSolid(rect);
+            }
+            else
+            {
+                DrawDottedLine(rect);
+            }
+        }
+
+        private void DrawRectSolid(Rect rect)
+        {
+            Handles.DrawLine(rect.min, rect.max);
+        }
 
         private void DrawDottedLine(Rect rect)
         {
-            rect.y += DOT_LENGTH;
-
             Vector2 len = rect.max - rect.min;
-            Vector2 seg = len / 4;
+            Vector2 offset = len.normalized;
 
-            for (int i = 0; i < 4; i++)
+            int count = offset.y == 0 ? 2 : 4;
+
+            offset *= DOT_LENGTH;
+
+            Vector2 seg = len * 0.25f;
+
+            for (int i = 0; i < count; i++)
             {
                 Vector2 a = rect.min + (seg * i);
-                a.y -= DOT_LENGTH;
-
-                Vector2 b = rect.min + (seg * i);
-                b.y += DOT_LENGTH;
+                Vector2 b = a;
+                b += offset * 2f;
 
                 Handles.DrawLine(a, b);
             }
         }
 
-        const float HORIZONTAL_OFFSET = 7f;
-        const float HORIZONTAL_WIDTH = 5f;
-
+      
         private static Rect GetVerticalLineRect(Rect rect, int depth, HierarchyCache.SceneCache scene, HierarchyCache.HierarchyData data)
         {
             rect.width = 0f;

@@ -10,6 +10,8 @@ namespace HierarchyDecorator
         SameDepthOrHigher = 3
     }
 
+    public enum BreadcrumbStyle { Solid = 0, Dotted = 1 }
+
     [System.Serializable]
     public class GlobalData
     {
@@ -47,10 +49,12 @@ namespace HierarchyDecorator
         // Breadcrumbs
 
         public bool showBreadcrumbs;
+        public 
+        public BreadcrumbStyle breadcrumbStyle = BreadcrumbStyle.Solid;
+        public Color breadcrumbColor = Color.grey;
 
         public bool displayForFullDepth;
-
-        public Color colour;
-        public Color fullDepthColour;
+        public BreadcrumbStyle depthStyle;
+        public Color fullDepthColor = Color.grey;
     }
 }
