@@ -373,7 +373,6 @@ namespace HierarchyDecorator
                 else // Draw the group if selected
                 if (categoryIndex < groupNames.Length)
                 {
-                    string group = groupNames[categoryIndex];
                     DrawComponentsColumns(unityGroups[group]);
                 }
 
