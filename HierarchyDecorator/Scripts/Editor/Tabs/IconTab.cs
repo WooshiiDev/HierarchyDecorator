@@ -28,6 +28,7 @@ namespace HierarchyDecorator
 
             // --- Sidebar group names
 
+            public const string EXCLUDED_COMPONENTS_LABEL = "Excluded";
             public const string ALL_COMPONENTS_LABEL = "All";
             public const string CUSTOM_COMPONENTS_LABEL = "Custom";
 
@@ -153,7 +154,6 @@ namespace HierarchyDecorator
         private EnumFlagToggleDrawer<DisplayMode> display;
 
         // Properties
-
         private Event Event => Event.current;
 
         // Constructor
@@ -232,15 +232,25 @@ namespace HierarchyDecorator
 
             unityGroups.Add(Labels.ALL_COMPONENTS_LABEL, allIcons.ToArray());
 
-            // Store group names
+            // Excluded group
 
+            SerializedProperty excludedProp = serializedTab.FindPropertyRelative("excludedComponents").FindPropertyRelative("components");
+            IconInfo[] excluded = GetIconsFromGroup(components.ExcludedComponents, excludedProp);
+
+            unityGroups.Add("Excluded", excluded);
+
+            // Store group names - Yes this is gross but shh
+
+            names.Add("");
             names.Add("");
             groupNames = names.ToArray();
             Array.Sort(groupNames);
-
+            
             // Assign global group to 'All'
 
-            groupNames[0] = Labels.ALL_COMPONENTS_LABEL;
+            groupNames[0] = Labels.EXCLUDED_COMPONENTS_LABEL;
+            groupNames[1] = Labels.ALL_COMPONENTS_LABEL;
+
         }
 
         private IconInfo[] GetIconsFromGroup(ComponentGroup group, SerializedProperty serializedGroup)
@@ -294,7 +304,6 @@ namespace HierarchyDecorator
 
             float height = isOnCustom ? Values.ICON_WINDOW_HEIGHT : 300f;
 
-            EditorGUI.BeginDisabledGroup(IsSearching());
             Rect rect = EditorGUILayout.BeginVertical(Style.BoxHeader, GUILayout.MaxWidth(71f), GUILayout.MinHeight(height));
             {
                 display.OnDraw();
@@ -337,7 +346,6 @@ namespace HierarchyDecorator
             DrawBorder(rect);
 
             EditorGUILayout.EndVertical();
-            EditorGUI.EndDisabledGroup();
         }
 
         private void DrawComponents()
@@ -487,9 +495,16 @@ namespace HierarchyDecorator
 
         private void DrawFilteredComponents(string filter)
         {
+            if (isOnCustom)
+            {
+                searchText = string.Empty;
+                return;
+            }
+
             filter = filter.ToLower();
 
-            IconInfo[] selectedTypes = unityGroups[Labels.ALL_COMPONENTS_LABEL];
+            string group = groupNames[categoryIndex];
+            IconInfo[] selectedTypes = unityGroups[group];
             List<IconInfo> filteredTypes = new List<IconInfo>();
 
             for (int i = 0; i < selectedTypes.Length; i++)
@@ -823,6 +838,7 @@ namespace HierarchyDecorator
                 Handles.EndGUI();
             }
         }
+
 
         // --- Icon Content
 
