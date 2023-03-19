@@ -67,6 +67,7 @@ namespace HierarchyDecorator
 
         [SerializeField] private List<ComponentGroup> customGroups = new List<ComponentGroup>();
         [SerializeField] private ComponentGroup allCustomComponents = new ComponentGroup("All");
+        [SerializeField] private ComponentGroup excludedComponents = new ComponentGroup("Excluded");
 
         // --- Validation
 
@@ -127,35 +128,22 @@ namespace HierarchyDecorator
         /// <summary>
         /// Component groups regarding built-in Unity types.
         /// </summary>
-        public ComponentGroup[] UnityGroups
-        {
-            get
-            {
-                return unityGroups;
-            }
-        }
+        public ComponentGroup[] UnityGroups => unityGroups;
 
         /// <summary>
         /// Component groups regarding custom components.
         /// </summary>
-        public ComponentGroup[] CustomGroups
-        {
-            get
-            {
-                return customGroups.ToArray();
-            }
-        }
+        public ComponentGroup[] CustomGroups => customGroups.ToArray();
 
         /// <summary>
         /// A component group containing all custom components.
         /// </summary>
-        public ComponentGroup AllCustomComponents
-        {
-            get
-            {
-                return allCustomComponents;
-            }
-        }
+        public ComponentGroup AllCustomComponents => allCustomComponents;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public ComponentGroup ExcludedComponents => excludedComponents;
 
         // --- Methods
 
@@ -220,7 +208,7 @@ namespace HierarchyDecorator
                     {
                         component = new ComponentType(type, true);
                     }
-                    
+
                     // Create a group if one does not exist already
 
                     if (!cachedGroups.TryGetValue(category, out ComponentGroup group))
@@ -230,7 +218,10 @@ namespace HierarchyDecorator
                     }
 
                     group.Add(component);
+                    excludedComponents.Add(new ComponentType(type, true));
                 }
+
+                excludedComponents.Sort();
 
                 // Assign the new groups and end dirty
 
@@ -249,46 +240,11 @@ namespace HierarchyDecorator
             
             for (int i = 0; i < unityGroups.Length; i++)
             {
-                ComponentGroup group = unityGroups[i]; 
-
-                for (int j = 0; j < group.Count; j++)
-                {
-                    ComponentType component = group.Get(j);
-
-                    // Null component, remove 
-
-                    if (component == null)
-                    {
-                        group.Remove(component);
-                        j--;
-
-                        continue;
-                    }
-
-                    // Do not update if the component already has a type
-
-                    if (component.IsValid())
-                    {
-                        continue;
-                    }
-
-                    // Find the type the component requires and assign it
-                    // Update the content if required too
-                    
-                    int index = Array.FindIndex(allTypes, type => type.Name == component.Name);
-
-                    // The type probably does not exist anymore, remove
-
-                    if (index == -1)
-                    {
-                        group.Remove(component);
-                        j--;
-                        continue;
-                    }
-
-                    component.UpdateType(allTypes[index], updateContent);
-                }
+                ComponentGroup group = unityGroups[i];
+                UpdateGroup(group);
             }
+
+            UpdateGroup(excludedComponents);
 
             // Update custom components 
 
@@ -337,6 +293,36 @@ namespace HierarchyDecorator
                     // Update the type and the content (if required)
 
                     component.UpdateType(component.Script.GetClass(), updateContent);
+                }
+            }
+
+            void UpdateGroup(ComponentGroup group)
+            {
+                for (int i = 0; i < group.Count; i++)
+                {
+                    ComponentType component = group.Get(i);
+                    if (component == null)
+                    {
+                        group.Remove(component);
+                        i--;
+
+                        continue;
+                    }
+
+                    if (component.IsValid())
+                    {
+                        continue;
+                    }
+
+                    int index = Array.FindIndex(allTypes, type => type.Name == component.Name);
+                    if (index == -1)
+                    {
+                        group.Remove(component);
+                        i--;
+                        continue;
+                    }
+
+                    component.UpdateType(allTypes[index], updateContent);
                 }
             }
         }
@@ -434,6 +420,11 @@ namespace HierarchyDecorator
 
         // --- Queries
 
+        public bool IsExcluded(Type type)
+        {
+            return excludedComponents.TryGetComponent(type, out ComponentType component) && component.Shown;
+        }
+
         /// <summary>
         /// Find a component with the given type.
         /// </summary>
@@ -444,7 +435,7 @@ namespace HierarchyDecorator
         {  
             // If the given type is null, there is nothing to look for
 
-            if (type == null)
+            if (type == null || IsExcluded(type))
             {
                 component = null;
                 return false;
