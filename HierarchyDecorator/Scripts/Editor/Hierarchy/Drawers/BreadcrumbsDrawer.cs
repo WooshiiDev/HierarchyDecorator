@@ -129,34 +129,6 @@ namespace HierarchyDecorator
 
                 distanceTraveled += segmentLength;
             }
-
-            //Vector2 min = rect.min;
-
-            //Vector2 len = rect.max - min;
-            //Vector2 dir = len.normalized;
-            //Vector2 dot = dir * 2;
-
-            //float sqrSize = 64f;
-            //int count = 4;
-
-            //if (small)
-            //{
-            //    sqrSize = 31;
-            //    count = 8;
-            //    dot = dir;
-            //}
-
-
-            //count = Mathf.Min(Mathf.CeilToInt(len.sqrMagnitude / sqrSize) + 1, count);
-            //for (int i = 0; i < count; i++)
-            //{
-            //    Vector2 a = min + (2 * i * dot);
-            //    Vector2 b = a;
-            //    b += dot;
-
-            //    Handles.DrawLine(a, b);
-            //    Handles.dot
-            //}
         }
 
         private static Rect GetVerticalLineRect(Rect rect, int depth)
