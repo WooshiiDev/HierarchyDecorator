@@ -72,7 +72,7 @@ namespace HierarchyDecorator
                     }
                 }
 
-                if (isInvalid)
+                if (isInvalid || settings.Components.IsExcluded(type))
                 {
                     continue;
                 }

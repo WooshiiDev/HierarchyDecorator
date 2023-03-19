@@ -435,7 +435,7 @@ namespace HierarchyDecorator
         {  
             // If the given type is null, there is nothing to look for
 
-            if (type == null || IsExcluded(type))
+            if (type == null)
             {
                 component = null;
                 return false;
