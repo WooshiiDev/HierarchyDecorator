@@ -65,6 +65,11 @@ namespace HierarchyDecorator
 
                 return index;
             }
+
+            public bool IsValid()
+            {
+                return Transform != null;
+            }
         }
 
         public class SceneCache
@@ -151,7 +156,7 @@ namespace HierarchyDecorator
 
                 // Check foldout state for last instance
 
-                if (Previous != null && Previous.HasChildren)
+                if (Previous != null && Previous.IsValid() && Previous.HasChildren)
                 {
                     Previous.Foldout = Current.Transform.parent == Previous.Transform;
                 }
@@ -175,6 +180,11 @@ namespace HierarchyDecorator
 
             public void SetTarget(Transform transform)
             {
+                if (transform == null)
+                {
+                    return;
+                }
+
                 int id = transform.GetInstanceID();
                 if (TryGetInstance(id, out HierarchyData data))
                 {
@@ -274,6 +284,7 @@ namespace HierarchyDecorator
 
             if (!TryGetScene(scene, out SceneCache cache))
             {
+                RegisterScene(scene);
                 return Target;
             }
 

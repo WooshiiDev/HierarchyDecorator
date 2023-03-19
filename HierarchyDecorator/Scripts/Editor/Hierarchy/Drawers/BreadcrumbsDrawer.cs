@@ -16,7 +16,7 @@ namespace HierarchyDecorator
 
         protected override bool DrawerIsEnabled(Settings _settings, GameObject instance)
         {
-            return _settings.globalData.showBreadcrumbs;
+            return _settings.globalData.showBreadcrumbs && Scene.Scene.IsValid();
         }
         
         protected override void DrawInternal(Rect rect, GameObject instance, Settings _settings)
