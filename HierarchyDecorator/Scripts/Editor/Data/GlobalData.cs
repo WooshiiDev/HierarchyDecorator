@@ -10,7 +10,7 @@ namespace HierarchyDecorator
         SameDepthOrHigher = 3
     }
 
-    public enum BreadcrumbStyle { Solid = 0, Dotted = 1 }
+    public enum BreadcrumbStyle { Solid = 0, Dash = 1, Dotted = 2 }
 
     [System.Serializable]
     public class BreadcrumbSettings
@@ -63,7 +63,7 @@ namespace HierarchyDecorator
         public BreadcrumbSettings instanceBreadcrumbs;
         public BreadcrumbSettings fullDepthBreadcrumbs = new BreadcrumbSettings()
         {
-            breadcrumbStyle = BreadcrumbStyle.Dotted,
+            breadcrumbStyle = BreadcrumbStyle.Dash,
             showHorizontal = false,
         };
 

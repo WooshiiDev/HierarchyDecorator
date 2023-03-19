@@ -67,13 +67,19 @@ namespace HierarchyDecorator
 
         private void DrawLine(Rect rect, BreadcrumbStyle style)
         {
-            if (style == BreadcrumbStyle.Solid)
+            switch (style)
             {
-                DrawRectSolid(rect);
-            }
-            else
-            {
-                DrawDottedLine(rect);
+                case BreadcrumbStyle.Solid:
+                    DrawRectSolid(rect);
+                    break;
+
+                case BreadcrumbStyle.Dash:
+                    DrawDashedLine(rect);
+                    break;
+
+                case BreadcrumbStyle.Dotted:
+                    DrawDottedLine(rect);
+                    break;
             }
         }
 
@@ -82,16 +88,38 @@ namespace HierarchyDecorator
             Handles.DrawLine(rect.min, rect.max);
         }
 
+        private void DrawDashedLine(Rect rect)
+        {
+            SpacedLine(rect, false);
+        }
+
         private void DrawDottedLine(Rect rect)
         {
-            Vector2 len = rect.max - rect.min;
-            Vector2 dir = len.normalized;
-            Vector2 dot = dir*2;
+            SpacedLine(rect, true);
+        }
 
-            int count = Mathf.Min(Mathf.CeilToInt(len.sqrMagnitude / 64) + 1, 4);
+        private void SpacedLine(Rect rect, bool small)
+        {
+            Vector2 min = rect.min;
+
+            Vector2 len = rect.max - min;
+            Vector2 dir = len.normalized;
+            Vector2 dot = dir * 2;
+
+            float sqrSize = 64f;
+            int count = 4;
+
+            if (small)
+            {
+                sqrSize = 32;
+                count = 8;
+                dot = dir;
+            }
+
+            count = Mathf.Min(Mathf.CeilToInt(len.sqrMagnitude / sqrSize) + 1, count);
             for (int i = 0; i < count; i++)
             {
-                Vector2 a = rect.min + (2 * i * dot);
+                Vector2 a = min + (2 * i * dot);
                 Vector2 b = a;
                 b += dot;
 
