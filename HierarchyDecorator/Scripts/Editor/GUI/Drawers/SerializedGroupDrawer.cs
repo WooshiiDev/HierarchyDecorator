@@ -7,7 +7,7 @@ namespace HierarchyDecorator
     {
         private readonly GUIContent title;
 
-        public SerializedGroupDrawer(string title, SerializedProperty[] target) : base(target) 
+        public SerializedGroupDrawer(string title, params SerializedProperty[] target) : base(target) 
         {
             this.title = new GUIContent(title);
         }
@@ -15,7 +15,7 @@ namespace HierarchyDecorator
         protected override void OnGUI()
         {
             HierarchyGUI.Space();
-            EditorGUILayout.BeginVertical(Style.BoxHeader);
+            EditorGUILayout.BeginVertical();
             {
                 EditorGUILayout.LabelField(title, EditorStyles.boldLabel);
                 EditorGUI.indentLevel++;

@@ -56,11 +56,9 @@ namespace HierarchyDecorator
         private void DrawTwoToneContent(Rect rect, GameObject instance, Settings _settings)
         {
             Rect twoToneRect = GetActualHierarchyWidth (rect);
+            var color = _settings.styleData.GetColorMode(EditorGUIUtility.isProSkin);
 
-            int y = Mathf.RoundToInt(twoToneRect.y);
-            int index = y % 32/16;
-
-            Handles.DrawSolidRectangleWithOutline (twoToneRect, HierarchyGUI.GetTwoToneColour (index), Color.clear);
+            Handles.DrawSolidRectangleWithOutline (twoToneRect, color.GetColor(twoToneRect), Color.clear);
             HierarchyGUI.DrawStandardContent (rect, instance);
         }
 

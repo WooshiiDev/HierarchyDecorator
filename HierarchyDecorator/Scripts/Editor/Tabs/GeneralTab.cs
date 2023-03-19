@@ -1,4 +1,4 @@
-﻿using UnityEditor;
+using UnityEditor;
 using UnityEngine;
 
 namespace HierarchyDecorator
@@ -8,11 +8,17 @@ namespace HierarchyDecorator
     {
         public GeneralTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, "globalData", "General", "d_CustomTool")
         {
+            // --- General Features
+
             CreateDrawableGroup ("Features")
-                .RegisterSerializedProperty (serializedTab, "showActiveToggles", "showComponentIcons", "twoToneBackground");
+                .RegisterSerializedProperty (serializedTab, "showActiveToggles", "showComponentIcons");
+
+            // --- Layers
 
             CreateDrawableGroup ("Layers")
                 .RegisterSerializedProperty (serializedTab, "showLayers", "editableLayers", "applyChildLayers");
+
+            // --- Breadcrumbs
 
             SerializedProperty crumbA = serializedTab.FindPropertyRelative("instanceBreadcrumbs");
             SerializedProperty crumbB = serializedTab.FindPropertyRelative("fullDepthBreadcrumbs");

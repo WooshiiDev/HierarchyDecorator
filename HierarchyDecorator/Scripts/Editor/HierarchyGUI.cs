@@ -115,20 +115,6 @@ namespace HierarchyDecorator
             }
         }
 
-        public static Color GetTwoToneColour(int rowIndex)
-        {
-            bool isEvenRow = rowIndex % 2 != 0;
-
-            if (EditorGUIUtility.isProSkin)
-            {
-                return isEvenRow ? Constants.DarkModeEvenColor : Constants.DarkModeOddColor;
-            }
-            else
-            {
-                return isEvenRow ? Constants.LightModeEvenColor : Constants.LightModeOddColor;
-            }
-        }
-
         // Version GUI Helpers
 
         public static void Space(float width = 9f)
