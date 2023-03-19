@@ -26,6 +26,7 @@ namespace HierarchyDecorator
         {
             settings = target as Settings;
             hasInitialized = false;
+            Repaint();
         }
 
         private void OnDisable()
