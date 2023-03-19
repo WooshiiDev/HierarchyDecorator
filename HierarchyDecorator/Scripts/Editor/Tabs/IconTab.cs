@@ -750,7 +750,6 @@ namespace HierarchyDecorator
                     }
                 }
 
-                float deleteWidth = Values.CUSTOM_TOOLBAR_WIDTH / (toolbarContent.Length + 1);
                 if (GUILayout.Button(Labels.DELETE_COMPONENT_LABEL, Style.ToolbarButtonResizable, GUILayout.Width(deleteWidth)))
                 {
                     group.Remove(component);
