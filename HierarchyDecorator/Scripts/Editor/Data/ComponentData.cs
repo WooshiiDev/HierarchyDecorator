@@ -60,7 +60,7 @@ namespace HierarchyDecorator
         // --- Settings
 
         [SerializeField] private bool showMissingScriptWarning;
-        [SerializeField] private DisplayMode showAll;
+        [SerializeField] private DisplayMode showAll = DisplayMode.Unity | DisplayMode.Custom;
         [SerializeField] private bool stackMonoBehaviours;
 
         [SerializeField] private ComponentGroup[] unityGroups = new ComponentGroup[0];
