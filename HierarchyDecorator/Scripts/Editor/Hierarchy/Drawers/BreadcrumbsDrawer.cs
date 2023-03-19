@@ -132,14 +132,9 @@ namespace HierarchyDecorator
             rect.width = 0f;
             rect.x -= GetDepthX(depth);
 
-            int index = data.Transform.GetSiblingIndex();
-
-            if (depth == 0)
+            if (depth == 0 && data.IsLastSibling(scene))
             {
-                if (depth == 0 && data.IsLastSibling(scene))
-                {
-                    rect.height /= 2;// Mathf.Floor(rect.height / 2);
-                }
+                rect.height /= 2;
             }
 
             return rect;
@@ -154,6 +149,11 @@ namespace HierarchyDecorator
             else
             {
                 rect.width = rect.height;
+
+                if (depth == 1 && data.HasChildren)
+                {
+                    rect.width -= HORIZONTAL_WIDTH;
+                }
             }
 
             rect.y += rect.height / 2;
@@ -166,7 +166,7 @@ namespace HierarchyDecorator
 
         private static float GetDepthX(int depth)
         {
-            return depth * DEPTH_WIDTH + DEPTH_OFFSET;
+            return depth * DEPTH_WIDTH + DEPTH_OFFSET + 1;
         }
     }
 }
