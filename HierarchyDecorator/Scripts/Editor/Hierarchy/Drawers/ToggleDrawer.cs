@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -165,29 +165,27 @@ namespace HierarchyDecorator
                     targetDepth = GetInstanceDepth (targetInstance.transform);
                 }
             }
-            else
+
+            bool hasChanged = false;
+            if (isPressingShift)
             {
-                bool hasChanged = false;
-                if (isPressingShift)
-                {
-                    hasChanged = !(isPressingShift = eventType != EventType.KeyUp);
-                }
+                hasChanged = !(isPressingShift = eventType != EventType.KeyUp);
+            }
 
-                if (isHoldingMouse)
-                {
-                    hasChanged = !(isHoldingMouse = eventType != EventType.MouseUp);
-                }
+            if (isHoldingMouse)
+            {
+                hasChanged = !(isHoldingMouse = eventType != EventType.MouseUp);
+            }
 
-                // Reset variables
+            // Reset variables
 
-                if (hasChanged)
-                {
-                    isPressingShift = false;
-                    isHoldingMouse = false;
+            if (hasChanged)
+            {
+                isPressingShift = false;
+                isHoldingMouse = false;
 
-                    targetInstance = null;
-                    swipedInstances.Clear ();
-                }
+                targetInstance = null;
+                swipedInstances.Clear ();
             }
         }
 

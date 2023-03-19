@@ -5,7 +5,12 @@ namespace HierarchyDecorator
 {
     public class SerializedPropertyElement : GUIDrawer<SerializedProperty>
     {
-        public SerializedPropertyElement(SerializedProperty target) : base (target) { }
+        private GUIContent content;
+
+        public SerializedPropertyElement(SerializedProperty target) : base (target) 
+        {
+            content = new GUIContent(target.displayName, target.tooltip);
+        }
 
         protected override void OnGUI()
         {
@@ -18,7 +23,7 @@ namespace HierarchyDecorator
                     break;
 
                 case SerializedPropertyType.Boolean:
-                    Target.boolValue = GUILayout.Toggle (Target.boolValue, Target.displayName);
+                    Target.boolValue = GUILayout.Toggle (Target.boolValue, content);
                     break;
             }
 

@@ -40,7 +40,7 @@ namespace HierarchyDecorator
                 return false;
             }
 
-            return settings.globalData.showComponentIcons;
+            return settings.Components.Enabled;
         }
 
         protected override void DrawInfo(Rect rect, GameObject instance, Settings settings)
@@ -66,18 +66,16 @@ namespace HierarchyDecorator
 
                 if (!isInvalid)
                 {
-                    if (hasMonoBehaviour && settings.Components.IconBehaviour == ScriptIconBehaviour.StackMonobehaviours)
+                    if (hasMonoBehaviour && settings.Components.StackScripts)
                     {
                         isInvalid = type.IsSubclassOf(typeof(MonoBehaviour));
                     }
                 }
 
-                if (isInvalid)
+                if (isInvalid || settings.Components.IsExcluded(type))
                 {
                     continue;
                 }
-
-                // Draw built in component
 
                 if (settings.Components.TryGetComponent(type, out _))
                 {
@@ -92,7 +90,7 @@ namespace HierarchyDecorator
                         DrawMonobehaviour(rect, component, customType, settings);
                     }
                     else
-                    if (!EditorApplication.isCompiling && settings.Components.ShowAllComponents) // Has not been registered, so draw all
+                    if (settings.Components.DisplayMonoScripts)
                     {
                         settings.Components.RegisterCustomComponent(component);
                     }
@@ -118,7 +116,7 @@ namespace HierarchyDecorator
         {
             Type type = component.GetType ();
 
-            if (!settings.Components.ShowAllComponents)
+            if (!settings.Components.DisplayMonoScripts)
             {
                 if (componentType.Script == null)
                 {
@@ -135,7 +133,7 @@ namespace HierarchyDecorator
 
             GUIContent content = componentType.Content;
 
-            if (settings.Components.IconBehaviour == ScriptIconBehaviour.StackMonobehaviours && type.IsSubclassOf(typeof(MonoBehaviour)))
+            if (settings.Components.StackScripts && type.IsSubclassOf(typeof(MonoBehaviour)))
             {
                 type = MonoType;
                 content = MonoContent;
@@ -154,14 +152,14 @@ namespace HierarchyDecorator
                 return;
             }
 
-            if (!settings.Components.ShowAllComponents && !component.Shown)
+            if (!settings.Components.DisplayBuiltIn && !component.Shown)
             {
                 return;
             }
 
             GUIContent content = component.Content;
 
-            if (settings.Components.IconBehaviour == ScriptIconBehaviour.StackMonobehaviours && type.IsSubclassOf(typeof(MonoBehaviour)))
+            if (settings.Components.StackScripts && type.IsSubclassOf(typeof(MonoBehaviour)))
             {
                 type = MonoType;
                 content = MonoContent;

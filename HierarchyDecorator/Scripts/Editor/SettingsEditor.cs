@@ -14,6 +14,7 @@ namespace HierarchyDecorator
 
         // Grid selection
 
+        private bool hasInitialized = false;
         private SettingsTab selectedTab;
 
         private List<SettingsTab> tabs = new List<SettingsTab> ();
@@ -24,8 +25,8 @@ namespace HierarchyDecorator
         private void OnEnable()
         {
             settings = target as Settings;
-            SetupValues ();
-            RegisterTabs ();
+            hasInitialized = false;
+            Repaint();
         }
 
         private void OnDisable()
@@ -36,6 +37,14 @@ namespace HierarchyDecorator
             }
         }
 
+        private void Initialize()
+        {
+            SetupValues();
+            RegisterTabs();
+
+            hasInitialized = true;
+        }
+
         public override bool UseDefaultMargins()
         {
             return false;
@@ -43,22 +52,25 @@ namespace HierarchyDecorator
 
         public override void OnInspectorGUI()
         {
+            if (!hasInitialized)
+            {
+                Initialize();
+                return;
+            }
+
             EditorGUILayout.BeginVertical(Style.InspectorPadding);
 
             DrawTitle();
             selectedTab?.OnGUI();
 
-            if (serializedObject.UpdateIfRequiredOrScript())
+            if (selectedTab.IsDirty)
             {
+                serializedObject.Update();
                 EditorApplication.RepaintHierarchyWindow();
+                Repaint();
             }
 
             EditorGUILayout.EndVertical();
-            
-            if (Event.current.type == EventType.Repaint)
-            {
-                Repaint();
-            }
         }
 
         private void DrawTitle()
@@ -76,7 +88,7 @@ namespace HierarchyDecorator
 
                 GUILayout.FlexibleSpace ();
 
-                // Link to Repo for convenience
+                // Link to repo for convenience
 
                 if (GUILayout.Button ("GitHub Repository", EditorStyles.miniButtonMid))
                 {

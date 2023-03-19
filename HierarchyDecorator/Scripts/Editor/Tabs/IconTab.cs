@@ -28,6 +28,7 @@ namespace HierarchyDecorator
 
             // --- Sidebar group names
 
+            public const string EXCLUDED_COMPONENTS_LABEL = "Excluded";
             public const string ALL_COMPONENTS_LABEL = "All";
             public const string CUSTOM_COMPONENTS_LABEL = "Custom";
 
@@ -126,9 +127,6 @@ namespace HierarchyDecorator
 
         private ComponentData components;
 
-        private readonly SerializedProperty ShowAllProperty;
-        private readonly SerializedProperty ShowMissingProperty;
-
         private readonly SerializedProperty[] SerializedUnityGroups;
         private SerializedProperty[] SerializedCustomGroups;
 
@@ -153,8 +151,9 @@ namespace HierarchyDecorator
 
         private List<MonoScript> selectedScripts = new List<MonoScript>();
 
-        // Properties
+        private EnumFlagToggleDrawer<DisplayMode> display;
 
+        // Properties
         private Event Event => Event.current;
 
         // Constructor
@@ -164,9 +163,6 @@ namespace HierarchyDecorator
             // Setup References
             components = settings.Components;
 
-            ShowAllProperty = serializedTab.FindPropertyRelative("showAllComponents");
-            ShowMissingProperty = serializedTab.FindPropertyRelative("showMissingScriptWarning");
-
             SerializedUnityGroups = GetSerializedArrayElements("unityGroups");
             SerializedCustomGroups = GetSerializedArrayElements("customGroups");
 
@@ -174,8 +170,12 @@ namespace HierarchyDecorator
 
             // Register Groups
 
+            SerializedProperty displayProp = serializedTab.FindPropertyRelative("showAll");
+            display = new EnumFlagToggleDrawer<DisplayMode>(displayProp);
+            display.ToggleStyle = Style.ToolbarButtonLeft;
+
             CreateDrawableGroup("Settings")
-                .RegisterSerializedProperty(serializedTab, "showAllComponents", "showMissingScriptWarning", "iconBehaviour");
+                .RegisterSerializedProperty(serializedTab, "enableIcons", "stackMonoBehaviours", "showMissingScriptWarning");
         }
 
         // Methods
@@ -232,15 +232,25 @@ namespace HierarchyDecorator
 
             unityGroups.Add(Labels.ALL_COMPONENTS_LABEL, allIcons.ToArray());
 
-            // Store group names
+            // Excluded group
 
+            SerializedProperty excludedProp = serializedTab.FindPropertyRelative("excludedComponents").FindPropertyRelative("components");
+            IconInfo[] excluded = GetIconsFromGroup(components.ExcludedComponents, excludedProp);
+
+            unityGroups.Add("Excluded", excluded);
+
+            // Store group names - Yes this is gross but shh
+
+            names.Add("");
             names.Add("");
             groupNames = names.ToArray();
             Array.Sort(groupNames);
-
+            
             // Assign global group to 'All'
 
-            groupNames[0] = Labels.ALL_COMPONENTS_LABEL;
+            groupNames[0] = Labels.EXCLUDED_COMPONENTS_LABEL;
+            groupNames[1] = Labels.ALL_COMPONENTS_LABEL;
+
         }
 
         private IconInfo[] GetIconsFromGroup(ComponentGroup group, SerializedProperty serializedGroup)
@@ -294,10 +304,13 @@ namespace HierarchyDecorator
 
             float height = isOnCustom ? Values.ICON_WINDOW_HEIGHT : 300f;
 
-            EditorGUI.BeginDisabledGroup(IsSearching());
             Rect rect = EditorGUILayout.BeginVertical(Style.BoxHeader, GUILayout.MaxWidth(71f), GUILayout.MinHeight(height));
             {
+                display.OnDraw();
+
                 EditorGUI.BeginChangeCheck();
+
+                EditorGUILayout.LabelField("Groups", Style.CenteredLabel, GUILayout.MinWidth(0));
 
                 int index = categoryIndex;
                 for (int i = 0; i < groupNames.Length; i++)
@@ -330,17 +343,20 @@ namespace HierarchyDecorator
             }
             GUILayout.FlexibleSpace();
 
-            rect.x--;
-            rect.width++;
             DrawBorder(rect);
 
             EditorGUILayout.EndVertical();
-            EditorGUI.EndDisabledGroup();
         }
 
         private void DrawComponents()
         {
-            EditorGUI.BeginDisabledGroup(ShowAllProperty.boolValue);
+            string group = "";
+            if (categoryIndex != -1)
+            {
+                group = groupNames[categoryIndex];
+            }
+
+            EditorGUI.BeginDisabledGroup(settings.Components.DisplayAll && group != "Excluded");
             windowRect = EditorGUILayout.BeginVertical();
             {
                 // Filter components from search
@@ -357,7 +373,6 @@ namespace HierarchyDecorator
                 else // Draw the group if selected
                 if (categoryIndex < groupNames.Length)
                 {
-                    string group = groupNames[categoryIndex];
                     DrawComponentsColumns(unityGroups[group]);
                 }
 
@@ -485,9 +500,17 @@ namespace HierarchyDecorator
 
         private void DrawFilteredComponents(string filter)
         {
+            if (isOnCustom)
+            {
+                GUI.FocusControl(string.Empty);
+                searchText = string.Empty;
+                return;
+            }
+
             filter = filter.ToLower();
 
-            IconInfo[] selectedTypes = unityGroups[Labels.ALL_COMPONENTS_LABEL];
+            string group = groupNames[categoryIndex];
+            IconInfo[] selectedTypes = unityGroups[group];
             List<IconInfo> filteredTypes = new List<IconInfo>();
 
             for (int i = 0; i < selectedTypes.Length; i++)
@@ -691,20 +714,25 @@ namespace HierarchyDecorator
 
         private void DrawCustomComponent(int index, ComponentGroup group)
         {
+            float deleteWidth = Values.CUSTOM_TOOLBAR_WIDTH / (toolbarContent.Length + 1);
+            
             EditorGUILayout.BeginHorizontal();
             {
                 ComponentType component = group.Get(index);
-                component.Shown = EditorGUILayout.Toggle(component.Shown, Style.ToggleMixed, GUILayout.Width(16f));
+                component.Shown = EditorGUILayout.Toggle(component.Shown, GUILayout.Width(16f));
 
                 int controlID = GUIUtility.GetControlID(FocusType.Keyboard);
 
-                GUIContent content = component.IsValid() ? component.Content : Icons.EmptyComponent;
+                GUIContent content = component.IsValid() ? new GUIContent(component.Content) : Icons.EmptyComponent;
 
-                if (GUILayout.Button(content, Style.ToolbarButtonLeft, GUILayout.ExpandWidth(true)))
+                Vector2 iconSize = Vector2.one * 16f;
+                EditorGUIUtility.SetIconSize(iconSize);
+                if (GUILayout.Button(content, Style.ToolbarButtonLeft))
                 {
                     selectedComponentIndex = index;
                     EditorGUIUtility.ShowObjectPicker<MonoScript>(component.Script, false, "", controlID);
                 }
+                EditorGUIUtility.SetIconSize(Vector2.zero);
 
                 if (selectedComponentIndex != -1)
                 {
@@ -727,7 +755,6 @@ namespace HierarchyDecorator
                     }
                 }
 
-                float deleteWidth = Values.CUSTOM_TOOLBAR_WIDTH / (toolbarContent.Length + 1);
                 if (GUILayout.Button(Labels.DELETE_COMPONENT_LABEL, Style.ToolbarButtonResizable, GUILayout.Width(deleteWidth)))
                 {
                     group.Remove(component);
@@ -821,6 +848,7 @@ namespace HierarchyDecorator
                 Handles.EndGUI();
             }
         }
+
 
         // --- Icon Content
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -27,9 +27,9 @@ namespace HierarchyDecorator
         private readonly Color OUTLINE_COLOR = new Color (0.15f, 0.15f, 0.15f, 1f);
 
         private readonly GUIContent[] Modes = { new GUIContent("Light Mode"), new GUIContent("Dark Mode") };
-        private readonly string[] SettingList = { "prefix", "name", "font", "fontSize", "fontStyle", "fontAlignment" };
+        private readonly string[] SettingList = { "prefix", "name", "font", "fontSize", "fontStyle", "fontAlignment",  "textFormatting" };
 
-        public StyleTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, "styleData", "Styles", "d_InputField Icon")
+        public StyleTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, "styleData", "Visual", "d_InputField Icon")
         {
             serializedStyles = serializedTab.FindPropertyRelative ("styles");
 
@@ -61,11 +61,16 @@ namespace HierarchyDecorator
                 style.isExpanded = false;
             }
 #endif
+            SerializedProperty darkModeBack = serializedTab.FindPropertyRelative("darkMode");
+            SerializedProperty lightModeBack = serializedTab.FindPropertyRelative("lightMode");
 
-            CreateDrawableGroup ("Settings")
-                .RegisterSerializedProperty (serializedTab, "displayLayers", "displayIcons");
+            CreateDrawableGroup("Background")
+                .RegisterSerializedProperty(serializedTab, "twoToneBackground")
+                .RegisterSerializedGroup(darkModeBack, "Dark Mode", "colorOne", "colorTwo")
+                .RegisterSerializedGroup(lightModeBack, "Light Mode", "colorOne", "colorTwo");
 
             CreateDrawableGroup ("Styles")
+                .RegisterSerializedProperty(serializedTab, "displayLayers", "displayIcons")
                 .RegisterReorderable (styleList);
         }
 

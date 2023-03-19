@@ -32,7 +32,7 @@ namespace HierarchyDecorator
     
         public readonly static Color HoverColour = new Color (150f / 255f, 150f / 255f, 150f / 255f, 1);
 
-        public readonly static Color InactiveColour = new Color (0.20f, 0.20f, 0.20f, 0.3f);
+        public readonly static Color InactiveColour = new Color (0.20f, 0.20f, 0.20f, 0.35f);
 
         public readonly static Color InactivePrefabColour = new Color (0.48f, 0.67f, 0.95f, 0.6f);
 
@@ -129,13 +129,9 @@ namespace HierarchyDecorator
 
         // --- Fields
 
-        public static readonly GUIStyle TextFieldShortStyle;
-
         public static readonly GUIStyle ToolbarNoSpace;
         public static readonly GUIStyle ToolbarButtonLeft;
         public static readonly GUIStyle ToolbarButtonResizable;
-
-        public static readonly GUIStyle SelectionLabel;
 
         // --- Widgets
 

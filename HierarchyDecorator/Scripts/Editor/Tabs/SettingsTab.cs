@@ -12,7 +12,9 @@ namespace HierarchyDecorator
 
         public readonly GUIContent Content;
 
-        protected List<DrawerGroup> settingGroups = new List<DrawerGroup> ();
+        protected List<DrawerGroup> settingGroups = new List<DrawerGroup>();
+
+        public bool IsDirty { get; private set; } = false;
 
         /// <summary>
         /// Constructor used to cache the data required
@@ -36,6 +38,11 @@ namespace HierarchyDecorator
         /// </summary>
         public void OnGUI()
         {
+            if (IsDirty)
+            {
+                IsDirty = false;
+            }
+
 #if UNITY_2019_1_OR_NEWER
             EditorGUILayout.BeginVertical (Style.TabBackground, GUILayout.MinHeight (32f));
 #else
@@ -59,6 +66,7 @@ namespace HierarchyDecorator
             }
             if (EditorGUI.EndChangeCheck())
             {
+                IsDirty = true;
                 serializedSettings.ApplyModifiedProperties ();
             }
 

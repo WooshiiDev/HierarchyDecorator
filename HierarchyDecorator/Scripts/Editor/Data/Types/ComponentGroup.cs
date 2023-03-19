@@ -207,6 +207,19 @@ namespace HierarchyDecorator
             return components.Contains(component);
         }
 
+        public bool Contains(Type type)
+        {
+            for (int i = 0; i < components.Count; i++)
+            {
+                if (components[i].Type == type)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         // Indexer
 
         /// <summary>
