@@ -11,8 +11,8 @@ namespace HierarchyDecorator
 
         const float HORIZONTAL_WIDTH = 6f;
 
-        private HierarchyCache.SceneCache Scene => HierarchyCache.Target;
-        private HierarchyCache.HierarchyData HierarchyInstance => Scene.Current;
+        private static HierarchyCache.SceneCache Scene => HierarchyCache.Target;
+        private static HierarchyCache.HierarchyData Data => Scene.Current;
 
         protected override bool DrawerIsEnabled(Settings _settings, GameObject instance)
         {
@@ -55,12 +55,12 @@ namespace HierarchyDecorator
                 return;
             }
 
-            Rect verticalRect = GetVerticalLineRect(rect, depth, Scene, HierarchyInstance);
+            Rect verticalRect = GetVerticalLineRect(rect, depth);
             DrawLine(verticalRect, settings.breadcrumbStyle);
 
             if (settings.showHorizontal)
             {
-                Rect horizontalRect = GetHorizontalLineRect(rect, depth, Scene, HierarchyInstance);
+                Rect horizontalRect = GetHorizontalLineRect(rect, depth);
                 DrawLine(horizontalRect, settings.breadcrumbStyle);
             }
         }
@@ -127,12 +127,12 @@ namespace HierarchyDecorator
             }
         }
 
-        private static Rect GetVerticalLineRect(Rect rect, int depth, HierarchyCache.SceneCache scene, HierarchyCache.HierarchyData data)
+        private static Rect GetVerticalLineRect(Rect rect, int depth)
         {
             rect.width = 0f;
             rect.x -= GetDepthX(depth);
 
-            if (depth == 0 && data.IsLastSibling(scene))
+            if (depth == 0 && Data.IsLastSibling(Scene))
             {
                 rect.height /= 2;
             }
@@ -140,7 +140,7 @@ namespace HierarchyDecorator
             return rect;
         }
 
-        private static Rect GetHorizontalLineRect(Rect rect, int depth, HierarchyCache.SceneCache scene, HierarchyCache.HierarchyData data)
+        private static Rect GetHorizontalLineRect(Rect rect, int depth)
         {
             if (depth == 0)
             {
@@ -150,7 +150,7 @@ namespace HierarchyDecorator
             {
                 rect.width = rect.height;
 
-                if (depth == 1 && data.HasChildren)
+                if (depth == 1 && Data.HasChildren)
                 {
                     rect.width -= HORIZONTAL_WIDTH;
                 }
