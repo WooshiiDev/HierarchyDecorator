@@ -136,13 +136,6 @@ namespace HierarchyDecorator
 
             if (depth == 0)
             {
-                float offset = 1f;
-                if (index == 0)
-                {
-                    rect.y += offset;
-                    rect.height -= offset;
-                }
-
                 if (depth == 0 && data.IsLastSibling(scene))
                 {
                     rect.height /= 2;// Mathf.Floor(rect.height / 2);
