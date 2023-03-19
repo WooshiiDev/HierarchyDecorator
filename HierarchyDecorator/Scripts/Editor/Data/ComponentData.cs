@@ -59,6 +59,8 @@ namespace HierarchyDecorator
 
         // --- Settings
 
+        [SerializeField] private bool enableIcons = true;
+
         [SerializeField] private bool showMissingScriptWarning;
         [SerializeField] private DisplayMode showAll = DisplayMode.Unity | DisplayMode.Custom;
         [SerializeField] private bool stackMonoBehaviours;
@@ -97,6 +99,11 @@ namespace HierarchyDecorator
         }
 
         public bool StackScripts => stackMonoBehaviours;
+
+        /// <summary>
+        /// Are components enabled?
+        /// </summary>
+        public bool Enabled => enableIcons;
 
         /// <summary>
         /// How scripts are drawn in the hierarchy.

@@ -25,10 +25,6 @@ namespace HierarchyDecorator
     [System.Serializable]
     public class GlobalData
     {
-        // General 
-
-        public bool showComponentIcons = true;
-
         // Toggles
 
         public bool showActiveToggles = true;
