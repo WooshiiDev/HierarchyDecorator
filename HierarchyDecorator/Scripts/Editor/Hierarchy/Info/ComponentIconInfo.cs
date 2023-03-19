@@ -40,7 +40,7 @@ namespace HierarchyDecorator
                 return false;
             }
 
-            return settings.globalData.showComponentIcons;
+            return settings.Components.Enabled;
         }
 
         protected override void DrawInfo(Rect rect, GameObject instance, Settings settings)
