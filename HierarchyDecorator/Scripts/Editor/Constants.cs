@@ -129,13 +129,9 @@ namespace HierarchyDecorator
 
         // --- Fields
 
-        public static readonly GUIStyle TextFieldShortStyle;
-
         public static readonly GUIStyle ToolbarNoSpace;
         public static readonly GUIStyle ToolbarButtonLeft;
         public static readonly GUIStyle ToolbarButtonResizable;
-
-        public static readonly GUIStyle SelectionLabel;
 
         // --- Widgets
 

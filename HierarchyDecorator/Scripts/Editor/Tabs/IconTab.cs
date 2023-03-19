@@ -724,11 +724,10 @@ namespace HierarchyDecorator
                 int controlID = GUIUtility.GetControlID(FocusType.Keyboard);
 
                 GUIContent content = component.IsValid() ? new GUIContent(component.Content) : Icons.EmptyComponent;
-                content = GetComponentDisplayName(content, EditorGUIUtility.currentViewWidth - 16f - deleteWidth);
 
                 Vector2 iconSize = Vector2.one * 16f;
                 EditorGUIUtility.SetIconSize(iconSize);
-                if (GUILayout.Button(content, Style.ToolbarButtonLeft, GUILayout.ExpandWidth(true)))
+                if (GUILayout.Button(content, Style.ToolbarButtonLeft))
                 {
                     selectedComponentIndex = index;
                     EditorGUIUtility.ShowObjectPicker<MonoScript>(component.Script, false, "", controlID);
