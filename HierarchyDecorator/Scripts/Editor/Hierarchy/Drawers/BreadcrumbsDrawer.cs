@@ -21,6 +21,8 @@ namespace HierarchyDecorator
                 return;
             }
 
+            GlobalData data = _settings.globalData;
+
             Transform transform = current.Transform;
 
             int depth = current.CalculateDepth();

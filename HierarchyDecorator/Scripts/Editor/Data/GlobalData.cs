@@ -43,5 +43,14 @@ namespace HierarchyDecorator
         // Components 
 
         public bool showAllComponents = true;
+
+        // Breadcrumbs
+
+        public bool showBreadcrumbs;
+
+        public bool displayForFullDepth;
+
+        public Color colour;
+        public Color fullDepthColour;
     }
 }
