@@ -62,17 +62,14 @@ namespace HierarchyDecorator
             DrawTitle();
             selectedTab?.OnGUI();
 
-            if (serializedObject.UpdateIfRequiredOrScript())
+            if (selectedTab.IsDirty)
             {
+                serializedObject.Update();
                 EditorApplication.RepaintHierarchyWindow();
+                Repaint();
             }
 
             EditorGUILayout.EndVertical();
-            
-            if (Event.current.type == EventType.Repaint)
-            {
-                Repaint();
-            }
         }
 
         private void DrawTitle()
