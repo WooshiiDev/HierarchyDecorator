@@ -34,7 +34,7 @@ namespace HierarchyDecorator
 
         public bool showActiveToggles = true;
 
-        [Tooltip("Clicking and dragging over checkboxes to toggle them.")]
+        [Tooltip("Clicking and dragging over check boxes to toggle them.")]
         public bool activeSwiping = true;
 
         [Tooltip ("Only toggle the instances with the same state as the first selected.")]
@@ -43,7 +43,7 @@ namespace HierarchyDecorator
         [Tooltip ("If a selection exists, only toggle the selected instances.")]
         public bool swipeSelectionOnly = true;
 
-        [Tooltip ("How to handke ")]
+        [Tooltip ("The accepted criteria for selecting instances when swiping.")]
         public DepthMode depthMode;
 
         // Layers
