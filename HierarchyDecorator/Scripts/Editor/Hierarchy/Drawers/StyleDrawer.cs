@@ -1,128 +1,42 @@
-using System;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace HierarchyDecorator
 {
     public class StyleDrawer : HierarchyDrawer
     {
-        private Transform firstTransform;
-
-        private bool previousNeedsFoldout;
-        private Transform previousTransform;
-        private Transform currentTransform;
-
-        private int instanceIndex;
-
-        private List<int> validFoldoutCache = new List<int>();
-        private Dictionary<int, bool> foldoutCache = new Dictionary<int, bool> ();
-
         protected override void DrawInternal(Rect rect, GameObject instance, Settings settings)
         {
-            currentTransform = instance.transform;
-
-            // We've went back to the start
-
-            if (firstTransform == currentTransform)
-            {
-                // Find all invalid keys and remove
-
-                List<int> invalidKeys = new List<int> ();
-                foreach (var key in foldoutCache.Keys)
-                {
-                    if (!validFoldoutCache.Contains(key))
-                    {
-                        invalidKeys.Add (key);
-                    }
-                }
-
-                for (int i = 0; i < invalidKeys.Count; i++)
-                {
-                    foldoutCache.Remove (invalidKeys[i]);
-                }
-
-                // Clear the valid cache for the next check
-
-                validFoldoutCache.Clear ();
-            }
-
-            // First transform will have the lowest index and no parent
-
-            if (currentTransform.parent == null && currentTransform.GetSiblingIndex () == 0)
-            {
-                firstTransform = currentTransform;
-                instanceIndex = 0;
-            }
-
-            // Draw previous transform
-
-            if (previousTransform != null)
-            {
-                int previousInstanceID = previousTransform.GetInstanceID ();
-
-                if (previousNeedsFoldout)
-                {
-                    foldoutCache[previousInstanceID] = currentTransform.parent == previousTransform;
-                }
-                else
-                if (foldoutCache.ContainsKey (previousInstanceID))
-                {
-                    foldoutCache.Remove (previousInstanceID);
-                }
-            }
-
-            // Draw style, and then drawn selection on top
-
-            int instanceID = currentTransform.GetInstanceID();
-
-            bool hasChildren = currentTransform.childCount > 0;
             bool hasStyle = settings.globalData.twoToneBackground;
 
             // Only draw the two tone background if there's no style override
 
             if (settings.globalData.twoToneBackground)
             {
-                DrawTwoToneContent (rect, instance, settings);
+                DrawTwoToneContent(rect, instance, settings);
                 hasStyle = true;
             }
 
             // Draw the style if one is to be applied
             // Have to make sure selection colours are drawn on top when required too
 
-            if (settings.styleData.TryGetStyleFromPrefix (instance.name, out HierarchyStyle prefix))
+            if (settings.styleData.TryGetStyleFromPrefix(instance.name, out HierarchyStyle prefix))
             {
                 Rect styleRect = (instance.transform.parent != null)
                     ? rect
-                    : GetActualHierarchyWidth (rect);
+                    : GetActualHierarchyWidth(rect);
 
-                HierarchyGUI.DrawHierarchyStyle (prefix, styleRect, rect, instance.name);
+                HierarchyGUI.DrawHierarchyStyle(prefix, styleRect, rect, instance.name);
                 hasStyle = true;
             }
 
-            // Cache values for next instance
+            var target = HierarchyCache.Target;
+            var current = target.Current;
 
-            previousTransform = currentTransform;
-            previousNeedsFoldout = hasStyle && hasChildren;
-
-            // Draw foldout on top if required
-
-            if (previousNeedsFoldout)
+            if (current.HasChildren && hasStyle)
             {
-                if (foldoutCache.ContainsKey (instanceID))
-                {
-                    DrawFoldout (rect, foldoutCache[instanceID]);
-                }
-                else
-                {
-                    foldoutCache.Add (instanceID, false);
-                }
-
-                validFoldoutCache.Add (instanceID);
+                DrawFoldout(rect, current.Foldout);
             }
-
-            instanceIndex++;
         }
 
         protected override bool DrawerIsEnabled(Settings _settings, GameObject instance)
