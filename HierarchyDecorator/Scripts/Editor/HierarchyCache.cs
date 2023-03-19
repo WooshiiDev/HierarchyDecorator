@@ -100,7 +100,7 @@ namespace HierarchyDecorator
             {
                 if (instance == null)
                 {
-                    Debug.Log("TODO: [Wooshii]");
+                    Debug.LogWarning("Cannot add a null instance.");
                     return false;
                 }
 
@@ -125,7 +125,7 @@ namespace HierarchyDecorator
             {
                 if (instance == null)
                 {
-                    Debug.Log("TODO: [Wooshii]");
+                    Debug.LogWarning("Cannot remove a null instance.");
                     return false;
                 }
 
@@ -148,7 +148,7 @@ namespace HierarchyDecorator
             {
                 if (data == null)
                 {
-                    Debug.LogWarning("TODO: [Wooshii]");
+                    Debug.LogWarning("Cannot assign a null instance as the target.");
                 }
 
                 Previous = Current;
