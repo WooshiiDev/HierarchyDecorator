@@ -67,6 +67,11 @@ namespace HierarchyDecorator
 
         private void DrawLine(Rect rect, BreadcrumbStyle style)
         {
+            if (rect.x % 2 != 0)
+            {
+                rect.x--;
+            }
+
             switch (style)
             {
                 case BreadcrumbStyle.Solid:
@@ -100,41 +105,68 @@ namespace HierarchyDecorator
 
         private void SpacedLine(Rect rect, bool small)
         {
-            Vector2 min = rect.min;
+            Vector2 start = rect.min;
+            Vector2 end = rect.max;
+            Vector2 len = end - start;
 
-            Vector2 len = rect.max - min;
-            Vector2 dir = len.normalized;
-            Vector2 dot = dir * 2;
+            float totalDistance = Vector2.Distance(start, end);
 
-            float sqrSize = 64f;
-            int count = 4;
+            // Calculate segment sizing
 
-            if (small)
-            {
-                sqrSize = 32;
-                count = 8;
-                dot = dir;
-            }
+            float segmentLength = small ? 1f : 2f;
+            int lengthCount = Mathf.FloorToInt(totalDistance / (segmentLength * 2));
+            int count = Mathf.Max(lengthCount, 7);
 
-            count = Mathf.Min(Mathf.CeilToInt(len.sqrMagnitude / sqrSize) + 1, count);
+            // Draw the line using Handles.DrawLine with alternating segments and gaps
+
+            float distanceTraveled = 0;
             for (int i = 0; i < count; i++)
             {
-                Vector2 a = min + (2 * i * dot);
-                Vector2 b = a;
-                b += dot;
+                Vector3 segmentStart = Vector2.Lerp(start, end, distanceTraveled / totalDistance);
+                distanceTraveled += segmentLength;
+                Vector3 segmentEnd = Vector2.Lerp(start, end, distanceTraveled / totalDistance);
+                Handles.DrawLine(segmentStart, segmentEnd);
 
-                Handles.DrawLine(a, b);
+                distanceTraveled += segmentLength;
             }
+
+            //Vector2 min = rect.min;
+
+            //Vector2 len = rect.max - min;
+            //Vector2 dir = len.normalized;
+            //Vector2 dot = dir * 2;
+
+            //float sqrSize = 64f;
+            //int count = 4;
+
+            //if (small)
+            //{
+            //    sqrSize = 31;
+            //    count = 8;
+            //    dot = dir;
+            //}
+
+
+            //count = Mathf.Min(Mathf.CeilToInt(len.sqrMagnitude / sqrSize) + 1, count);
+            //for (int i = 0; i < count; i++)
+            //{
+            //    Vector2 a = min + (2 * i * dot);
+            //    Vector2 b = a;
+            //    b += dot;
+
+            //    Handles.DrawLine(a, b);
+            //    Handles.dot
+            //}
         }
 
         private static Rect GetVerticalLineRect(Rect rect, int depth)
         {
             rect.width = 0f;
-            rect.x -= GetDepthX(depth);
+            rect.x -= GetDepthX(depth) + 1;
 
             if (depth == 0 && Data.IsLastSibling(Scene))
             {
-                rect.height /= 2;
+                rect.height = Mathf.Ceil(rect.height * 0.5f);
             }
 
             return rect;
@@ -157,7 +189,7 @@ namespace HierarchyDecorator
             }
 
             rect.y += rect.height / 2;
-            rect.x -= GetDepthX(depth);
+            rect.x -= GetDepthX(depth) + 1;
 
             rect.height = 0;
 
@@ -166,7 +198,7 @@ namespace HierarchyDecorator
 
         private static float GetDepthX(int depth)
         {
-            return depth * DEPTH_WIDTH + DEPTH_OFFSET + 1;
+            return depth * DEPTH_WIDTH + DEPTH_OFFSET;
         }
     }
 }
