@@ -14,9 +14,8 @@ namespace HierarchyDecorator
             CreateDrawableGroup ("Layers")
                 .RegisterSerializedProperty (serializedTab, "showLayers", "editableLayers", "applyChildLayers");
 
-            CreateDrawableGroup("Breadcrumbs!!!!!!!!!!!!")
-                .RegisterSerializedProperty(serializedTab, "showBreadcrumbs", "breadcrumbStyle", "breadcrumbColor")
-                .RegisterSerializedProperty(serializedTab, "displayForFullDepth", "depthStyle", "fullDepthColor");
+            CreateDrawableGroup("Breadcrumbs")
+                .RegisterSerializedProperty(serializedTab, "showBreadcrumbs", "instanceBreadcrumbs", "fullDepthBreadcrumbs");
         }
     }
 }

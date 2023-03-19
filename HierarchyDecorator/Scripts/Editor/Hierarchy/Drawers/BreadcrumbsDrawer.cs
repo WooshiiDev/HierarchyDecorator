@@ -6,10 +6,13 @@ namespace HierarchyDecorator
 {
     public class BreadcrumbsDrawer : HierarchyDrawer
     {
-        const float DOT_LENGTH = 1f;
+        const float DEPTH_WIDTH = 14f;
+        const float DEPTH_OFFSET = 7f;
 
-        const float HORIZONTAL_OFFSET = 7f;
-        const float HORIZONTAL_WIDTH = 5f;
+        const float HORIZONTAL_WIDTH = 6f;
+
+        private HierarchyCache.SceneCache Scene => HierarchyCache.Target;
+        private HierarchyCache.HierarchyData HierarchyInstance => Scene.Current;
 
         protected override bool DrawerIsEnabled(Settings _settings, GameObject instance)
         {
@@ -33,33 +36,33 @@ namespace HierarchyDecorator
             int depth = current.CalculateDepth();
 
             int start = (transform.childCount == 0) ? 0 : 1;
-            int end = data.displayForFullDepth ? depth : 0;
+            int end = data.fullDepthBreadcrumbs.show ? depth : 0;
 
             for (int i = start; i <= end; i++)
             {
-                Rect verticalRect = GetVerticalLineRect(rect, i, scene, current);
-
-                if (i == 0)
-                {
-                    Rect horizontalRect = GetHorizontalLineRect(rect, i, scene, current);
-
-                    Handles.color = data.breadcrumbColor;
-                    DrawLine(verticalRect, data.breadcrumbStyle);
-                    DrawLine(horizontalRect, BreadcrumbStyle.Solid);
-                }
-                else
-                {
-                    Handles.color = data.fullDepthColor;
-
-                    Rect dottedRect = verticalRect;
-                    dottedRect.y = rect.y;
-                    dottedRect.height = rect.height;
-
-                    DrawLine(dottedRect, data.depthStyle);
-                }
+                BreadcrumbSettings breadcrumbs = (i == 0) ? data.instanceBreadcrumbs : data.fullDepthBreadcrumbs;
+                Handles.color = breadcrumbs.color;
+                DrawTrail(rect, i, breadcrumbs);
             }
 
             Handles.color = Color.white;
+        }
+
+        private void DrawTrail(Rect rect, int depth, BreadcrumbSettings settings)
+        {
+            if (!settings.show)
+            {
+                return;
+            }
+
+            Rect verticalRect = GetVerticalLineRect(rect, depth, Scene, HierarchyInstance);
+            DrawLine(verticalRect, settings.breadcrumbStyle);
+
+            if (settings.showHorizontal)
+            {
+                Rect horizontalRect = GetHorizontalLineRect(rect, depth, Scene, HierarchyInstance);
+                DrawLine(horizontalRect, settings.breadcrumbStyle);
+            }
         }
 
         private void DrawLine(Rect rect, BreadcrumbStyle style)
@@ -82,29 +85,24 @@ namespace HierarchyDecorator
         private void DrawDottedLine(Rect rect)
         {
             Vector2 len = rect.max - rect.min;
-            Vector2 offset = len.normalized;
+            Vector2 dir = len.normalized;
+            Vector2 dot = dir*2;
 
-            int count = offset.y == 0 ? 2 : 4;
-
-            offset *= DOT_LENGTH;
-
-            Vector2 seg = len * 0.25f;
-
+            int count = Mathf.Min(Mathf.CeilToInt(len.sqrMagnitude / 64) + 1, 4);
             for (int i = 0; i < count; i++)
             {
-                Vector2 a = rect.min + (seg * i);
+                Vector2 a = rect.min + (2 * i * dot);
                 Vector2 b = a;
-                b += offset * 2f;
+                b += dot;
 
                 Handles.DrawLine(a, b);
             }
         }
 
-      
         private static Rect GetVerticalLineRect(Rect rect, int depth, HierarchyCache.SceneCache scene, HierarchyCache.HierarchyData data)
         {
             rect.width = 0f;
-            rect.x -= GetDepthOffset(depth);
+            rect.x -= GetDepthX(depth);
 
             int index = data.Transform.GetSiblingIndex();
 
@@ -119,7 +117,7 @@ namespace HierarchyDecorator
 
                 if (depth == 0 && data.IsLastSibling(scene))
                 {
-                    rect.height = Mathf.Floor(rect.height / 2);
+                    rect.height /= 2;// Mathf.Floor(rect.height / 2);
                 }
             }
 
@@ -128,26 +126,26 @@ namespace HierarchyDecorator
 
         private static Rect GetHorizontalLineRect(Rect rect, int depth, HierarchyCache.SceneCache scene, HierarchyCache.HierarchyData data)
         {
+            if (depth == 0)
+            {
+                rect.width = HORIZONTAL_WIDTH;
+            }
+            else
+            {
+                rect.width = rect.height;
+            }
+
             rect.y += rect.height / 2;
+            rect.x -= GetDepthX(depth);
+
             rect.height = 0;
 
-            rect.x -= GetDepthOffset(depth);
-            rect.width = HORIZONTAL_WIDTH;
-
             return rect;
         }
 
-        private static Rect GetVerticalChildRect(Rect rect)
+        private static float GetDepthX(int depth)
         {
-            rect.width = 0f;
-            rect.x += 22f;
-
-            return rect;
-        }
-
-        private static float GetDepthOffset(int depth)
-        {
-            return HORIZONTAL_OFFSET * (depth + 1) + (7f * depth);
+            return depth * DEPTH_WIDTH + DEPTH_OFFSET;
         }
     }
 }
