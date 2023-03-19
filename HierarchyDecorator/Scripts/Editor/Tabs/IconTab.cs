@@ -714,20 +714,26 @@ namespace HierarchyDecorator
 
         private void DrawCustomComponent(int index, ComponentGroup group)
         {
+            float deleteWidth = Values.CUSTOM_TOOLBAR_WIDTH / (toolbarContent.Length + 1);
+            
             EditorGUILayout.BeginHorizontal();
             {
                 ComponentType component = group.Get(index);
-                component.Shown = EditorGUILayout.Toggle(component.Shown, Style.ToggleMixed, GUILayout.Width(16f));
+                component.Shown = EditorGUILayout.Toggle(component.Shown, GUILayout.Width(16f));
 
                 int controlID = GUIUtility.GetControlID(FocusType.Keyboard);
 
-                GUIContent content = component.IsValid() ? component.Content : Icons.EmptyComponent;
+                GUIContent content = component.IsValid() ? new GUIContent(component.Content) : Icons.EmptyComponent;
+                content = GetComponentDisplayName(content, EditorGUIUtility.currentViewWidth - 16f - deleteWidth);
 
+                Vector2 iconSize = Vector2.one * 16f;
+                EditorGUIUtility.SetIconSize(iconSize);
                 if (GUILayout.Button(content, Style.ToolbarButtonLeft, GUILayout.ExpandWidth(true)))
                 {
                     selectedComponentIndex = index;
                     EditorGUIUtility.ShowObjectPicker<MonoScript>(component.Script, false, "", controlID);
                 }
+                EditorGUIUtility.SetIconSize(Vector2.zero);
 
                 if (selectedComponentIndex != -1)
                 {
