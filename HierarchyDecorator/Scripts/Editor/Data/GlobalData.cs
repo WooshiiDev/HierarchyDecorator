@@ -17,9 +17,9 @@ namespace HierarchyDecorator
     {
         public bool show = true;
         public Color color = Color.grey;
-        public BreadcrumbStyle breadcrumbStyle = BreadcrumbStyle.Solid;
+        public BreadcrumbStyle style = BreadcrumbStyle.Solid;
 
-        public bool showHorizontal = true;
+        public bool displayHorizontal = true;
     }
 
     [System.Serializable]
@@ -63,8 +63,8 @@ namespace HierarchyDecorator
         public BreadcrumbSettings instanceBreadcrumbs;
         public BreadcrumbSettings fullDepthBreadcrumbs = new BreadcrumbSettings()
         {
-            breadcrumbStyle = BreadcrumbStyle.Dash,
-            showHorizontal = false,
+            style = BreadcrumbStyle.Dash,
+            displayHorizontal = false,
         };
 
         //public bool showBreadcrumbs;

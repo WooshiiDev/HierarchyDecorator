@@ -296,5 +296,18 @@ namespace HierarchyDecorator
                     return property.displayName;
             }
         }
+
+        public static SerializedProperty[] GetChildProperties(SerializedProperty property, params string[] childNames)
+        {
+            int len = childNames.Length;
+            SerializedProperty[] properties = new SerializedProperty[len];
+
+            for (int i = 0; i < len; i++)
+            {
+                properties[i] = property.FindPropertyRelative(childNames[i]);
+            }
+
+            return properties;
+        }
     }
 }

@@ -56,12 +56,12 @@ namespace HierarchyDecorator
             }
 
             Rect verticalRect = GetVerticalLineRect(rect, depth);
-            DrawLine(verticalRect, settings.breadcrumbStyle);
+            DrawLine(verticalRect, settings.style);
 
-            if (settings.showHorizontal)
+            if (settings.displayHorizontal)
             {
                 Rect horizontalRect = GetHorizontalLineRect(rect, depth);
-                DrawLine(horizontalRect, settings.breadcrumbStyle);
+                DrawLine(horizontalRect, settings.style);
             }
         }
 
