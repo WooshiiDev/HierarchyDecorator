@@ -66,13 +66,5 @@ namespace HierarchyDecorator
             style = BreadcrumbStyle.Dash,
             displayHorizontal = false,
         };
-
-        //public bool showBreadcrumbs;
-        //public BreadcrumbStyle breadcrumbStyle = BreadcrumbStyle.Solid;
-        //public Color breadcrumbColor = Color.grey;
-
-        //public bool displayForFullDepth;
-        //public BreadcrumbStyle depthStyle;
-        //public Color fullDepthColor = Color.grey;
     }
 }
