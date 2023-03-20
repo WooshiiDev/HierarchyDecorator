@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -125,6 +126,11 @@ namespace HierarchyDecorator
                 return false;
             }
 
+            if (content == null)
+            {
+                return false;
+            }
+
             return Type != null && content.image != null;
         }
 
@@ -238,6 +244,16 @@ namespace HierarchyDecorator
             }
 
             return name.Equals(other.name);
+        }
+
+        public override int GetHashCode()
+        {
+            int hashCode = 1280150957;
+            hashCode *= -1521134295 + name.GetHashCode();
+            hashCode *= -1521134295 + shown.GetHashCode();
+            hashCode *= -1521134295 + isBuiltIn.GetHashCode();
+            hashCode *= -1521134295 + script.GetHashCode();
+            return hashCode;
         }
     }
 }
