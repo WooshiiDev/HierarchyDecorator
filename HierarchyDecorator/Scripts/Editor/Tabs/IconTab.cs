@@ -264,9 +264,7 @@ namespace HierarchyDecorator
 
                 // Check the content validity - we cannot use default or internal types as they're not exposed for use
 
-                GUIContent content = component.Content;
-
-                if (content.image == null || Array.IndexOf(INVALID_ASSET_TYPES, component.Content.image.name) != -1)
+                if (!component.IsValid() || Array.IndexOf(INVALID_ASSET_TYPES, component.Content.image.name) != -1)
                 {
                     continue;
                 }
