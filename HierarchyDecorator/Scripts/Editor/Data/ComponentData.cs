@@ -310,7 +310,10 @@ namespace HierarchyDecorator
                 Type type = allTypes[i];
                 if (!excludedComponents.TryGetComponent(type, out _))
                 {
-                    excludedComponents.Add(new ComponentType(type, true));
+                    ComponentType component = new ComponentType(type, true);
+                    excludedComponents.Add(component);
+                    component.UpdateContent();
+
                 }
             }
 
