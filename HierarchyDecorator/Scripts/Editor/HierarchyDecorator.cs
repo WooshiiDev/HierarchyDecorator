@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEditor;
 using UnityEngine;
-
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
+using UnityEditor.PackageManager;
 
 namespace HierarchyDecorator
 {
@@ -41,7 +41,7 @@ namespace HierarchyDecorator
             EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyItem;
             EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyItem;
 
-            // Hierarchy Init
+            // Scene Init
 
             EditorSceneManager.sceneOpened -= AddScene;
             EditorSceneManager.sceneOpened += AddScene;
@@ -54,6 +54,10 @@ namespace HierarchyDecorator
                 Scene scene = SceneManager.GetSceneAt(i);
                 AddScene(scene, OpenSceneMode.Single);
             }
+
+            // Handle package updating
+
+            
         }
 
         private static void AddScene(Scene scene, OpenSceneMode mode)
