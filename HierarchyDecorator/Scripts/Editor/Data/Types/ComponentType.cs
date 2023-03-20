@@ -126,6 +126,11 @@ namespace HierarchyDecorator
                 return false;
             }
 
+            if (content == null)
+            {
+                return false;
+            }
+
             return Type != null && content.image != null;
         }
 
