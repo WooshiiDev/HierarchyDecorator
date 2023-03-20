@@ -303,6 +303,17 @@ namespace HierarchyDecorator
                 }
             }
 
+            // Make sure excluded components have all 
+
+            for (int i = 0; i < allTypes.Length; i++)
+            {
+                Type type = allTypes[i];
+                if (!excludedComponents.TryGetComponent(type, out _))
+                {
+                    excludedComponents.Add(new ComponentType(type, true));
+                }
+            }
+
             void UpdateGroup(ComponentGroup group)
             {
                 List<Type> types = new List<Type>();
