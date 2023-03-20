@@ -305,6 +305,7 @@ namespace HierarchyDecorator
 
             void UpdateGroup(ComponentGroup group)
             {
+                List<Type> types = new List<Type>();
                 for (int i = 0; i < group.Count; i++)
                 {
                     ComponentType component = group.Get(i);
@@ -329,8 +330,19 @@ namespace HierarchyDecorator
                         continue;
                     }
 
-                    component.UpdateType(allTypes[index], updateContent);
+                    Type componentType = allTypes[index];
+
+                    if (types.Contains(componentType))
+                    {
+                        group.Remove(component);
+                        i--;
+                        continue;
+                    }
+
+                    component.UpdateType(componentType, updateContent);
+                    types.Add(componentType);
                 }
+                types.Clear();
             }
         }
         
