@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -6,19 +6,30 @@ using UnityEditorInternal;
 
 namespace HierarchyDecorator
 {
+    [RegisterTab(1)]
     public class StyleTab : SettingsTab
     {
+        // Readonly 
+
+        private const float ELEMENT_X_OFFSET = 4f;
+        private const float ELEMENT_WIDTH_MARGIN = 19f;
+        private const float ELEMENT_WIDTH_PADDING = 20f;
+
+        private const float ELEMENT_HEIGHT_SPACING = 1f;
+        private const float ELEMENT_HEIGHT_OFFSET = 4f;
+
+        // References
+
         private ReorderableList styleList;
+        private SerializedProperty serializedStyles;
 
         private readonly Color BACKGROUND_COLOR = new Color (0.235f, 0.360f, 0.580f);
         private readonly Color OUTLINE_COLOR = new Color (0.15f, 0.15f, 0.15f, 1f);
 
-        private string[] modes = new string[] { "Light Mode", "Dark Mode" };
+        private readonly GUIContent[] Modes = { new GUIContent("Light Mode"), new GUIContent("Dark Mode") };
+        private readonly string[] SettingList = { "prefix", "name", "font", "fontSize", "fontStyle", "fontAlignment",  "textFormatting" };
 
-        private SerializedProperty serializedStyles;
-        private SettingGroup styleGlobalSettings;
-
-        public StyleTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, serializedSettings.FindProperty ("styleData"), "Styles", "d_InputField Icon")
+        public StyleTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, "styleData", "Visual", "d_InputField Icon")
         {
             serializedStyles = serializedTab.FindPropertyRelative ("styles");
 
@@ -27,16 +38,18 @@ namespace HierarchyDecorator
                 drawHeaderCallback = DrawHeader,
                 drawFooterCallback = DrawFooter,
 
-                drawElementCallback = DrawStyleElements,
+                drawElementCallback = DrawElement,
                 drawElementBackgroundCallback = DrawElementBackground,
-                drawNoneElementCallback = DrawNoElements,
+
+                //drawNoneElementCallback = DrawNoElements,
 
                 elementHeightCallback = GetPropertyHeight,
 
                 headerHeight = 0,
                 footerHeight = 19f,
 
-                showDefaultBackground = false
+                showDefaultBackground = false,
+                
             };
 
             // Fix for Unity 2021.X for buggy unexpanded list elements
@@ -48,28 +61,17 @@ namespace HierarchyDecorator
                 style.isExpanded = false;
             }
 #endif
+            SerializedProperty darkModeBack = serializedTab.FindPropertyRelative("darkMode");
+            SerializedProperty lightModeBack = serializedTab.FindPropertyRelative("lightMode");
 
-            styleGlobalSettings = new SettingGroup ("Style Global Features", "displayLayers", "displayIcons");
-        }
+            CreateDrawableGroup("Background")
+                .RegisterSerializedProperty(serializedTab, "twoToneBackground")
+                .RegisterSerializedGroup(darkModeBack, "Dark Mode", "colorOne", "colorTwo")
+                .RegisterSerializedGroup(lightModeBack, "Light Mode", "colorOne", "colorTwo");
 
-        /// <summary>
-        /// The main content area for the settings
-        /// </summary>
-        protected override void OnContentGUI()
-        {
-            EditorGUI.BeginChangeCheck ();
-
-            styleGlobalSettings.DisplaySettings (serializedTab);
-
-            if (EditorGUI.EndChangeCheck())
-            {
-                serializedSettings.ApplyModifiedProperties ();
-            }
-
-            EditorGUILayout.Space ();
-            EditorGUILayout.LabelField ("Hierarchy Styles", EditorStyles.boldLabel);
-
-            styleList.DoLayoutList ();
+            CreateDrawableGroup ("Styles")
+                .RegisterSerializedProperty(serializedTab, "displayLayers", "displayIcons")
+                .RegisterReorderable (styleList);
         }
 
         // Reorderable List GUI
@@ -79,65 +81,77 @@ namespace HierarchyDecorator
 
         }
 
-        private void DrawStyleElements(Rect rect, int index, bool isActive, bool isFocused)
+        private void DrawFooter(Rect rect)
         {
+            rect = GetReorderableFooterRect (rect);
 
-            rect.x += 3f;
-            rect.width -= 3f;
+            Handles.BeginGUI ();
+            Handles.DrawSolidRectangleWithOutline (rect, Color.clear, OUTLINE_COLOR);
+            Handles.EndGUI ();
 
-            if (index >= serializedStyles.arraySize)
+            // Draw optionals
+            if (GUI.Button (rect, "Add New Style", Style.CenteredBoldLabel))
             {
-                return;
-            }
-
-            SerializedProperty style = serializedStyles.GetArrayElementAtIndex (index);
-            SerializedProperty nameProp = style.FindPropertyRelative ("name");
-
-            Rect removeRect = rect;
-            removeRect.x = removeRect.width + 6f;
-            removeRect.width = 48f;
-            removeRect.height = 18f;
-            if (GUI.Button (removeRect, "Delete", EditorStyles.centeredGreyMiniLabel))
-            {
-                serializedStyles.DeleteArrayElementAtIndex (index);
+                serializedStyles.InsertArrayElementAtIndex (serializedStyles.arraySize);
                 serializedSettings.ApplyModifiedProperties ();
                 serializedSettings.Update ();
-                return;
             }
+        }
 
-            rect.y--;
+        private void DrawElement(Rect rect, int index, bool isActive, bool isFocused)
+        {
+            SerializedProperty styleSettings = serializedStyles.GetArrayElementAtIndex (index);
+
+            // Draw header that includes the style
+
+            Rect titleRect = GetElementHeaderRect (rect);
+            Rect tileStyleRect = GetElementStyleRect(rect);
+
+            SerializedProperty nameProp = styleSettings.FindPropertyRelative ("name");
+            HierarchyGUI.DrawHierarchyStyle (settings.styleData[index], tileStyleRect, titleRect, nameProp.stringValue, false);
+
+            // Draw foldout
 
             Rect foldoutRect = GetFoldoutRect(rect);
-            Rect labelRect = GetStyleLabelRect(rect);
-            Rect styleRect = GetStyleRect(rect);
 
             EditorGUI.BeginChangeCheck ();
             {
-                HierarchyGUI.DrawHierarchyStyle (settings.styleData[index], styleRect, labelRect, nameProp.stringValue, false);
+                styleSettings.isExpanded = GUI.Toggle (foldoutRect, styleSettings.isExpanded, GUIContent.none, Style.Toggle);
 
-                // Use GUI over EditorGUI due to overlapping on draggable
-                style.isExpanded = GUI.Toggle (foldoutRect, style.isExpanded, "", EditorStyles.foldout);
+                // Draw style settings
 
-                Rect propertyRect = GetStylePropertyRect (rect);
-
-                if (style.isExpanded)
+                Rect settingsRect = GetElementBoxRect (rect);
+                if (styleSettings.isExpanded)
                 {
-                    Rect box = propertyRect;
-                    box.height -= 18f;
-                    box.x = styleRect.x;
-                    box.width = styleRect.width;
-                    box.y -= 3f;
+                    // Draw the background
 
-                    GUI.Box (box, "");
+                    GUI.Box (settingsRect, "");
 
-                    var customDraws = new Dictionary<string, Action<Rect, SerializedProperty>> ()
-                    {
-                        { "modes", DrawModes }
-                    };
+                    // Add some padding to the rect to fit it into the box
 
-                    SerializedPropertyUtility.DrawChildrenProperties (propertyRect, style, style.isExpanded, customDraws);
+                    Rect propertyRect = GetElementPropertyRect (rect);
+                    propertyRect = DrawPropertyList (propertyRect, styleSettings, SettingList);
+                    propertyRect.y += propertyRect.height;
+
+                    DrawModes (propertyRect, styleSettings);
+                }
+
+                // Draw Deletion
+
+                Rect deletionRect = GetElementDeleteRect (rect);
+             
+                GUIContent content = new GUIContent ("X");
+                if (GUI.Button(deletionRect, content, Style.CenteredBoldLabel))
+                {
+                    serializedStyles.DeleteArrayElementAtIndex (index);
+                    serializedSettings.ApplyModifiedProperties ();
+                    serializedSettings.Update ();
+                    return;
                 }
             }
+
+            // Save settings and update the GUIStyle
+
             if (EditorGUI.EndChangeCheck ())
             {
                 serializedSettings.ApplyModifiedProperties ();
@@ -149,35 +163,19 @@ namespace HierarchyDecorator
 
         private void DrawElementBackground(Rect rect, int index, bool isActive, bool isFocused)
         {
-            DrawBackground (rect, isFocused);
-        }
+            rect = GetElementSpacerRect (rect);
+            GUIHelper.LineSpacer (rect, OUTLINE_COLOR);
 
-        private void DrawFooter(Rect rect)
-        {
-            rect.y -= 4f;
-
-            rect.x += 0.25f * rect.width;
-            rect.width *= 0.5f;
-
-            Handles.BeginGUI ();
-            Handles.DrawSolidRectangleWithOutline (rect, Color.clear, OUTLINE_COLOR);
-            Handles.EndGUI ();
-
-            GUI.Box (rect, "");
-
-            // Draw optionals
-            if (GUI.Button (rect, "Add New Style", Style.CenteredBoldLabel))
-            {
-                serializedStyles.InsertArrayElementAtIndex (serializedStyles.arraySize);
-                serializedSettings.ApplyModifiedProperties ();
-                serializedSettings.Update ();
-            }
+            rect.y += rect.height;
+            GUIHelper.LineSpacer (rect, OUTLINE_COLOR);
         }
 
         private void DrawNoElements(Rect rect)
         {
             EditorGUI.LabelField (rect, "No styles to display.");
         }
+
+        // Height Calculation
 
         private float GetPropertyHeight(int index)
         {
@@ -191,68 +189,79 @@ namespace HierarchyDecorator
                 return 0;
             }
 
-            SerializedProperty property = serializedStyles.GetArrayElementAtIndex (index);
-            return GetPropertyHeight (property);
+            return GetPropertyHeight (serializedStyles.GetArrayElementAtIndex (index));
         }
 
         private float GetPropertyHeight(SerializedProperty property)
         {
-            return EditorGUI.GetPropertyHeight (property, property.isExpanded) + (property.isExpanded ? -36f : 0);
+            if (!property.isExpanded)
+            {
+                return EditorGUIUtility.singleLineHeight + 1;
+            }
+
+            // All settings listed equally spaced with padding
+            int listCount = (SettingList.Length + 1);
+            int modeCount = 4;
+
+            return (listCount + modeCount) * (EditorGUIUtility.singleLineHeight + ELEMENT_HEIGHT_SPACING) + EditorGUIUtility.singleLineHeight/2;
         }
 
-        private void DrawBackground(Rect rect, bool isFocused)
+        // Property Display
+
+        private Rect DrawPropertyList(Rect rect, SerializedProperty property, params string[] propertyNames)
         {
-            Rect fullWidthRect = rect;
-            fullWidthRect.x -= 3f;
-            fullWidthRect.width += 6f;
-            GUI.Box (fullWidthRect, "");
-
-            Handles.BeginGUI ();
+            if (propertyNames == null)
             {
-
-                Rect spacerRect = fullWidthRect;
-                spacerRect.height = 0;
-
-                Handles.BeginGUI ();
-                {
-                    Handles.DrawSolidRectangleWithOutline (spacerRect, Color.clear, OUTLINE_COLOR);
-                    spacerRect.y += rect.height;
-                    Handles.DrawSolidRectangleWithOutline (spacerRect, Color.clear, OUTLINE_COLOR);
-
-                    Rect splitRect = rect;
-                    splitRect.x += 23f;
-                    splitRect.width = 0;
-
-                    Handles.DrawSolidRectangleWithOutline (splitRect, Color.clear, OUTLINE_COLOR);
-
-                    splitRect.x = rect.width - 22f;
-
-                    Handles.DrawSolidRectangleWithOutline (splitRect, Color.clear, OUTLINE_COLOR);
-
-                }
-                Handles.EndGUI ();
+                Debug.LogWarning ($"Attempt to draw null child properties of {property.name} ");
+                return rect;
             }
-            Handles.EndGUI ();
+
+            // Iterate over properties and draw
+
+            float height = 0;
+            for (int i = 0; i < propertyNames.Length; i++)
+            {
+                SerializedProperty prop = property.FindPropertyRelative (propertyNames[i]);
+
+                if (prop == null)
+                {
+                    Debug.LogWarning ($"Cannot find child property of property {prop.name}.");
+                    continue;
+                }
+
+                rect.height = EditorGUI.GetPropertyHeight (prop);
+                EditorGUI.PropertyField (rect, prop, true);
+                rect.y += EditorGUIUtility.singleLineHeight + ELEMENT_HEIGHT_SPACING;
+
+                height += rect.height;
+            }
+
+            // Get full rect size to return
+
+            rect.y -= height;
+            rect.height = height;
+
+            return rect;
         }
 
         public void DrawModes(Rect rect, SerializedProperty property)
         {
-            if (property.arraySize == 0)
+            SerializedProperty modeProperty = property.FindPropertyRelative ("modes");
+
+            if (modeProperty == null)
             {
+                Debug.LogWarning ($"Cannot find modes property in property {property.name}. Has the correct property been assigned?");
                 return;
             }
 
-            property.isExpanded = true;
+            modeProperty.isExpanded = true;
 
-            Rect selectionRect = rect;
-            selectionRect.height = 21f;
+            rect.height = EditorGUIUtility.singleLineHeight;
 
-            Rect modeRect = rect;
-            modeRect.height -= 21f;
-            modeRect.y += 21f;
+            SerializedProperty lightMode = modeProperty.GetArrayElementAtIndex (0);
+            SerializedProperty darkMode = modeProperty.GetArrayElementAtIndex (1);
 
-            SerializedProperty lightMode = property.GetArrayElementAtIndex (0);
-            SerializedProperty darkMode = property.GetArrayElementAtIndex (1);
+            // Make sure that only one is selected if the case that both have been 'expanded'
 
             if (lightMode.isExpanded == darkMode.isExpanded)
             {
@@ -262,15 +271,19 @@ namespace HierarchyDecorator
                 darkMode.isExpanded = isPro;
             }
 
+            // Draw selection and toggle mode selected
+
             EditorGUI.BeginChangeCheck ();
 
             int selected = lightMode.isExpanded ? 0 : 1;
-            int selection = GUI.SelectionGrid (selectionRect, selected, modes, 2, EditorStyles.centeredGreyMiniLabel);
+            int selection = GUI.SelectionGrid (rect, selected, Modes, 2, Style.CenteredBoldLabel);
 
-            SerializedProperty selectedMode = (selection == 0) ? lightMode : darkMode;
-            EditorGUI.PropertyField (modeRect, selectedMode, new GUIContent (modes[selection]), true);
+            rect.y += EditorGUIUtility.singleLineHeight + ELEMENT_HEIGHT_SPACING;
 
-            if (EditorGUI.EndChangeCheck())
+            SerializedProperty prop = modeProperty.GetArrayElementAtIndex (selection);
+            EditorGUI.PropertyField (rect, prop, Modes[selection], true);
+
+            if (EditorGUI.EndChangeCheck ())
             {
                 lightMode.isExpanded = selection == 0;
                 darkMode.isExpanded = !lightMode.isExpanded;
@@ -279,113 +292,105 @@ namespace HierarchyDecorator
 
         // Rect Helpers
 
-        // --- Style Rects
-
-        private Rect GetStylePropertyRect(Rect rect)
+        private Rect GetElementBaseRect(Rect rect)
         {
-#if UNITY_2021_1_OR_NEWER
-            rect.y += 23f;
-            rect.x += 16f;
-
-            rect.width -= 64f;
-#else
-            rect.y += 21f;
-            rect.width -= 50f;
-#endif
+            rect.x += ELEMENT_X_OFFSET;
+            rect.width -= 26f;
 
             return rect;
         }
 
-        private Rect GetStyleRect(Rect rect)
+        private Rect GetElementBoxRect(Rect rect)
         {
+            rect = GetElementBaseRect (rect);
 
-#if UNITY_2021_1_OR_NEWER
-            rect.x += 1f;
-            rect.width -= 40f;
-
-            rect.y += 2f;
-            rect.height = 18f;
-#elif UNITY_2019_1_OR_NEWER
-            rect.width -= 39f;
-
-            rect.height = 17f;
-            rect.y++;
-#else
-            rect.width -= 35f;
-
-            rect.height = 15f;
-            rect.y++;
-#endif
+            rect.y += EditorGUIUtility.singleLineHeight;
+            rect.height -= EditorGUIUtility.singleLineHeight - 2f;
 
             return rect;
         }
 
-        private Rect GetStyleLabelRect(Rect rect)
+        // --- Style Header
+
+        private Rect GetElementStyleRect(Rect rect)
         {
-            rect.height = 19f;
-
-#if UNITY_2021_1_OR_NEWER
+            rect = GetElementBaseRect (rect);
+            rect.height = EditorGUIUtility.singleLineHeight;
             rect.y++;
-
-            rect.x += 20f;
-            rect.width -= 64f;
-#elif UNITY_2019_1_OR_NEWER
-            rect.y -= 1f;
-
-            rect.x += 4f;
-            rect.width -= 48f;
-#else
-            rect.y -= 1f;
-
-            rect.x += 4f;
-            rect.width -= 44f;
-#endif
-
-            //EditorGUI.DrawRect (rect, Color.white);
 
             return rect;
         }
 
-        // --- Other GUI Rect
+        private Rect GetElementHeaderRect(Rect rect)
+        {
+            // Label uses the same rect, but shrinks height to a single line, and adds width padding
+            rect = GetElementStyleRect (rect);
+         
+            rect.width -= ELEMENT_WIDTH_PADDING * 2f;
+            rect.x += ELEMENT_WIDTH_PADDING;
+
+            return rect;
+        }
 
         private Rect GetFoldoutRect(Rect rect)
         {
-            rect.height = 19f;
-            rect.width = 19f;
-
-            rect.x += 2f;
-
-#if UNITY_2021_1_OR_NEWER
-            rect.y += 2f;
-#elif UNITY_2019_1_OR_NEWER
-
-#else
+            rect = GetElementStyleRect (rect);
             rect.y++;
-#endif
 
             return rect;
         }
 
-        private Rect GetRemoveButtonRect(Rect rect)
-        {
-            rect.x = rect.width + 6f;
-            rect.width = 48f;
-            rect.height = 18f;
+        // --- Footer
 
-            return rect;
-        }
-
-        private Rect GetBoxRect(Rect rect)
+        private Rect GetReorderableFooterRect(Rect rect)
         {
-       
-#if UNITY_2021_1_OR_NEWER
-            rect.x += 1f;
-            rect.width -= 40f;
-#else
-            rect.y++;
-#endif
-            rect.height -= 18f;
+            float centreOffset = rect.width / 2 ;
+
             rect.y -= 3f;
+            rect.x += centreOffset/2;
+            rect.width = centreOffset;
+
+            return rect;
+        }
+
+        // --- Style Elements
+
+        private Rect GetElementModeRect(Rect rect)
+        {
+            rect = GetElementBaseRect (rect);
+            rect.height = EditorGUIUtility.singleLineHeight;
+
+            return rect;
+        }
+
+        private Rect GetElementPropertyRect(Rect rect)
+        {
+            rect = GetElementBoxRect (rect);
+
+            rect.x += ELEMENT_WIDTH_MARGIN;
+            rect.width -= ELEMENT_WIDTH_MARGIN * 2f;
+
+            rect.y += ELEMENT_HEIGHT_OFFSET;
+
+            return rect;
+        }
+
+        private Rect GetElementSpacerRect(Rect rect)
+        {
+            rect.x -= 4f;
+            rect.width += 8f;
+
+            return rect;
+        }
+
+        private Rect GetElementDeleteRect(Rect rect)
+        {
+            rect = GetElementStyleRect (rect);
+        
+            float newWidth = rect.x;
+
+            rect.x += rect.width;
+            rect.width = newWidth;
 
             return rect;
         }

@@ -1,10 +1,14 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 
 namespace HierarchyDecorator
 {
     public static class HierarchyGUI
     {
+        private static GUIStyle TextStyle = new GUIStyle(EditorStyles.label);
+        private static readonly Color DarkModeText = new Color(0.48f, 0.67f, 0.95f, 1f);
+        private static readonly Color WhiteModeText = new Color(0.1f, 0.3f, 0.7f, 1f);
+
         public static void DrawHierarchyStyle(HierarchyStyle style, Rect styleRect, Rect labelRect, string label, bool removePrefix = true)
         {
             if (removePrefix)
@@ -20,27 +24,49 @@ namespace HierarchyDecorator
 
         public static void DrawStandardContent(Rect rect, GameObject instance)
         {
-            // Draw standard content on top of drawn background
-            bool isPrefab = PrefabUtility.GetNearestPrefabInstanceRoot (instance) == instance;
+            // Get prefab info
 
-            GUIContent content = GetStandardContent (rect, instance, isPrefab);
-            GUIStyle style = new GUIStyle (Style.ComponentIconStyle);
+            bool isPrefab = PrefabUtility.IsPartOfAnyPrefab(instance);
+            
+            GameObject prefabRoot = PrefabUtility.GetNearestPrefabInstanceRoot(instance);
+            bool isPrefabParent = prefabRoot == instance;
 
+            // Get the content needed for the icon
+
+            GUIContent content = GetStandardContent (rect, instance, isPrefab && isPrefabParent);
+
+            // Handle colours
+
+            Color textColour = EditorStyles.label.normal.textColor;
             if (isPrefab)
             {
-                DrawPrefabArrow (rect);
-
-                style.normal.textColor = (EditorGUIUtility.isProSkin)
-                    ? new Color (0.48f, 0.67f, 0.95f, 1f)
-                    : new Color (0.1f, 0.3f, 0.7f, 1f);
+                textColour = (EditorGUIUtility.isProSkin) ? DarkModeText : WhiteModeText;
             }
 
-            if (Selection.Contains (instance))
+            if (Selection.Contains(instance))
             {
-                style.normal.textColor = Color.white;
+                textColour = Color.white;
             }
 
-            DrawStandardLabel (rect, content, instance.name, style);
+            TextStyle.normal.textColor = textColour;
+
+            // Draw prefab context icon
+
+            if (isPrefabParent)
+            {
+                DrawPrefabArrow(rect);
+            }
+
+            // Draw label
+
+            DrawStandardLabel (rect, content, instance.name, TextStyle);
+
+            // Add the small prefab indicator if required
+
+            if (!isPrefab && PrefabUtility.IsAddedGameObjectOverride(instance))
+            {
+                EditorGUI.LabelField(rect, EditorGUIUtility.IconContent("PrefabOverlayAdded Icon"));
+            }
         }
 
         private static void DrawStandardLabel(Rect rect, GUIContent icon, string label, GUIStyle style)
@@ -89,18 +115,15 @@ namespace HierarchyDecorator
             }
         }
 
-        public static Color GetTwoToneColour(int rowIndex)
-        {
-            bool isEvenRow = rowIndex % 2 != 0;
+        // Version GUI Helpers
 
-            if (EditorGUIUtility.isProSkin)
-            {
-                return isEvenRow ? Constants.DarkModeEvenColor : Constants.DarkModeOddColor;
-            }
-            else
-            {
-                return isEvenRow ? Constants.LightModeEvenColor : Constants.LightModeOddColor;
-            }
+        public static void Space(float width = 9f)
+        {
+#if UNITY_2019_1_OR_NEWER
+            EditorGUILayout.Space (width);
+#else
+            GUILayout.Space (width);
+#endif
         }
     }
 }

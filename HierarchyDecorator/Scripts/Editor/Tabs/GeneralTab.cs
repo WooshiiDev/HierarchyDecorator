@@ -1,37 +1,35 @@
-﻿using System.Collections.Generic;
 using UnityEditor;
+using UnityEngine;
 
 namespace HierarchyDecorator
 {
+    [RegisterTab(0)]
     public class GeneralTab : SettingsTab
     {
-        private readonly SettingGroup[] groups = new SettingGroup[]
+        public GeneralTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, "globalData", "General", "d_CustomTool")
         {
-            new SettingGroup("Features", new string[] {"showActiveToggles", "showComponentIcons", "twoToneBackground"}),
-            new SettingGroup("Layers", new string[] {"showLayers", "editableLayers", "applyChildLayers"}),
-        };
+            // --- General Features
 
-        public GeneralTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, serializedSettings.FindProperty ("globalData"), "General", "d_CustomTool")
-        {
+            CreateDrawableGroup("Toggles")
+                .RegisterSerializedProperty(serializedTab, "showActiveToggles", "activeSwiping", "swipeSameState", "swipeSelectionOnly", "depthMode"); 
 
-        }
+            // --- Layers
 
-        /// <summary>
-        /// The main content area for the settings
-        /// </summary>
-        protected override void OnContentGUI()
-        {
-            EditorGUI.BeginChangeCheck ();
+            CreateDrawableGroup ("Layers")
+                .RegisterSerializedProperty (serializedTab, "showLayers", "editableLayers", "applyChildLayers");
 
-            groups[0].DisplaySettings (serializedTab);
-            groups[1].DisplaySettings (serializedTab);
+            // --- Breadcrumbs
 
-            EditorGUILayout.Space ();
+            SerializedProperty crumbA = serializedTab.FindPropertyRelative("instanceBreadcrumbs");
+            SerializedProperty crumbB = serializedTab.FindPropertyRelative("fullDepthBreadcrumbs");
 
-            if (EditorGUI.EndChangeCheck())
-            {
-                serializedSettings.ApplyModifiedProperties ();
-            }
+            SerializedProperty[] instanceCrumbs = SerializedPropertyUtility.GetChildProperties(crumbA, "show", "color", "style", "displayHorizontal");
+            SerializedProperty[] depthCrumbs = SerializedPropertyUtility.GetChildProperties(crumbB, "show", "color", "style", "displayHorizontal");
+
+            CreateDrawableGroup("Breadcrumbs")
+                .RegisterSerializedProperty(serializedTab, "showBreadcrumbs")
+                .RegisterDrawer(new SerializedGroupDrawer("Instance", instanceCrumbs))
+                .RegisterDrawer(new SerializedGroupDrawer("Hierarchy", depthCrumbs));
         }
     }
 }

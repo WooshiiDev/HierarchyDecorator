@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+using System.Runtime.CompilerServices;
+using UnityEditor;
 using UnityEngine;
 
 namespace HierarchyDecorator
@@ -31,7 +32,7 @@ namespace HierarchyDecorator
     
         public readonly static Color HoverColour = new Color (150f / 255f, 150f / 255f, 150f / 255f, 1);
 
-        public readonly static Color InactiveColour = new Color (0.20f, 0.20f, 0.20f, 0.3f);
+        public readonly static Color InactiveColour = new Color (0.20f, 0.20f, 0.20f, 0.35f);
 
         public readonly static Color InactivePrefabColour = new Color (0.48f, 0.67f, 0.95f, 0.6f);
 
@@ -47,6 +48,8 @@ namespace HierarchyDecorator
         public readonly static LayerMask AllLayers = ~0;
 
         //====== Editor Settings ======
+
+        public readonly static CategoryFilter DefaultFilter = new CategoryFilter("Other", string.Empty, FilterType.NONE);
 
         public readonly static CategoryFilter[] ComponentFilters =
         {
@@ -90,36 +93,109 @@ namespace HierarchyDecorator
         internal readonly static Texture2D Banner = Resources.Load<Texture2D> ("HierarchyDecoratorLogo");
     }
 
+    //TODO: [Wooshii] Add comment descriptions for styles.
     internal static class Style
     {
-        public static readonly GUIStyle FoldoutHeader;
-        public static readonly GUIStyle TabBackground;
+        private const string TOGGLE_MIXED = "OL ToggleMixed";
+
+        public static readonly GUIStyle Label;
+        public static readonly GUIStyle BoldLabel;
+        public static readonly GUIStyle Foldout;
+
         public static readonly GUIStyle CenteredBoldLabel;
+        public static readonly GUIStyle CenteredLabel;
+        
         public static readonly GUIStyle SmallDropdown;
         public static readonly GUIStyle ComponentIconStyle;
-        public static readonly GUIStyle Title;
-        public static readonly GUIStyle InnerWindow;
 
-        // Foldouts
+        public static readonly GUIStyle Title;
+        public static readonly GUIStyle InspectorPadding;
+        public static readonly GUIStyle NoPadding;
+
+        // --- Setting Tabs
+
+        public static readonly GUIStyle TabBackground;
+        public static readonly GUIStyle BoxHeader;
+
+        // --- Foldouts
+
         public static readonly GUIStyle LargeButtonStyle;
         public static readonly GUIStyle LargeButtonSmallTextStyle;
 
-        // Hierarchy Styles
+        // --- Hierarchy Styles
 
         public static readonly GUIStyle Toggle;
         public static readonly GUIStyle ToggleMixed;
 
-        private const string TOGGLE_MIXED = "OL ToggleMixed";
+        // --- Fields
+
+        public static readonly GUIStyle ToolbarNoSpace;
+        public static readonly GUIStyle ToolbarButtonLeft;
+        public static readonly GUIStyle ToolbarButtonResizable;
+
+        // --- Widgets
+
+        public static readonly GUIStyle ToolbarTextField;
 
         static Style()
         {
-            FoldoutHeader = new GUIStyle (EditorStyles.foldout)
+            // Labels 
+
+            Label = new GUIStyle(EditorStyles.label)
+            {
+                alignment = TextAnchor.UpperLeft
+            };
+
+            BoldLabel = new GUIStyle(Label)
+            {
+                fontStyle = FontStyle.Bold
+            };
+
+            Foldout = new GUIStyle(EditorStyles.foldout)
+            {
+                alignment = TextAnchor.UpperLeft,
+            };
+
+            ToolbarNoSpace = new GUIStyle(EditorStyles.toolbar)
+            {
+                padding = new RectOffset(0, 0, 0, 0),
+                margin = new RectOffset(0, 0, 0, 0),
+
+                fixedHeight = 0,
+                fixedWidth = 0,
+            };
+
+            ToolbarButtonLeft = new GUIStyle("ToolbarButtonLeft")
+            {
+                alignment = TextAnchor.MiddleLeft,
+            };
+
+            ToolbarButtonResizable = new GUIStyle(ToolbarButtonLeft)
+            {
+                fixedWidth = 0,
+                fixedHeight = 0,
+                alignment = TextAnchor.MiddleCenter
+            };
+
+            BoxHeader = new GUIStyle(GUI.skin.box)
             {
 #if UNITY_2019_1_OR_NEWER
                 stretchHeight = true,
 #endif
+                stretchWidth = true,
+
                 fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.MiddleLeft,
+                alignment = TextAnchor.MiddleCenter,
+
+                fontSize = 12,
+
+                normal =
+                {
+                    textColor = EditorStyles.label.normal.textColor,
+                },
+
+                margin = new RectOffset(0,0,0,0),
+                padding = new RectOffset(0,0,0,0)
             };
 
             TabBackground = new GUIStyle (EditorStyles.helpBox)
@@ -128,15 +204,22 @@ namespace HierarchyDecorator
                 fixedHeight = 0,
 
                 margin = new RectOffset (0, 0, 0, 0),
+                padding = new RectOffset(8, 8, 8, 8),
 
                 alignment = TextAnchor.MiddleLeft
+            };
+
+            CenteredLabel = new GUIStyle(EditorStyles.boldLabel)
+            {
+                fixedHeight = 0,
+                alignment = TextAnchor.MiddleCenter
             };
 
             CenteredBoldLabel = new GUIStyle (EditorStyles.centeredGreyMiniLabel)
             {
                 fontSize = 11,
                 fixedHeight = 0,
-                fontStyle = FontStyle.Bold
+                fontStyle = FontStyle.Bold,
             };
 
             SmallDropdown = new GUIStyle (EditorStyles.centeredGreyMiniLabel)
@@ -152,7 +235,12 @@ namespace HierarchyDecorator
             ComponentIconStyle = new GUIStyle (EditorStyles.label)
             {
                 padding = new RectOffset (0, 0, 0, 0),
-                margin = new RectOffset (0, 0, 0, 0)
+                margin = new RectOffset (0, 0, 0, 0),
+
+                fixedHeight = 16,
+                fixedWidth = 16,
+
+                imagePosition = ImagePosition.ImageOnly
             };
 
             Title = new GUIStyle (EditorStyles.boldLabel)
@@ -161,40 +249,79 @@ namespace HierarchyDecorator
                 fixedHeight = 21,
             };
 
-            InnerWindow = new GUIStyle (GUI.skin.window)
+            InspectorPadding = new GUIStyle (EditorStyles.inspectorFullWidthMargins)
             {
-                padding = new RectOffset (2, 0, 0, 0),
-                margin = new RectOffset (0, 0, 0, 0),
+                padding = new RectOffset (4, 4, 4, 4),
             };
 
-            LargeButtonStyle = new GUIStyle (EditorStyles.miniButton)
+            NoPadding = new GUIStyle(EditorStyles.inspectorFullWidthMargins)
             {
-                fixedHeight = 32f
+
+            };
+
+            LargeButtonStyle = new GUIStyle(EditorStyles.miniButton)
+            {
+                fixedHeight = 32f,
+                fixedWidth = 0,
+
+                clipping = TextClipping.Clip,
+                margin = new RectOffset(1, 1, 1, 1)
             };
 
             LargeButtonSmallTextStyle = new GUIStyle (EditorStyles.miniButton)
             {
                 fixedHeight = 32f,
-                fontSize = 12
+                fontSize = 12,
             };
 
             // Hierarchy Styles
 
-            Toggle = new GUIStyle ("OL Toggle");
+            Toggle = new GUIStyle ("OL Toggle")
+            {
+                normal =
+                {
+                    textColor = EditorStyles.label.normal.textColor,
+                },
+            };
 
 #if UNITY_2019_4_OR_NEWER
             ToggleMixed = new GUIStyle (TOGGLE_MIXED)
             {
+                clipping = TextClipping.Clip,
+
+                normal =
+                {
+                    textColor = EditorStyles.label.normal.textColor,
+                },
+
+                active =
+                {
+                    textColor = EditorStyles.label.normal.textColor,
+                },
+
+                hover =
+                {
+                    textColor = EditorStyles.label.normal.textColor,
+                },
+
                 focused =
                 {
                     background = null,
                     scaledBackgrounds = null,
+
+                    textColor = EditorStyles.label.normal.textColor,
                 },
             };
 #else
             ToggleMixed = new GUIStyle (Toggle);
 #endif
 
+            ToolbarTextField = new GUIStyle("ToolbarSeachTextField")
+            {
+                fixedWidth = 0,
+                margin = new RectOffset(2, 1, 1, 0),
+
+            };
         }
     }
 }
