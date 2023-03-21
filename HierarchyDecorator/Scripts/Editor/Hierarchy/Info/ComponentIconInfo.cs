@@ -83,6 +83,8 @@ namespace HierarchyDecorator
                 }
                 else
                 {
+                    // If no built in component is found, attempt to draw as custom
+
                     if (settings.Components.TryGetCustomComponent(type, out ComponentType customType))
                     {
                         DrawMonobehaviour(rect, component, customType, settings);
@@ -90,12 +92,7 @@ namespace HierarchyDecorator
                     else
                     if (settings.Components.DisplayMonoScripts)
                     {
-                        customType = new ComponentType(type, false);
-
-                        MonoScript script = MonoScript.FromMonoBehaviour(component as MonoBehaviour);
-                        customType.UpdateType(script);
-
-                        settings.Components.RegisterCustomComponent(customType);
+                        settings.Components.RegisterCustomComponent(component);
                     }
                 }
 

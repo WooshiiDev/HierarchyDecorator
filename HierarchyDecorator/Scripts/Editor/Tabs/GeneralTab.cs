@@ -16,7 +16,7 @@ namespace HierarchyDecorator
             // --- Layers
 
             CreateDrawableGroup ("Layers")
-                .RegisterSerializedProperty (serializedTab, "showLayers", "editableLayers", "applyChildLayers");
+                .RegisterSerializedProperty (serializedTab, "showLayers", "clickToSelectLayer", "applyChildLayers");
 
             // --- Breadcrumbs
 
