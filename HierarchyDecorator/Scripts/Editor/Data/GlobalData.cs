@@ -44,7 +44,7 @@ namespace HierarchyDecorator
         // Layers
 
         public bool showLayers = true;
-        public bool editableLayers = true;
+        public bool clickToSelectLayer = true;
         public bool applyChildLayers = true;
 
         // Components 
