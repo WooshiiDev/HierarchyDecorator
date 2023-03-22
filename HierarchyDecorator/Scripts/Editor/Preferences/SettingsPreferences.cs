@@ -65,6 +65,7 @@ namespace HierarchyDecorator
             if (settingsEditor == null)
             {
                 Editor.CreateCachedEditor (settings, null, ref settingsEditor);
+                return;
             }
 
             settingsEditor.OnInspectorGUI ();
