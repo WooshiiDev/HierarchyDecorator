@@ -38,7 +38,7 @@ Everything is optional, and can be modified to the requirements of the project.
 
 ## Installation
 <p align="center">
-  <a href="https://github.com/WooshiiDev/HierarchyDecorator/releases">Releases</a> • <a href="https://github.com/WooshiiDev/HierarchyDecorator/releases/download/v0.8.5/HierarchyDecorator.v0.8.5.unitypackage">Unity Package</a> • <a href="https://github.com/WooshiiDev/HierarchyDecorator/archive/master.zip">Zip</a> 
+  <a href="https://github.com/WooshiiDev/HierarchyDecorator/releases">Releases</a> • <a href="https://github.com/WooshiiDev/HierarchyDecorator/releases/download/v0.9.0/HierarchyDecorator.v0.9.0.unitypackage">Unity Package</a> • <a href="https://github.com/WooshiiDev/HierarchyDecorator/archive/master.zip">Zip</a> 
 </p>
   
 
