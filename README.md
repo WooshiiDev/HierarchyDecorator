@@ -27,7 +27,7 @@
 
 ## About
 
-Hierarchy Decorator is an extension for Unity 2018.4 and higher that extends Unity's hiearchy and takes it to the next level. With headers, component information and other features, it transforms the window into more than a plain list of objects. This can turn scene structures easier to read, understand and provide information on what is going on.
+Hierarchy Decorator is an extension for Unity 2018.4 and higher that extends Unity's hierarchy and takes it to the next level. With headers, component information and other features, it transforms the window into more than a plain list of objects. This can turn scene structures easier to read, understand and provide information on what is going on.
 
 Everything is optional, and can be modified to the requirements of the project.
 
