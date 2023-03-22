@@ -4,7 +4,7 @@
  Hierarchy Decorator
 </h1>
 
-<h4 align="center"> Unity Editor Plugin giving the Hierarchy a lick of paint.<br><br>
+<h4 align="center"> Unity Editor plugin giving the Hierarchy a lick of paint.<br><br>
  
  Fully Customisable.<br>
  Toggle Everything.</h4>
@@ -27,7 +27,7 @@
 
 ## About
 
-Hierarchy Decorator is an extension for Unity 2018.4 and higher that extends Unity's hiearchy and takes it to the next level. With headers, component information and other features, it transforms the window into more than a plain list of objects. This can turn scene structures easier to read, understand and provide information on what is going on.
+Hierarchy Decorator is an extension for Unity 2018.4 and higher that extends Unity's hierarchy and takes it to the next level. With headers, component information and other features, it transforms the window into more than a plain list of objects. This can turn scene structures easier to read, understand and provide information on what is going on.
 
 Everything is optional, and can be modified to the requirements of the project.
 
@@ -38,7 +38,7 @@ Everything is optional, and can be modified to the requirements of the project.
 
 ## Installation
 <p align="center">
-  <a href="https://github.com/WooshiiDev/HierarchyDecorator/releases">Releases</a> • <a href="https://github.com/WooshiiDev/HierarchyDecorator/releases/download/v0.8.5/HierarchyDecorator.v0.8.5.unitypackage">Unity Package</a> • <a href="https://github.com/WooshiiDev/HierarchyDecorator/archive/master.zip">Zip</a> 
+  <a href="https://github.com/WooshiiDev/HierarchyDecorator/releases">Releases</a> • <a href="https://github.com/WooshiiDev/HierarchyDecorator/releases/download/v0.9.0/HierarchyDecorator.v0.9.0.unitypackage">Unity Package</a> • <a href="https://github.com/WooshiiDev/HierarchyDecorator/archive/master.zip">Zip</a> 
 </p>
   
 
@@ -233,4 +233,4 @@ HierarchyDecorator will be and always has been developed in my free time, and th
 
 Development will be continued with this and will forever stay public and free.
 
-Copyright (c) 2020-2021 Damian Slocombe
+Copyright (c) 2020-2023 Damian Slocombe
