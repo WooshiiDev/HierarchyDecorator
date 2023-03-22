@@ -4,7 +4,7 @@
  Hierarchy Decorator
 </h1>
 
-<h4 align="center"> Unity Editor Plugin giving the Hierarchy a lick of paint.<br><br>
+<h4 align="center"> Unity Editor plugin giving the Hierarchy a lick of paint.<br><br>
  
  Fully Customisable.<br>
  Toggle Everything.</h4>
@@ -233,4 +233,4 @@ HierarchyDecorator will be and always has been developed in my free time, and th
 
 Development will be continued with this and will forever stay public and free.
 
-Copyright (c) 2020-2021 Damian Slocombe
+Copyright (c) 2020-2023 Damian Slocombe
