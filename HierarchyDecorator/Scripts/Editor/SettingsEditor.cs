@@ -29,14 +29,6 @@ namespace HierarchyDecorator
             Repaint();
         }
 
-        private void OnDisable()
-        {
-            if (serializedObject != null)
-            {
-                serializedObject.Dispose ();
-            }
-        }
-
         private void Initialize()
         {
             SetupValues();

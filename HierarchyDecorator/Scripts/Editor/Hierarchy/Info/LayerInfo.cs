@@ -14,7 +14,7 @@ namespace HierarchyDecorator
 
             EditorGUI.LabelField (rect, LayerMask.LayerToName (instance.layer), Style.SmallDropdown);
 
-            if (settings.globalData.editableLayers)
+            if (settings.globalData.clickToSelectLayer)
             {
                 Event e = Event.current;
                 bool hasClicked = rect.Contains (e.mousePosition) && e.type == EventType.MouseDown;

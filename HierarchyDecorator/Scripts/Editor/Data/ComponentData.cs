@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace HierarchyDecorator
@@ -61,7 +62,7 @@ namespace HierarchyDecorator
 
         [SerializeField] private bool enableIcons = true;
 
-        [SerializeField] private bool showMissingScriptWarning;
+        [SerializeField] private bool showMissingScriptWarning = true;
         [SerializeField] private DisplayMode showAll = DisplayMode.Unity | DisplayMode.Custom;
         [SerializeField] private bool stackMonoBehaviours;
 
@@ -405,7 +406,26 @@ namespace HierarchyDecorator
         /// <summary>
         /// Register a custom component to <see cref="AllCustomComponents"/>.
         /// </summary>
-        /// <param name="component"The component to register.></param>
+        /// <param name="component">The component to register.</param>
+        public void RegisterCustomComponent(Component component)
+        {
+            if (component == null)
+            {
+                Debug.LogError("Cannot register null component.");
+                return;
+            }
+
+            MonoScript script = MonoScript.FromMonoBehaviour(component as MonoBehaviour);
+            ComponentType type = new ComponentType(component.GetType(), false);
+            type.UpdateType(script);
+            
+            RegisterCustomComponent(type);
+        }
+
+        /// <summary>
+        /// Register a custom component to <see cref="AllCustomComponents"/>.
+        /// </summary>
+        /// <param name="component">The component to register.</param>
         public void RegisterCustomComponent(ComponentType component)
         {
             // Cannot register null components
@@ -543,7 +563,7 @@ namespace HierarchyDecorator
         /// <returns>Returns the category for the type provided.</returns>
         private string GetTypeCategory(Type type)
         {
-            // Cannot categorise null type.
+            // Cannot categorize null type.
             
             if (type == null)
             {
@@ -560,7 +580,7 @@ namespace HierarchyDecorator
                 }
             }
 
-            // Return the default filter, so the type can still be categorised
+            // Return the default filter, so the type can still be categorized
            
             return DefaultFilter.Name;
         }
