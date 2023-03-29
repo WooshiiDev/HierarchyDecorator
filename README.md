@@ -250,6 +250,7 @@ Reach out to me or see my other work through:
 HierarchyDecorator will be and always has been developed in my free time, and there are many more features I'd like to include. If you would to support me, you can do so below:
 
 [![PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://paypal.me/Wooshii?locale.x=en_GB)
+<p href="https://ko-fi.com/L3L026UOE"><img src="https://ko-fi.com/img/githubbutton_sm.svg">
 
 Development will be continued with this and will forever stay public and free.
 
