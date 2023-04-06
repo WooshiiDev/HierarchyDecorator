@@ -57,7 +57,6 @@ You can also install this via git by adding the following to your **manifest.jso
 ```
 "com.wooshii.hierarchydecorator" : "https://github.com/WooshiiDev/HierarchyDecorator.git"
 ```
-Net 4.0 is required to use this. This can be turned on in the **Player Settings**.
 
 ## Features
 
