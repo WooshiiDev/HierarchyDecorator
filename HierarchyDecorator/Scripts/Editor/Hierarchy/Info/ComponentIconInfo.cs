@@ -162,8 +162,6 @@ namespace HierarchyDecorator
 
             componentTypes.Add(type);
             DrawComponentIcon(rect, content, type);
-
-            return;
         }
 
         private void DrawComponentIcon(Rect rect, GUIContent content, Type type)
