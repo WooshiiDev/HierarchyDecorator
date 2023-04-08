@@ -79,7 +79,11 @@ namespace HierarchyDecorator
 
                 // Draw unity component, otherwise check if it's custom
 
-                if (!DrawComponent(rect, type, instance, settings))
+                if (settings.Components.TryGetComponent(type, out ComponentType componentType))
+                {
+                    DrawComponent(rect, componentType, settings);
+                }
+                else
                 {
                     // If no built in component is found, attempt to draw as custom
 
@@ -140,21 +144,14 @@ namespace HierarchyDecorator
             DrawComponentIcon (rect, content, type);
         }
 
-        private bool DrawComponent(Rect rect, Type type, GameObject instance, Settings settings)
+        private void DrawComponent(Rect rect, ComponentType component, Settings settings)
         {
-            // Get the corresponding component type
-
-            ComponentType component = null;
-            if (!settings.Components.TryGetComponent(type, out component))
+            if (!settings.Components.DisplayBuiltIn)
             {
-                return false;
+                return;
             }
 
-            if (!settings.Components.DisplayBuiltIn && !component.Shown)
-            {
-                return false;
-            }
-
+            Type type = component.Type;
             GUIContent content = component.Content;
 
             if (settings.Components.StackScripts && type.IsSubclassOf(typeof(MonoBehaviour)))
@@ -163,15 +160,10 @@ namespace HierarchyDecorator
                 content = MonoContent;
             }
 
-            if (content.image == null)
-            {
-                return false;
-            }
-
             componentTypes.Add(type);
             DrawComponentIcon(rect, content, type);
 
-            return true;
+            return;
         }
 
         private void DrawComponentIcon(Rect rect, GUIContent content, Type type)
