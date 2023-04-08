@@ -185,10 +185,11 @@ namespace HierarchyDecorator
         {
             for (int i = 0; i < Count; i++)
             {
-                component = components[i];
+                ComponentType componentType = components[i];
 
-                if (component.Type == type && component.IsValid())
+                if (componentType.Type == type && componentType.IsValid())
                 {
+                    component = componentType;
                     return true;
                 }
             }
