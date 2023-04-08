@@ -22,7 +22,6 @@ namespace HierarchyDecorator
         private GUIContent warningGUI = EditorGUIUtility.IconContent ("console.warnicon");
 #endif
 
-
         protected override int GetGridCount()
         {
             if (!HasInitialized)
@@ -49,59 +48,49 @@ namespace HierarchyDecorator
             {
                 Component component = components[i];
 
-                if (component == null)
+                if (component == null && settings.Components.ShowMissingScriptWarning)
                 {
-                    if (settings.Components.ShowMissingScriptWarning)
-                    {
-                        DrawMissingComponent (rect);
-                        return;
-                    }
-
-                    continue;
+                    DrawMissingComponent(rect);
+                    return;
                 }
 
-                Type type = component.GetType ();
+                Type type = component.GetType();
                 
-                bool isInvalid = componentTypes.Contains(type);
-
-                if (!isInvalid)
-                {
-                    if (hasMonoBehaviour && settings.Components.StackScripts)
-                    {
-                        isInvalid = type.IsSubclassOf(typeof(MonoBehaviour));
-                    }
-                }
-
-                if (isInvalid || settings.Components.IsExcluded(type))
+                if (!IsValid(type) || settings.Components.IsExcluded(type))
                 {
                     continue;
                 }
 
-                // Draw unity component, otherwise check if it's custom
-
-                if (settings.Components.TryGetComponent(type, out ComponentType componentType))
+                // Draw built in
+                if (settings.Components.TryGetComponent(type, out ComponentType componentType)) 
                 {
                     DrawComponent(rect, componentType, settings);
                 }
-                else
+                else // Draw custom
+                if (settings.Components.TryGetCustomComponent(type, out ComponentType custom)) 
                 {
-                    // If no built in component is found, attempt to draw as custom
-
-                    if (settings.Components.TryGetCustomComponent(type, out ComponentType customType))
-                    {
-                        DrawMonobehaviour(rect, component, customType, settings);
-                    }
-                    else
-                    if (settings.Components.DisplayMonoScripts)
-                    {
-                        settings.Components.RegisterCustomComponent(component);
-                    }
+                    DrawMonobehaviour(rect, component, custom, settings);
+                }
+                else // Register if it does not exist
+                if (settings.Components.DisplayMonoScripts) 
+                {
+                    settings.Components.RegisterCustomComponent(component);
                 }
 
                 if (!hasMonoBehaviour)
                 {
                     hasMonoBehaviour = type.IsSubclassOf(typeof(MonoBehaviour));
                 }
+            }
+
+            bool IsValid(Type type)
+            {
+                if (!hasMonoBehaviour || !settings.Components.StackScripts)
+                {
+                    return true;
+                }
+
+                return type.IsSubclassOf(MonoType);
             }
         }
 
@@ -174,8 +163,6 @@ namespace HierarchyDecorator
             }
 
             content.tooltip = type.Name;
-
-            //GUI.DrawTexture (rect, content.image, ScaleMode.ScaleToFit);
             GUI.Label (rect, content, Style.ComponentIconStyle);
         }
 
