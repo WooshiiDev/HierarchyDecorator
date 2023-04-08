@@ -475,6 +475,11 @@ namespace HierarchyDecorator
 
         public bool IsExcluded(Type type)
         {
+            if (excludedComponents.Count == 0)
+            {
+                return false;
+            }
+
             return excludedComponents.TryGetComponent(type, out ComponentType component) && component.Shown;
         }
 
