@@ -8,6 +8,8 @@ namespace HierarchyDecorator
 {
     public class ComponentIconInfo : HierarchyInfo
     {
+        private Dictionary<Type, ComponentType> foundTypes = new Dictionary<Type, ComponentType>();
+
         private readonly Type MonoType = typeof(MonoBehaviour);
         private readonly GUIContent MonoContent = EditorGUIUtility.IconContent("cs Script Icon");
 
@@ -62,17 +64,32 @@ namespace HierarchyDecorator
                 }
 
                 // Draw built in
-                if (settings.Components.TryGetComponent(type, out ComponentType componentType)) 
+                ComponentType componentType;
+                bool hasCached = foundTypes.TryGetValue(type, out componentType);
+
+                if (!hasCached)
                 {
-                    DrawComponent(rect, componentType, settings);
+                    GetComponent(type, out componentType);
                 }
-                else // Draw custom
-                if (settings.Components.TryGetCustomComponent(type, out ComponentType custom)) 
+
+                if (componentType != null)
                 {
-                    DrawMonobehaviour(rect, component, custom, settings);
+                    if (componentType.IsBuiltIn)
+                    {
+                        DrawComponent(rect, componentType, settings);
+                    }
+                    else
+                    {
+                        DrawMonobehaviour(rect, component, componentType, settings);
+                    }
+
+                    if (!hasCached)
+                    {
+                        foundTypes.Add(type, componentType);
+                    }
                 }
-                else // Register if it does not exist
-                if (settings.Components.DisplayMonoScripts) 
+                else
+                if (settings.Components.DisplayMonoScripts)
                 {
                     settings.Components.RegisterCustomComponent(component);
                 }
@@ -91,6 +108,16 @@ namespace HierarchyDecorator
                 }
 
                 return type.IsSubclassOf(MonoType);
+            }
+
+            bool GetComponent(Type type, out ComponentType componentType)
+            {
+                if (settings.Components.TryGetComponent(type, out componentType))
+                {
+                    return true;
+                }
+
+                return settings.Components.TryGetCustomComponent(type, out componentType);
             }
         }
 
