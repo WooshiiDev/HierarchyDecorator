@@ -77,11 +77,9 @@ namespace HierarchyDecorator
                     continue;
                 }
 
-                if (settings.Components.TryGetComponent(type, out _))
-                {
-                    DrawComponent(rect, type, instance, settings);
-                }
-                else
+                // Draw unity component, otherwise check if it's custom
+
+                if (!DrawComponent(rect, type, instance, settings))
                 {
                     // If no built in component is found, attempt to draw as custom
 
@@ -142,19 +140,19 @@ namespace HierarchyDecorator
             DrawComponentIcon (rect, content, type);
         }
 
-        private void DrawComponent(Rect rect, Type type, GameObject instance, Settings settings)
+        private bool DrawComponent(Rect rect, Type type, GameObject instance, Settings settings)
         {
             // Get the corresponding component type
 
             ComponentType component = null;
             if (!settings.Components.TryGetComponent(type, out component))
             {
-                return;
+                return false;
             }
 
             if (!settings.Components.DisplayBuiltIn && !component.Shown)
             {
-                return;
+                return false;
             }
 
             GUIContent content = component.Content;
@@ -167,11 +165,13 @@ namespace HierarchyDecorator
 
             if (content.image == null)
             {
-                return;
+                return false;
             }
 
             componentTypes.Add(type);
             DrawComponentIcon(rect, content, type);
+
+            return true;
         }
 
         private void DrawComponentIcon(Rect rect, GUIContent content, Type type)
