@@ -5,6 +5,8 @@ namespace HierarchyDecorator
 {
     public class StyleDrawer : HierarchyDrawer
     {
+        private static readonly HideFlags IgnoreFoldoutFlags = HideFlags.HideInHierarchy | HideFlags.HideInInspector;
+
         protected override void DrawInternal(Rect rect, GameObject instance, Settings settings)
         {
             bool hasStyle = settings.styleData.twoToneBackground;
@@ -33,10 +35,31 @@ namespace HierarchyDecorator
             var target = HierarchyCache.Target;
             var current = target.Current;
 
-            if (current.HasChildren && hasStyle)
+            if (!current.HasChildren || !hasStyle)
             {
-                DrawFoldout(rect, current.Foldout);
+                return;
             }
+
+            // - Need to validate children to check if some can be visible
+
+            bool canShow = false;
+            for (int i = 0; i < current.Transform.childCount; i++)
+            {
+                Transform child = current.Transform.GetChild(i);
+
+                if (!child.hideFlags.HasFlag(IgnoreFoldoutFlags))
+                {
+                    canShow = true;
+                    break;
+                }
+            }
+
+            if (!canShow)
+            {
+                return;
+            }
+
+            DrawFoldout(rect, current.Foldout);
         }
 
         protected override bool DrawerIsEnabled(Settings _settings, GameObject instance)
