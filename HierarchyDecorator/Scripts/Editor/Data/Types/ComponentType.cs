@@ -23,9 +23,10 @@ namespace HierarchyDecorator
 
         [SerializeField] private bool isBuiltIn;
         [SerializeField] private MonoScript script;
+        [SerializeField] private int hash = -1;
 
         // Properties
-        
+
         /// <summary>
         /// The full name of the component
         /// </summary>
@@ -229,6 +230,11 @@ namespace HierarchyDecorator
             return name.CompareTo (other.name);
         }
 
+        public int CompareTo(Type type)
+        {
+            return name.CompareTo(type.Name);
+        }
+
         public override string ToString()
         {
             return $"Component Type: {name}, {Type}";
@@ -248,12 +254,17 @@ namespace HierarchyDecorator
 
         public override int GetHashCode()
         {
-            int hashCode = 1280150957;
-            hashCode *= -1521134295 + name.GetHashCode();
-            hashCode *= -1521134295 + shown.GetHashCode();
-            hashCode *= -1521134295 + isBuiltIn.GetHashCode();
-            hashCode *= -1521134295 + script.GetHashCode();
-            return hashCode;
+            if (hash == -1)
+            {
+                hash = 1280150957;
+                hash *= -1521134295 + name.GetHashCode();
+                hash *= -1521134295 + shown.GetHashCode();
+                hash *= -1521134295 + isBuiltIn.GetHashCode();
+                hash *= -1521134295 + script.GetHashCode();
+            }
+
+             
+            return hash;
         }
     }
 }
