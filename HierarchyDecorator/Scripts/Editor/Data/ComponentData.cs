@@ -337,7 +337,7 @@ namespace HierarchyDecorator
                         continue;
                     }
 
-                    int index = Array.FindIndex(allTypes, type => type.Name == component.Name);
+                    int index = Array.FindIndex(allTypes, type => type.AssemblyQualifiedName == component.Name);
                     if (index == -1)
                     {
                         group.Remove(component);
