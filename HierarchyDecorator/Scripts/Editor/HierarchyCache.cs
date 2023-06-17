@@ -19,7 +19,7 @@ namespace HierarchyDecorator
 
             public bool Foldout { get; set; }
 
-            public bool HasChildren => Transform.childCount > 0;
+            public bool HasChildren => Transform != null && Transform.childCount > 0;
 
             public Transform Parent
             {
