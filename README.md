@@ -57,7 +57,6 @@ You can also install this via git by adding the following to your **manifest.jso
 ```
 "com.wooshii.hierarchydecorator" : "https://github.com/WooshiiDev/HierarchyDecorator.git"
 ```
-Net 4.0 is required to use this. This can be turned on in the **Player Settings**.
 
 ## Features
 
@@ -96,14 +95,16 @@ There is a scriptable object that is required for hierarchy decorator to run. If
 
 Setting design may change over time with development to support more features, or keep things looking consistent & clean.
 
+
 ### General
   
-**Toggles**
+<details>
+ <summary><b>Toggles</b></summary>
   
-<p align="center">
-  <img width="915" alt="chrome_aClIcjH3wq" src="https://user-images.githubusercontent.com/31889435/226558578-78287342-711c-4b4b-acf3-18b316f3216b.gif">
-  <img width="915" alt="chrome_aClIcjH3wq" src="https://user-images.githubusercontent.com/31889435/226493660-ba63cb16-a046-48f3-8d1a-c1ea0007de4a.png">
-</p>
+ <p align="center">
+   <img width="915" alt="chrome_aClIcjH3wq" src="https://user-images.githubusercontent.com/31889435/226558578-78287342-711c-4b4b-acf3-18b316f3216b.gif">
+   <img width="915" alt="chrome_aClIcjH3wq" src="https://user-images.githubusercontent.com/31889435/226493660-ba63cb16-a046-48f3-8d1a-c1ea0007de4a.png">
+ </p>
 
   Toggles will simply display the state of the instance, can be clicked to toggle the instance active state.
 
@@ -114,7 +115,10 @@ Setting design may change over time with development to support more features, o
   Swipe Selection Only    If a selection exists, only toggle the selected instances.
   Depth Mode              The accepted criteria for selecting instances when swiping.
   ```
-**Layers**
+</details>
+
+<details>
+ <summary><b>Layers</b></summary>
 
 <p align="center">
   <img width="913" alt="chrome_szO7gPHVZ4" src="https://user-images.githubusercontent.com/31889435/226493749-b30ebd4a-bf89-4841-bde8-b78159ec6068.png">
@@ -127,9 +131,11 @@ Setting design may change over time with development to support more features, o
   Click To Select Layer   Clicking the layer label will display a layer dropdown to update it.
   Apply Child Layers      Change the child gameobjects when updating the layer above.
   ```
-  
-**Breadcrumbs**
-  
+</details>
+
+<details>
+ <summary><b>Breadcrumbs</b></summary>
+
 <p align="center">
    <img width="922" alt="chrome_DtNbO5Mimi" src="https://user-images.githubusercontent.com/31889435/226493794-e45fbb59-ec38-430a-a3ba-2cd137251f46.png">
 </p>
@@ -145,11 +151,13 @@ Setting design may change over time with development to support more features, o
   Style                   The line style - Solid, Dash, Dotted.
   Display Horizontal      Draw a horizontal line, from left to right, towards the instance.
   ```
-  
-  ### Visual
+</details>
+ 
+### Visual
 
-**Background**
-  
+<details>
+ <summary><b>Background</b></summary>
+ 
 <p align="center">
  <img width="612" alt="chrome_Y3lak6Q0Dm" src="https://user-images.githubusercontent.com/31889435/226495114-e578f1c4-60d4-473e-8b42-b2c09c0fdeb1.png">
 </p>
@@ -161,17 +169,20 @@ Setting design may change over time with development to support more features, o
   Color One               The first colour for the theme.
   Color Two               The second colour for the theme.
   ```
-  
-  **Styles**
+</details>
+
+<details>
+ <summary><b>Styles</b></summary>
    
   The Style tab controls the design of the headers and seperators for the hierarchy. Colours are individual for light and dark mode providing accessibility. The **prefix** is the string to specify at the start of an instance name to apply the style.
   
   Layers and icons can be specifically disables on styles instances to remove clutter and information that is not required.
 
-<p align="center">
- <img src="https://i.imgur.com/6zfMz61.png" alt="Style Settings">
-</p>
- 
+ <p align="center">
+  <img src="https://i.imgur.com/6zfMz61.png" alt="Style Settings">
+ </p>
+</details>
+
   ### Icons
 
  Icons can be displayed that represent components that exist on gameobjects. This tab will provide the flexibility to specify what components can and cannot be displayed, and also allow you to automatically show all. 
@@ -180,12 +191,18 @@ Setting design may change over time with development to support more features, o
  <img width="132" height="327" alt="Unity_emGzaT8YHM" src="https://user-images.githubusercontent.com/31889435/226554415-8bd0be96-6eb2-4217-8d56-e39d23dd7ffd.png"><img width="627" alt="Unity_iWzNrNwYKa" src="https://user-images.githubusercontent.com/31889435/226494920-6b78be6e-686d-42ac-a11f-629f270cb5bc.png">
 </p>
 
-**Settings**
-
+<details>
+ <summary><b>Settings</b></summary>
+ 
  - Enable Icons: Will toggle the icons on.
  - Stack Mono Behaviours - If there are any MonoBehaviour derived components, show only one script icon on the instance.
  - Show Missing Script Warning - Show an indicator if there's an invalid script or "missing" script that cannot find the source file.
 
+</details>
+
+<details>
+ <summary><b>Icon Panel</b></summary>
+ 
 **Show All**
 
 Below show all are two labels - Unity & Custom. Both of these can be enabled to automatically show the respective components automatically on all instances.
@@ -207,6 +224,8 @@ Scripts can also be dragged in from the project view and will be added to the gr
  <img width="40%" alt="Unity_emGzaT8YHM" src="https://user-images.githubusercontent.com/31889435/226555645-85954060-c25e-4ae8-bf5b-c7313d1188ee.gif">
 <img width="40%" alt="Unity_emGzaT8YHM" src="https://user-images.githubusercontent.com/31889435/226556916-73888fe0-b8fa-4365-88ab-18d786aa7c37.gif">
 </p>
+
+</details>
 
 ## Contributing
 When contributing to this repository, please first discuss the change you wish to make via issue or any other method with the owners of this repository before making a change.
@@ -230,6 +249,7 @@ Reach out to me or see my other work through:
 HierarchyDecorator will be and always has been developed in my free time, and there are many more features I'd like to include. If you would to support me, you can do so below:
 
 [![PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://paypal.me/Wooshii?locale.x=en_GB)
+<p href="https://ko-fi.com/L3L026UOE"><img src="https://ko-fi.com/img/githubbutton_sm.svg">
 
 Development will be continued with this and will forever stay public and free.
 

@@ -12,6 +12,7 @@ namespace HierarchyDecorator
 
         // --- Component information
 
+        [SerializeField] protected string displayName;
         [SerializeField] protected string name;
         [SerializeField] protected GUIContent content;
 
@@ -42,6 +43,11 @@ namespace HierarchyDecorator
                 name = value;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string DiplayName => displayName;
 
         /// <summary>
         /// The type of component.
@@ -111,7 +117,8 @@ namespace HierarchyDecorator
         public ComponentType(Type type, bool isBuiltIn)
         {
             Type = type;
-            name = type.Name;
+            name = type.AssemblyQualifiedName;
+            displayName = type.Name;
 
             this.isBuiltIn = isBuiltIn;
         }
@@ -156,7 +163,9 @@ namespace HierarchyDecorator
             }
 
             Type = type;
-            name = type.Name;
+
+            name = type.AssemblyQualifiedName;
+            displayName = type.Name;
 
             if (updateContent)
             {
@@ -196,7 +205,7 @@ namespace HierarchyDecorator
                 return new GUIContent(GUIContent.none);
             }
 
-            GUIContent content = new GUIContent(name, name);
+            GUIContent content = new GUIContent(displayName, displayName);
             Texture texture;
             if (isBuiltIn)
             {
@@ -237,7 +246,7 @@ namespace HierarchyDecorator
 
         public override string ToString()
         {
-            return $"Component Type: {name}, {Type}";
+            return $"Component Type: {displayName}, {Type}";
         }
 
         public override bool Equals(object obj)
@@ -254,17 +263,13 @@ namespace HierarchyDecorator
 
         public override int GetHashCode()
         {
-            if (hash == -1)
-            {
-                hash = 1280150957;
-                hash *= -1521134295 + name.GetHashCode();
-                hash *= -1521134295 + shown.GetHashCode();
-                hash *= -1521134295 + isBuiltIn.GetHashCode();
-                hash *= -1521134295 + script.GetHashCode();
-            }
-
-             
-            return hash;
+            int hashCode = 1280150957;
+            hashCode *= -1521134295 + name.GetHashCode();
+            hashCode *= -1521134295 + displayName.GetHashCode();
+            hashCode *= -1521134295 + shown.GetHashCode();
+            hashCode *= -1521134295 + isBuiltIn.GetHashCode();
+            hashCode *= -1521134295 + script.GetHashCode();
+            return hashCode;
         }
     }
 }
