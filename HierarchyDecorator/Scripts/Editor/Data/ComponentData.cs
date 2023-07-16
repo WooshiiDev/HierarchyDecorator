@@ -169,11 +169,6 @@ namespace HierarchyDecorator
         /// </summary>
         public void UpdateData(bool forceDirty = false)
         {
-            if (!IsDirty() && !forceDirty)
-            {
-                return;
-            }
-
             if (allTypes.Length == 0)
             {
                 allTypes = ReflectionUtility.GetSubTypesFromAssemblies(typeof(Component),
