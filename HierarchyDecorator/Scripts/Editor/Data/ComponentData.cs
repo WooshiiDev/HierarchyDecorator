@@ -182,6 +182,11 @@ namespace HierarchyDecorator
                     .ToArray();
             }
 
+            if (!IsDirty() && !forceDirty)
+            {
+                return;
+            }
+
             // Update dirty data
 
             unityCount = allTypes.Length;
