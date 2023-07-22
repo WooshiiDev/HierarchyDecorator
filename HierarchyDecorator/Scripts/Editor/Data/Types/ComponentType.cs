@@ -251,15 +251,19 @@ namespace HierarchyDecorator
 
         public override bool Equals(object obj)
         {
-            ComponentType other = obj as ComponentType;
-
-            if (other == null)
+            if (obj is ComponentType component)
             {
-                return false;
+                return Type == component.Type;
             }
 
-            return name.Equals(other.name);
+            if (obj is Type type)
+            {
+                return Type == type;
+            }
+
+            return false;
         }
+
 
         public override int GetHashCode()
         {
