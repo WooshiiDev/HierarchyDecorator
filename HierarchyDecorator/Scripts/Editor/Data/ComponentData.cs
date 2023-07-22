@@ -338,7 +338,7 @@ namespace HierarchyDecorator
 
             if (allCustomComponents.Contains(component))
             {
-                Debug.LogError($"Attempted to register a component that already exists.");
+                Debug.LogError($"Attempted to register a component that already exists. ({component})");
                 return;
             }
 
