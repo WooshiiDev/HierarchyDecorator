@@ -241,7 +241,7 @@ namespace HierarchyDecorator
 
         public int CompareTo(Type type)
         {
-            return name.CompareTo(type.Name);
+            return name.CompareTo(type.AssemblyQualifiedName);
         }
 
         public override string ToString()
