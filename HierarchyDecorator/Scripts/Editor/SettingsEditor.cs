@@ -10,6 +10,8 @@ namespace HierarchyDecorator
     [CustomEditor (typeof (Settings))]
     internal class SettingsEditor : Editor
     {
+        private static Type[] s_TabTypes;
+
         private Settings settings;
 
         // Grid selection
@@ -110,7 +112,12 @@ namespace HierarchyDecorator
         {
             // Get all types that have the RegisterTab attribute
 
-            foreach (Type type in GetTabs())
+            if (s_TabTypes == null)
+            {
+                s_TabTypes = GetTabs();
+            }
+
+            foreach (Type type in s_TabTypes)
             {
                 // If we find any type that is not a SettingsTab alert the user
 
