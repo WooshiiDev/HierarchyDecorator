@@ -187,6 +187,7 @@ namespace HierarchyDecorator
             unityCount = allTypes.Length;
             unityVersion = Application.unityVersion;
 
+            excludedComponents.Clear();
             Dictionary<string, ComponentGroup> cachedGroups = new Dictionary<string, ComponentGroup>();
 
             for (int i = 0; i < unityCount; i++)

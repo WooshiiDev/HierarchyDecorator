@@ -149,6 +149,14 @@ namespace HierarchyDecorator
             return Remove(components[index]);
         }
 
+        public void Clear()
+        {
+            components.Clear();
+            lookup.Clear();
+
+            hasCached = false;
+        }
+
         /// <summary>
         /// Get a component element in the group.
         /// </summary>
@@ -299,6 +307,11 @@ namespace HierarchyDecorator
         /// <returns>Returns true if the given component is found in the group otherwise it will return false.</returns>
         public bool Contains(ComponentType component)
         {
+            if (hasCached && lookup.ContainsKey(component.Type))
+            {
+                return true;
+            }
+
             return components.Contains(component);
         }
 
