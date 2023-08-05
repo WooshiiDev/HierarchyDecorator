@@ -282,17 +282,15 @@ namespace HierarchyDecorator
             {
                 return true;
             }
-            else
-            {
-                for (int i = 0; i < Count; i++)
-                {
-                    ComponentType componentType = components[i];
 
-                    if (componentType.Type == type && componentType.IsValid())
-                    {
-                        component = componentType;
-                        return true;
-                    }
+            for (int i = 0; i < Count; i++)
+            {
+                ComponentType componentType = components[i];
+
+                if (componentType.Type == type && componentType.IsValid())
+                {
+                    component = componentType;
+                    return true;
                 }
             }
 
