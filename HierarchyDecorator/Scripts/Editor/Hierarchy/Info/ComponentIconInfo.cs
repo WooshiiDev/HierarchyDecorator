@@ -8,7 +8,7 @@ namespace HierarchyDecorator
 {
     public class ComponentIconInfo : HierarchyInfo
     {
-        private Dictionary<Type, ComponentType> foundTypes = new Dictionary<Type, ComponentType>();
+        private static Dictionary<Type, ComponentType> s_allTypes = new Dictionary<Type, ComponentType>();
 
         private readonly Type MonoType = typeof(MonoBehaviour);
         private readonly GUIContent MonoContent = EditorGUIUtility.IconContent("cs Script Icon");
@@ -46,7 +46,7 @@ namespace HierarchyDecorator
 
         protected override void DrawInfo(Rect rect, GameObject instance, Settings settings)
         {
-            for (int i = components.Length; i-- > 0;)
+            for (int i = 0; i < components.Length; i++)
             {
                 Component component = components[i];
 
@@ -57,57 +57,33 @@ namespace HierarchyDecorator
                 }
 
                 Type type = component.GetType();
-                
-                if (!IsValid(type) || settings.Components.IsExcluded(type))
+                ComponentType componentType;
+
+                bool hasComponent = s_allTypes.TryGetValue(type, out componentType);
+
+                if (!hasComponent && GetComponent(type, out componentType))
                 {
+                    s_allTypes.Add(type, componentType);
+                    hasComponent = true;
+                }
+
+                if (!hasComponent)
+                {
+                    settings.Components.RegisterCustomComponent(component);
+                    GetComponent(type, out componentType);
+                    s_allTypes.Add(type, componentType);
+
                     continue;
                 }
 
-                // Draw built in
-                ComponentType componentType;
-                bool hasCached = foundTypes.TryGetValue(type, out componentType);
-
-                if (!hasCached)
+                if (componentType.IsBuiltIn)
                 {
-                    GetComponent(type, out componentType);
-                }
-
-                if (componentType != null)
-                {
-                    if (componentType.IsBuiltIn)
-                    {
-                        DrawComponent(rect, componentType, settings);
-                    }
-                    else
-                    {
-                        DrawMonobehaviour(rect, component, componentType, settings);
-                    }
-
-                    if (!hasCached)
-                    {
-                        foundTypes.Add(type, componentType);
-                    }
+                    DrawComponent(rect, componentType, settings);
                 }
                 else
-                if (settings.Components.DisplayMonoScripts)
                 {
-                    settings.Components.RegisterCustomComponent(component);
+                    DrawMonobehaviour(rect, type, componentType, settings);
                 }
-
-                if (!hasMonoBehaviour)
-                {
-                    hasMonoBehaviour = type.IsSubclassOf(typeof(MonoBehaviour));
-                }
-            }
-
-            bool IsValid(Type type)
-            {
-                if (!hasMonoBehaviour || !settings.Components.StackScripts)
-                {
-                    return true;
-                }
-
-                return type.IsSubclassOf(MonoType);
             }
 
             bool GetComponent(Type type, out ComponentType componentType)
@@ -130,10 +106,8 @@ namespace HierarchyDecorator
 
         // GUI
 
-        private void DrawMonobehaviour(Rect rect, Component component, ComponentType componentType, Settings settings)
+        private void DrawMonobehaviour(Rect rect, Type type, ComponentType componentType, Settings settings)
         {
-            Type type = component.GetType ();
-
             if (!settings.Components.DisplayMonoScripts)
             {
                 if (componentType.Script == null)
