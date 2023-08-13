@@ -171,8 +171,8 @@ namespace HierarchyDecorator
         {
             if (allTypes.Length == 0)
             {
-                allTypes = ReflectionUtility.GetSubTypesFromAssemblies(typeof(Component),
-                    t => t.Assembly.FullName.StartsWith("Unity") && !t.IsAbstract)
+                allTypes = TypeCache.GetTypesDerivedFrom(typeof(Component))
+                    .Where(t => t.Assembly.FullName.StartsWith("Unity") && !t.IsAbstract)
                     .OrderBy(t => t.Name)
                     .ToArray();
             }
