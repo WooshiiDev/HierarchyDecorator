@@ -252,19 +252,6 @@ namespace HierarchyDecorator
             {
                 customGroups[i].UpdateCache(updateContent);
             }
-
-            // Add missing types to full excluded list
-
-            for (int i = 0; i < allTypes.Length; i++)
-            {
-                Type type = allTypes[i];
-                if (!excludedComponents.TryGetComponent(type, out _))
-                {
-                    ComponentType component = new ComponentType(type, true);
-                    excludedComponents.Add(component);
-                    component.UpdateContent();
-                }
-            }
         }
 
         // --- Custom Components
