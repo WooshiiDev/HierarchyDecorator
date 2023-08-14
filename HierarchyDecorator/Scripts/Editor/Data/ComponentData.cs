@@ -235,7 +235,6 @@ namespace HierarchyDecorator
         /// <param name="updateContent">Should the gui content be updated too?</param>
         public void UpdateComponents(bool updateContent = true)
         {
-            // - Built In Types
 
             for (int i = 0; i < unityGroups.Length; i++)
             {
