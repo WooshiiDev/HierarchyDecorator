@@ -99,7 +99,7 @@ namespace HierarchyDecorator
         /// <summary>
         /// Are components enabled?
         /// </summary>
-        public bool Enabled => enableIcons;
+        public bool Enabled => enableIcons && (DisplayBuiltIn || DisplayMonoScripts);
 
         /// <summary>
         /// How scripts are drawn in the hierarchy.
