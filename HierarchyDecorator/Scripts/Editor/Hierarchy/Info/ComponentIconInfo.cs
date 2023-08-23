@@ -76,6 +76,11 @@ namespace HierarchyDecorator
                     continue;
                 }
 
+                if (componentType == null)
+                {
+                    continue;
+                }
+
                 if (componentType.IsBuiltIn)
                 {
                     DrawComponent(rect, componentType, settings);
