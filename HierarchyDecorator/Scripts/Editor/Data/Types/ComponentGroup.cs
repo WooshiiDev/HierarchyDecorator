@@ -128,7 +128,10 @@ namespace HierarchyDecorator
                 return false;
             }
 
-            lookup.Remove(component.Type);
+            if (component.Type != null)
+            {
+                lookup.Remove(component.Type);
+            }
 
             return true;
         }
@@ -229,6 +232,13 @@ namespace HierarchyDecorator
                 bool isValid = component.IsBuiltIn
                     ? UpdateBuiltIn(component, updateContent)
                     : UpdateCustom(component, updateContent);
+
+                if (component.Type == null)
+                {
+                    Remove(i);
+                    i--;
+                    continue;
+                }
 
                 isValid &= !lookup.ContainsKey(component.Type);
                 isValid &= component.IsValid();
