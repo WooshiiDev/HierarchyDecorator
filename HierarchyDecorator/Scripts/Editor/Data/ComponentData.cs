@@ -301,6 +301,14 @@ namespace HierarchyDecorator
             }
 
             MonoScript script = MonoScript.FromMonoBehaviour(component as MonoBehaviour);
+
+            // Invalid type, component being added that shouldn't
+
+            if (script == null)
+            {
+                return;
+            }
+
             ComponentType type = new ComponentType(component.GetType(), false);
             type.UpdateType(script);
             
