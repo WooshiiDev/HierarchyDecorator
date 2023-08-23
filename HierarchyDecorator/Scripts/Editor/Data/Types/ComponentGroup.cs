@@ -233,7 +233,7 @@ namespace HierarchyDecorator
                     ? UpdateBuiltIn(component, updateContent)
                     : UpdateCustom(component, updateContent);
 
-                if (component.Type == null)
+                if (component == null || component.Type == null)
                 {
                     Remove(i);
                     i--;
