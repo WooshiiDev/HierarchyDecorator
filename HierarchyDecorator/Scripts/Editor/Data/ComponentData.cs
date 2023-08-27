@@ -311,6 +311,13 @@ namespace HierarchyDecorator
 
             ComponentType type = new ComponentType(component.GetType(), false);
             type.UpdateType(script);
+
+            // Invalid type, ignore 
+
+            if (!type.IsValid())
+            {
+                return;
+            }
             
             RegisterCustomComponent(type);
         }
