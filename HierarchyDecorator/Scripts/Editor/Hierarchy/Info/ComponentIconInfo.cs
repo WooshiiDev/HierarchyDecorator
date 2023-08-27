@@ -15,6 +15,7 @@ namespace HierarchyDecorator
 
         private List<Type> componentTypes = new List<Type> ();
         private Component[] components = new Component[0];
+        private int validComponentCount;
 
         private bool hasMonoBehaviour = false;
 
@@ -31,7 +32,7 @@ namespace HierarchyDecorator
                 return components.Length;
             }
 
-            return componentTypes.Count;
+            return validComponentCount;
         }
 
         protected override bool DrawerIsEnabled(Settings settings, GameObject instance)
@@ -46,11 +47,14 @@ namespace HierarchyDecorator
 
         protected override void DrawInfo(Rect rect, GameObject instance, Settings settings)
         {
+            bool stackScripts = settings.Components.StackScripts;
+            string stackOutput = string.Empty;
+
             for (int i = 0; i < components.Length; i++)
             {
                 Component component = components[i];
 
-                if (component == null && settings.Components.ShowMissingScriptWarning)
+                if (component == null & settings.Components.ShowMissingScriptWarning)
                 {
                     DrawMissingComponent(rect);
                     return;
@@ -70,8 +74,11 @@ namespace HierarchyDecorator
                 if (!hasComponent)
                 {
                     settings.Components.RegisterCustomComponent(component);
-                    GetComponent(type, out componentType);
-                    s_allTypes.Add(type, componentType);
+
+                    if (GetComponent(type, out componentType))
+                    {
+                        s_allTypes.Add(type, componentType);
+                    }
 
                     continue;
                 }
@@ -86,9 +93,24 @@ namespace HierarchyDecorator
                     DrawComponent(rect, componentType, settings);
                 }
                 else
+                if (!stackScripts)
                 {
                     DrawMonobehaviour(rect, type, componentType, settings);
                 }
+                else
+                {
+                    stackOutput += componentType.DiplayName + "\n";
+                }
+            }
+
+            if (stackScripts && !string.IsNullOrEmpty(stackOutput))
+            {
+                GUIContent content = new GUIContent(MonoContent)
+                {
+                    tooltip = stackOutput.Trim()
+                };
+
+                DrawComponentIcon(rect, content);
             }
 
             bool GetComponent(Type type, out ComponentType componentType)
@@ -104,6 +126,8 @@ namespace HierarchyDecorator
 
         protected override void OnDrawInit(GameObject instance, Settings settings)
         {
+            validComponentCount = 1;
+
             components = instance.GetComponents<Component> ();
             componentTypes.Clear ();
             hasMonoBehaviour = false;
@@ -136,7 +160,7 @@ namespace HierarchyDecorator
                 content = MonoContent;
             }
 
-            DrawComponentIcon (rect, content, type);
+            DrawComponentIcon (rect, content);
         }
 
         private void DrawComponent(Rect rect, ComponentType component, Settings settings)
@@ -156,10 +180,10 @@ namespace HierarchyDecorator
             }
 
             componentTypes.Add(type);
-            DrawComponentIcon(rect, content, type);
+            DrawComponentIcon(rect, content);
         }
 
-        private void DrawComponentIcon(Rect rect, GUIContent content, Type type)
+        private void DrawComponentIcon(Rect rect, GUIContent content)
         {
             rect = GetIconPosition (rect);
 
@@ -168,8 +192,8 @@ namespace HierarchyDecorator
                 return;
             }
 
-            content.tooltip = type.Name;
             GUI.Label (rect, content, Style.ComponentIconStyle);
+            validComponentCount++;
         }
 
         private void DrawMissingComponent(Rect rect)
