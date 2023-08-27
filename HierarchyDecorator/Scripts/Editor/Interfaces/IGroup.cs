@@ -36,7 +36,7 @@ namespace HierarchyDecorator
         /// Remove an instance that belongs to this group.
         /// </summary>
         /// <param name="instance">The instance to remove.</param>
-        /// <returns>Returns a bool based on if the instance was removed from the group suggessfully.</returns>
+        /// <returns>Returns a bool based on if the instance was removed from the group successfully.</returns>
         bool Remove(T instance);
     }
 }

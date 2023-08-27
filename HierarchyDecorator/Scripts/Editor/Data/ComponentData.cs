@@ -75,18 +75,13 @@ namespace HierarchyDecorator
         // --- Validation
 
         [SerializeField] private string unityVersion;
-        [SerializeField] private bool isDirty;
+        [SerializeField] private int unityCount; //  The number of Unity Components that have been found.
 
         // --- Reflection
 
-        private Type[] allTypes;
+        private Type[] allTypes = new Type[0];
 
         // --- Properties
-
-        /// <summary>
-        /// The number of Unity Components that have been found.
-        /// </summary>
-        public int UnityCount;
 
         /// <summary>
         /// Is the missing script warning on?
@@ -162,211 +157,101 @@ namespace HierarchyDecorator
         /// </summary>
         public void OnInitialize()
         {
-            isDirty = unityVersion != Application.unityVersion;
-
-            if (isDirty)
+            if (unityVersion != Application.unityVersion)
             {
                 unityVersion = Application.unityVersion;
-                Debug.LogWarning ("HierarchyDecorator version changed, updating cached components.");
+                UpdateData(true);
             }
-
-            UpdateData();
         }
 
         /// <summary>
         /// Update Component Data
         /// </summary>
-        public void UpdateData()
+        public void UpdateData(bool forceDirty = false)
         {
-            // Generate all types found in the Unity project
-
-            if (allTypes == null || isDirty)
+            if (allTypes.Length == 0)
             {
-                allTypes = ReflectionUtility.GetSubTypesFromAssemblies(typeof(Component), 
-                        t => t.Assembly.FullName.StartsWith("Unity"))
+                allTypes = TypeCache.GetTypesDerivedFrom(typeof(Component))
+                    .Where(t => t.Assembly.FullName.StartsWith("Unity") && !t.IsAbstract)
                     .OrderBy(t => t.Name)
                     .ToArray();
             }
 
-            // Update the components if any are missing
-
-            if (!isDirty)
+            if (!IsDirty() && !forceDirty)
             {
-                isDirty = UnityCount != allTypes.Length || unityGroups.Length == 0;
+                return;
             }
 
-            if (isDirty)
+            // Update dirty data
+
+            unityCount = allTypes.Length;
+            unityVersion = Application.unityVersion;
+
+            excludedComponents.Clear();
+            Dictionary<string, ComponentGroup> cachedGroups = new Dictionary<string, ComponentGroup>();
+
+            for (int i = 0; i < unityCount; i++)
             {
-                // Get the count of unity types 
+                Type type = allTypes[i];
+                string category = GetTypeCategory(type);
 
-                UnityCount = allTypes.Length;
-                Dictionary<string, ComponentGroup> cachedGroups = new Dictionary<string, ComponentGroup>();
-
-                for (int i = 0; i < UnityCount; i++)
+                // If the component does not already exist in a group, create one
+                
+                if (!TryGetComponent(type, out ComponentType component))
                 {
-                    // Find the category for the type 
-                    // If the group doesn't exist, create one
-
-                    Type type = allTypes[i];
-                    string category = GetTypeCategory(type);
-
-                    // If the component does not already exist in a group, create one
-
-                    if (!TryGetComponent(type, out ComponentType component))
-                    {
-                        component = new ComponentType(type, true);
-                    }
-
-                    // Create a group if one does not exist already
-
-                    if (!cachedGroups.TryGetValue(category, out ComponentGroup group))
-                    {
-                        group = new ComponentGroup(category);
-                        cachedGroups.Add(category, group);
-                    }
-
-                    group.Add(component);
-                    excludedComponents.Add(new ComponentType(type, true));
+                    component = new ComponentType(type, true);
                 }
 
-                excludedComponents.Sort();
+                // Create a category group if one does not exist
 
-                // Assign the new groups and end dirty
+                if (!cachedGroups.TryGetValue(category, out ComponentGroup group))
+                {
+                    group = new ComponentGroup(category);
+                    cachedGroups.Add(category, group);
+                }
 
-                unityGroups = cachedGroups.Values.ToArray();
-                isDirty = false;
+                // Add the created component
+
+                group.Add(component);
+                excludedComponents.Add(new ComponentType(type, true));
+            }
+
+            unityGroups = cachedGroups.Values.ToArray();
+            excludedComponents.Sort();
+
+            Debug.LogWarning("HierarchyDecorator components updated due to changes detected.");
+
+            bool IsDirty()
+            {
+                return 
+                    allTypes.Length != unityCount ||    // Internal types changed
+                    unityGroups.Length == 0;            // No initialization so far
             }
         }
-        
+
         /// <summary>
         /// Update the components type and content.
         /// </summary>
         /// <param name="updateContent">Should the gui content be updated too?</param>
         public void UpdateComponents(bool updateContent = true)
         {
-            // Update built in components first
-            
+
             for (int i = 0; i < unityGroups.Length; i++)
             {
-                ComponentGroup group = unityGroups[i];
-                UpdateGroup(group);
+                unityGroups[i].UpdateCache(updateContent);
             }
 
-            UpdateGroup(excludedComponents);
+            // - Complete Groups
 
-            // Update custom components 
+            excludedComponents.UpdateCache(updateContent);
+            allCustomComponents.UpdateCache(updateContent);
 
-            for (int i = 0; i < allCustomComponents.Count; i++)
-            {
-                ComponentType component = allCustomComponents.Get(i);
-
-                // Script does not exist, remove it
-
-                if (component.Script == null)
-                {
-                    allCustomComponents.Remove(i);
-                    i--;
-                    continue;
-                }
-
-                component.UpdateType(component.Script.GetClass(), updateContent);
-            }
+            // - Custom Groups
 
             for (int i = 0; i < customGroups.Count; i++)
             {
-                ComponentGroup group = customGroups[i];
-
-                for (int j = 0; j < group.Count; j++)
-                {
-                    ComponentType component = group.Get(j);
-
-                    // Do not update if the component already has a type
-
-                    if (component == null)
-                    {
-                        group.Remove(j);
-                        j--;
-
-                        continue;
-                    }
-
-                    // No need to update custom components with no assignment
-                    // Likewise, do not update components that have valid information
-
-                    if (component.Script == null || component.IsValid())
-                    {
-                        continue;
-                    }
-
-                    // Update the type and the content (if required)
-
-                    component.UpdateType(component.Script.GetClass(), updateContent);
-                }
+                customGroups[i].UpdateCache(updateContent);
             }
-
-            // Make sure excluded components have all 
-
-            for (int i = 0; i < allTypes.Length; i++)
-            {
-                Type type = allTypes[i];
-                if (!excludedComponents.TryGetComponent(type, out _))
-                {
-                    ComponentType component = new ComponentType(type, true);
-                    excludedComponents.Add(component);
-                    component.UpdateContent();
-
-                }
-            }
-
-            void UpdateGroup(ComponentGroup group)
-            {
-                List<Type> types = new List<Type>();
-                for (int i = 0; i < group.Count; i++)
-                {
-                    ComponentType component = group.Get(i);
-                    if (component == null)
-                    {
-                        group.Remove(component);
-                        i--;
-
-                        continue;
-                    }
-
-                    if (component.IsValid())
-                    {
-                        continue;
-                    }
-
-                    int index = Array.FindIndex(allTypes, type => type.AssemblyQualifiedName == component.Name);
-                    if (index == -1)
-                    {
-                        group.Remove(component);
-                        i--;
-                        continue;
-                    }
-
-                    Type componentType = allTypes[index];
-
-                    if (types.Contains(componentType))
-                    {
-                        group.Remove(component);
-                        i--;
-                        continue;
-                    }
-
-                    component.UpdateType(componentType, updateContent);
-                    types.Add(componentType);
-                }
-                types.Clear();
-            }
-        }
-        
-        /// <summary>
-        /// Set component data to dirty. 
-        /// </summary>
-        public void SetDirty()
-        {
-            isDirty = true;
         }
 
         // --- Custom Components
@@ -416,8 +301,23 @@ namespace HierarchyDecorator
             }
 
             MonoScript script = MonoScript.FromMonoBehaviour(component as MonoBehaviour);
+
+            // Invalid type, component being added that shouldn't
+
+            if (script == null)
+            {
+                return;
+            }
+
             ComponentType type = new ComponentType(component.GetType(), false);
             type.UpdateType(script);
+
+            // Invalid type, ignore 
+
+            if (!type.IsValid())
+            {
+                return;
+            }
             
             RegisterCustomComponent(type);
         }
@@ -440,7 +340,7 @@ namespace HierarchyDecorator
 
             if (allCustomComponents.Contains(component))
             {
-                Debug.LogError($"Attempted to register a component that already exists.");
+                Debug.LogError($"Attempted to register a component that already exists. ({component})");
                 return;
             }
 
@@ -475,6 +375,11 @@ namespace HierarchyDecorator
 
         public bool IsExcluded(Type type)
         {
+            if (excludedComponents.Count == 0)
+            {
+                return false;
+            }
+
             return excludedComponents.TryGetComponent(type, out ComponentType component) && component.Shown;
         }
 
@@ -497,17 +402,10 @@ namespace HierarchyDecorator
             for (int i = 0; i < unityGroups.Length; i++)
             {
                 ComponentGroup group = unityGroups[i];
-
-                for (int j = 0; j < group.Count; j++)
+                
+                if (group.TryGetComponent(type, out component))
                 {
-                    component = group.Get(j);
-                    
-                    // Found component with required type, return
-
-                    if (component.Type == type)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
 
@@ -527,10 +425,9 @@ namespace HierarchyDecorator
         {
             // If the given type is null, there is nothing to look for
 
-            component = null;
-
             if (type == null)
             {
+                component = null;
                 return false;
             }
 
@@ -548,12 +445,8 @@ namespace HierarchyDecorator
                     }
                 }
             }
-            else
-            {
-                return allCustomComponents.TryGetComponent(type, out component);
-            }
 
-            return false;
+            return allCustomComponents.TryGetComponent(type, out component);
         }
 
         /// <summary>
