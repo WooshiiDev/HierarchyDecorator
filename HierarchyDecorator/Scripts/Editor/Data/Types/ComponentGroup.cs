@@ -16,6 +16,9 @@ namespace HierarchyDecorator
 
         [SerializeField] protected string name;
         [SerializeField] protected List<ComponentType> components = new List<ComponentType>();
+       
+        private Dictionary<Type, ComponentType> lookup;
+        private bool hasCached = false;
 
         // Properties
 
@@ -62,6 +65,7 @@ namespace HierarchyDecorator
         public ComponentGroup(string name)
         {
             this.name = name;
+            ValidateCache();
         }
 
         // Methods
@@ -93,6 +97,13 @@ namespace HierarchyDecorator
             }
 
             components.Add(component);
+
+            if (component.Type != null)
+            {
+                ValidateCache();
+                lookup.Add(component.Type, component);
+            }
+
             return true;
         }
 
@@ -103,7 +114,7 @@ namespace HierarchyDecorator
         /// <returns>Returns true if a component was removed, otherwise will return false.</returns>
         public bool Remove(ComponentType component)
         {
-            // Cannot remove a null component, even if null components exist, it's not explict enough.
+            // Cannot remove a null component, even if null components exist, it's not explicit enough.
 
             if (component == null)
             {
@@ -115,6 +126,11 @@ namespace HierarchyDecorator
             {
                 Debug.LogError("Cannot remove a component that does not belong to the group.");
                 return false;
+            }
+
+            if (component.Type != null)
+            {
+                lookup.Remove(component.Type);
             }
 
             return true;
@@ -133,8 +149,15 @@ namespace HierarchyDecorator
                 return false;
             }
 
-            components.RemoveAt(index);
-            return true;
+            return Remove(components[index]);
+        }
+
+        public void Clear()
+        {
+            components.Clear();
+            lookup.Clear();
+
+            hasCached = false;
         }
 
         /// <summary>
@@ -173,6 +196,88 @@ namespace HierarchyDecorator
             }
         }
 
+        private void ValidateCache()
+        {
+            if (lookup == null) // Required due to lack of serialization
+            {
+                lookup = new Dictionary<Type, ComponentType>();
+            }
+            else
+            {
+                lookup.Clear();
+            }
+        }
+
+        public void UpdateCache(bool updateContent = true)
+        {
+            ValidateCache();
+
+            for (int i = 0; i < components.Count; i++)
+            {
+                ComponentType component = components[i];
+
+                if (component == null) // Remove invalid 
+                {
+                    Remove(i);
+                    i--;
+                    continue;
+                }
+                else if (component.IsValid()) // Ignore valid
+                {
+                    continue;
+                }
+
+                // Update components if valid, return false if invalid
+
+                bool isValid = component.IsBuiltIn
+                    ? UpdateBuiltIn(component, updateContent)
+                    : UpdateCustom(component, updateContent);
+
+                if (component == null || component.Type == null)
+                {
+                    Remove(i);
+                    i--;
+                    continue;
+                }
+
+                isValid &= !lookup.ContainsKey(component.Type);
+                isValid &= component.IsValid();
+
+                if (isValid)
+                {
+                    lookup.Add(component.Type, component);
+                }
+            }
+
+            hasCached = true;
+        }
+
+        private bool UpdateCustom(ComponentType component, bool updateContent)
+        {
+            MonoScript script = component.Script;
+
+            if (script == null)
+            {
+                return false;
+            }
+
+            component.UpdateType(script.GetClass(), updateContent);
+            return true;
+        }
+
+        private bool UpdateBuiltIn(ComponentType component, bool updateContent)
+        {
+            Type type = Type.GetType(component.Name);
+
+            if (type == null)
+            {
+                return false;
+            }
+
+            component.UpdateType(type, updateContent);
+            return true;
+        }
+
         // Queries
 
         /// <summary>
@@ -183,12 +288,18 @@ namespace HierarchyDecorator
         /// <returns>Returns a bool based on if a valid component is found or not.</returns>
         public bool TryGetComponent(Type type, out ComponentType component)
         {
+            if (hasCached && lookup.TryGetValue(type, out component))
+            {
+                return true;
+            }
+
             for (int i = 0; i < Count; i++)
             {
-                component = components[i];
+                ComponentType componentType = components[i];
 
-                if (component.Type == type && component.IsValid())
+                if (componentType.Type == type && componentType.IsValid())
                 {
+                    component = componentType;
                     return true;
                 }
             }
@@ -204,6 +315,11 @@ namespace HierarchyDecorator
         /// <returns>Returns true if the given component is found in the group otherwise it will return false.</returns>
         public bool Contains(ComponentType component)
         {
+            if (hasCached && lookup.ContainsKey(component.Type))
+            {
+                return true;
+            }
+
             return components.Contains(component);
         }
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,16 +8,35 @@ namespace HierarchyDecorator
 {
     public static class HierarchyCache
     {
-        public class HierarchyData
+        public class HierarchyData : IComparable<HierarchyData>, IEquatable<HierarchyData>
         {
+            // Instance 
+
             public readonly int ID;
             public readonly Transform Transform;
 
+            // - Properties
+
             public bool Foldout { get; set; }
 
-            public bool HasChildren => Transform.childCount > 0;
+            public bool HasChildren => Transform != null && Transform.childCount > 0;
 
-            public Transform Parent => Transform.parent;
+            public Transform Parent
+            {
+                get
+                {
+                    if (Transform == null)
+                    {
+                        return null;
+                    }
+                    
+                    return Transform.parent;
+                }
+            }
+
+            public bool IsRoot => Transform != null && Parent == null;
+
+            // - Methods
 
             public HierarchyData(Transform transform)
             {
@@ -26,17 +46,9 @@ namespace HierarchyDecorator
 
             public int GetSiblingIndex(SceneCache scene)
             {
-                if (Parent == null)
+                if (IsRoot)
                 {
-                    GameObject[] roots = scene.Scene.GetRootGameObjects();
-
-                    for (int i = 0; i < roots.Length; i++)
-                    {
-                        if (roots[i] == Transform.gameObject)
-                        {
-                            return i;
-                        }
-                    }
+                    return scene.Roots.IndexOf(ID);
                 }
 
                 return Transform.GetSiblingIndex();
@@ -44,10 +56,9 @@ namespace HierarchyDecorator
 
             public bool IsLastSibling(SceneCache scene)
             {
-                if (Parent == null)
+                if (IsRoot)
                 {
-                    GameObject[] roots = scene.Scene.GetRootGameObjects();
-                    return Array.IndexOf(roots, Transform.gameObject) == roots.Length - 1;
+                    return scene.Roots.IndexOf(ID) == scene.Roots.Count - 1;
                 }
 
                 return Transform.GetSiblingIndex() == Parent.childCount - 1;
@@ -70,14 +81,24 @@ namespace HierarchyDecorator
             {
                 return Transform != null;
             }
+
+            public int CompareTo(HierarchyData other)
+            {
+                return ID.CompareTo(other.ID);
+            }
+
+            public bool Equals(HierarchyData other)
+            {
+                return ID == other.ID;
+            }
         }
 
-        public class SceneCache
+        public class SceneCache : IDisposable
         {
             // --- Fields
 
             private List<int> validIDs = new List<int>();
-            private Dictionary<int, HierarchyData> Lookup = new Dictionary<int, HierarchyData>();
+            private Dictionary<int, HierarchyData> lookup = new Dictionary<int, HierarchyData>();
 
             // --- Properties
 
@@ -86,12 +107,26 @@ namespace HierarchyDecorator
             public HierarchyData First { get; private set; }
             public HierarchyData Current { get; private set; }
             public HierarchyData Previous { get; private set; }
+            public List<int> Roots { get; private set; } = new List<int>();
 
             // --- Creation
 
             public SceneCache(Scene scene)
             {
                 Scene = scene;
+            }
+
+            public void Dispose()
+            {
+                for (int i = 0; i < validIDs.Count; i++)
+                {
+                    if (!lookup.TryGetValue(validIDs[i], out HierarchyData data))
+                    {
+                        continue;
+                    }
+
+                    Remove(data);
+                }
             }
 
             // --- Methods
@@ -112,7 +147,13 @@ namespace HierarchyDecorator
                     return false;
                 }
 
-                Lookup.Add(id, data);
+                lookup.Add(id, data);
+                
+                if (instance.parent == null)
+                {
+                    Roots.Add(id);
+                    Roots.OrderBy(x => x);
+                }
 
                 // Update
 
@@ -121,27 +162,39 @@ namespace HierarchyDecorator
                 return true;
             }
 
-            public bool Remove(Transform instance)
+            public bool Remove(int id)
             {
-                if (instance == null)
+                if (!lookup.TryGetValue(id, out HierarchyData data))
                 {
-                    Debug.LogWarning("Cannot remove a null instance.");
+                    Debug.LogError($"Missing HierarchyData with ID {id}.");
                     return false;
                 }
 
-                int id = instance.GetInstanceID();
+                return Remove(data);
+            }
 
-                if (!Lookup.ContainsKey(id))
+            private bool Remove(HierarchyData data)
+            {
+                if (data == null)
                 {
+                    Debug.LogError("Attempt to delete null HiearchyData instance.");
                     return false;
                 }
 
-                return Lookup.Remove(id);
+                int id = data.ID;
+
+                //if (Roots.Contains(data.ID))
+                //{
+                //    Roots.Remove(data.ID);
+                //}
+
+                lookup.Remove(id);
+                return true;
             }
 
             public bool TryGetInstance(int id, out HierarchyData instance)
             {
-                return Lookup.TryGetValue(id, out instance);
+                return lookup.TryGetValue(id, out instance);
             }
 
             public void SetTarget(HierarchyData data)
@@ -149,6 +202,7 @@ namespace HierarchyDecorator
                 if (data == null)
                 {
                     Debug.LogWarning("Cannot assign a null instance as the target.");
+                    return;
                 }
 
                 Previous = Current;
@@ -163,14 +217,12 @@ namespace HierarchyDecorator
 
                 // Refresh if at the start of the hierarchy
 
-                Transform transform = data.Transform;
-
                 if (First == data)
                 {
                     Refresh();
                 }
 
-                if (transform.parent == null && transform.GetSiblingIndex() == 0)
+                if (data.IsRoot && data.GetSiblingIndex(this) == 0)
                 {
                     First = data;
                 }
@@ -197,23 +249,26 @@ namespace HierarchyDecorator
 
             public void Clear()
             {
-                Lookup.Clear();
+                lookup.Clear();
+                validIDs.Clear();
             }
 
             private void Refresh()
             {
-                List<int> invalidKeys = new List<int>();
-                foreach (int key in Lookup.Keys)
+                List<HierarchyData> invalid = new List<HierarchyData>();
+                foreach (int key in lookup.Keys)
                 {
-                    if (!validIDs.Contains(key))
+                    HierarchyData data = lookup[key];
+
+                    if (!validIDs.Contains(key) || data.Transform == null)
                     {
-                        invalidKeys.Add(key);
+                        invalid.Add(lookup[key]);
                     }
                 }
 
-                for (int i = 0; i < invalidKeys.Count; i++)
+                for (int i = 0; i < invalid.Count; i++)
                 {
-                    Lookup.Remove(invalidKeys[i]);
+                    Remove(invalid[i]);
                 }
 
                 validIDs.Clear();
@@ -228,13 +283,12 @@ namespace HierarchyDecorator
         {
             if (!scene.IsValid())
             {
-                Debug.LogWarning("a");
                 return false;
             }
 
             if (Exists(scene))
             {
-                Debug.LogWarning("b");
+                Debug.LogWarning("Attempted to add preexisting scene to cache.");
                 return false;
             }
 
@@ -252,11 +306,12 @@ namespace HierarchyDecorator
 
         public static bool RemoveScene(Scene scene)
         {
-            if (!Exists(scene))
+            if (!TryGetScene(scene, out SceneCache cache))
             {
                 return false;
             }
 
+            cache.Dispose();
             return Scenes.Remove(scene);
         }
 
@@ -296,7 +351,7 @@ namespace HierarchyDecorator
         {
             if (cache == null)
             {
-                Debug.LogError("a");
+                Debug.LogError("Null cache, cannot set target.");
                 return;
             }
 

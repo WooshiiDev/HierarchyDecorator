@@ -24,9 +24,10 @@ namespace HierarchyDecorator
 
         [SerializeField] private bool isBuiltIn;
         [SerializeField] private MonoScript script;
+        [SerializeField] private int hash = -1;
 
         // Properties
-        
+
         /// <summary>
         /// The full name of the component
         /// </summary>
@@ -238,6 +239,11 @@ namespace HierarchyDecorator
             return name.CompareTo (other.name);
         }
 
+        public int CompareTo(Type type)
+        {
+            return name.CompareTo(type.AssemblyQualifiedName);
+        }
+
         public override string ToString()
         {
             return $"Component Type: {displayName}, {Type}";
@@ -245,15 +251,19 @@ namespace HierarchyDecorator
 
         public override bool Equals(object obj)
         {
-            ComponentType other = obj as ComponentType;
-
-            if (other == null)
+            if (obj is ComponentType component)
             {
-                return false;
+                return Type == component.Type;
             }
 
-            return name.Equals(other.name);
+            if (obj is Type type)
+            {
+                return Type == type;
+            }
+
+            return false;
         }
+
 
         public override int GetHashCode()
         {
