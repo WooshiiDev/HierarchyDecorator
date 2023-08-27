@@ -1,3 +1,13 @@
+## v0.9.1 Hotfix - Duplicate component types
+
+This is to fix a use case of types being named the same that may exist in the same project.
+
+Unfortunately, as usual, you will need to delete your settings instance.
+ - Looking to find a solution to this.
+ 
+ Cheers
+~ Wooshii
+
 ## v0.9.0 | Expanded settings, breadcrumbs, new icon settings & further API additions
 
 ### New Features
