@@ -160,6 +160,30 @@ namespace HierarchyDecorator
             hasCached = false;
         }
 
+        public void Update(ComponentType component, MonoScript script)
+        {
+            if (component == null || script == null)
+            {
+                return;
+            }
+
+            // Remove old component cached
+
+            if (Contains(component))
+            {
+                lookup.Remove(component.Type);
+            }
+
+            // Update type and recache 
+
+            component.UpdateType(script);
+
+            if (!Contains(component.Type))
+            {
+                lookup.Add(component.Type, component);
+            }
+        }
+
         /// <summary>
         /// Get a component element in the group.
         /// </summary>
@@ -325,6 +349,11 @@ namespace HierarchyDecorator
 
         public bool Contains(Type type)
         {
+            if (hasCached && lookup.ContainsKey(type))
+            {
+                return true;
+            }
+
             for (int i = 0; i < components.Count; i++)
             {
                 if (components[i].Type == type)
