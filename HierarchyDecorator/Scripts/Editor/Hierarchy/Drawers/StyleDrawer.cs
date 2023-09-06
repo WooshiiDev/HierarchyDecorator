@@ -47,7 +47,7 @@ namespace HierarchyDecorator
             {
                 Transform child = current.Transform.GetChild(i);
 
-                if (!child.hideFlags.HasFlag(IgnoreFoldoutFlags))
+                if ((child.hideFlags & IgnoreFoldoutFlags) == 0)
                 {
                     canShow = true;
                     break;
