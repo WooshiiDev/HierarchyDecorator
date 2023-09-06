@@ -292,12 +292,12 @@ namespace HierarchyDecorator
         /// Register a custom component to <see cref="AllCustomComponents"/>.
         /// </summary>
         /// <param name="component">The component to register.</param>
-        public void RegisterCustomComponent(Component component)
+        public bool RegisterCustomComponent(Component component)
         {
             if (component == null)
             {
                 Debug.LogError("Cannot register null component.");
-                return;
+                return false;
             }
 
             MonoScript script = MonoScript.FromMonoBehaviour(component as MonoBehaviour);
@@ -306,7 +306,7 @@ namespace HierarchyDecorator
 
             if (script == null)
             {
-                return;
+                return false;
             }
 
             ComponentType type = new ComponentType(component.GetType(), false);
@@ -316,24 +316,24 @@ namespace HierarchyDecorator
 
             if (!type.IsValid())
             {
-                return;
+                return false;
             }
             
-            RegisterCustomComponent(type);
+            return RegisterCustomComponent(type);
         }
 
         /// <summary>
         /// Register a custom component to <see cref="AllCustomComponents"/>.
         /// </summary>
         /// <param name="component">The component to register.</param>
-        public void RegisterCustomComponent(ComponentType component)
+        public bool RegisterCustomComponent(ComponentType component)
         {
             // Cannot register null components
 
             if (component == null)
             {
                 Debug.LogError($"Attempted to register null component.");
-                return;
+                return false;
             }
 
             // Do not register the component if it already exists
@@ -341,10 +341,11 @@ namespace HierarchyDecorator
             if (allCustomComponents.Contains(component))
             {
                 Debug.LogError($"Attempted to register a component that already exists. ({component})");
-                return;
+                return false;
             }
 
             allCustomComponents.Add(component);
+            return true;
         }
 
         public void MoveCustomGroup(int index, int newIndex)
