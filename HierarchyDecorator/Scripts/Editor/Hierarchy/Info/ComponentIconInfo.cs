@@ -69,7 +69,10 @@ namespace HierarchyDecorator
                 {
                     if (GetComponent(type, out componentType) || RegisterComponent(component, out componentType))
                     {
-                        s_allTypes.Add(type, componentType);
+                        if (componentType.IsBuiltIn)
+                        {
+                            s_allTypes.Add(type, componentType);
+                        }
                     }
                 }
 
