@@ -11,6 +11,8 @@ namespace HierarchyDecorator
 
         const float HORIZONTAL_WIDTH = 6f;
 
+        private static readonly HideFlags IgnoreFoldoutFlags = HideFlags.HideInHierarchy | HideFlags.HideInInspector;
+
         private static HierarchyCache.SceneCache Scene => HierarchyCache.Target;
         private static HierarchyCache.HierarchyData Data => Scene.Current;
 
@@ -35,9 +37,26 @@ namespace HierarchyDecorator
 
             int depth = current.CalculateDepth();
 
-            int start = (transform.childCount == 0) ? 0 : 1;
-            int end = data.fullDepthBreadcrumbs.show ? depth : 0;
+            int start = 0;
+           
+            bool hasVisibleChild = false;
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                Transform child = transform.GetChild(i);
 
+                if ((child.hideFlags & IgnoreFoldoutFlags) == 0)
+                {
+                    hasVisibleChild = true;
+                    break;
+                }
+            }
+
+            if (hasVisibleChild)
+            {
+                start = 1;
+            }
+
+            int end = data.fullDepthBreadcrumbs.show ? depth : 0;
             for (int i = start; i <= end; i++)
             {
                 BreadcrumbSettings breadcrumbs = (i == 0) ? data.instanceBreadcrumbs : data.fullDepthBreadcrumbs;
