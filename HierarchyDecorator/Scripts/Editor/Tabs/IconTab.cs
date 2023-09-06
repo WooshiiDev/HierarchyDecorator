@@ -740,7 +740,12 @@ namespace HierarchyDecorator
                         if (commandName == "ObjectSelectorUpdated")
                         {
                             MonoScript script = EditorGUIUtility.GetObjectPickerObject() as MonoScript;
-                            group.Update(component, script);
+                            
+                            if (component.Type != script.GetClass())
+                            {
+                                group.Update(component, script);
+                                EditorApplication.RepaintHierarchyWindow();
+                            }
                         }
                         else
                         if (commandName == "ObjectSelectorClosed")
