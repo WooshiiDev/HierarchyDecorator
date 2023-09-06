@@ -167,9 +167,18 @@ namespace HierarchyDecorator
                 return;
             }
 
+            // Remove old component cached
+
+            if (Contains(component))
+            {
+                lookup.Remove(component.Type);
+            }
+
+            // Update type and recache 
+
             component.UpdateType(script);
 
-            if (!lookup.ContainsKey(component.Type))
+            if (!Contains(component.Type))
             {
                 lookup.Add(component.Type, component);
             }
@@ -340,6 +349,11 @@ namespace HierarchyDecorator
 
         public bool Contains(Type type)
         {
+            if (hasCached && lookup.ContainsKey(type))
+            {
+                return true;
+            }
+
             for (int i = 0; i < components.Count; i++)
             {
                 if (components[i].Type == type)
