@@ -713,7 +713,7 @@ namespace HierarchyDecorator
         private void DrawCustomComponent(int index, ComponentGroup group)
         {
             float deleteWidth = Values.CUSTOM_TOOLBAR_WIDTH / (toolbarContent.Length + 1);
-            
+
             EditorGUILayout.BeginHorizontal();
             {
                 ComponentType component = group.Get(index);
@@ -740,9 +740,11 @@ namespace HierarchyDecorator
                         if (commandName == "ObjectSelectorUpdated")
                         {
                             MonoScript script = EditorGUIUtility.GetObjectPickerObject() as MonoScript;
-                            if (component.Script != script)
+                            
+                            if (component.Type != script.GetClass())
                             {
-                                component.UpdateType(script);
+                                group.Update(component, script);
+                                EditorApplication.RepaintHierarchyWindow();
                             }
                         }
                         else

@@ -15,6 +15,7 @@ namespace HierarchyDecorator
 
         private List<Type> componentTypes = new List<Type> ();
         private Component[] components = new Component[0];
+        private int validComponentCount;
 
         private bool hasMonoBehaviour = false;
 
@@ -31,7 +32,7 @@ namespace HierarchyDecorator
                 return components.Length;
             }
 
-            return componentTypes.Count;
+            return validComponentCount;
         }
 
         protected override bool DrawerIsEnabled(Settings settings, GameObject instance)
@@ -46,37 +47,41 @@ namespace HierarchyDecorator
 
         protected override void DrawInfo(Rect rect, GameObject instance, Settings settings)
         {
+            bool stackScripts = settings.Components.StackScripts;
+            string stackOutput = string.Empty;
+
             for (int i = 0; i < components.Length; i++)
             {
                 Component component = components[i];
 
-                if (component == null && settings.Components.ShowMissingScriptWarning)
+                if (component == null & settings.Components.ShowMissingScriptWarning)
                 {
                     DrawMissingComponent(rect);
                     return;
                 }
 
+                // Get Type
+
                 Type type = component.GetType();
                 ComponentType componentType;
 
-                bool hasComponent = s_allTypes.TryGetValue(type, out componentType);
-
-                if (!hasComponent && GetComponent(type, out componentType))
+                if (!s_allTypes.TryGetValue(type, out componentType))
                 {
-                    s_allTypes.Add(type, componentType);
-                    hasComponent = true;
-                }
-
-                if (!hasComponent)
-                {
-                    settings.Components.RegisterCustomComponent(component);
-                    GetComponent(type, out componentType);
-                    s_allTypes.Add(type, componentType);
-
-                    continue;
+                    if (GetComponent(type, out componentType) || RegisterComponent(component, out componentType))
+                    {
+                        if (componentType.IsBuiltIn)
+                        {
+                            s_allTypes.Add(type, componentType);
+                        }
+                    }
                 }
 
                 if (componentType == null)
+                {
+                    continue;
+                }
+
+                if (componentType.IsBuiltIn && settings.Components.IsExcluded(type))
                 {
                     continue;
                 }
@@ -86,9 +91,24 @@ namespace HierarchyDecorator
                     DrawComponent(rect, componentType, settings);
                 }
                 else
+                if (!stackScripts)
                 {
                     DrawMonobehaviour(rect, type, componentType, settings);
                 }
+                else
+                {
+                    stackOutput += componentType.DiplayName + "\n";
+                }
+            }
+
+            if (stackScripts && !string.IsNullOrEmpty(stackOutput))
+            {
+                GUIContent content = new GUIContent(MonoContent)
+                {
+                    tooltip = stackOutput.Trim()
+                };
+
+                DrawComponentIcon(rect, content);
             }
 
             bool GetComponent(Type type, out ComponentType componentType)
@@ -100,10 +120,23 @@ namespace HierarchyDecorator
 
                 return settings.Components.TryGetCustomComponent(type, out componentType);
             }
+
+            bool RegisterComponent(Component component, out ComponentType componentType)
+            {
+                if (settings.Components.RegisterCustomComponent(component))
+                {
+                    return GetComponent(component.GetType(), out componentType);
+                }
+
+                componentType = null;
+                return false;
+            }
         }
 
         protected override void OnDrawInit(GameObject instance, Settings settings)
         {
+            validComponentCount = 1;
+
             components = instance.GetComponents<Component> ();
             componentTypes.Clear ();
             hasMonoBehaviour = false;
@@ -127,39 +160,24 @@ namespace HierarchyDecorator
             }
 
             componentTypes.Add(type);
-
-            GUIContent content = componentType.Content;
-
-            if (settings.Components.StackScripts && type.IsSubclassOf(typeof(MonoBehaviour)))
-            {
-                type = MonoType;
-                content = MonoContent;
-            }
-
-            DrawComponentIcon (rect, content, type);
+            DrawComponentIcon(rect, componentType.Content);
         }
 
         private void DrawComponent(Rect rect, ComponentType component, Settings settings)
         {
             if (!settings.Components.DisplayBuiltIn)
             {
-                return;
+                if (!component.Shown)
+                {
+                    return;
+                }
             }
 
-            Type type = component.Type;
-            GUIContent content = component.Content;
-
-            if (settings.Components.StackScripts && type.IsSubclassOf(typeof(MonoBehaviour)))
-            {
-                type = MonoType;
-                content = MonoContent;
-            }
-
-            componentTypes.Add(type);
-            DrawComponentIcon(rect, content, type);
+            componentTypes.Add(component.Type);
+            DrawComponentIcon(rect, component.Content);
         }
 
-        private void DrawComponentIcon(Rect rect, GUIContent content, Type type)
+        private void DrawComponentIcon(Rect rect, GUIContent content)
         {
             rect = GetIconPosition (rect);
 
@@ -168,8 +186,8 @@ namespace HierarchyDecorator
                 return;
             }
 
-            content.tooltip = type.Name;
             GUI.Label (rect, content, Style.ComponentIconStyle);
+            validComponentCount++;
         }
 
         private void DrawMissingComponent(Rect rect)
