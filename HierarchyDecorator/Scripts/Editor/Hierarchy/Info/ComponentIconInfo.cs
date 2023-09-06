@@ -60,30 +60,25 @@ namespace HierarchyDecorator
                     return;
                 }
 
+                // Get Type
+
                 Type type = component.GetType();
                 ComponentType componentType;
 
-                bool hasComponent = s_allTypes.TryGetValue(type, out componentType);
-
-                if (!hasComponent && GetComponent(type, out componentType))
+                if (!s_allTypes.TryGetValue(type, out componentType))
                 {
-                    s_allTypes.Add(type, componentType);
-                    hasComponent = true;
-                }
-
-                if (!hasComponent)
-                {
-                    settings.Components.RegisterCustomComponent(component);
-
-                    if (GetComponent(type, out componentType))
+                    if (GetComponent(type, out componentType) || RegisterComponent(component, out componentType))
                     {
                         s_allTypes.Add(type, componentType);
                     }
-
-                    continue;
                 }
 
                 if (componentType == null)
+                {
+                    continue;
+                }
+
+                if (componentType.IsBuiltIn && settings.Components.IsExcluded(type))
                 {
                     continue;
                 }
@@ -122,6 +117,17 @@ namespace HierarchyDecorator
 
                 return settings.Components.TryGetCustomComponent(type, out componentType);
             }
+
+            bool RegisterComponent(Component component, out ComponentType componentType)
+            {
+                if (settings.Components.RegisterCustomComponent(component))
+                {
+                    return GetComponent(component.GetType(), out componentType);
+                }
+
+                componentType = null;
+                return false;
+            }
         }
 
         protected override void OnDrawInit(GameObject instance, Settings settings)
@@ -151,36 +157,21 @@ namespace HierarchyDecorator
             }
 
             componentTypes.Add(type);
-
-            GUIContent content = componentType.Content;
-
-            if (settings.Components.StackScripts && type.IsSubclassOf(typeof(MonoBehaviour)))
-            {
-                type = MonoType;
-                content = MonoContent;
-            }
-
-            DrawComponentIcon (rect, content);
+            DrawComponentIcon(rect, componentType.Content);
         }
 
         private void DrawComponent(Rect rect, ComponentType component, Settings settings)
         {
             if (!settings.Components.DisplayBuiltIn)
             {
-                return;
+                if (!component.Shown)
+                {
+                    return;
+                }
             }
 
-            Type type = component.Type;
-            GUIContent content = component.Content;
-
-            if (settings.Components.StackScripts && type.IsSubclassOf(typeof(MonoBehaviour)))
-            {
-                type = MonoType;
-                content = MonoContent;
-            }
-
-            componentTypes.Add(type);
-            DrawComponentIcon(rect, content);
+            componentTypes.Add(component.Type);
+            DrawComponentIcon(rect, component.Content);
         }
 
         private void DrawComponentIcon(Rect rect, GUIContent content)
