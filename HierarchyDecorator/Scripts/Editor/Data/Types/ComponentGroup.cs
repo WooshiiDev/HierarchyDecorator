@@ -160,6 +160,21 @@ namespace HierarchyDecorator
             hasCached = false;
         }
 
+        public void Update(ComponentType component, MonoScript script)
+        {
+            if (component == null || script == null)
+            {
+                return;
+            }
+
+            component.UpdateType(script);
+
+            if (!lookup.ContainsKey(component.Type))
+            {
+                lookup.Add(component.Type, component);
+            }
+        }
+
         /// <summary>
         /// Get a component element in the group.
         /// </summary>
