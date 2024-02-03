@@ -41,7 +41,10 @@ namespace HierarchyDecorator
         [Tooltip ("The accepted criteria for selecting instances when swiping.")]
         public DepthMode depthMode;
 
-        // Layers
+        // Tags & Layers
+
+        public bool showTags = true;
+        public bool clickToSelectTags = true;
 
         public bool showLayers = true;
         public bool clickToSelectLayer = true;
