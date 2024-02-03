@@ -11,12 +11,15 @@ namespace HierarchyDecorator
             // --- General Features
 
             CreateDrawableGroup("Toggles")
-                .RegisterSerializedProperty(serializedTab, "showActiveToggles", "activeSwiping", "swipeSameState", "swipeSelectionOnly", "depthMode"); 
+                .RegisterSerializedProperty(serializedTab, "showActiveToggles", "activeSwiping", "swipeSameState", "swipeSelectionOnly", "depthMode");
 
             // --- Layers
 
-            CreateDrawableGroup ("Layers")
-                .RegisterSerializedProperty (serializedTab, "showLayers", "clickToSelectLayer", "applyChildLayers");
+            CreateDrawableGroup("Tags")
+                .RegisterSerializedProperty(serializedTab, "showTags", "clickToSelectTags");
+
+            CreateDrawableGroup("Layers")
+                .RegisterSerializedProperty(serializedTab, "showLayers", "clickToSelectLayer", "applyChildLayers");
 
             // --- Breadcrumbs
 
