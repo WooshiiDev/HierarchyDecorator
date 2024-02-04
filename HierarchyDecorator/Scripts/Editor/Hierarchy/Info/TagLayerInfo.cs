@@ -7,15 +7,24 @@ namespace HierarchyDecorator
 {
     public class TagLayerInfo : HierarchyInfo
     {
+        // --- Settings
+
         private bool tagEnabled;
         private bool layerEnabled;
 
+        private bool setChildLayers;
+
         private bool isVertical;
-        private bool bothShown => tagEnabled && layerEnabled;
         private bool hasStyle;
+
+        private bool bothShown => tagEnabled && layerEnabled;
+
+        // --- Methods
 
         protected override void OnDrawInit(GameObject instance, Settings settings)
         {
+            setChildLayers = settings.globalData.applyChildLayers;
+
             TagLayerLayout layout = settings.globalData.tagLayerLayout;
             isVertical = layout == TagLayerLayout.TagAbove || layout == TagLayerLayout.LayerAbove;
         }
@@ -119,17 +128,18 @@ namespace HierarchyDecorator
 
             foreach (GameObject go in Selection.gameObjects)
             {
-                go.layer = LayerMask.NameToLayer(layer);
+                int layerIndex = LayerMask.NameToLayer(layer);
+                go.layer = layerIndex;
 
-                //if (setChildLayers)
-                //{
-                //    Undo.RecordObjects(Selection.gameObjects, "Layer Updated");
+                if (setChildLayers)
+                {
+                    Undo.RecordObjects(Selection.gameObjects, "Layer Updated");
 
-                //    foreach (Transform child in go.transform)
-                //    {
-                //        child.gameObject.layer = index;
-                //    }
-                //}
+                    foreach (Transform child in go.transform)
+                    {
+                        child.gameObject.layer = layerIndex;
+                    }
+                }
 
                 if (Selection.gameObjects.Length == 1)
                 {
