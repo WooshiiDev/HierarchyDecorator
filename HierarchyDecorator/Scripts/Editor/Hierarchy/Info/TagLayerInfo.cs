@@ -7,11 +7,12 @@ namespace HierarchyDecorator
 {
     public class TagLayerInfo : HierarchyInfo
     {
-        private bool tagEnabled = false;
-        private bool layerEnabled = false;
+        private bool tagEnabled;
+        private bool layerEnabled;
 
         private bool isVertical;
         private bool bothShown => tagEnabled && layerEnabled;
+        private bool hasStyle;
 
         protected override void OnDrawInit(GameObject instance, Settings settings)
         {
@@ -24,18 +25,31 @@ namespace HierarchyDecorator
 
         protected override bool DrawerIsEnabled(Settings settings, GameObject instance)
         {
-            return _settings.globalData.showLayers || _settings.globalData.showTags;
-            return settings.globalData.showLayers || settings.globalData.showTags;
+            bool showLayers = settings.globalData.showLayers;
+            bool showTags = settings.globalData.showTags;
+
+            if (hasStyle = settings.styleData.HasStyle(instance.name))
+            {
+                bool showStyleTag = settings.styleData.displayTags;
+                bool showStyleLayer = settings.styleData.displayLayers;
+
+                return (showLayers == showStyleLayer) || (showTags == showStyleTag);
+            }
+
+            return showLayers || showTags;
         }
 
         protected override void DrawInfo(Rect rect, GameObject instance, Settings settings)
         {
-            if (settings.globalData.showTags)
+            bool canDrawTag = hasStyle == (hasStyle && settings.styleData.displayTags);
+            bool canDrawLayers = hasStyle == (hasStyle && settings.styleData.displayLayers);
+
+            if (settings.globalData.showTags && canDrawTag)
             {
                 DrawTag(rect, instance, settings.globalData.tagLayerLayout);
             }
 
-            if (settings.globalData.showLayers)
+            if (settings.globalData.showLayers && canDrawLayers)
             {
                 DrawLayer(rect, instance, settings.globalData.tagLayerLayout);
             }

@@ -70,7 +70,7 @@ namespace HierarchyDecorator
                 .RegisterSerializedGroup(lightModeBack, "Light Mode", "colorOne", "colorTwo");
 
             CreateDrawableGroup ("Styles")
-                .RegisterSerializedProperty(serializedTab, "displayLayers", "displayIcons")
+                .RegisterSerializedProperty(serializedTab, "displayTags", "displayLayers", "displayIcons")
                 .RegisterReorderable (styleList);
         }
 
