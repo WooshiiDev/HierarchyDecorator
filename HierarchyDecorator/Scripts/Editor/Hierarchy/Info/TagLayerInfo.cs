@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEditorInternal;
@@ -10,14 +10,21 @@ namespace HierarchyDecorator
         private bool tagEnabled = false;
         private bool layerEnabled = false;
 
+        private bool isVertical;
+
         protected override void OnDrawInit(GameObject instance, Settings settings)
         {
-            
+            tagEnabled = settings.globalData.showTags;
+            layerEnabled = settings.globalData.showLayers;
+
+            TagLayerLayout layout = settings.globalData.tagLayerLayout;
+            isVertical = layout == TagLayerLayout.TagAbove || layout == TagLayerLayout.LayerAbove;
         }
 
-        protected override bool DrawerIsEnabled(Settings _settings, GameObject instance)
+        protected override bool DrawerIsEnabled(Settings settings, GameObject instance)
         {
             return _settings.globalData.showLayers || _settings.globalData.showTags;
+            return settings.globalData.showLayers || settings.globalData.showTags;
         }
 
         protected override void DrawInfo(Rect rect, GameObject instance, Settings settings)
@@ -35,6 +42,11 @@ namespace HierarchyDecorator
 
         protected override int GetGridCount()
         {
+            if (isVertical || tagEnabled != layerEnabled)
+            {
+                return 3;
+            }
+
             return 6;
         }
         
