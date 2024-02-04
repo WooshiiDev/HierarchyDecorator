@@ -11,6 +11,7 @@ namespace HierarchyDecorator
         private bool layerEnabled = false;
 
         private bool isVertical;
+        private bool bothShown => tagEnabled && layerEnabled;
 
         protected override void OnDrawInit(GameObject instance, Settings settings)
         {
@@ -146,6 +147,11 @@ namespace HierarchyDecorator
 
         private Rect GetInfoAreaRect(Rect rect, bool isTag, TagLayerLayout layout)
         {
+            if (!bothShown)
+            {
+                return rect;
+            }
+
             switch (layout)
             {
                 // Horizontal
