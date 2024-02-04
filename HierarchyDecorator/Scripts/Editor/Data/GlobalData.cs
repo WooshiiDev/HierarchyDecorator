@@ -12,6 +12,8 @@ namespace HierarchyDecorator
 
     public enum BreadcrumbStyle { Solid = 0, Dash = 1, Dotted = 2 }
 
+    public enum TagLayerLayout { TagInFront = 0, LayerInfront = 1, TagAbove = 2, LayerAbove = 3 }
+
     [System.Serializable]
     public class BreadcrumbSettings
     {
@@ -43,6 +45,7 @@ namespace HierarchyDecorator
 
         // Tags & Layers
 
+        public TagLayerLayout tagLayerLayout;
         public bool showTags = true;
         public bool clickToSelectTags = true;
 
