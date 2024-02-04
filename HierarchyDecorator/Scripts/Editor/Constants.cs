@@ -235,7 +235,7 @@ namespace HierarchyDecorator
 
             TinyText = new GUIStyle(EditorStyles.centeredGreyMiniLabel)
             {
-                alignment = TextAnchor.MiddleCenter,
+                alignment = TextAnchor.MiddleLeft,
                 fontSize = 8,
                 normal =
                 {

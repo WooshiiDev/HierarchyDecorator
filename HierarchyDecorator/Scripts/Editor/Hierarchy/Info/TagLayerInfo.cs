@@ -66,6 +66,7 @@ namespace HierarchyDecorator
 
             DrawInstanceInfo(rect, instance.tag, instance, menu);
         }
+
         private void DrawLayer(Rect rect, GameObject instance, TagLayerLayout layout)
         {
             GenericMenu menu = CreateMenu(InternalEditorUtility.layers, AssignLayer);
@@ -76,7 +77,7 @@ namespace HierarchyDecorator
 
         private void DrawInstanceInfo(Rect rect, string label, GameObject instance, GenericMenu menu)
         {
-            EditorGUI.LabelField(rect, label, isVertical ? Style.TinyText : Style.SmallDropdown);
+            EditorGUI.LabelField(rect, label, (isVertical && bothShown) ? Style.TinyText : Style.SmallDropdown);
 
             Event e = Event.current;
             bool hasClicked = rect.Contains(e.mousePosition) && e.type == EventType.MouseDown;
