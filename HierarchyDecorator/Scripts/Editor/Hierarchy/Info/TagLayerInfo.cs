@@ -16,40 +16,32 @@ namespace HierarchyDecorator
 
         protected override void OnDrawInit(GameObject instance, Settings settings)
         {
-            tagEnabled = settings.globalData.showTags;
-            layerEnabled = settings.globalData.showLayers;
-
             TagLayerLayout layout = settings.globalData.tagLayerLayout;
             isVertical = layout == TagLayerLayout.TagAbove || layout == TagLayerLayout.LayerAbove;
         }
 
         protected override bool DrawerIsEnabled(Settings settings, GameObject instance)
         {
-            bool showLayers = settings.globalData.showLayers;
-            bool showTags = settings.globalData.showTags;
+            tagEnabled = settings.globalData.showTags;
+            layerEnabled = settings.globalData.showLayers;
 
             if (hasStyle = settings.styleData.HasStyle(instance.name))
             {
-                bool showStyleTag = settings.styleData.displayTags;
-                bool showStyleLayer = settings.styleData.displayLayers;
-
-                return (showLayers == showStyleLayer) || (showTags == showStyleTag);
+                tagEnabled &= settings.styleData.displayTags;
+                layerEnabled &= settings.styleData.displayLayers;
             }
 
-            return showLayers || showTags;
+            return tagEnabled || layerEnabled;
         }
 
         protected override void DrawInfo(Rect rect, GameObject instance, Settings settings)
         {
-            bool canDrawTag = hasStyle == (hasStyle && settings.styleData.displayTags);
-            bool canDrawLayers = hasStyle == (hasStyle && settings.styleData.displayLayers);
-
-            if (settings.globalData.showTags && canDrawTag)
+            if (tagEnabled)
             {
                 DrawTag(rect, instance, settings.globalData.tagLayerLayout);
             }
 
-            if (settings.globalData.showLayers && canDrawLayers)
+            if (layerEnabled)
             {
                 DrawLayer(rect, instance, settings.globalData.tagLayerLayout);
             }
@@ -80,6 +72,27 @@ namespace HierarchyDecorator
             rect = GetInfoAreaRect(rect, false, layout);
 
             DrawInstanceInfo(rect, LayerMask.LayerToName(instance.layer), instance, menu);
+        }
+
+        private void DrawInstanceInfo(Rect rect, string label, GameObject instance, GenericMenu menu)
+        {
+            EditorGUI.LabelField(rect, label, isVertical ? Style.TinyText : Style.SmallDropdown);
+
+            Event e = Event.current;
+            bool hasClicked = rect.Contains(e.mousePosition) && e.type == EventType.MouseDown;
+
+            if (!hasClicked)
+            {
+                return;
+            }
+
+            GameObject[] selection = Selection.gameObjects;
+            if (selection.Length < 2)
+            {
+                Selection.SetActiveObjectWithContext(instance, null);
+            }
+            menu.ShowAsContext();
+            e.Use();
         }
 
         // - Assignment
@@ -122,27 +135,6 @@ namespace HierarchyDecorator
                     Selection.SetActiveObjectWithContext(Selection.gameObjects[0], null);
                 }
             }
-        }
-
-        private void DrawInstanceInfo(Rect rect, string label, GameObject instance, GenericMenu menu)
-        {
-            EditorGUI.LabelField(rect, label, Style.SmallDropdown);
-
-            Event e = Event.current;
-            bool hasClicked = rect.Contains(e.mousePosition) && e.type == EventType.MouseDown;
-
-            if (!hasClicked)
-            {
-                return;
-            }
-
-            GameObject[] selection = Selection.gameObjects;
-            if (selection.Length < 2)
-            {
-                Selection.SetActiveObjectWithContext(instance, null);
-            }
-            menu.ShowAsContext();
-            e.Use();
         }
 
         // - Helpers
