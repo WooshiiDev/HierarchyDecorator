@@ -6,8 +6,8 @@ namespace HierarchyDecorator
     [RegisterTab(0)]
     public class GeneralTab : SettingsTab
     {
-        private string[] TagFields = new[] { "showTags", "clickToSelectTags" };
-        private string[] LayerFields = new[] { "showLayers", "clickToSelectLayer", "applyChildLayers" };
+        private string[] TagFields = new[] { "showTags" };
+        private string[] LayerFields = new[] { "showLayers", "applyChildLayers" };
 
         public GeneralTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, "globalData", "General", "d_CustomTool")
         {
@@ -19,7 +19,7 @@ namespace HierarchyDecorator
             // --- Layers
 
             CreateDrawableGroup("Tags & Layers")
-                .RegisterSerializedProperty(serializedTab, TagFields).Space()
+                .RegisterSerializedProperty(serializedTab, TagFields)
                 .RegisterSerializedProperty(serializedTab, LayerFields).Space()
                 .RegisterSerializedProperty(serializedTab, "tagLayerLayout");
 
