@@ -88,12 +88,12 @@ namespace HierarchyDecorator
 
                 if (componentType.IsBuiltIn)
                 {
-                    DrawComponent(rect, componentType, settings);
+                    DrawComponent(rect, component, componentType, settings);
                 }
                 else
                 if (!stackScripts)
                 {
-                    DrawMonobehaviour(rect, type, componentType, settings);
+                    DrawMonobehaviour(rect, component, componentType, settings);
                 }
                 else
                 {
@@ -108,7 +108,7 @@ namespace HierarchyDecorator
                     tooltip = stackOutput.Trim()
                 };
 
-                DrawComponentIcon(rect, content);
+                DrawComponentIcon(rect, null, false, content);
             }
 
             bool GetComponent(Type type, out ComponentType componentType)
@@ -144,7 +144,7 @@ namespace HierarchyDecorator
 
         // GUI
 
-        private void DrawMonobehaviour(Rect rect, Type type, ComponentType componentType, Settings settings)
+        private void DrawMonobehaviour(Rect rect, Component component, ComponentType componentType, Settings settings)
         {
             if (!settings.Components.DisplayMonoScripts)
             {
@@ -159,26 +159,31 @@ namespace HierarchyDecorator
                 }
             }
 
-            componentTypes.Add(type);
-            DrawComponentIcon(rect, componentType.Content);
+            componentTypes.Add(componentType.Type);
+            DrawComponentIcon(rect, component, componentType.HasToggle, componentType.Content);
         }
 
-        private void DrawComponent(Rect rect, ComponentType component, Settings settings)
+        private void DrawComponent(Rect rect, Component component, ComponentType type, Settings settings)
         {
             if (!settings.Components.DisplayBuiltIn)
             {
-                if (!component.Shown)
+                if (!type.Shown)
                 {
                     return;
                 }
             }
 
-            componentTypes.Add(component.Type);
-            DrawComponentIcon(rect, component.Content);
+            componentTypes.Add(type.Type);
+            DrawComponentIcon(rect, component, type.HasToggle, type.Content);
         }
 
-        private void DrawComponentIcon(Rect rect, GUIContent content)
+        private void DrawComponentIcon(Rect rect, Component component, bool hasToggle, GUIContent content)
         {
+            if (component == null)
+            {
+                return;
+            }
+
             rect = GetIconPosition (rect);
 
             if (rect.x < (LabelRect.x + LabelRect.width))
@@ -186,7 +191,13 @@ namespace HierarchyDecorator
                 return;
             }
 
-            GUI.Label (rect, content, Style.ComponentIconStyle);
+            GUI.Label(rect, content, Style.ComponentIconStyle);
+
+            if (hasToggle && rect.Contains(Event.current.mousePosition))
+            {
+                GetEnableValue(component);
+            }
+
             validComponentCount++;
         }
 
@@ -194,6 +205,14 @@ namespace HierarchyDecorator
         {
             rect = GetIconPosition (rect, true);
             GUI.Label (rect, warningGUI, Style.ComponentIconStyle);
+        }
+
+        private void GetEnableValue(Component component)
+        {
+            var enabled = ReflectionUtility.GetProperty(component.GetType(), "enabled");
+            bool value = (bool)enabled.GetValue(component);
+
+            enabled.SetValue(component, !value);
         }
 
         // Position Helpers

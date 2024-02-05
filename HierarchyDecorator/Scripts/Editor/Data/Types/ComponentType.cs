@@ -26,6 +26,8 @@ namespace HierarchyDecorator
         [SerializeField] private MonoScript script;
         [SerializeField] private int hash = -1;
 
+        [SerializeField] private bool hasToggle;
+
         // Properties
 
         /// <summary>
@@ -108,6 +110,8 @@ namespace HierarchyDecorator
             }
         }
 
+        public bool HasToggle => hasToggle;
+
         // Constructor 
 
         /// <summary>
@@ -116,11 +120,8 @@ namespace HierarchyDecorator
         /// <param name="type">The type of component.</param>
         public ComponentType(Type type, bool isBuiltIn)
         {
-            Type = type;
-            name = type.AssemblyQualifiedName;
-            displayName = type.Name;
-
             this.isBuiltIn = isBuiltIn;
+            UpdateType(type, false);
         }
          
         // Methods
@@ -156,7 +157,7 @@ namespace HierarchyDecorator
                 UpdateContent();
                 return;
             }
-
+            
             if (!isBuiltIn && script == null)
             {
                 return;
@@ -166,6 +167,8 @@ namespace HierarchyDecorator
 
             name = type.AssemblyQualifiedName;
             displayName = type.Name;
+
+            hasToggle = ReflectionUtility.HasProperty(type, "enabled");
 
             if (updateContent)
             {

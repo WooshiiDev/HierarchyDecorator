@@ -8,6 +8,16 @@ namespace HierarchyDecorator
 {
     internal static class ReflectionUtility
     {
+        public static BindingFlags Default = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+        public static BindingFlags Property = Default | BindingFlags.GetProperty| BindingFlags.SetProperty;
+
+        // --- Fields
+
+        public static PropertyInfo GetProperty(Type type, string name)
+        {
+            return type.GetProperty(name, Property);
+        }
+
         // --- Subtypes
 
         /// <summary>
@@ -157,6 +167,7 @@ namespace HierarchyDecorator
 
         // --- Assembly
 
+
         /// <summary>
         /// Get the assembly the given type is in.
         /// </summary>
@@ -173,6 +184,13 @@ namespace HierarchyDecorator
             }
 
             return Assembly.GetAssembly (type);
+        }
+
+        // --- Queries
+
+        public static bool HasProperty(Type type, string name)
+        {
+            return GetProperty(type, name) != null;
         }
     }
 }
