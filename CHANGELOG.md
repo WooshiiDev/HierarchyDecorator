@@ -1,4 +1,9 @@
-## v0.9.1 Hotfix - Duplicate component types
+## v0.10.0 | Tag Display
+
+ - Tags can now be displayed in the hierarchy.
+ - Options to display tags and layers above each other or horizontally.
+
+## v0.9.1 | Hotfix - Duplicate component types
 
 This is to fix a use case of types being named the same that may exist in the same project.
 
