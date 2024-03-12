@@ -191,14 +191,53 @@ namespace HierarchyDecorator
                 return;
             }
 
-            GUI.Label(rect, content, Style.ComponentIconStyle);
-
-            if (hasToggle && rect.Contains(Event.current.mousePosition))
+            if (hasToggle)
             {
-                GetEnableValue(component);
+                DrawComponentToggle(rect, component, content);
+            }
+            else
+            {
+                GUI.Label(rect, content, Style.ComponentIconStyle);
             }
 
             validComponentCount++;
+        }
+
+        private void DrawComponentToggle(Rect rect, Component component, GUIContent content)
+        {
+
+            bool value;
+            if (component is Behaviour behaviour)
+            {
+                value = behaviour.enabled;
+            }
+            else
+            {
+                var property = ReflectionUtility.GetProperty(component.GetType(), "enabled");
+                value = (bool)property.GetValue(component);
+            }
+
+            if (!value)
+            {
+                GUI.color = new Color(1f, 1f, 1f, 0.4f);
+            }
+
+            GUI.Label(rect, content, Style.ComponentIconStyle);
+            Event ev = Event.current;
+
+            if (ev.type == EventType.MouseDown && rect.Contains(ev.mousePosition))
+            {
+                if (component is Behaviour b)
+                {
+                    b.enabled = !value;
+                }
+                else
+                {
+                    GetEnableValue(component);
+                }
+            }
+
+            GUI.color = Color.white;
         }
 
         private void DrawMissingComponent(Rect rect)
