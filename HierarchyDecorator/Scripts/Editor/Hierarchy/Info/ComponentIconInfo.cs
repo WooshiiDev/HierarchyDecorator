@@ -205,7 +205,6 @@ namespace HierarchyDecorator
 
         private void DrawComponentToggle(Rect rect, Component component, GUIContent content)
         {
-
             bool value;
             if (component is Behaviour behaviour)
             {
@@ -217,12 +216,6 @@ namespace HierarchyDecorator
                 value = (bool)property.GetValue(component);
             }
 
-            if (!value)
-            {
-                GUI.color = new Color(1f, 1f, 1f, 0.4f);
-            }
-
-            GUI.Label(rect, content, Style.ComponentIconStyle);
             Event ev = Event.current;
 
             if (ev.type == EventType.MouseDown && rect.Contains(ev.mousePosition))
@@ -235,8 +228,21 @@ namespace HierarchyDecorator
                 {
                     GetEnableValue(component);
                 }
+
+                ev.Use();
+
+                if (Selection.Contains(component.gameObject))
+                {
+                    EditorUtility.SetDirty(component.gameObject);
+                }
             }
 
+            if (!value)
+            {
+                GUI.color = new Color(1f, 1f, 1f, 0.4f);
+            }
+
+            GUI.Label(rect, content, Style.ComponentIconStyle);
             GUI.color = Color.white;
         }
 
