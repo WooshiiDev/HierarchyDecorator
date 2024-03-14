@@ -1,7 +1,8 @@
-## v0.10.0 | Tag Display
+## v0.10.0 | Tags, toggle icon components
 
  - Tags can now be displayed in the hierarchy.
  - Options to display tags and layers above each other or horizontally.
+ - Disabling/enabling components is now possible by clicking their respective icon.
 
 ## v0.9.1 | Hotfix - Duplicate component types
 
