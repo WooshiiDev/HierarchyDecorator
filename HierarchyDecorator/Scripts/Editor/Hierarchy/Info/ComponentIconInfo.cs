@@ -140,6 +140,8 @@ namespace HierarchyDecorator
             components = instance.GetComponents<Component> ();
             componentTypes.Clear ();
             hasMonoBehaviour = false;
+
+            EditorApplication.RepaintHierarchyWindow();
         }
 
         // GUI
@@ -223,6 +225,10 @@ namespace HierarchyDecorator
                 if (component is Behaviour b)
                 {
                     b.enabled = !value;
+                    if (Selection.Contains(component.gameObject))
+                    {
+                        EditorUtility.SetDirty(component.gameObject);
+                    }
                 }
                 else
                 {
@@ -231,10 +237,7 @@ namespace HierarchyDecorator
 
                 ev.Use();
 
-                if (Selection.Contains(component.gameObject))
-                {
-                    EditorUtility.SetDirty(component.gameObject);
-                }
+                
             }
 
             if (!value)
