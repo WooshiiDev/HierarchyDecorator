@@ -41,23 +41,24 @@ namespace HierarchyDecorator
             EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyItem;
             EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyItem;
 
-            // Scene Init
-
-            EditorSceneManager.sceneOpened -= AddScene;
-            EditorSceneManager.sceneOpened += AddScene;
-            EditorSceneManager.sceneClosed -= RemoveScene;
-            EditorSceneManager.sceneClosed += RemoveScene;
-
-            int count = SceneManager.sceneCount;
-            for (int i = 0; i < count; i++)
+            EditorApplication.delayCall = () =>
             {
-                Scene scene = SceneManager.GetSceneAt(i);
-                AddScene(scene, OpenSceneMode.Single);
-            }
+                EditorSceneManager.sceneOpened -= AddScene;
+                EditorSceneManager.sceneOpened += AddScene;
+                EditorSceneManager.sceneClosed -= RemoveScene;
+                EditorSceneManager.sceneClosed += RemoveScene;
+
+                // Need to manually 
+                int count = SceneManager.sceneCount;
+                for (int i = 0; i < count; i++)
+                {
+                    Scene scene = SceneManager.GetSceneAt(i);
+                    AddScene(scene, OpenSceneMode.Single);
+                }
+            };
 
             // Handle package updating
 
-            
         }
 
         private static void AddScene(Scene scene, OpenSceneMode mode)
