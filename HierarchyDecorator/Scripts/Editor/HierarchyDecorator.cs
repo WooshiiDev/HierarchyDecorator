@@ -38,11 +38,11 @@ namespace HierarchyDecorator
     
         static HierarchyDecorator()
         {
-            EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyItem;
-            EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyItem;
-
             EditorApplication.delayCall = () =>
             {
+                EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyItem;
+                EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyItem;
+                
                 EditorSceneManager.sceneOpened -= AddScene;
                 EditorSceneManager.sceneOpened += AddScene;
                 EditorSceneManager.sceneClosed -= RemoveScene;
