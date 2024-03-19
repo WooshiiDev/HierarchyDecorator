@@ -48,7 +48,8 @@ namespace HierarchyDecorator
                 EditorSceneManager.sceneClosed -= RemoveScene;
                 EditorSceneManager.sceneClosed += RemoveScene;
 
-                // Need to manually 
+                // Need to manually register initial scenes
+                
                 int count = SceneManager.sceneCount;
                 for (int i = 0; i < count; i++)
                 {
