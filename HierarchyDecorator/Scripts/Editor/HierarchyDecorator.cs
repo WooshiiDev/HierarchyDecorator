@@ -15,7 +15,6 @@ namespace HierarchyDecorator
         public const string SETTINGS_NAME_STRING = "Settings";
 
         private static Settings Settings;
-        private static SceneCache Hierarchy;
     
         static HierarchyDecorator()
         {
@@ -23,36 +22,7 @@ namespace HierarchyDecorator
             {
                 EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyItem;
                 EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyItem;
-                
-                EditorSceneManager.sceneOpened -= AddScene;
-                EditorSceneManager.sceneOpened += AddScene;
-                EditorSceneManager.sceneClosed -= RemoveScene;
-                EditorSceneManager.sceneClosed += RemoveScene;
-
-                // Need to manually register initial scenes
-                
-                int count = SceneManager.sceneCount;
-                for (int i = 0; i < count; i++)
-                {
-                    Scene scene = SceneManager.GetSceneAt(i);
-                    AddScene(scene, OpenSceneMode.Single);
-                }
             };
-
-            // Handle package updating
-
-        }
-
-        private static void AddScene(Scene scene, OpenSceneMode mode)
-        {
-            HierarchyCache.RegisterScene(scene);
-            //Debug.Log("Added scene " + scene.name + " to Hierarchy.");
-        }
-
-        private static void RemoveScene(Scene scene)
-        {
-            HierarchyCache.RemoveScene(scene);
-            //Debug.Log("Removed scene " + scene.name + " from Hierarchy.");
         }
 
         private static void OnHierarchyItem(int instanceID, Rect selectionRect)
