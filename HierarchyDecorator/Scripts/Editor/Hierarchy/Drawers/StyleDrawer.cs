@@ -32,10 +32,8 @@ namespace HierarchyDecorator
                 hasStyle = true;
             }
 
-            var target = HierarchyCache.Target;
-            var current = target.Current;
-
-            if (!current.HasChildren || !hasStyle)
+            HierarchyItem item = HierarchyManager.Current;
+            if (!item.HasChildren || !hasStyle)
             {
                 return;
             }
@@ -43,9 +41,9 @@ namespace HierarchyDecorator
             // - Need to validate children to check if some can be visible
 
             bool canShow = false;
-            for (int i = 0; i < current.Transform.childCount; i++)
+            for (int i = 0; i < item.Transform.childCount; i++)
             {
-                Transform child = current.Transform.GetChild(i);
+                Transform child = item.Transform.GetChild(i);
 
                 if ((child.hideFlags & IgnoreFoldoutFlags) == 0)
                 {
@@ -59,7 +57,7 @@ namespace HierarchyDecorator
                 return;
             }
 
-            DrawFoldout(rect, current.Foldout);
+            DrawFoldout(rect, item.Foldout);
         }
 
         protected override bool DrawerIsEnabled(Settings _settings, GameObject instance)

@@ -16,26 +16,6 @@ namespace HierarchyDecorator
 
         private static Settings Settings;
         private static SceneCache Hierarchy;
-
-        // Drawers 
-
-        private static HierarchyDrawer[] Drawers = new HierarchyDrawer[]
-        {
-            new StyleDrawer(),
-        };
-
-        private static HierarchyDrawer[] OverlayDrawers = new HierarchyDrawer[]
-        {
-            new StateDrawer(),
-            new ToggleDrawer(),
-            new BreadcrumbsDrawer()
-        };
-
-        private static HierarchyInfo[] Info = new HierarchyInfo[]    
-        {
-            new TagLayerInfo(),
-            new ComponentIconInfo()
-        };
     
         static HierarchyDecorator()
         {
