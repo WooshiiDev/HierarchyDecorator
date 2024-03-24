@@ -275,28 +275,34 @@ namespace HierarchyDecorator
             }
         }
 
-        private static Dictionary<Scene, SceneCache> Scenes = new Dictionary<Scene, SceneCache>();
+        private static Dictionary<int, SceneCache> Scenes = new Dictionary<int, SceneCache>();
 
         public static SceneCache Target;
+        public static int CurrentHandle { get; private set; }
+
+        // --- Methods
+
+        // - Add/Remove
 
         public static bool RegisterScene(Scene scene)
         {
             if (!scene.IsValid())
             {
+                Debug.LogWarning("[Hierarchy Decorator] Attempted to register invalid scene.");
                 return false;
             }
 
-            if (Exists(scene))
+            int handle = scene.handle;
+            if (Exists(handle))
             {
-                Debug.LogWarning("Attempted to add preexisting scene to cache.");
+                Debug.LogWarning("[Hierarchy Decorator] Attempted to add preexisting scene to cache.");
                 return false;
             }
 
             SceneCache cache = new SceneCache(scene);
-
-            Scenes.Add(scene, cache);
-
-            if (Target == null)
+            Scenes.Add(scene.handle, cache);
+             
+            if (CurrentHandle == 0 || Target == null)
             {
                 Target = cache;
             }
@@ -312,18 +318,10 @@ namespace HierarchyDecorator
             }
 
             cache.Dispose();
-            return Scenes.Remove(scene);
+            return Scenes.Remove(scene.handle);
         }
 
-        public static bool TryGetScene(Scene scene, out SceneCache cache)
-        {
-            return Scenes.TryGetValue(scene, out cache);
-        }
-
-        public static bool Exists(Scene scene)
-        {
-            return Scenes.ContainsKey(scene);
-        }
+        // - Target Scene
 
         public static bool IsTarget(Scene scene)
         {
@@ -356,6 +354,16 @@ namespace HierarchyDecorator
             }
 
             Target = cache;
+        }
+
+        public static bool TryGetScene(Scene scene, out SceneCache cache)
+        {
+            return Scenes.TryGetValue(scene.handle, out cache);
+        }
+
+        public static bool Exists(int handle)
+        {
+            return Scenes.ContainsKey(handle);
         }
     }
 }
