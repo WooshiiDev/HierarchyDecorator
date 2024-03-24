@@ -15,6 +15,7 @@ namespace HierarchyDecorator
         public const string SETTINGS_NAME_STRING = "Settings";
 
         private static Settings Settings;
+        private static SceneCache Hierarchy;
 
         // Drawers 
 
@@ -98,9 +99,8 @@ namespace HierarchyDecorator
                 return;
             }
 
-            HierarchyCache
-                .SetTarget(instance.scene)
-                .SetTarget(instance.transform);
+            Hierarchy = HierarchyCache.SetTarget(instance.scene);
+            Hierarchy.SetTarget(instance.transform);
 
 #if UNITY_2019_1_OR_NEWER
             selectionRect.height = 16f;

@@ -13,8 +13,8 @@ namespace HierarchyDecorator
 
         private static readonly HideFlags IgnoreFoldoutFlags = HideFlags.HideInHierarchy | HideFlags.HideInInspector;
 
-        private static HierarchyCache.SceneCache Scene => HierarchyCache.Target;
-        private static HierarchyCache.HierarchyData Data => Scene.Current;
+        private static SceneCache Scene => HierarchyCache.Target;
+        private static HierarchyData Data => Scene.Current;
 
         protected override bool DrawerIsEnabled(Settings _settings, GameObject instance)
         {
