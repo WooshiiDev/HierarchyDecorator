@@ -2,6 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEditor.SceneManagement;
 
 namespace HierarchyDecorator
 {
@@ -17,6 +18,30 @@ namespace HierarchyDecorator
         public static HierarchyItem Previous { get; private set; }
 
         // --- Methods
+
+        public static void Initialize()
+        {
+            EditorSceneManager.sceneOpened += OnSceneOpen;
+            EditorSceneManager.sceneClosed += OnSceneClose;
+        }
+
+        private static void OnSceneOpen(Scene scene, OpenSceneMode mode)
+        {
+            ResetLookup();
+        }
+
+        private static void OnSceneClose(Scene scene)
+        {
+            ResetLookup();
+        }
+
+        private static void ResetLookup()
+        {
+            lookup.Clear();
+            Current = null;
+        }
+
+        // - GUI
 
         public static void OnGUI(int id, Rect rect)
         {

@@ -18,11 +18,10 @@ namespace HierarchyDecorator
     
         static HierarchyDecorator()
         {
-            EditorApplication.delayCall = () =>
-            {
-                EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyItem;
-                EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyItem;
-            };
+            HierarchyManager.Initialize();
+
+            EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyItem;
+            EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyItem;
         }
 
         private static void OnHierarchyItem(int instanceID, Rect selectionRect)
