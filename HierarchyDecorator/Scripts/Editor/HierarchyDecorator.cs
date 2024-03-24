@@ -88,43 +88,8 @@ namespace HierarchyDecorator
                 UpdateComponentData();
                 return;
             }
-            
-            // Skip over the instance 
-            // - normally if it's a Scene instance rather than a GameObject
 
-            GameObject instance = EditorUtility.InstanceIDToObject (instanceID) as GameObject;
-
-            if (instance == null)
-            {
-                return;
-            }
-
-            Hierarchy = HierarchyCache.SetTarget(instance.scene);
-            Hierarchy.SetTarget(instance.transform);
-
-#if UNITY_2019_1_OR_NEWER
-            selectionRect.height = 16f;
-#endif
-
-            // Draw GUI
-
-            int i = 0;
-            for (i = 0; i < Drawers.Length; i++)
-            {
-                Drawers[i].Draw (selectionRect, instance, Settings);
-            }
-
-            for (i = 0; i < Info.Length; i++)
-            {
-                Info[i].Draw(selectionRect, instance, Settings);
-            }
-
-            for (i = 0; i < OverlayDrawers.Length; i++)
-            {
-                OverlayDrawers[i].Draw(selectionRect, instance, Settings);
-            }
-
-            HierarchyInfo.ResetIndent ();
+            HierarchyManager.OnGUI(instanceID, selectionRect);
         }
 
         // Factory Methods
