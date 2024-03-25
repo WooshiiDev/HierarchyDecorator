@@ -8,16 +8,12 @@ namespace HierarchyDecorator
 {
     public class ComponentIconInfo : HierarchyInfo
     {
-        private static Dictionary<Type, ComponentType> s_allTypes = new Dictionary<Type, ComponentType>();
-
         private readonly Type MonoType = typeof(MonoBehaviour);
         private readonly GUIContent MonoContent = EditorGUIUtility.IconContent("cs Script Icon");
 
         private HashSet<Type> componentTypes = new HashSet<Type> ();
         private Component[] components = new Component[0];
         private int validComponentCount;
-
-        private bool hasMonoBehaviour = false;
 
 #if UNITY_2019_1_OR_NEWER
         private GUIContent warningGUI = EditorGUIUtility.IconContent ("warning");
@@ -48,7 +44,7 @@ namespace HierarchyDecorator
         protected override void DrawInfo(Rect rect, GameObject instance, Settings settings)
         {
             bool stackScripts = settings.Components.StackScripts;
-            
+
             var items = HierarchyManager.Current.Components.Items;
             for (int i = 0; i < items.Count; i++)
             {
@@ -96,133 +92,15 @@ namespace HierarchyDecorator
                 DrawComponentIcon(rect, item.Component, false, item.Content);
                 componentTypes.Add(type);
             }
-
-            return;
-
-            string stackOutput = string.Empty;
-
-            for (int i = 0; i < components.Length; i++)
-            {
-                Component component = components[i];
-
-                // Get Type
-
-                Type type = component.GetType();
-                ComponentType componentType;
-
-                if (!s_allTypes.TryGetValue(type, out componentType))
-                {
-                    if (GetComponent(type, out componentType) || RegisterComponent(component, out componentType))
-                    {
-                        if (componentType.IsBuiltIn)
-                        {
-                            s_allTypes.Add(type, componentType);
-                        }
-                    }
-                }
-
-                if (componentType == null)
-                {
-                    continue;
-                }
-
-                if (componentType.IsBuiltIn && settings.Components.IsExcluded(type))
-                {
-                    continue;
-                }
-
-                if (componentType.IsBuiltIn)
-                {
-                    DrawComponent(rect, component, componentType, settings);
-                }
-                else
-                if (!stackScripts)
-                {
-                    DrawMonobehaviour(rect, component, componentType, settings);
-                }
-                else
-                {
-                    stackOutput += componentType.DiplayName + "\n";
-                }
-            }
-
-            if (stackScripts && !string.IsNullOrEmpty(stackOutput))
-            {
-                GUIContent content = new GUIContent(MonoContent)
-                {
-                    tooltip = stackOutput.Trim()
-                };
-
-                DrawComponentIcon(rect, null, false, content);
-            }
-
-            bool GetComponent(Type type, out ComponentType componentType)
-            {
-                if (settings.Components.TryGetComponent(type, out componentType))
-                {
-                    return true;
-                }
-
-                return settings.Components.TryGetCustomComponent(type, out componentType);
-            }
-
-            bool RegisterComponent(Component component, out ComponentType componentType)
-            {
-                if (settings.Components.RegisterCustomComponent(component))
-                {
-                    return GetComponent(component.GetType(), out componentType);
-                }
-
-                componentType = null;
-                return false;
-            }
         }
 
         protected override void OnDrawInit(GameObject instance, Settings settings)
         {
             validComponentCount = 1;
-
-            //components = instance.GetComponents<Component> ();
             componentTypes.Clear ();
-            hasMonoBehaviour = false;
-
-            //EditorApplication.RepaintHierarchyWindow();
         }
 
         // GUI
-
-        private void DrawMonobehaviour(Rect rect, Component component, ComponentType componentType, Settings settings)
-        {
-            if (!settings.Components.DisplayMonoScripts)
-            {
-                if (componentType.Script == null)
-                {
-                    return;
-                }
-
-                if (!componentType.Shown)
-                {
-                    return;
-                }
-            }
-
-            componentTypes.Add(componentType.Type);
-            DrawComponentIcon(rect, component, componentType.HasToggle, componentType.Content);
-        }
-
-        private void DrawComponent(Rect rect, Component component, ComponentType type, Settings settings)
-        {
-            if (!settings.Components.DisplayBuiltIn)
-            {
-                if (!type.Shown)
-                {
-                    return;
-                }
-            }
-
-            componentTypes.Add(type.Type);
-            DrawComponentIcon(rect, component, type.HasToggle, type.Content);
-        }
 
         private void DrawComponentIcon(Rect rect, Component component, bool hasToggle, GUIContent content)
         {
