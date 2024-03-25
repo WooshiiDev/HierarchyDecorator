@@ -23,6 +23,13 @@ namespace HierarchyDecorator
         {
             EditorSceneManager.sceneOpened += OnSceneOpen;
             EditorSceneManager.sceneClosed += OnSceneClose;
+
+            EditorApplication.hierarchyChanged += OnHierarchyChange;
+        }
+
+        private static void OnHierarchyChange()
+        {
+            ResetLookup();
         }
 
         private static void OnSceneOpen(Scene scene, OpenSceneMode mode)
