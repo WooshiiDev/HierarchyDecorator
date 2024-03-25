@@ -142,6 +142,7 @@ namespace HierarchyDecorator
 
         // --- Fields
 
+        
         private GameObject instance;
 
         // --- Properties
@@ -202,6 +203,11 @@ namespace HierarchyDecorator
 
         public void OnGUI(Rect rect)
         {
+            if (Components.Validate(instance))
+            {
+
+            }
+
 #if UNITY_2019_1_OR_NEWER
             rect.height = 16f;
 #endif
@@ -256,6 +262,78 @@ namespace HierarchyDecorator
         public bool IsValid()
         {
             return instance != null;
+        }
+    }
+
+    public class Components
+    {
+        public List<ComponentItem> Items { get; private set; } = new List<ComponentItem>();
+
+        public Components(GameObject instance)
+        {
+            UpdateCache(GetComponents(instance));
+        }
+
+        public bool Validate(GameObject instance)
+        {
+            Component[] list = GetComponents(instance);
+
+            bool isValid = Items.Count == list.Length;
+            for (int i = Items.Count - 1; i >= 0; i--)
+            {
+                if (!Items[i].IsValid())
+                {
+                    isValid = false;
+                    Items.RemoveAt(i);
+                }
+            }
+
+            if (!isValid)
+            {
+                UpdateCache(list);
+            }
+
+            return isValid;
+        }
+
+        private void UpdateCache(Component[] components)
+        {
+
+            foreach (Component component in components)
+            {
+                if (Items.Any(c => c.Component == component))
+                {
+                    continue;
+                }
+
+                Items.Add(new ComponentItem(component));
+            }
+        }
+
+        private Component[] GetComponents(GameObject instance)
+        {
+            return instance.GetComponents<Component>();
+        }
+    }
+
+    public class ComponentItem
+    {
+        public Component Component { get; private set; }
+        public GUIContent Content { get; private set; }
+
+        public ComponentItem(Component component)
+        {
+            Component = component;
+
+            if (HierarchyDecorator.GetOrCreateSettings().Components.TryGetComponent(component.GetType(), out ComponentType type))
+            {
+                Content = type.Content;
+            }
+        }
+
+        public bool IsValid()
+        {
+            return Component != null;
         }
     }
 }

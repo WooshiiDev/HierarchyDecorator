@@ -47,6 +47,22 @@ namespace HierarchyDecorator
 
         protected override void DrawInfo(Rect rect, GameObject instance, Settings settings)
         {
+
+            var items = HierarchyManager.Current.Components.Items;
+            for (int i = 0; i < items.Count; i++)
+            {
+                var item = items[i];
+
+                if (item.Content == null)
+                {
+                    continue;
+                }
+
+                DrawComponentIcon(rect, item.Component, false, item.Content);
+            }
+
+            return;
+
             bool stackScripts = settings.Components.StackScripts;
             string stackOutput = string.Empty;
 
