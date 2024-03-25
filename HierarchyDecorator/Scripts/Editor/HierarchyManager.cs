@@ -32,6 +32,11 @@ namespace HierarchyDecorator
 
         private static void OnHierarchyChange()
         {
+            if (lookup.Count < 100)
+            {
+                return;
+            }
+
             ResetLookup();
         }
 
@@ -317,6 +322,7 @@ namespace HierarchyDecorator
         public string DisplayName { get; private set; }
         public Component Component { get; private set; }
         public GUIContent Content { get; private set; }
+        public ComponentType Type { get; private set; }
         public bool IsNullComponent { get; private set; }
         public bool IsBuiltIn { get; private set; }
 
@@ -330,10 +336,10 @@ namespace HierarchyDecorator
                 return;
             }
 
-            ComponentType type = GetComponentInfo(HierarchyDecorator.GetOrCreateSettings());
-            Content = type.Content;
-            IsBuiltIn = type.IsBuiltIn;
-            DisplayName = type.DiplayName;
+            Type = GetComponentInfo(HierarchyDecorator.GetOrCreateSettings());
+            Content = Type.Content;
+            IsBuiltIn = Type.IsBuiltIn;
+            DisplayName = Type.DiplayName;
         }
 
         public bool IsValid()
