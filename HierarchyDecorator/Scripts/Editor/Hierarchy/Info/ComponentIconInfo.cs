@@ -11,12 +11,12 @@ namespace HierarchyDecorator
         private readonly Type MonoType = typeof(MonoBehaviour);
         private readonly GUIContent MonoContent = EditorGUIUtility.IconContent("cs Script Icon");
 
-        private HashSet<Type> componentTypes = new HashSet<Type> ();
+        private HashSet<Type> componentTypes = new HashSet<Type>();
         private Component[] components = new Component[0];
         private int validComponentCount;
 
 #if UNITY_2019_1_OR_NEWER
-        private GUIContent warningGUI = EditorGUIUtility.IconContent ("warning");
+        private GUIContent warningGUI = EditorGUIUtility.IconContent("warning");
 #else
         private GUIContent warningGUI = EditorGUIUtility.IconContent ("console.warnicon");
 #endif
@@ -33,7 +33,7 @@ namespace HierarchyDecorator
 
         protected override bool DrawerIsEnabled(Settings settings, GameObject instance)
         {
-            if (settings.styleData.HasStyle (instance.name) && !settings.styleData.displayIcons)
+            if (settings.styleData.HasStyle(instance.name) && !settings.styleData.displayIcons)
             {
                 return false;
             }
@@ -45,6 +45,7 @@ namespace HierarchyDecorator
         {
             bool stackScripts = settings.Components.StackScripts;
 
+            bool requiresWarning = false;
             var items = HierarchyManager.Current.Components.Items;
             for (int i = 0; i < items.Count; i++)
             {
@@ -54,25 +55,18 @@ namespace HierarchyDecorator
 
                 if (item.IsNullComponent && settings.Components.ShowMissingScriptWarning)
                 {
-                    DrawMissingComponent(rect);
-                    return;
+                    requiresWarning = true;
+                    continue;
                 }
 
-                Type type = item.Component.GetType();
-                if (item.IsBuiltIn)
-                {
-                    if (!settings.Components.DisplayBuiltIn && !item.Type.Shown)
-                    {
-                        continue;
-                    }
-                }
-                if (!settings.Components.DisplayMonoScripts && !item.Type.Shown)
+                if (!CanShow(item, settings))
                 {
                     continue;
                 }
 
                 // Feature - Stack Scripts: Only draw once
 
+                Type type = item.Component.GetType();
                 if (stackScripts && componentTypes.Contains(type))
                 {
                     continue;
@@ -86,14 +80,19 @@ namespace HierarchyDecorator
                 // Draw
 
                 DrawComponentIcon(rect, item);
-                componentTypes.Add(type);
+                //componentTypes.Add(type);
+            }
+
+            if (requiresWarning)
+            {
+                DrawMissingComponent(rect);
             }
         }
 
         protected override void OnDrawInit(GameObject instance, Settings settings)
         {
             validComponentCount = 1;
-            componentTypes.Clear ();
+            componentTypes.Clear();
         }
 
         // GUI
@@ -105,7 +104,7 @@ namespace HierarchyDecorator
                 return;
             }
 
-            rect = GetIconPosition (rect);
+            rect = GetIconPosition(rect);
 
             if (rect.x < (LabelRect.x + LabelRect.width))
             {
@@ -125,7 +124,7 @@ namespace HierarchyDecorator
         }
 
         private void DrawComponentToggle(Rect rect, ComponentItem item)
-        { 
+        {
             Event ev = Event.current;
 
             if (ev.type == EventType.MouseDown && rect.Contains(ev.mousePosition))
@@ -146,7 +145,7 @@ namespace HierarchyDecorator
                 GUI.color = new Color(1f, 1f, 1f, 0.4f);
             }
             GUI.Label(rect, item.Content, Style.ComponentIconStyle);
-            if ( !active)
+            if (!active)
             {
                 GUI.color = c;
             }
@@ -154,19 +153,28 @@ namespace HierarchyDecorator
 
         private void DrawMissingComponent(Rect rect)
         {
-            rect = GetIconPosition (rect, true);
-            GUI.Label (rect, warningGUI, Style.ComponentIconStyle);
+            rect = GetIconPosition(rect);
+            GUI.Label(rect, warningGUI, Style.ComponentIconStyle);
         }
 
-        // Position Helpers
+        // Helpers
 
-        private Rect GetIconPosition(Rect rect, bool isInvalid = false)
+        private bool CanShow(ComponentItem item, Settings settings)
         {
-            int gridCount = isInvalid ? GetGridCount () + 1 : GetGridCount ();
+            if (item.IsBuiltIn)
+            {
+                return settings.Components.DisplayBuiltIn || item.Type.Shown;
+            }
 
+            return settings.Components.DisplayMonoScripts || item.Type.Shown;
+        }
+
+        private Rect GetIconPosition(Rect rect)
+        {
             // Move to left-most side possible, then move along rows
+
             rect.x += rect.width;
-            rect.x -= INDENT_SIZE * gridCount;
+            rect.x -= INDENT_SIZE * GetGridCount();
 
             rect.width = rect.height = INDENT_SIZE;
 
