@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -147,7 +146,6 @@ namespace HierarchyDecorator
         private static Settings s_settings = HierarchyDecorator.GetOrCreateSettings();
 
         // --- Fields
-
         
         private GameObject instance;
 
@@ -209,10 +207,7 @@ namespace HierarchyDecorator
 
         public void OnGUI(Rect rect)
         {
-            if (Components.Validate(instance))
-            {
-
-            }
+            Components.Validate(instance);
 
 #if UNITY_2019_1_OR_NEWER
             rect.height = 16f;
@@ -280,45 +275,45 @@ namespace HierarchyDecorator
             UpdateCache(GetComponents(instance));
         }
 
-        public bool Validate(GameObject instance)
+        public void Validate(GameObject instance)
         {
-            Component[] list = GetComponents(instance);
-
-            bool isValid = Items.Count == list.Length;
-            for (int i = Items.Count - 1; i >= 0; i--)
-            {
-                if (!Items[i].IsValid())
-                {
-                    isValid = false;
-                    Items.RemoveAt(i);
-                }
-            }
-
-            if (!isValid)
-            {
-                UpdateCache(list);
-            }
-
-            return isValid;
+            UpdateCache(GetComponents(instance));
         }
 
         private void UpdateCache(Component[] components)
         {
-            bool hasItems = Items.Count > 0;
-            foreach (Component component in components)
-            {
-                if (hasItems && Items.Any(c => c.Component == component))
-                {
-                    continue;
-                }
+            List<ComponentItem> nextItems = new List<ComponentItem>();
 
-                Items.Add(new ComponentItem(component));
+            for (int i = 0; i < components.Length; i++)
+            {
+                if (!TryGet(components[i], out ComponentItem item))
+                {
+                    item = new ComponentItem(components[i]);
+                }
+                
+                nextItems.Add(item);
             }
+            Items = nextItems;
         }
 
         private Component[] GetComponents(GameObject instance)
         {
             return instance.GetComponents<Component>();
+        }
+
+        private bool TryGet(Component component, out ComponentItem item)
+        {
+            for (int i = 0; i < Items.Count; i++)
+            {
+                if (Items[i].Component == component)
+                {
+                    item = Items[i];
+                    return true;
+                }
+            }
+
+            item = null;
+            return false;
         }
     }
 
