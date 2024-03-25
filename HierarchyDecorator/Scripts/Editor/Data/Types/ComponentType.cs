@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -112,6 +113,8 @@ namespace HierarchyDecorator
 
         public bool HasToggle => hasToggle;
 
+        public PropertyInfo ToggleProperty { get; private set; }
+
         // Constructor 
 
         /// <summary>
@@ -169,6 +172,10 @@ namespace HierarchyDecorator
             displayName = type.Name;
 
             hasToggle = ReflectionUtility.HasProperty(type, "enabled");
+            if (hasToggle)
+            {
+                ToggleProperty = ReflectionUtility.GetProperty(Type, "enabled");
+            }
 
             if (updateContent)
             {

@@ -85,7 +85,7 @@ namespace HierarchyDecorator
 
                 // Draw
 
-                DrawComponentIcon(rect, item.Component, false, item.Content);
+                DrawComponentIcon(rect, item);
                 componentTypes.Add(type);
             }
         }
@@ -98,9 +98,9 @@ namespace HierarchyDecorator
 
         // GUI
 
-        private void DrawComponentIcon(Rect rect, Component component, bool hasToggle, GUIContent content)
+        private void DrawComponentIcon(Rect rect, ComponentItem item)
         {
-            if (component == null)
+            if (item == null)
             {
                 return;
             }
@@ -112,74 +112,50 @@ namespace HierarchyDecorator
                 return;
             }
 
-            if (hasToggle)
+            if (item.CanToggle)
             {
-                DrawComponentToggle(rect, component, content);
+                DrawComponentToggle(rect, item);
             }
             else
             {
-                GUI.Label(rect, content, Style.ComponentIconStyle);
+                GUI.Label(rect, item.Content, Style.ComponentIconStyle);
             }
 
             validComponentCount++;
         }
 
-        private void DrawComponentToggle(Rect rect, Component component, GUIContent content)
-        {
-            bool value;
-            if (component is Behaviour behaviour)
-            {
-                value = behaviour.enabled;
-            }
-            else
-            {
-                var property = ReflectionUtility.GetProperty(component.GetType(), "enabled");
-                value = (bool)property.GetValue(component);
-            }
-
+        private void DrawComponentToggle(Rect rect, ComponentItem item)
+        { 
             Event ev = Event.current;
 
             if (ev.type == EventType.MouseDown && rect.Contains(ev.mousePosition))
             {
-                if (component is Behaviour b)
-                {
-                    b.enabled = !value;
-                    if (Selection.Contains(component.gameObject))
-                    {
-                        EditorUtility.SetDirty(component.gameObject);
-                    }
-                }
-                else
-                {
-                    GetEnableValue(component);
-                }
-
+                item.ToggleActive();
                 ev.Use();
 
-                
+                if (Selection.Contains(item.Component.gameObject))
+                {
+                    EditorUtility.SetDirty(item.Component.gameObject);
+                }
             }
 
-            if (!value)
+            bool active = item.Active;
+            Color c = GUI.color;
+            if (!active)
             {
                 GUI.color = new Color(1f, 1f, 1f, 0.4f);
             }
-
-            GUI.Label(rect, content, Style.ComponentIconStyle);
-            GUI.color = Color.white;
+            GUI.Label(rect, item.Content, Style.ComponentIconStyle);
+            if ( !active)
+            {
+                GUI.color = c;
+            }
         }
 
         private void DrawMissingComponent(Rect rect)
         {
             rect = GetIconPosition (rect, true);
             GUI.Label (rect, warningGUI, Style.ComponentIconStyle);
-        }
-
-        private void GetEnableValue(Component component)
-        {
-            var enabled = ReflectionUtility.GetProperty(component.GetType(), "enabled");
-            bool value = (bool)enabled.GetValue(component);
-
-            enabled.SetValue(component, !value);
         }
 
         // Position Helpers

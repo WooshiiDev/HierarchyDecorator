@@ -325,6 +325,8 @@ namespace HierarchyDecorator
         public ComponentType Type { get; private set; }
         public bool IsNullComponent { get; private set; }
         public bool IsBuiltIn { get; private set; }
+        public bool Active { get; private set; }
+        public bool CanToggle => Type.HasToggle;
 
         public ComponentItem(Component component)
         {
@@ -340,6 +342,8 @@ namespace HierarchyDecorator
             Content = Type.Content;
             IsBuiltIn = Type.IsBuiltIn;
             DisplayName = Type.DiplayName;
+
+            Active = GetActiveState();
         }
 
         public bool IsValid()
@@ -362,6 +366,39 @@ namespace HierarchyDecorator
             }
 
             return c;
+        }
+    
+        private bool GetActiveState()
+        {
+            // Default as enabled 
+
+            if (!Type.HasToggle)
+            {
+                return true;
+            }
+
+            if (Component is Behaviour behaviour)
+            {
+                return behaviour.enabled;
+            }
+
+            return (bool)Type.ToggleProperty.GetValue(Component);
+        }
+
+        public void ToggleActive()
+        {
+            SetActive(!Active);
+        }
+
+        public void SetActive(bool active)
+        {
+            if (!CanToggle)
+            {
+                return;
+            }
+
+            Active = active;
+            Type.ToggleProperty.SetValue(Component, active);
         }
     }
 }
