@@ -20,6 +20,7 @@ namespace HierarchyDecorator
         // --- Settings
 
         [SerializeField] protected bool shown = false;
+        [SerializeField] protected bool excluded = false;
 
         //  --- Type Data
 
@@ -78,15 +79,14 @@ namespace HierarchyDecorator
         /// </summary>
         public bool Shown
         {
-            get
-            {
-                return shown;
-            }
+            get => shown;
+            set => shown = value;
+        }
 
-            set
-            {
-                shown = value;
-            }
+        public bool Excluded 
+        { 
+            get => excluded; 
+            set => excluded = value; 
         }
 
         /// <summary>
