@@ -58,19 +58,12 @@ namespace HierarchyDecorator
                 return;
             }
 
-            if (Current != null)
+            // Need to check IsValid() as the last GO in hierarchy doees not call OnHierarchyChange() in time
+            
+            if (Current != null && Current.IsValid())
             {
-                // Need to check due to last game object in hierarchy not calling OnHierarchyChange() if deleted
-
-                if (Current.IsValid())
-                {
-                    Current.BeforeNextGUI(item);
-                    Previous = Current;
-                }
-                else
-                {
-                    lookup.Remove(Current.ID);
-                }
+                Current.BeforeNextGUI(item);
+                Previous = Current;
             }
 
             Current = item;
@@ -299,7 +292,6 @@ namespace HierarchyDecorator
 
         private void UpdateCache(Component[] components)
         {
-
             foreach (Component component in components)
             {
                 if (Items.Any(c => c.Component == component))
