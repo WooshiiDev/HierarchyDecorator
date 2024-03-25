@@ -13,18 +13,16 @@ namespace HierarchyDecorator
 
         private static readonly HideFlags IgnoreFoldoutFlags = HideFlags.HideInHierarchy | HideFlags.HideInInspector;
 
-        private static HierarchyCache.SceneCache Scene => HierarchyCache.Target;
-        private static HierarchyCache.HierarchyData Data => Scene.Current;
+        private static HierarchyItem Item => HierarchyManager.Current;
 
         protected override bool DrawerIsEnabled(Settings _settings, GameObject instance)
         {
-            return _settings.globalData.showBreadcrumbs && Scene.Scene.IsValid();
+            return _settings.globalData.showBreadcrumbs;
         }
         
         protected override void DrawInternal(Rect rect, GameObject instance, Settings _settings)
         {
-            var scene = HierarchyCache.Target;
-            var current = scene.Current;
+            HierarchyItem current = HierarchyManager.Current;
 
             if (_settings.styleData.TryGetStyleFromPrefix(instance.name, out HierarchyStyle prefix))
             {
@@ -155,7 +153,7 @@ namespace HierarchyDecorator
             rect.width = 0f;
             rect.x -= GetDepthX(depth) + 1;
 
-            if (depth == 0 && Data.IsLastSibling(Scene))
+            if (depth == 0 && Item.IsLastSibling())
             {
                 rect.height = Mathf.Ceil(rect.height * 0.5f);
             }
@@ -173,7 +171,7 @@ namespace HierarchyDecorator
             {
                 rect.width = rect.height;
 
-                if (depth == 1 && Data.HasChildren)
+                if (depth == 1 && Item.HasChildren)
                 {
                     rect.width -= HORIZONTAL_WIDTH;
                 }

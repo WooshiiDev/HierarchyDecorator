@@ -15,114 +15,13 @@ namespace HierarchyDecorator
         public const string SETTINGS_NAME_STRING = "Settings";
 
         private static Settings Settings;
-
-        // Drawers 
-
-        private static HierarchyDrawer[] Drawers = new HierarchyDrawer[]
-        {
-            new StyleDrawer(),
-        };
-
-        private static HierarchyDrawer[] OverlayDrawers = new HierarchyDrawer[]
-        {
-            new StateDrawer(),
-            new ToggleDrawer(),
-            new BreadcrumbsDrawer()
-        };
-
-        private static HierarchyInfo[] Info = new HierarchyInfo[]    
-        {
-            new TagLayerInfo(),
-            new ComponentIconInfo()
-        };
     
         static HierarchyDecorator()
         {
-            EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyItem;
-            EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyItem;
+            HierarchyManager.Initialize();
 
-            // Scene Init
-
-            EditorSceneManager.sceneOpened -= AddScene;
-            EditorSceneManager.sceneOpened += AddScene;
-            EditorSceneManager.sceneClosed -= RemoveScene;
-            EditorSceneManager.sceneClosed += RemoveScene;
-
-            int count = SceneManager.sceneCount;
-            for (int i = 0; i < count; i++)
-            {
-                Scene scene = SceneManager.GetSceneAt(i);
-                AddScene(scene, OpenSceneMode.Single);
-            }
-
-            // Handle package updating
-
-            
-        }
-
-        private static void AddScene(Scene scene, OpenSceneMode mode)
-        {
-            HierarchyCache.RegisterScene(scene);
-            //Debug.Log("Added scene " + scene.name + " to Hierarchy.");
-        }
-
-        private static void RemoveScene(Scene scene)
-        {
-            HierarchyCache.RemoveScene(scene);
-            //Debug.Log("Removed scene " + scene.name + " from Hierarchy.");
-        }
-
-        private static void OnHierarchyItem(int instanceID, Rect selectionRect)
-        {
-            if (EditorApplication.isUpdating)
-            {
-                return;
-            }
-
-            if (Settings == null)
-            {
-                Settings = GetOrCreateSettings ();
-                UpdateComponentData();
-                return;
-            }
-            
-            // Skip over the instance 
-            // - normally if it's a Scene instance rather than a GameObject
-
-            GameObject instance = EditorUtility.InstanceIDToObject (instanceID) as GameObject;
-
-            if (instance == null)
-            {
-                return;
-            }
-
-            HierarchyCache
-                .SetTarget(instance.scene)
-                .SetTarget(instance.transform);
-
-#if UNITY_2019_1_OR_NEWER
-            selectionRect.height = 16f;
-#endif
-
-            // Draw GUI
-
-            int i = 0;
-            for (i = 0; i < Drawers.Length; i++)
-            {
-                Drawers[i].Draw (selectionRect, instance, Settings);
-            }
-
-            for (i = 0; i < Info.Length; i++)
-            {
-                Info[i].Draw(selectionRect, instance, Settings);
-            }
-
-            for (i = 0; i < OverlayDrawers.Length; i++)
-            {
-                OverlayDrawers[i].Draw(selectionRect, instance, Settings);
-            }
-
-            HierarchyInfo.ResetIndent ();
+            Settings = GetOrCreateSettings();
+            UpdateComponentData();
         }
 
         // Factory Methods
