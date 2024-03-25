@@ -324,14 +324,23 @@ namespace HierarchyDecorator
 
     public class ComponentItem
     {
-        public string DisplayName { get; private set; }
+        // --- Properties
+
         public Component Component { get; private set; }
-        public GUIContent Content { get; private set; }
         public ComponentType Type { get; private set; }
         public bool IsNullComponent { get; private set; }
-        public bool IsBuiltIn { get; private set; }
-        public bool Active { get; private set; }
+
+        // - Visual
+
+        public GUIContent Content => Type.Content;
+
+        public string DisplayName => Type.DisplayName;
+        public bool IsBuiltIn => Type.IsBuiltIn;
         public bool CanToggle => Type.HasToggle;
+
+        public bool Active { get; private set; }
+
+        // --- Constructor 
 
         public ComponentItem(Component component)
         {
@@ -344,12 +353,10 @@ namespace HierarchyDecorator
             }
 
             Type = GetComponentInfo(HierarchyDecorator.GetOrCreateSettings());
-            Content = Type.Content;
-            IsBuiltIn = Type.IsBuiltIn;
-            DisplayName = Type.DiplayName;
-
             Active = GetActiveState();
         }
+
+        // --- Methods
 
         public bool IsValid()
         {
