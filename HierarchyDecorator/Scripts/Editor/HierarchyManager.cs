@@ -104,6 +104,8 @@ namespace HierarchyDecorator
         }
     }
 
+    public enum PrefabInfo { None, Root, Part }
+
     public class HierarchyItem
     {
         // Drawers 
@@ -159,9 +161,25 @@ namespace HierarchyDecorator
         /// </summary>
         public bool HasParent => Transform.parent != null;
 
+        public PrefabInfo PrefabInfo { get; private set; }
+        public bool IsPrefab => PrefabInfo != PrefabInfo.None;
+
         public HierarchyItem(GameObject instance)
         {
             this.instance = instance;
+            PrefabInfo = GetPrefabInfo();
+        }
+
+        private PrefabInfo GetPrefabInfo()
+        {
+            if (!PrefabUtility.IsPartOfAnyPrefab(instance))
+            {
+                return PrefabInfo.None;
+            }
+
+            return PrefabUtility.GetNearestPrefabInstanceRoot(instance) == instance
+                ? PrefabInfo.Root
+                : PrefabInfo.Part;
         }
 
         // --- Methods

@@ -24,16 +24,14 @@ namespace HierarchyDecorator
 
         public static void DrawStandardContent(Rect rect, GameObject instance)
         {
-            // Get prefab info
-
-            bool isPrefab = PrefabUtility.IsPartOfAnyPrefab(instance);
-            
-            GameObject prefabRoot = PrefabUtility.GetNearestPrefabInstanceRoot(instance);
-            bool isPrefabParent = prefabRoot == instance;
+            HierarchyItem item = HierarchyManager.Current;
 
             // Get the content needed for the icon
 
-            GUIContent content = GetStandardContent (rect, instance, isPrefab && isPrefabParent);
+            bool isPrefab = item.IsPrefab;
+            bool isPrefabParent = item.PrefabInfo == PrefabInfo.Root;
+
+            GUIContent content = GetStandardContent (rect, instance, isPrefabParent);
 
             // Handle colours
 
