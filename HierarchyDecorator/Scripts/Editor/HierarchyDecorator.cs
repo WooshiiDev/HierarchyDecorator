@@ -20,25 +20,8 @@ namespace HierarchyDecorator
         {
             HierarchyManager.Initialize();
 
-            EditorApplication.hierarchyWindowItemOnGUI -= OnHierarchyItem;
-            EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyItem;
-        }
-
-        private static void OnHierarchyItem(int instanceID, Rect selectionRect)
-        {
-            if (EditorApplication.isUpdating)
-            {
-                return;
-            }
-
-            if (Settings == null)
-            {
-                Settings = GetOrCreateSettings ();
-                UpdateComponentData();
-                return;
-            }
-
-            HierarchyManager.OnGUI(instanceID, selectionRect);
+            Settings = GetOrCreateSettings();
+            UpdateComponentData();
         }
 
         // Factory Methods

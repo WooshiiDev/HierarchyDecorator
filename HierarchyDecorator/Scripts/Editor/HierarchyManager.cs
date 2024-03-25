@@ -22,6 +22,8 @@ namespace HierarchyDecorator
 
         public static void Initialize()
         {
+            EditorApplication.hierarchyWindowItemOnGUI += OnGUI;
+
             EditorSceneManager.sceneOpened += OnSceneOpen;
             EditorSceneManager.sceneClosed += OnSceneClose;
 
