@@ -161,11 +161,11 @@ namespace HierarchyDecorator
         {
             validComponentCount = 1;
 
-            components = instance.GetComponents<Component> ();
+            //components = instance.GetComponents<Component> ();
             componentTypes.Clear ();
             hasMonoBehaviour = false;
 
-            EditorApplication.RepaintHierarchyWindow();
+            //EditorApplication.RepaintHierarchyWindow();
         }
 
         // GUI
