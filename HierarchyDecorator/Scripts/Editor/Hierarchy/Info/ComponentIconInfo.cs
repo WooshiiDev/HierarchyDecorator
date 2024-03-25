@@ -93,6 +93,8 @@ namespace HierarchyDecorator
 
         private void DrawComponentIcon(Rect rect, ComponentItem item)
         {
+            rect = GetIconPosition(rect);
+
             if (item.CanToggle)
             {
                 DrawComponentToggle(rect, item);
@@ -133,12 +135,12 @@ namespace HierarchyDecorator
 
         private void DrawMissingComponent(Rect rect)
         {
+            rect = GetIconPosition(rect);
             DrawIcon(rect, warningGUI);
         }
 
         private void DrawIcon(Rect rect, GUIContent content)
         {
-            rect = GetIconPosition(rect);
 
             if (IsIconOutOfBounds(rect))
             {
