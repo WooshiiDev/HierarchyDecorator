@@ -163,13 +163,14 @@ namespace HierarchyDecorator
 
         public PrefabInfo PrefabInfo { get; private set; }
         public bool IsPrefab => PrefabInfo != PrefabInfo.None;
-
+        
         public HierarchyItem(GameObject instance)
         {
             this.instance = instance;
             PrefabInfo = GetPrefabInfo();
         }
 
+        // --- Methods
         private PrefabInfo GetPrefabInfo()
         {
             if (!PrefabUtility.IsPartOfAnyPrefab(instance))
@@ -181,8 +182,6 @@ namespace HierarchyDecorator
                 ? PrefabInfo.Root
                 : PrefabInfo.Part;
         }
-
-        // --- Methods
 
         public void OnGUI(Rect rect)
         {
