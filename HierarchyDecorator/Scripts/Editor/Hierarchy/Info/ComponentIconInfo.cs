@@ -13,7 +13,7 @@ namespace HierarchyDecorator
         private readonly Type MonoType = typeof(MonoBehaviour);
         private readonly GUIContent MonoContent = EditorGUIUtility.IconContent("cs Script Icon");
 
-        private List<Type> componentTypes = new List<Type> ();
+        private HashSet<Type> componentTypes = new HashSet<Type> ();
         private Component[] components = new Component[0];
         private int validComponentCount;
 
@@ -47,7 +47,8 @@ namespace HierarchyDecorator
 
         protected override void DrawInfo(Rect rect, GameObject instance, Settings settings)
         {
-
+            bool stackScripts = settings.Components.StackScripts;
+            
             var items = HierarchyManager.Current.Components.Items;
             for (int i = 0; i < items.Count; i++)
             {
@@ -58,12 +59,19 @@ namespace HierarchyDecorator
                     continue;
                 }
 
+                Type type = item.Component.GetType();
+
+                if (stackScripts && componentTypes.Contains(type))
+                {
+                    continue;
+                }
+
                 DrawComponentIcon(rect, item.Component, false, item.Content);
+                componentTypes.Add(type);
             }
 
             return;
 
-            bool stackScripts = settings.Components.StackScripts;
             string stackOutput = string.Empty;
 
             for (int i = 0; i < components.Length; i++)
