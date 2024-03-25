@@ -62,6 +62,11 @@ namespace HierarchyDecorator
 
         public static void OnGUI(int id, Rect rect)
         {
+            if (EditorApplication.isUpdating)
+            {
+                return;
+            }
+
             if (!TryGetValidInstance(id, out HierarchyItem item))
             {
                 return;
