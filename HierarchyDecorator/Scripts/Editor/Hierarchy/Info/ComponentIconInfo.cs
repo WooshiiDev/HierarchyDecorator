@@ -13,7 +13,7 @@ namespace HierarchyDecorator
 
         private HashSet<Type> componentTypes = new HashSet<Type>();
         private Component[] components = new Component[0];
-        private int validComponentCount;
+        private int iconCount;
 
 #if UNITY_2019_1_OR_NEWER
         private GUIContent warningGUI = EditorGUIUtility.IconContent("warning");
@@ -28,7 +28,7 @@ namespace HierarchyDecorator
                 return components.Length;
             }
 
-            return validComponentCount;
+            return iconCount;
         }
 
         protected override bool DrawerIsEnabled(Settings settings, GameObject instance)
@@ -80,7 +80,7 @@ namespace HierarchyDecorator
                 // Draw
 
                 DrawComponentIcon(rect, item);
-                //componentTypes.Add(type);
+                iconCount++;
             }
 
             if (requiresWarning)
@@ -91,7 +91,7 @@ namespace HierarchyDecorator
 
         protected override void OnDrawInit(GameObject instance, Settings settings)
         {
-            validComponentCount = 1;
+            iconCount = 1;
             componentTypes.Clear();
         }
 
@@ -99,28 +99,14 @@ namespace HierarchyDecorator
 
         private void DrawComponentIcon(Rect rect, ComponentItem item)
         {
-            if (item == null)
-            {
-                return;
-            }
-
-            rect = GetIconPosition(rect);
-
-            if (rect.x < (LabelRect.x + LabelRect.width))
-            {
-                return;
-            }
-
             if (item.CanToggle)
             {
                 DrawComponentToggle(rect, item);
             }
             else
             {
-                GUI.Label(rect, item.Content, Style.ComponentIconStyle);
+                DrawIcon(rect, item.Content);
             }
-
-            validComponentCount++;
         }
 
         private void DrawComponentToggle(Rect rect, ComponentItem item)
@@ -144,7 +130,7 @@ namespace HierarchyDecorator
             {
                 GUI.color = new Color(1f, 1f, 1f, 0.4f);
             }
-            GUI.Label(rect, item.Content, Style.ComponentIconStyle);
+            DrawIcon(rect, item.Content);
             if (!active)
             {
                 GUI.color = c;
@@ -153,8 +139,19 @@ namespace HierarchyDecorator
 
         private void DrawMissingComponent(Rect rect)
         {
+            DrawIcon(rect, warningGUI);
+        }
+
+        private void DrawIcon(Rect rect, GUIContent content)
+        {
             rect = GetIconPosition(rect);
-            GUI.Label(rect, warningGUI, Style.ComponentIconStyle);
+
+            if (IsIconOutOfBounds(rect))
+            {
+                return;
+            }
+
+            GUI.Label(rect, content, Style.ComponentIconStyle);
         }
 
         // Helpers
@@ -179,6 +176,11 @@ namespace HierarchyDecorator
             rect.width = rect.height = INDENT_SIZE;
 
             return rect;
+        }
+  
+        private bool IsIconOutOfBounds(Rect rect)
+        {
+            return rect.x < (LabelRect.x + LabelRect.width);
         }
     }
 }
