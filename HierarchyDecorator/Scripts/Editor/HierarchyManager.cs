@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -134,12 +134,30 @@ namespace HierarchyDecorator
 
         // --- Properties
 
+        /// <summary>
+        /// This items transform.
+        /// </summary>
         public Transform Transform => instance.transform;
+        
+        /// <summary>
+        /// The scene this item belongs in.
+        /// </summary>
         public Scene Scene => instance.scene;
+
+        /// <summary>
+        /// Does this item have any children?
+        /// </summary>
         public bool HasChildren => instance.transform.childCount > 0;
 
+        /// <summary>
+        /// Is this showing child items in hierarchy?
+        /// </summary>
         public bool Foldout { get; private set; }
-        public bool HasParent { get; private set; }
+
+        /// <summary>
+        /// Does this item have a parent or is it a root?
+        /// </summary>
+        public bool HasParent => Transform.parent != null;
 
         public HierarchyItem(GameObject instance)
         {
