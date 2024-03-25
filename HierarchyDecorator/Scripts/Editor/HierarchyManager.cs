@@ -59,9 +59,19 @@ namespace HierarchyDecorator
 
             if (Current != null)
             {
-                Previous = Current;
-                Previous.BeforeNextGUI(item);
+                // Need to check due to last game object in hierarchy not calling OnHierarchyChange() if deleted
+
+                if (Current.IsValid())
+                {
+                    Current.BeforeNextGUI(item);
+                    Previous = Current;
+                }
+                else
+                {
+                    lookup.Remove(Current.ID);
+                }
             }
+
             Current = item;
 
             item.OnGUI(rect);
@@ -86,7 +96,7 @@ namespace HierarchyDecorator
         {
             if (!lookup.TryGetValue(id, out HierarchyItem item))
             {
-                item = new HierarchyItem(instance);
+                item = new HierarchyItem(id, instance);
                 lookup.Add(id, item);
             }
 
@@ -136,6 +146,9 @@ namespace HierarchyDecorator
 
         // --- Properties
 
+        public int ID { get; private set; }
+        public Components Components { get; private set; }
+
         /// <summary>
         /// This items transform.
         /// </summary>
@@ -164,13 +177,17 @@ namespace HierarchyDecorator
         public PrefabInfo PrefabInfo { get; private set; }
         public bool IsPrefab => PrefabInfo != PrefabInfo.None;
         
-        public HierarchyItem(GameObject instance)
+        public HierarchyItem(int id, GameObject instance)
         {
             this.instance = instance;
+            this.Components = new Components(instance);
+
+            ID = id;
             PrefabInfo = GetPrefabInfo();
         }
 
         // --- Methods
+
         private PrefabInfo GetPrefabInfo()
         {
             if (!PrefabUtility.IsPartOfAnyPrefab(instance))
@@ -234,6 +251,11 @@ namespace HierarchyDecorator
             }
 
             return Transform.parent.childCount - 1 == index;
+        }
+
+        public bool IsValid()
+        {
+            return instance != null;
         }
     }
 }
