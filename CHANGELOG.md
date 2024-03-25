@@ -1,8 +1,15 @@
 ## v0.10.0 | Tags, toggle icon components
 
+### Features
+
  - Tags can now be displayed in the hierarchy.
  - Options to display tags and layers above each other or horizontally.
  - Disabling/enabling components is now possible by clicking their respective icon.
+
+### Performance Improvements
+
+Iterating over elements has been overhauled with gameobject & component cache.
+Icons should be much more efficient, due to less constant look up.
 
 ## v0.9.1 | Hotfix - Duplicate component types
 
