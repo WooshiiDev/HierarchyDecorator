@@ -211,7 +211,7 @@ namespace HierarchyDecorator
         public bool IsLastSibling()
         {
             int index = Transform.GetSiblingIndex();
-            if (Transform.parent == null)
+            if (!HasParent)
             {
                 return instance.scene.rootCount - 1 == index;
             }
