@@ -6,6 +6,10 @@
  - Options to display tags and layers above each other or horizontally.
  - Disabling/enabling components is now possible by clicking their respective icon.
 
+### Changes
+
+ - Warning icon is now always shown at the end of the icon list
+
 ### Performance Improvements
 
 Iterating over elements has been overhauled with gameobject & component cache.
