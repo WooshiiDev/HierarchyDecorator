@@ -292,9 +292,10 @@ namespace HierarchyDecorator
 
         private void UpdateCache(Component[] components)
         {
+            bool hasItems = Items.Count > 0;
             foreach (Component component in components)
             {
-                if (Items.Any(c => c.Component == component))
+                if (hasItems && Items.Any(c => c.Component == component))
                 {
                     continue;
                 }
