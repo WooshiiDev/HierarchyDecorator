@@ -404,8 +404,6 @@ namespace HierarchyDecorator
                         SerializedProperty shown = icon.Property.FindPropertyRelative("shown");
                         shown.boolValue = true;
                     }
-
-                    
                 }
             }
 
