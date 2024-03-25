@@ -26,7 +26,6 @@ namespace HierarchyDecorator
 
         [SerializeField] private bool isBuiltIn;
         [SerializeField] private MonoScript script;
-        [SerializeField] private int hash = -1;
 
         [SerializeField] private bool hasToggle;
 
@@ -63,19 +62,12 @@ namespace HierarchyDecorator
         /// </summary>
         public MonoScript Script
         {
-            get
-            {
-                return script;
-            }
-
-            set
-            {
-                script = value;
-            }
+            get => script;
+            set => script = value;
         }
 
         /// <summary>
-        /// Is the component activated or not
+        /// Is the component activated or not.
         /// </summary>
         public bool Shown
         {
@@ -83,6 +75,9 @@ namespace HierarchyDecorator
             set => shown = value;
         }
 
+        /// <summary>
+        /// Is this component completely excluded.
+        /// </summary>
         public bool Excluded 
         { 
             get => excluded; 
@@ -92,24 +87,12 @@ namespace HierarchyDecorator
         /// <summary>
         /// 
         /// </summary>
-        public bool IsBuiltIn
-        {
-            get
-            {
-                return isBuiltIn;
-            }
-        }
+        public bool IsBuiltIn => isBuiltIn;
 
         /// <summary>
         /// The GUIContent displayed for this component.
         /// </summary>
-        public GUIContent Content
-        {
-            get
-            {
-                return content;
-            }
-        }
+        public GUIContent Content => content;
 
         public bool HasToggle => hasToggle;
 
