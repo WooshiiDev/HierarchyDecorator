@@ -50,7 +50,7 @@ namespace HierarchyDecorator
         /// <summary>
         /// 
         /// </summary>
-        public string DiplayName => displayName;
+        public string DisplayName => displayName;
 
         /// <summary>
         /// The type of component.
