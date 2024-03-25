@@ -1,10 +1,4 @@
-using System.Collections.Generic;
-using System.ComponentModel;
 using UnityEditor;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEditor.SceneManagement;
-using UnityEditor.PackageManager;
 
 namespace HierarchyDecorator
 {
