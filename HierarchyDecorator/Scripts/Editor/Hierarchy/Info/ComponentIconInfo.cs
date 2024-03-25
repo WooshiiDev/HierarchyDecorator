@@ -62,12 +62,22 @@ namespace HierarchyDecorator
                     return;
                 }
 
-                if (item.Content == null)
-                {
-                    continue;
-                }
-
                 Type type = item.Component.GetType();
+                if (item.IsBuiltIn)
+                {
+                    if (!settings.Components.DisplayBuiltIn && (!settings.Components.TryGetComponent(type, out ComponentType c) || !c.Shown))
+                    {
+                        continue;
+                    }
+                }
+                else
+                if (!settings.Components.DisplayMonoScripts)
+                {
+                    if (!settings.Components.TryGetCustomComponent(type, out ComponentType c) || !c.Shown)
+                    {
+                        continue;
+                    }
+                }
 
                 // Feature - Stack Scripts: Only draw once
 

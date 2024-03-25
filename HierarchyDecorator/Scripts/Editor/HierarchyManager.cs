@@ -311,24 +311,48 @@ namespace HierarchyDecorator
 
     public class ComponentItem
     {
+        public string DisplayName { get; private set; }
         public Component Component { get; private set; }
         public GUIContent Content { get; private set; }
         public bool IsNullComponent { get; private set; }
+        public bool IsBuiltIn { get; private set; }
 
         public ComponentItem(Component component)
         {
             Component = component;
             IsNullComponent = component == null;
 
-            if (!IsNullComponent && HierarchyDecorator.GetOrCreateSettings().Components.TryGetComponent(component.GetType(), out ComponentType type))
+            if (IsNullComponent)
             {
-                Content = type.Content;
+                return;
             }
+
+            ComponentType type = GetComponentInfo(HierarchyDecorator.GetOrCreateSettings());
+            Content = type.Content;
+            IsBuiltIn = type.IsBuiltIn;
+            DisplayName = type.DiplayName;
         }
 
         public bool IsValid()
         {
             return Component == null == IsNullComponent;
+        }
+
+        private ComponentType GetComponentInfo(Settings settings)
+        {
+            var type = Component.GetType();
+            if (settings.Components.TryGetComponent(type, out ComponentType c))
+            {
+                return c;
+            }
+
+            if (!settings.Components.TryGetCustomComponent(type, out c))
+            {
+                settings.Components.RegisterCustomComponent(Component);
+                settings.Components.TryGetCustomComponent(type, out c);
+            }
+
+            return c;
         }
     }
 }
