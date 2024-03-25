@@ -7,6 +7,8 @@ using UnityEditor.SceneManagement;
 
 namespace HierarchyDecorator
 {
+    public enum PrefabInfo { None, Root, Part }
+
     public static class HierarchyManager
     {
         // --- Scene Data
@@ -114,8 +116,6 @@ namespace HierarchyDecorator
             return Current.Transform.parent == Previous.Transform;
         }
     }
-
-    public enum PrefabInfo { None, Root, Part }
 
     public class HierarchyItem
     {
