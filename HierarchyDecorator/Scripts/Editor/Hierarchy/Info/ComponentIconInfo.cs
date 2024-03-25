@@ -54,6 +54,14 @@ namespace HierarchyDecorator
             {
                 var item = items[i];
 
+                // Feature - Warning
+
+                if (item.IsNullComponent && settings.Components.ShowMissingScriptWarning)
+                {
+                    DrawMissingComponent(rect);
+                    return;
+                }
+
                 if (item.Content == null)
                 {
                     continue;
@@ -61,10 +69,19 @@ namespace HierarchyDecorator
 
                 Type type = item.Component.GetType();
 
+                // Feature - Stack Scripts: Only draw once
+
                 if (stackScripts && componentTypes.Contains(type))
                 {
                     continue;
                 }
+
+                if (settings.Components.IsExcluded(type))
+                {
+                    continue;
+                }
+
+                // Draw
 
                 DrawComponentIcon(rect, item.Component, false, item.Content);
                 componentTypes.Add(type);
@@ -77,12 +94,6 @@ namespace HierarchyDecorator
             for (int i = 0; i < components.Length; i++)
             {
                 Component component = components[i];
-
-                if (component == null & settings.Components.ShowMissingScriptWarning)
-                {
-                    DrawMissingComponent(rect);
-                    return;
-                }
 
                 // Get Type
 

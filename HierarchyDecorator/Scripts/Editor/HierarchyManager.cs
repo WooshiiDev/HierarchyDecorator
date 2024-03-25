@@ -313,12 +313,14 @@ namespace HierarchyDecorator
     {
         public Component Component { get; private set; }
         public GUIContent Content { get; private set; }
+        public bool IsNullComponent { get; private set; }
 
         public ComponentItem(Component component)
         {
             Component = component;
+            IsNullComponent = component == null;
 
-            if (HierarchyDecorator.GetOrCreateSettings().Components.TryGetComponent(component.GetType(), out ComponentType type))
+            if (!IsNullComponent && HierarchyDecorator.GetOrCreateSettings().Components.TryGetComponent(component.GetType(), out ComponentType type))
             {
                 Content = type.Content;
             }
@@ -326,7 +328,7 @@ namespace HierarchyDecorator
 
         public bool IsValid()
         {
-            return Component != null;
+            return Component == null == IsNullComponent;
         }
     }
 }
