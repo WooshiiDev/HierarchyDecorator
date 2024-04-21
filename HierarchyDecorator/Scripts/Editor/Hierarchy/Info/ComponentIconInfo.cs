@@ -11,7 +11,7 @@ namespace HierarchyDecorator
         private readonly Type MonoType = typeof(MonoBehaviour);
         private readonly GUIContent MonoContent = EditorGUIUtility.IconContent("cs Script Icon");
 
-        private HashSet<Type> componentTypes = new HashSet<Type>();
+        private HashSet<Texture> componentTypes = new HashSet<Texture>();
         private Component[] components = new Component[0];
         private int iconCount;
 
@@ -43,6 +43,7 @@ namespace HierarchyDecorator
 
         protected override void DrawInfo(Rect rect, GameObject instance, Settings settings)
         {
+
             bool stackScripts = settings.Components.StackScripts;
 
             bool requiresWarning = false;
@@ -66,7 +67,7 @@ namespace HierarchyDecorator
 
                 // Feature - Stack Scripts: Only draw once
 
-                if (stackScripts && componentTypes.Contains(item.Component.GetType()))
+                if (stackScripts && componentTypes.Contains(item.Content.image))
                 {
                     continue;
                 }
@@ -103,6 +104,8 @@ namespace HierarchyDecorator
             {
                 DrawIcon(rect, item.Content);
             }
+
+            componentTypes.Add(item.Content.image);
         }
 
         private void DrawComponentToggle(Rect rect, ComponentItem item)
@@ -141,7 +144,6 @@ namespace HierarchyDecorator
 
         private void DrawIcon(Rect rect, GUIContent content)
         {
-
             if (IsIconOutOfBounds(rect))
             {
                 return;
