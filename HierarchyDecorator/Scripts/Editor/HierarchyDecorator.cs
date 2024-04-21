@@ -12,10 +12,10 @@ namespace HierarchyDecorator
     
         static HierarchyDecorator()
         {
-            HierarchyManager.Initialize();
+            // Need to check if settings exists and setup
 
-            Settings = GetOrCreateSettings();
-            UpdateComponentData();
+            EditorApplication.update -= SetupSettings;
+            EditorApplication.update += SetupSettings;
         }
 
         // Factory Methods
@@ -48,6 +48,7 @@ namespace HierarchyDecorator
             EditorUtility.SetDirty (settings);
             AssetDatabase.SaveAssets ();
 
+            Settings = settings;
             return settings;
         }
 
@@ -60,12 +61,21 @@ namespace HierarchyDecorator
             return new SerializedObject (GetOrCreateSettings ());
         }
 
-        // Drawers
-
-        public static void UpdateComponentData()
+        private static void UpdateComponentData()
         {
             Settings.Components.UpdateData();
             Settings.Components.UpdateComponents(true);
+        }
+
+        private static void SetupSettings()
+        {
+            if (Settings != null)
+            {
+                return;
+            }
+
+            Settings = GetOrCreateSettings();
+            UpdateComponentData();
         }
     }
 }
