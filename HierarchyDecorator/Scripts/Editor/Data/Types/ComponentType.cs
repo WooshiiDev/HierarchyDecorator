@@ -48,7 +48,7 @@ namespace HierarchyDecorator
         }
 
         /// <summary>
-        /// 
+        /// The display name for the component.
         /// </summary>
         public string DisplayName => displayName;
 
@@ -58,7 +58,7 @@ namespace HierarchyDecorator
         public Type Type { get; private set; } = typeof(DefaultAsset);
 
         /// <summary>
-        /// 
+        /// The script that represents this component.
         /// </summary>
         public MonoScript Script
         {
@@ -85,7 +85,7 @@ namespace HierarchyDecorator
         }
 
         /// <summary>
-        /// 
+        /// Represents whether the component is a Unity component or not.
         /// </summary>
         public bool IsBuiltIn => isBuiltIn;
 
@@ -94,8 +94,14 @@ namespace HierarchyDecorator
         /// </summary>
         public GUIContent Content => content;
 
+        /// <summary>
+        /// Can this component be toggled on/off or not.
+        /// </summary>
         public bool HasToggle => hasToggle;
 
+        /// <summary>
+        /// The reflected toggle property.
+        /// </summary>
         public PropertyInfo ToggleProperty { get; private set; }
 
         // Constructor 
@@ -180,7 +186,7 @@ namespace HierarchyDecorator
         }
 
         /// <summary>
-        /// 
+        /// Update the GUIContent cached.
         /// </summary>
         public void UpdateContent()
         {
@@ -188,9 +194,9 @@ namespace HierarchyDecorator
         }
 
         /// <summary>
-        /// 
+        /// Get the GUIContent icon for for component.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Returns the content object.</returns>
         private GUIContent GetTypeContent()
         {
             if (Type == null)
@@ -218,7 +224,7 @@ namespace HierarchyDecorator
         // --- Overrides
 
         /// <summary>
-        /// Compare this component type to another.
+        /// Compare this component to another.
         /// </summary>
         /// <param name="other">The other component type.</param>
         /// <returns>Returns an integer based on their sort position.</returns>
@@ -232,6 +238,11 @@ namespace HierarchyDecorator
             return name.CompareTo (other.name);
         }
 
+        /// <summary>
+        /// Compare this component to another type.
+        /// </summary>
+        /// <param name="type">The type to compare to.</param>
+        /// <returns>Returns an integer based on their sort position.</returns>
         public int CompareTo(Type type)
         {
             return name.CompareTo(type.AssemblyQualifiedName);
