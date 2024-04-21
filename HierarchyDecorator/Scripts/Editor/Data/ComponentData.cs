@@ -64,7 +64,7 @@ namespace HierarchyDecorator
 
         [SerializeField] private bool showMissingScriptWarning = true;
         [SerializeField] private DisplayMode showAll = DisplayMode.Unity | DisplayMode.Custom;
-        [SerializeField] private bool stackMonoBehaviours;
+        [SerializeField] private bool stackDuplicateIcons;
 
         [SerializeField] private ComponentGroup[] unityGroups = new ComponentGroup[0];
 
@@ -93,7 +93,7 @@ namespace HierarchyDecorator
             }
         }
 
-        public bool StackScripts => stackMonoBehaviours;
+        public bool StackScripts => stackDuplicateIcons;
 
         /// <summary>
         /// Are components enabled?
