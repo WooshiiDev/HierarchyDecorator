@@ -118,6 +118,10 @@ namespace HierarchyDecorator
          
         // Methods
 
+        /// <summary>
+        /// Evaluate and check if this is a valid representation of a component.
+        /// </summary>
+        /// <returns>Returns true if valid, otherwise returns false.</returns>
         public bool IsValid()
         {
             // Need to check type and content to validate GUI
@@ -138,7 +142,8 @@ namespace HierarchyDecorator
         /// <summary>
         /// Update the component
         /// </summary>
-        /// <param name="type"></param>
+        /// <param name="type">The type to assign.</param>
+        /// <param name="updateContent">Update the GUI.</param>
         public void UpdateType(Type type, bool updateContent = false)
         {
             if (type == null)
@@ -171,7 +176,11 @@ namespace HierarchyDecorator
                 UpdateContent();
             }
         }
-
+        
+        /// <summary>
+         /// Update the component.
+         /// </summary>
+         /// <param name="monoScript">The script to assign.</param>
         public void UpdateType(MonoScript monoScript)
         {
             script = monoScript;
