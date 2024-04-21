@@ -66,13 +66,7 @@ namespace HierarchyDecorator
 
                 // Feature - Stack Scripts: Only draw once
 
-                Type type = item.Component.GetType();
-                if (stackScripts && componentTypes.Contains(type))
-                {
-                    continue;
-                }
-
-                if (settings.Components.IsExcluded(type))
+                if (stackScripts && componentTypes.Contains(item.Component.GetType()))
                 {
                     continue;
                 }
@@ -99,6 +93,8 @@ namespace HierarchyDecorator
 
         private void DrawComponentIcon(Rect rect, ComponentItem item)
         {
+            rect = GetIconPosition(rect);
+
             if (item.CanToggle)
             {
                 DrawComponentToggle(rect, item);
@@ -139,12 +135,12 @@ namespace HierarchyDecorator
 
         private void DrawMissingComponent(Rect rect)
         {
+            rect = GetIconPosition(rect);
             DrawIcon(rect, warningGUI);
         }
 
         private void DrawIcon(Rect rect, GUIContent content)
         {
-            rect = GetIconPosition(rect);
 
             if (IsIconOutOfBounds(rect))
             {
@@ -158,12 +154,14 @@ namespace HierarchyDecorator
 
         private bool CanShow(ComponentItem item, Settings settings)
         {
+            bool shown = item.Type.Shown && !item.Type.Excluded;
+
             if (item.IsBuiltIn)
             {
-                return settings.Components.DisplayBuiltIn || item.Type.Shown;
+                return settings.Components.DisplayBuiltIn || shown;
             }
 
-            return settings.Components.DisplayMonoScripts || item.Type.Shown;
+            return settings.Components.DisplayMonoScripts || shown;
         }
 
         private Rect GetIconPosition(Rect rect)

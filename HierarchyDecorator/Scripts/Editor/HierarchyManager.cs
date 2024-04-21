@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -22,7 +21,14 @@ namespace HierarchyDecorator
 
         // --- Methods
 
+        [InitializeOnLoadMethod]
         public static void Initialize()
+        {
+            EditorApplication.delayCall -= SetupCallbacks;
+            EditorApplication.delayCall += SetupCallbacks;
+        }
+
+        private static void SetupCallbacks()
         {
             EditorApplication.hierarchyWindowItemOnGUI += OnGUI;
 
@@ -62,6 +68,11 @@ namespace HierarchyDecorator
 
         public static void OnGUI(int id, Rect rect)
         {
+            if (EditorApplication.isUpdating)
+            {
+                return;
+            }
+
             if (!TryGetValidInstance(id, out HierarchyItem item))
             {
                 return;
@@ -142,7 +153,6 @@ namespace HierarchyDecorator
         private static Settings s_settings = HierarchyDecorator.GetOrCreateSettings();
 
         // --- Fields
-
         
         private GameObject instance;
 
@@ -204,10 +214,7 @@ namespace HierarchyDecorator
 
         public void OnGUI(Rect rect)
         {
-            if (Components.Validate(instance))
-            {
-
-            }
+            Components.Validate(instance);
 
 #if UNITY_2019_1_OR_NEWER
             rect.height = 16f;
@@ -275,58 +282,67 @@ namespace HierarchyDecorator
             UpdateCache(GetComponents(instance));
         }
 
-        public bool Validate(GameObject instance)
+        public void Validate(GameObject instance)
         {
-            Component[] list = GetComponents(instance);
-
-            bool isValid = Items.Count == list.Length;
-            for (int i = Items.Count - 1; i >= 0; i--)
-            {
-                if (!Items[i].IsValid())
-                {
-                    isValid = false;
-                    Items.RemoveAt(i);
-                }
-            }
-
-            if (!isValid)
-            {
-                UpdateCache(list);
-            }
-
-            return isValid;
+            UpdateCache(GetComponents(instance));
         }
 
         private void UpdateCache(Component[] components)
         {
-            bool hasItems = Items.Count > 0;
-            foreach (Component component in components)
-            {
-                if (hasItems && Items.Any(c => c.Component == component))
-                {
-                    continue;
-                }
+            List<ComponentItem> nextItems = new List<ComponentItem>();
 
-                Items.Add(new ComponentItem(component));
+            for (int i = 0; i < components.Length; i++)
+            {
+                if (!TryGet(components[i], out ComponentItem item))
+                {
+                    item = new ComponentItem(components[i]);
+                }
+                
+                nextItems.Add(item);
             }
+            Items = nextItems;
         }
 
         private Component[] GetComponents(GameObject instance)
         {
             return instance.GetComponents<Component>();
         }
+
+        private bool TryGet(Component component, out ComponentItem item)
+        {
+            for (int i = 0; i < Items.Count; i++)
+            {
+                if (Items[i].Component == component)
+                {
+                    item = Items[i];
+                    return true;
+                }
+            }
+
+            item = null;
+            return false;
+        }
     }
 
     public class ComponentItem
     {
-        public string DisplayName { get; private set; }
+        // --- Properties
+
         public Component Component { get; private set; }
-        public GUIContent Content { get; private set; }
         public ComponentType Type { get; private set; }
         public bool IsNullComponent { get; private set; }
-        public bool IsBuiltIn { get; private set; }
-        public bool Active { get; private set; }
+
+        // - Visual
+
+        public GUIContent Content => Type.Content;
+
+        public string DisplayName => Type.DisplayName;
+        public bool IsBuiltIn => Type.IsBuiltIn;
         public bool CanToggle => Type.HasToggle;
+
+        public bool Active { get; private set; }
+
+        // --- Constructor 
 
         public ComponentItem(Component component)
         {
@@ -339,12 +355,10 @@ namespace HierarchyDecorator
             }
 
             Type = GetComponentInfo(HierarchyDecorator.GetOrCreateSettings());
-            Content = Type.Content;
-            IsBuiltIn = Type.IsBuiltIn;
-            DisplayName = Type.DiplayName;
-
             Active = GetActiveState();
         }
+
+        // --- Methods
 
         public bool IsValid()
         {
