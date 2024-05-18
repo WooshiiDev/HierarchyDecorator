@@ -15,26 +15,24 @@ namespace HierarchyDecorator
 
         private static HierarchyItem Item => HierarchyManager.Current;
 
-        protected override bool DrawerIsEnabled(Settings _settings, GameObject instance)
+        protected override bool DrawerIsEnabled(HierarchyItem item, Settings settings)
         {
-            return _settings.globalData.showBreadcrumbs;
+            return settings.globalData.showBreadcrumbs;
         }
         
-        protected override void DrawInternal(Rect rect, GameObject instance, Settings _settings)
+        protected override void DrawInternal(Rect rect, HierarchyItem item, Settings _settings)
         {
             HierarchyItem current = HierarchyManager.Current;
 
-            if (_settings.styleData.TryGetStyleFromPrefix(instance.name, out HierarchyStyle prefix))
+            if (_settings.styleData.TryGetStyleFromPrefix(item.DisplayName, out HierarchyStyle prefix))
             {
                 return;
             }
 
             GlobalData data = _settings.globalData;
-
             Transform transform = current.Transform;
 
             int depth = current.CalculateDepth();
-
             int start = 0;
            
             bool hasVisibleChild = false;

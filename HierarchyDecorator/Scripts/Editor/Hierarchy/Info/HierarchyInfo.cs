@@ -29,15 +29,15 @@ namespace HierarchyDecorator
         /// <param name="rect">The drawn instance rect</param>
         /// <param name="instance">The instance to draw for</param>
         /// <param name="settings">Hierarchy settings</param>
-        protected override void DrawInternal(Rect rect, GameObject instance, Settings settings)
+        protected override void DrawInternal(Rect rect, HierarchyItem item, Settings settings)
         {
             // Full rect calculation 
             FullRect = GetFullRect (rect);
-            LabelRect = GetLabelRect(rect, instance.name, settings);
+            LabelRect = GetLabelRect(rect, item.DisplayName, settings);
 
             // Setup any data before drawing
             HasInitialized = false;
-            OnDrawInit (instance, settings);
+            OnDrawInit (item, settings);
 
             // Calculate initial rect
             int gridCount = GetGridCount ();
@@ -47,7 +47,7 @@ namespace HierarchyDecorator
             HasInitialized = true;
 
             // Draw Info
-            DrawInfo (rect, instance, settings);
+            DrawInfo (rect, item, settings);
 
             // Calculate the next initial index
             IndentIndex += gridCount;
@@ -59,14 +59,14 @@ namespace HierarchyDecorator
         /// <param name="rect">The drawn instance rect</param>
         /// <param name="instance">The instance to draw for</param>
         /// <param name="settings">Hierarchy settings</param>
-        protected abstract void DrawInfo(Rect rect, GameObject instance, Settings settings);
+        protected abstract void DrawInfo(Rect rect, HierarchyItem item, Settings settings);
 
         /// <summary>
         /// Method that provides any initialisation before drawing to the Hierarchy.
         /// </summary>
         /// <param name="instance">The target instance.</param>
         /// <param name="settings">The settings.</param>
-        protected virtual void OnDrawInit(GameObject instance, Settings settings)
+        protected virtual void OnDrawInit(HierarchyItem item, Settings settings)
         {
 
         }

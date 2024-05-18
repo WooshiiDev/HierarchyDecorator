@@ -35,12 +35,12 @@ namespace HierarchyDecorator
 
         // Methods
 
-        protected override bool DrawerIsEnabled(Settings settings, GameObject instance)
+        protected override bool DrawerIsEnabled(HierarchyItem item, Settings settings)
         {
             return settings.globalData.showActiveToggles && PrefabStageUtility.GetCurrentPrefabStage () == null;
         }
 
-        protected override void DrawInternal(Rect rect, GameObject instance, Settings settings)
+        protected override void DrawInternal(Rect rect, HierarchyItem item, Settings settings)
         {
             rect.width = 16f;
 
@@ -53,6 +53,7 @@ namespace HierarchyDecorator
 
             // Handle events if they're valid
 
+            GameObject instance = item.GameObject;
             HandleEvent (rect, instance, settings);
 
             if (isPressingShift)

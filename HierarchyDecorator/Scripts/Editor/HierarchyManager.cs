@@ -161,6 +161,8 @@ namespace HierarchyDecorator
         public int ID { get; private set; }
         public Components Components { get; private set; }
 
+        public GameObject GameObject => instance;
+
         /// <summary>
         /// This items transform.
         /// </summary>
@@ -188,7 +190,9 @@ namespace HierarchyDecorator
 
         public PrefabInfo PrefabInfo { get; private set; }
         public bool IsPrefab => PrefabInfo != PrefabInfo.None;
-        
+
+        public string DisplayName => instance.name;
+
         public HierarchyItem(int id, GameObject instance)
         {
             this.instance = instance;
@@ -224,17 +228,17 @@ namespace HierarchyDecorator
 
             foreach (HierarchyDrawer info in Drawers)
             {
-                info.Draw(rect, instance, s_settings);
+                info.Draw(rect, this, s_settings);
             }
 
             foreach (HierarchyInfo info in Info)
             {
-                info.Draw(rect, instance, s_settings);
+                info.Draw(rect, this, s_settings);
             }
 
             foreach (HierarchyDrawer info in OverlayDrawers)
             {
-                info.Draw(rect, instance, s_settings);
+                info.Draw(rect, this, s_settings);
             }
         }
 

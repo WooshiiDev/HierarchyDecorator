@@ -21,7 +21,7 @@ namespace HierarchyDecorator
 
         // --- Methods
 
-        protected override void OnDrawInit(GameObject instance, Settings settings)
+        protected override void OnDrawInit(HierarchyItem item, Settings settings)
         {
             setChildLayers = settings.globalData.applyChildLayers;
 
@@ -29,12 +29,12 @@ namespace HierarchyDecorator
             isVertical = layout == TagLayerLayout.TagAbove || layout == TagLayerLayout.LayerAbove;
         }
 
-        protected override bool DrawerIsEnabled(Settings settings, GameObject instance)
+        protected override bool DrawerIsEnabled(HierarchyItem item, Settings settings)
         {
             tagEnabled = settings.globalData.showTags;
             layerEnabled = settings.globalData.showLayers;
 
-            if (hasStyle = settings.styleData.HasStyle(instance.name))
+            if (hasStyle = settings.styleData.HasStyle(item.DisplayName))
             {
                 tagEnabled &= settings.styleData.displayTags;
                 layerEnabled &= settings.styleData.displayLayers;
@@ -43,16 +43,16 @@ namespace HierarchyDecorator
             return tagEnabled || layerEnabled;
         }
 
-        protected override void DrawInfo(Rect rect, GameObject instance, Settings settings)
+        protected override void DrawInfo(Rect rect, HierarchyItem item, Settings settings)
         {
             if (tagEnabled)
             {
-                DrawTag(rect, instance, settings.globalData.tagLayerLayout);
+                DrawTag(rect, item.GameObject, settings.globalData.tagLayerLayout);
             }
 
             if (layerEnabled)
             {
-                DrawLayer(rect, instance, settings.globalData.tagLayerLayout);
+                DrawLayer(rect, item.GameObject, settings.globalData.tagLayerLayout);
             }
         }
 

@@ -10,6 +10,8 @@ namespace HierarchyDecorator
     public class ComponentIconInfo : HierarchyInfo
     {
         private Dictionary<Texture, GUIContent> stackTextures = new Dictionary<Texture, GUIContent>();
+        private List<ComponentItem> stackItems = new List<ComponentItem>();
+
         private int iconCount;
 
 #if UNITY_2019_1_OR_NEWER
@@ -23,9 +25,9 @@ namespace HierarchyDecorator
             return iconCount;
         }
 
-        protected override bool DrawerIsEnabled(Settings settings, GameObject instance)
+        protected override bool DrawerIsEnabled(HierarchyItem item, Settings settings)
         {
-            if (settings.styleData.HasStyle(instance.name) && !settings.styleData.displayIcons)
+            if (settings.styleData.HasStyle(item.DisplayName) && !settings.styleData.displayIcons)
             {
                 return false;
             }
@@ -33,26 +35,25 @@ namespace HierarchyDecorator
             return settings.Components.Enabled;
         }
 
-        protected override void DrawInfo(Rect rect, GameObject instance, Settings settings)
+        protected override void DrawInfo(Rect rect, HierarchyItem item, Settings settings)
         {
-
             bool stackScripts = settings.Components.StackScripts;
 
             bool requiresWarning = false;
-            var items = HierarchyManager.Current.Components.Items;
-            for (int i = 0; i < items.Count; i++)
+            var components = item.Components.Items;
+            for (int i = 0; i < components.Count; i++)
             {
-                var item = items[i];
+                ComponentItem component = components[i];
 
                 // Feature - Warning
 
-                if (item.IsNullComponent && settings.Components.ShowMissingScriptWarning)
+                if (component.IsNullComponent && settings.Components.ShowMissingScriptWarning)
                 {
                     requiresWarning = true;
                     continue;
                 }
 
-                if (!CanShow(item, settings))
+                if (!CanShow(component, settings))
                 {
                     continue;
                 }
@@ -61,20 +62,20 @@ namespace HierarchyDecorator
 
                 if (stackScripts)
                 {
-                    Texture texture = item.Content.image;
+                    Texture texture = component.Content.image;
                     if (!stackTextures.TryGetValue(texture, out GUIContent content))
                     {
-                        content = new GUIContent(string.Empty, texture, item.DisplayName);
+                        content = new GUIContent(string.Empty, texture, component.DisplayName);
                         stackTextures.Add(texture, content);
                     }
                     else
                     {
-                        stackTextures[texture].tooltip += "\n" + item.DisplayName;
+                        stackTextures[texture].tooltip += "\n" + component.DisplayName;
                     }
                 }
                 else // Draw
                 {
-                    DrawComponentIcon(rect, item);
+                    DrawComponentIcon(rect, component);
                     iconCount++;
                 }
             }
@@ -94,10 +95,15 @@ namespace HierarchyDecorator
             }
         }
 
-        protected override void OnDrawInit(GameObject instance, Settings settings)
+        protected override void OnDrawInit(HierarchyItem instance, Settings settings)
         {
             iconCount = 1;
-            stackTextures.Clear();
+
+            if (stackTextures.Count > 0)
+            {
+                stackTextures.Clear();
+                stackItems.Clear();
+            }
         }
 
         // GUI
