@@ -9,6 +9,7 @@
 ### Changes
 
  - Warning icon is now always shown at the end of the icon list.
+ - "Stack MonoBehaviours" setting has now been renamed to "Stack Duplicate Icons".
  - Stacked icon tooltips now display all components it represents.
 
 ### Performance Improvements
