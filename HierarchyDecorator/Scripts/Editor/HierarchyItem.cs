@@ -35,7 +35,7 @@ namespace HierarchyDecorator
         // --- Properties
 
         public int ID { get; private set; }
-        public Components Components { get; private set; }
+        public ComponentList Components { get; private set; }
 
         public GameObject GameObject => instance;
 
@@ -72,7 +72,7 @@ namespace HierarchyDecorator
         public HierarchyItem(int id, GameObject instance)
         {
             this.instance = instance;
-            this.Components = new Components(instance);
+            this.Components = new ComponentList(instance);
 
             ID = id;
             PrefabInfo = GetPrefabInfo();

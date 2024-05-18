@@ -128,11 +128,11 @@ namespace HierarchyDecorator
         }
     }
 
-    public class Components
+    public class ComponentList
     {
         public List<ComponentItem> Items { get; private set; } = new List<ComponentItem>();
 
-        public Components(GameObject instance)
+        public ComponentList(GameObject instance)
         {
             UpdateCache(GetComponents(instance));
         }
@@ -165,17 +165,16 @@ namespace HierarchyDecorator
 
         private bool TryGet(Component component, out ComponentItem item)
         {
-            for (int i = 0; i < Items.Count; i++)
+            int index = Items.FindIndex(c => c.Component == component);
+
+            if (index == -1)
             {
-                if (Items[i].Component == component)
-                {
-                    item = Items[i];
-                    return true;
-                }
+                item = null;
+                return false;
             }
 
-            item = null;
-            return false;
+            item = Items[index];
+            return true;
         }
     }
 }
