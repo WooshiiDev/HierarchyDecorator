@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,26 +9,17 @@ namespace HierarchyDecorator
 {
     public class ComponentIconInfo : HierarchyInfo
     {
-        private readonly Type MonoType = typeof(MonoBehaviour);
-        private readonly GUIContent MonoContent = EditorGUIUtility.IconContent("cs Script Icon");
-
-        private HashSet<Type> componentTypes = new HashSet<Type>();
-        private Component[] components = new Component[0];
+        private Dictionary<Texture, GUIContent> stackTextures = new Dictionary<Texture, GUIContent>();
         private int iconCount;
 
 #if UNITY_2019_1_OR_NEWER
-        private GUIContent warningGUI = EditorGUIUtility.IconContent("warning");
+        private readonly GUIContent warningGUI = EditorGUIUtility.IconContent("warning");
 #else
-        private GUIContent warningGUI = EditorGUIUtility.IconContent ("console.warnicon");
+        private readonly GUIContent warningGUI = EditorGUIUtility.IconContent ("console.warnicon");
 #endif
 
         protected override int GetGridCount()
         {
-            if (!HasInitialized)
-            {
-                return components.Length;
-            }
-
             return iconCount;
         }
 
@@ -43,6 +35,7 @@ namespace HierarchyDecorator
 
         protected override void DrawInfo(Rect rect, GameObject instance, Settings settings)
         {
+
             bool stackScripts = settings.Components.StackScripts;
 
             bool requiresWarning = false;
@@ -66,15 +59,33 @@ namespace HierarchyDecorator
 
                 // Feature - Stack Scripts: Only draw once
 
-                if (stackScripts && componentTypes.Contains(item.Component.GetType()))
+                if (stackScripts)
                 {
-                    continue;
+                    Texture texture = item.Content.image;
+                    if (!stackTextures.TryGetValue(texture, out GUIContent content))
+                    {
+                        content = new GUIContent(string.Empty, texture, item.DisplayName);
+                        stackTextures.Add(texture, content);
+                    }
+                    else
+                    {
+                        stackTextures[texture].tooltip += "\n" + item.DisplayName;
+                    }
                 }
+                else // Draw
+                {
+                    DrawComponentIcon(rect, item);
+                    iconCount++;
+                }
+            }
 
-                // Draw
-
-                DrawComponentIcon(rect, item);
-                iconCount++;
+            if (stackScripts)
+            {
+                foreach (GUIContent content in stackTextures.Values)
+                {
+                    DrawIcon(GetIconPosition(rect), content);
+                    iconCount++;
+                }
             }
 
             if (requiresWarning)
@@ -86,7 +97,7 @@ namespace HierarchyDecorator
         protected override void OnDrawInit(GameObject instance, Settings settings)
         {
             iconCount = 1;
-            componentTypes.Clear();
+            stackTextures.Clear();
         }
 
         // GUI
@@ -141,7 +152,6 @@ namespace HierarchyDecorator
 
         private void DrawIcon(Rect rect, GUIContent content)
         {
-
             if (IsIconOutOfBounds(rect))
             {
                 return;
@@ -154,6 +164,11 @@ namespace HierarchyDecorator
 
         private bool CanShow(ComponentItem item, Settings settings)
         {
+            if (item.Type.Excluded)
+            {
+                return false;
+            }
+
             bool shown = item.Type.Shown && !item.Type.Excluded;
 
             if (item.IsBuiltIn)
