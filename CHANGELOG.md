@@ -12,10 +12,11 @@
  - "Stack MonoBehaviours" setting has now been renamed to "Stack Duplicate Icons".
  - Stacked icon tooltips now display all components it represents.
 
-### Performance Improvements
+### API Changes
 
-Iterating over elements has been overhauled with gameobject & component cache.
-Icons should be much more efficient, due to less constant look up.
+The hierarchy iteration has been overhauled replacing the direct gameobject references, to now using a container caching data. This has brought large performance gains, especially with component icons.
+ - `HierarchyItem` is a container for GameObjects, to easily cache components and `ComponentType` data.
+ - `ComponentItem` contains data for each component on a Game Object.
 
 ## v0.9.1 | Hotfix - Duplicate component types
 
