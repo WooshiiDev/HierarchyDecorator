@@ -8,7 +8,8 @@
 
 ### Changes
 
- - Warning icon is now always shown at the end of the icon list
+ - Warning icon is now always shown at the end of the icon list.
+ - Stacked icon tooltips now display all components it represents.
 
 ### Performance Improvements
 
