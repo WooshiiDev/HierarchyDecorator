@@ -169,7 +169,7 @@ namespace HierarchyDecorator
                 return false;
             }
 
-            bool shown = item.Type.Shown && !item.Type.Excluded;
+            bool shown = item.Type.Shown;
 
             if (item.IsBuiltIn)
             {
