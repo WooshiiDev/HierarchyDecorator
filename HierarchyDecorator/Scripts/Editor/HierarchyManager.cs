@@ -130,7 +130,7 @@ namespace HierarchyDecorator
 
     public class ComponentList
     {
-        public List<ComponentItem> Items { get; private set; } = new List<ComponentItem>();
+        private List<ComponentItem> items = new List<ComponentItem>();
 
         public ComponentList(GameObject instance)
         {
@@ -148,14 +148,15 @@ namespace HierarchyDecorator
 
             for (int i = 0; i < components.Length; i++)
             {
-                if (!TryGet(components[i], out ComponentItem item))
+                ComponentItem item = Get(components[i]);
+                if (item == null)
                 {
                     item = new ComponentItem(components[i]);
                 }
                 
                 nextItems.Add(item);
             }
-            Items = nextItems;
+            items = nextItems;
         }
 
         private Component[] GetComponents(GameObject instance)
@@ -163,18 +164,17 @@ namespace HierarchyDecorator
             return instance.GetComponents<Component>();
         }
 
-        private bool TryGet(Component component, out ComponentItem item)
+        private ComponentItem Get(Component component)
         {
-            int index = Items.FindIndex(c => c.Component == component);
+            return items.Find(c => c.Component == component);
+        }
 
-            if (index == -1)
+        public IEnumerable<ComponentItem> GetItems()
+        {
+            for (int i = 0; i < items.Count; i++)
             {
-                item = null;
-                return false;
+                yield return items[i];
             }
-
-            item = Items[index];
-            return true;
         }
     }
 }

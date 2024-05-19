@@ -27,7 +27,7 @@ namespace HierarchyDecorator
 
         protected override bool DrawerIsEnabled(HierarchyItem item, Settings settings)
         {
-            if (settings.styleData.HasStyle(item.DisplayName) && !settings.styleData.displayIcons)
+            if (!settings.styleData.displayIcons && settings.styleData.HasStyle(item.DisplayName))
             {
                 return false;
             }
@@ -40,11 +40,8 @@ namespace HierarchyDecorator
             bool stackScripts = settings.Components.StackScripts;
 
             bool requiresWarning = false;
-            var components = item.Components.Items;
-            for (int i = 0; i < components.Count; i++)
+            foreach (ComponentItem component in item.Components.GetItems())
             {
-                ComponentItem component = components[i];
-
                 // Feature - Warning
 
                 if (component.IsNullComponent && settings.Components.ShowMissingScriptWarning)
