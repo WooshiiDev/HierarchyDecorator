@@ -15,9 +15,30 @@ namespace HierarchyDecorator
         private static Dictionary<int, HierarchyItem> lookup = new Dictionary<int, HierarchyItem>();
         public static int Count => lookup.Count;
         public static IReadOnlyDictionary<int, HierarchyItem> Items => lookup;
+        private static Settings s_Settings => HierarchyDecorator.GetOrCreateSettings();
 
         public static HierarchyItem Current { get; private set; }
         public static HierarchyItem Previous { get; private set; }
+
+        // --- Drawers 
+
+        private static HierarchyDrawer[] Drawers = new HierarchyDrawer[]
+        {
+            new StyleDrawer(),
+        };
+
+        private static HierarchyDrawer[] OverlayDrawers = new HierarchyDrawer[]
+        {
+            new StateDrawer(),
+            new ToggleDrawer(),
+            new BreadcrumbsDrawer()
+        };
+
+        private static HierarchyInfo[] Info = new HierarchyInfo[]
+        {
+            new TagLayerInfo(),
+            new ComponentIconInfo()
+        };
 
         // --- Methods
 
@@ -82,13 +103,37 @@ namespace HierarchyDecorator
             
             if (Current != null && Current.IsValid())
             {
-                Current.BeforeNextGUI(item);
+                Current.OnGUIEnd(item);
                 Previous = Current;
             }
 
             Current = item;
+            Current.OnGUIBegin();
 
-            item.OnGUI(rect);
+            DrawItem(rect, item);
+        }
+
+        private static void DrawItem(Rect rect, HierarchyItem item)
+        {
+#if UNITY_2019_1_OR_NEWER
+            rect.height = 16f;
+#endif
+
+            foreach (HierarchyDrawer info in Drawers)
+            {
+                info.Draw(rect, item, s_Settings);
+            }
+
+            foreach (HierarchyInfo info in Info)
+            {
+                info.Draw(rect, item, s_Settings);
+            }
+
+            foreach (HierarchyDrawer info in OverlayDrawers)
+            {
+                info.Draw(rect, item, s_Settings);
+            }
+
             HierarchyInfo.ResetIndent();
         }
 

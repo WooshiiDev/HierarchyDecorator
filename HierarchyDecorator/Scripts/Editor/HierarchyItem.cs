@@ -6,28 +6,6 @@ namespace HierarchyDecorator
 {
     public class HierarchyItem
     {
-        // Drawers 
-
-        private static HierarchyDrawer[] Drawers = new HierarchyDrawer[]
-        {
-            new StyleDrawer(),
-        };
-
-        private static HierarchyDrawer[] OverlayDrawers = new HierarchyDrawer[]
-        {
-            new StateDrawer(),
-            new ToggleDrawer(),
-            new BreadcrumbsDrawer()
-        };
-
-        private static HierarchyInfo[] Info = new HierarchyInfo[]
-        {
-            new TagLayerInfo(),
-            new ComponentIconInfo()
-        };
-
-        private static Settings s_settings = HierarchyDecorator.GetOrCreateSettings();
-
         // --- Fields
         
         private GameObject instance;
@@ -92,35 +70,14 @@ namespace HierarchyDecorator
                 : PrefabInfo.Part;
         }
 
-        public void OnGUI(Rect rect)
+        public void OnGUIBegin()
         {
             Components.Validate(instance);
-
-#if UNITY_2019_1_OR_NEWER
-            rect.height = 16f;
-#endif
-
-            // Draw GUI
-
-            foreach (HierarchyDrawer info in Drawers)
-            {
-                info.Draw(rect, this, s_settings);
-            }
-
-            foreach (HierarchyInfo info in Info)
-            {
-                info.Draw(rect, this, s_settings);
-            }
-
-            foreach (HierarchyDrawer info in OverlayDrawers)
-            {
-                info.Draw(rect, this, s_settings);
-            }
         }
 
-        public void BeforeNextGUI(HierarchyItem next)
+        public void OnGUIEnd(HierarchyItem nextItem)
         {
-            Foldout = next.Transform.parent == Transform;
+            Foldout = nextItem.Transform.parent == Transform;
         }
 
         public int CalculateDepth()
