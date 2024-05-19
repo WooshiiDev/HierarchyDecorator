@@ -42,14 +42,7 @@ namespace HierarchyDecorator
 
         // --- Methods
 
-        [InitializeOnLoadMethod]
-        public static void Initialize()
-        {
-            EditorApplication.delayCall -= SetupCallbacks;
-            EditorApplication.delayCall += SetupCallbacks;
-        }
-
-        private static void SetupCallbacks()
+        public static void SetupCallbacks()
         {
             EditorApplication.hierarchyWindowItemOnGUI += OnGUI;
 

@@ -12,10 +12,35 @@ namespace HierarchyDecorator
     
         static HierarchyDecorator()
         {
-            // Need to check if settings exists and setup
+            Initialize();
 
-            EditorApplication.update -= SetupSettings;
-            EditorApplication.update += SetupSettings;
+            EditorApplication.update -= ValidateSettings;
+            EditorApplication.update += ValidateSettings;
+        }
+
+        // Setup 
+
+        private static void Initialize()
+        {
+            ValidateSettings();
+            HierarchyManager.SetupCallbacks();
+        }
+
+        private static void ValidateSettings()
+        {
+            if (Settings != null)
+            {
+                return;
+            }
+
+            Settings = GetOrCreateSettings();
+            UpdateComponentData();
+        }
+
+        private static void UpdateComponentData()
+        {
+            Settings.Components.UpdateData();
+            Settings.Components.UpdateComponents(true);
         }
 
         // Factory Methods
@@ -59,23 +84,6 @@ namespace HierarchyDecorator
         public static SerializedObject GetSerializedSettings()
         {
             return new SerializedObject (GetOrCreateSettings ());
-        }
-
-        private static void UpdateComponentData()
-        {
-            Settings.Components.UpdateData();
-            Settings.Components.UpdateComponents(true);
-        }
-
-        private static void SetupSettings()
-        {
-            if (Settings != null)
-            {
-                return;
-            }
-
-            Settings = GetOrCreateSettings();
-            UpdateComponentData();
         }
     }
 }
