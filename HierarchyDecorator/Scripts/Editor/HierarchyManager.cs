@@ -190,6 +190,10 @@ namespace HierarchyDecorator
                 {
                     item = new ComponentItem(components[i]);
                 }
+                else
+                {
+                    item.UpdateActiveState();
+                }
                 
                 nextItems.Add(item);
             }

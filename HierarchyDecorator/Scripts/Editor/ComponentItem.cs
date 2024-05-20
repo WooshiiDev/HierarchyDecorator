@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+using UnityEditor;
+using UnityEngine;
 
 namespace HierarchyDecorator
 {
@@ -9,6 +10,9 @@ namespace HierarchyDecorator
         public Component Component { get; private set; }
         public ComponentType Type { get; private set; }
         public bool IsNullComponent { get; private set; }
+
+        public readonly bool IsBehaviour;
+        private Behaviour behaviour;
 
         // - Visual
 
@@ -26,6 +30,12 @@ namespace HierarchyDecorator
         {
             Component = component;
             IsNullComponent = component == null;
+
+            IsBehaviour = Component is Behaviour;
+            if (IsBehaviour)
+            {
+                behaviour = Component as Behaviour;
+            }
 
             if (IsNullComponent)
             {
@@ -69,7 +79,7 @@ namespace HierarchyDecorator
                 return true;
             }
 
-            if (Component is Behaviour behaviour)
+            if (IsBehaviour)
             {
                 return behaviour.enabled;
             }
@@ -91,6 +101,12 @@ namespace HierarchyDecorator
 
             Active = active;
             Type.ToggleProperty.SetValue(Component, active);
+        }
+
+        public void UpdateActiveState()
+        {
+            EditorUtility.SetDirty(Component.gameObject);
+            Active = GetActiveState();
         }
     }
 }
