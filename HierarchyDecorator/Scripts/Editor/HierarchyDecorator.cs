@@ -51,27 +51,42 @@ namespace HierarchyDecorator
         /// <returns>The loaded settings</returns>
         private static Settings GetOrCreateSettings()
         {
-            string path = null;
-
-            // Make sure the key is still valid - no assuming that settings just 'exist'
-            if (EditorPrefs.HasKey (Constants.PREF_GUID))
+            if (TryLoadSettings(out Settings settings))
             {
-                path = AssetDatabase.GUIDToAssetPath (EditorPrefs.GetString (Constants.PREF_GUID));
+                return settings;
+            }
 
-                if (AssetDatabase.GetMainAssetTypeAtPath (path) != null)
+            return CreateSettings();
+        }
+
+        private static bool TryLoadSettings(out Settings settings)
+        {
+            // Make sure the key is still valid - no assuming that settings just 'exist'
+            if (EditorPrefs.HasKey(Constants.PREF_GUID))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(EditorPrefs.GetString(Constants.PREF_GUID));
+
+                if (AssetDatabase.GetMainAssetTypeAtPath(path) != null)
                 {
-                    return AssetDatabase.LoadAssetAtPath<Settings> (path);
+                    settings =  AssetDatabase.LoadAssetAtPath<Settings>(path);
+                    return true;
                 }
             }
 
-            Settings settings = AssetUtility.FindOrCreateScriptable<Settings> (SETTINGS_TYPE_STRING, SETTINGS_NAME_STRING, Constants.SETTINGS_ASSET_FOLDER);
-            settings.SetDefaults (EditorGUIUtility.isProSkin);
+            settings = null;
+            return false;
+        }
 
-            path = AssetDatabase.GetAssetPath (settings);
-            EditorPrefs.SetString (Constants.PREF_GUID, AssetDatabase.AssetPathToGUID (path));
+        private static Settings CreateSettings()
+        {
+            Settings settings = AssetUtility.FindOrCreateScriptable<Settings>(SETTINGS_TYPE_STRING, SETTINGS_NAME_STRING, Constants.SETTINGS_ASSET_FOLDER);
+            settings.SetDefaults(EditorGUIUtility.isProSkin);
 
-            EditorUtility.SetDirty (settings);
-            AssetDatabase.SaveAssets ();
+            string path = AssetDatabase.GetAssetPath(settings);
+            EditorPrefs.SetString(Constants.PREF_GUID, AssetDatabase.AssetPathToGUID(path));
+
+            EditorUtility.SetDirty(settings);
+            AssetDatabase.SaveAssets();
 
             return settings;
         }
