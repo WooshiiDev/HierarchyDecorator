@@ -8,8 +8,8 @@ namespace HierarchyDecorator
         public const string SETTINGS_TYPE_STRING = "Settings";
         public const string SETTINGS_NAME_STRING = "Settings";
 
-        private static Settings Settings;
-    
+        public static Settings Settings { get; private set; }
+
         static HierarchyDecorator()
         {
             Initialize();
@@ -49,7 +49,7 @@ namespace HierarchyDecorator
         /// Load the asset for settings, or create one if it doesn't already exist
         /// </summary>
         /// <returns>The loaded settings</returns>
-        public static Settings GetOrCreateSettings()
+        private static Settings GetOrCreateSettings()
         {
             string path = null;
 
@@ -73,7 +73,6 @@ namespace HierarchyDecorator
             EditorUtility.SetDirty (settings);
             AssetDatabase.SaveAssets ();
 
-            Settings = settings;
             return settings;
         }
 

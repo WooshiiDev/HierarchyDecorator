@@ -32,7 +32,7 @@ namespace HierarchyDecorator
                 return;
             }
 
-            Type = GetComponentInfo(HierarchyDecorator.GetOrCreateSettings());
+            Type = GetComponentInfo(HierarchyDecorator.Settings);
             Active = GetActiveState();
         }
 

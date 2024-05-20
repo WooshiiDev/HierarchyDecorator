@@ -15,7 +15,7 @@ namespace HierarchyDecorator
         private static Dictionary<int, HierarchyItem> lookup = new Dictionary<int, HierarchyItem>();
         public static int Count => lookup.Count;
         public static IReadOnlyDictionary<int, HierarchyItem> Items => lookup;
-        private static Settings s_Settings => HierarchyDecorator.GetOrCreateSettings();
+        private static Settings s_Settings = HierarchyDecorator.Settings;
 
         public static HierarchyItem Current { get; private set; }
         public static HierarchyItem Previous { get; private set; }
@@ -111,20 +111,19 @@ namespace HierarchyDecorator
 #if UNITY_2019_1_OR_NEWER
             rect.height = 16f;
 #endif
-
-            foreach (HierarchyDrawer info in Drawers)
+            for (int i = 0; i < Drawers.Length; i++)
             {
-                info.Draw(rect, item, s_Settings);
+                Drawers[i].Draw(rect, item, s_Settings);
             }
 
-            foreach (HierarchyInfo info in Info)
+            for (int i = 0; i < Info.Length; i++)
             {
-                info.Draw(rect, item, s_Settings);
+                Info[i].Draw(rect, item, s_Settings);
             }
 
-            foreach (HierarchyDrawer info in OverlayDrawers)
+            for (int i = 0; i < OverlayDrawers.Length; i++)
             {
-                info.Draw(rect, item, s_Settings);
+                OverlayDrawers[i].Draw(rect, item, s_Settings);
             }
 
             HierarchyInfo.ResetIndent();
