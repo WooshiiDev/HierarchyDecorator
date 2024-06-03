@@ -12,19 +12,11 @@ namespace HierarchyDecorator
 
         static HierarchyDecorator()
         {
-            Initialize();
-
             EditorApplication.update -= ValidateSettings;
             EditorApplication.update += ValidateSettings;
         }
 
         // Setup 
-
-        private static void Initialize()
-        {
-            ValidateSettings();
-            HierarchyManager.SetupCallbacks();
-        }
 
         private static void ValidateSettings()
         {
@@ -35,6 +27,7 @@ namespace HierarchyDecorator
 
             Settings = GetOrCreateSettings();
             UpdateComponentData();
+            HierarchyManager.SetupCallbacks();
         }
 
         private static void UpdateComponentData()
