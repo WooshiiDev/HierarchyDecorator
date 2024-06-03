@@ -105,6 +105,11 @@ namespace HierarchyDecorator
 
         public void UpdateActiveState()
         {
+            if (!Type.HasToggle)
+            {
+                return;
+            }
+
             EditorUtility.SetDirty(Component.gameObject);
             Active = GetActiveState();
         }
