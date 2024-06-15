@@ -343,7 +343,7 @@ namespace HierarchyDecorator
 
         private void DrawComponents()
         {
-            string group = "";
+            string group = "All";
             if (categoryIndex != -1)
             {
                 group = groupNames[categoryIndex];
@@ -354,6 +354,7 @@ namespace HierarchyDecorator
             windowRect = EditorGUILayout.BeginVertical();
             {
                 // Filter components from search
+
 
                 if (IsSearching())
                 {
@@ -533,6 +534,12 @@ namespace HierarchyDecorator
             filter = filter.ToLower();
 
             string group = groupNames[categoryIndex];
+            bool isExcluded = group == "Excluded";
+            if (isExcluded)
+            {
+                group = "All";
+            }
+
             IconInfo[] selectedTypes = unityGroups[group];
             List<IconInfo> filteredTypes = new List<IconInfo>();
 
