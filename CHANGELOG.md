@@ -14,13 +14,14 @@
 
 ### API Changes
 
-The hierarchy iteration has been overhauled replacing the direct gameobject references, to now using a container caching data. This has brought large performance gains, especially with component icons.
+The hierarchy iteration has been overhauled replacing the gameobject references with data containers. This has brought large performance gains, especially with component icons.
  - `HierarchyItem` is a container for GameObjects, to easily cache components and data.
  - `ComponentItem` contains data for each component on a Game Object.
  - `Components` is a collection wrapper, containing the components on a `HierarchyItem`.
 
 ### Bug Fixes
  - With the new API changes, errors with missing instances have been resolved. 
+ - 
 
 ## v0.9.1 | Hotfix - Duplicate component types
 
