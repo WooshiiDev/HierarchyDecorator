@@ -1,3 +1,5 @@
+using System;
+using UnityEngine;
 using UnityEditor;
 
 namespace HierarchyDecorator
@@ -8,12 +10,15 @@ namespace HierarchyDecorator
         public const string SETTINGS_TYPE_STRING = "Settings";
         public const string SETTINGS_NAME_STRING = "Settings";
 
+        public static bool HasInitialized { get; private set; }
         public static Settings Settings { get; private set; }
 
         static HierarchyDecorator()
         {
-            EditorApplication.update -= ValidateSettings;
-            EditorApplication.update += ValidateSettings;
+            HasInitialized = false;
+
+            EditorApplication.delayCall -= ValidateSettings;
+            EditorApplication.delayCall += ValidateSettings;
         }
 
         // Setup 
@@ -28,6 +33,8 @@ namespace HierarchyDecorator
             Settings = GetOrCreateSettings();
             UpdateComponentData();
             HierarchyManager.SetupCallbacks();
+
+            HasInitialized = true;
         }
 
         private static void UpdateComponentData()

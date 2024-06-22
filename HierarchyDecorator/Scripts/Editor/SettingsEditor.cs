@@ -26,9 +26,8 @@ namespace HierarchyDecorator
 
         private void OnEnable()
         {
-            settings = target as Settings;
             hasInitialized = false;
-            Repaint();
+            settings = target as Settings;
         }
 
         private void Initialize()
@@ -46,15 +45,23 @@ namespace HierarchyDecorator
 
         public override void OnInspectorGUI()
         {
-            if (!hasInitialized)
+            if (!hasInitialized && HierarchyDecorator.HasInitialized)
             {
                 Initialize();
                 return;
             }
 
             EditorGUILayout.BeginVertical(Style.InspectorPadding);
+            if (hasInitialized)
+            {
+                DrawTitle();
+                DrawContent();
+            }
+            EditorGUILayout.EndVertical();
+        }
 
-            DrawTitle();
+        private void DrawContent()
+        {
             selectedTab?.OnGUI();
 
             if (selectedTab.IsDirty)
@@ -63,8 +70,6 @@ namespace HierarchyDecorator
                 EditorApplication.RepaintHierarchyWindow();
                 Repaint();
             }
-
-            EditorGUILayout.EndVertical();
         }
 
         private void DrawTitle()
