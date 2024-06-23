@@ -43,21 +43,22 @@ namespace HierarchyDecorator
             return false;
         }
 
+
         public override void OnInspectorGUI()
         {
             if (!hasInitialized && HierarchyDecorator.HasInitialized)
             {
                 Initialize();
-                return;
             }
-
-            EditorGUILayout.BeginVertical(Style.InspectorPadding);
-            if (hasInitialized)
+            else
             {
+                EditorGUILayout.BeginVertical(Style.InspectorPadding);
                 DrawTitle();
                 DrawContent();
+                EditorGUILayout.EndVertical();
             }
-            EditorGUILayout.EndVertical();
+
+
         }
 
         private void DrawContent()
@@ -71,6 +72,7 @@ namespace HierarchyDecorator
                 Repaint();
             }
         }
+
 
         private void DrawTitle()
         {
