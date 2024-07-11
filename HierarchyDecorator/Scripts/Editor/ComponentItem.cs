@@ -74,7 +74,7 @@ namespace HierarchyDecorator
         {
             // Default as enabled 
 
-            if (!Type.HasToggle)
+            if (Type == null || !Type.HasToggle)
             {
                 return true;
             }
@@ -105,7 +105,7 @@ namespace HierarchyDecorator
 
         public void UpdateActiveState()
         {
-            if (IsNullComponent || !Type.HasToggle)
+            if (Type == null || !Type.HasToggle)
             {
                 return;
             }
