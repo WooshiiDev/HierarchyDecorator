@@ -20,7 +20,7 @@ namespace HierarchyDecorator
         private readonly GUIContent warningGUI = EditorGUIUtility.IconContent ("console.warnicon");
 #endif
 
-        protected override int GetGridCount()
+        protected override int CalculateGridCount()
         {
             return iconCount;
         }
@@ -187,7 +187,7 @@ namespace HierarchyDecorator
             // Move to left-most side possible, then move along rows
 
             rect.x += rect.width;
-            rect.x -= INDENT_SIZE * GetGridCount();
+            rect.x -= INDENT_SIZE * CalculateGridCount();
 
             rect.width = rect.height = INDENT_SIZE;
 

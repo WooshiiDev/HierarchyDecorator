@@ -7,6 +7,8 @@ namespace HierarchyDecorator
 {
     public class TagLayerInfo : HierarchyInfo
     {
+        private const int LABEL_GRID_SIZE = 3;
+
         // --- Settings
 
         private bool tagEnabled;
@@ -15,7 +17,7 @@ namespace HierarchyDecorator
         private bool setChildLayers;
 
         private bool isVertical;
-        private bool hasStyle;
+        private bool tagFirst;
 
         private bool bothShown => tagEnabled && layerEnabled;
 
@@ -27,6 +29,8 @@ namespace HierarchyDecorator
 
             TagLayerLayout layout = settings.globalData.tagLayerLayout;
             isVertical = layout == TagLayerLayout.TagAbove || layout == TagLayerLayout.LayerAbove;
+
+            tagFirst = layout == TagLayerLayout.TagInFront;
         }
 
         protected override bool DrawerIsEnabled(HierarchyItem item, Settings settings)
@@ -34,7 +38,7 @@ namespace HierarchyDecorator
             tagEnabled = settings.globalData.showTags;
             layerEnabled = settings.globalData.showLayers;
 
-            if (hasStyle = settings.styleData.HasStyle(item.DisplayName))
+            if (settings.styleData.HasStyle(item.DisplayName))
             {
                 tagEnabled &= settings.styleData.displayTags;
                 layerEnabled &= settings.styleData.displayLayers;
@@ -56,16 +60,37 @@ namespace HierarchyDecorator
             }
         }
 
-        protected override int GetGridCount()
+        protected override int CalculateGridCount()
         {
-            if (isVertical || tagEnabled != layerEnabled)
+            if (isVertical || !bothShown)
             {
-                return 3;
+                return LABEL_GRID_SIZE;
             }
 
-            return 6;
+            return LABEL_GRID_SIZE * 2;
         }
-        
+
+        protected override bool ValidateGrid()
+        {
+            if (GridCount == 0) // Not big enough for either element
+            {
+                return false;
+            }
+
+            if (GridCount >= LABEL_GRID_SIZE) 
+            {
+                return true;
+            }
+
+            if (!isVertical && bothShown)
+            {
+                tagEnabled = !tagFirst;
+                layerEnabled = tagFirst;
+            }
+
+            return true;
+        }
+
         // - Drawing elements
 
         private void DrawTag(Rect rect, GameObject instance, TagLayerLayout layout)
