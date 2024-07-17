@@ -201,7 +201,7 @@ namespace HierarchyDecorator
                 // - Front Element
 
                 case TagLayerLayout.TagInFront when isTag:
-                case TagLayerLayout.LayerInfront when !isTag:
+                case TagLayerLayout.LayerInFront when !isTag:
 
                     float halfWidth = rect.width * 0.5f;
                     rect.width = halfWidth;
@@ -211,7 +211,7 @@ namespace HierarchyDecorator
                 // - Back Element
 
                 case TagLayerLayout.TagInFront when !isTag:
-                case TagLayerLayout.LayerInfront when isTag:
+                case TagLayerLayout.LayerInFront when isTag:
 
                     halfWidth = rect.width * 0.5f;
                     rect.width = halfWidth;
