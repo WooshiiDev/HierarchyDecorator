@@ -29,7 +29,6 @@ namespace HierarchyDecorator
 
             TagLayerLayout layout = settings.globalData.tagLayerLayout;
             isVertical = layout == TagLayerLayout.TagAbove || layout == TagLayerLayout.LayerAbove;
-
             tagFirst = layout == TagLayerLayout.TagInFront;
         }
 
@@ -72,17 +71,12 @@ namespace HierarchyDecorator
 
         protected override bool ValidateGrid()
         {
-            if (GridCount == 0) // Not big enough for either element
+            if (GridCount < LABEL_GRID_SIZE) // Not big enough for either element
             {
                 return false;
             }
 
-            if (GridCount >= LABEL_GRID_SIZE) 
-            {
-                return true;
-            }
-
-            if (!isVertical && bothShown)
+            if (GridCount < LABEL_GRID_SIZE * 2 && !isVertical && bothShown)
             {
                 tagEnabled = !tagFirst;
                 layerEnabled = tagFirst;
@@ -95,21 +89,17 @@ namespace HierarchyDecorator
 
         private void DrawTag(Rect rect, GameObject instance, TagLayerLayout layout)
         {
-            GenericMenu menu = CreateMenu(InternalEditorUtility.tags, AssignTag);
             rect = GetInfoAreaRect(rect, true, layout);
-
-            DrawInstanceInfo(rect, instance.tag, instance, menu);
+            DrawInstanceInfo(rect, instance.tag, instance, true);
         }
 
         private void DrawLayer(Rect rect, GameObject instance, TagLayerLayout layout)
         {
-            GenericMenu menu = CreateMenu(InternalEditorUtility.layers, AssignLayer);
             rect = GetInfoAreaRect(rect, false, layout);
-
-            DrawInstanceInfo(rect, LayerMask.LayerToName(instance.layer), instance, menu);
+            DrawInstanceInfo(rect, LayerMask.LayerToName(instance.layer), instance, false);
         }
 
-        private void DrawInstanceInfo(Rect rect, string label, GameObject instance, GenericMenu menu)
+        private void DrawInstanceInfo(Rect rect, string label, GameObject instance, bool isTag)
         {
             EditorGUI.LabelField(rect, label, (isVertical && bothShown) ? Style.TinyText : Style.SmallDropdown);
 
@@ -121,11 +111,18 @@ namespace HierarchyDecorator
                 return;
             }
 
+            // Create menu here 
+
+            GenericMenu menu = isTag
+                ? CreateMenu(InternalEditorUtility.tags, AssignTag)
+                : CreateMenu(InternalEditorUtility.layers, AssignLayer);
+
             GameObject[] selection = Selection.gameObjects;
             if (selection.Length < 2)
             {
                 Selection.SetActiveObjectWithContext(instance, null);
             }
+
             menu.ShowAsContext();
             e.Use();
         }
@@ -175,7 +172,7 @@ namespace HierarchyDecorator
 
         // - Helpers
 
-        private GenericMenu CreateMenu(string[] items, Action<string> onSelect)
+        private static GenericMenu CreateMenu(string[] items, Action<string> onSelect)
         {
             GenericMenu menu = new GenericMenu();
             for (int i = 0; i < items.Length; i++)
