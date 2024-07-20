@@ -9,7 +9,9 @@ namespace HierarchyDecorator
 {
     public class ComponentIconInfo : HierarchyInfo
     {
+        private static readonly Color s_DisabledColor = new Color(1f, 1f, 1f, 0.4f);
         private Dictionary<Texture, GUIContent> stackTextures = new Dictionary<Texture, GUIContent>();
+
         private List<ComponentItem> stackItems = new List<ComponentItem>();
         private IList<ComponentItem> items = new List<ComponentItem>();
 
@@ -145,15 +147,14 @@ namespace HierarchyDecorator
             }
 
             bool active = item.Active;
-            Color c = GUI.color;
             if (!active)
             {
-                GUI.color = new Color(1f, 1f, 1f, 0.4f);
+                GUI.color = s_DisabledColor;
             }
             DrawIcon(rect, item.Content);
             if (!active)
             {
-                GUI.color = c;
+                GUI.color = Color.white;
             }
         }
 
