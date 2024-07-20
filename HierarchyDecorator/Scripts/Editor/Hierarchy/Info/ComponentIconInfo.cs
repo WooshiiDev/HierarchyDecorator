@@ -11,18 +11,46 @@ namespace HierarchyDecorator
     {
         private Dictionary<Texture, GUIContent> stackTextures = new Dictionary<Texture, GUIContent>();
         private List<ComponentItem> stackItems = new List<ComponentItem>();
+        private IList<ComponentItem> items = new List<ComponentItem>();
 
-        private int iconCount;
+        private bool requireWarning;
 
 #if UNITY_2019_1_OR_NEWER
         private readonly GUIContent warningGUI = EditorGUIUtility.IconContent("warning");
 #else
         private readonly GUIContent warningGUI = EditorGUIUtility.IconContent ("console.warnicon");
 #endif
+        protected override void OnDrawInit(HierarchyItem item, Settings settings)
+        {
+            requireWarning = false;
+            items.Clear();
+
+            foreach (ComponentItem component in item.Components.GetItems())
+            {
+                if (component.IsNullComponent && settings.Components.ShowMissingScriptWarning)
+                {
+                    requireWarning = true;
+                    continue;
+                }
+
+                if (!CanShow(component, settings))
+                {
+                    continue;
+                }
+
+                items.Add(component);
+            }
+
+            if (stackTextures.Count > 0)
+            {
+                stackTextures.Clear();
+                stackItems.Clear();
+            }
+        }
 
         protected override int CalculateGridCount()
         {
-            return iconCount;
+            return items.Count;
         }
 
         protected override bool DrawerIsEnabled(HierarchyItem item, Settings settings)
@@ -39,30 +67,25 @@ namespace HierarchyDecorator
         {
             bool stackScripts = settings.Components.StackScripts;
 
-            bool requiresWarning = false;
-            foreach (ComponentItem component in item.Components.GetItems())
+            rect = GetIconPosition(rect);
+
+            for (int i = 0; i < items.Count; i++)
             {
-                // Feature - Warning
-
-                if (component.IsNullComponent && settings.Components.ShowMissingScriptWarning)
+                if (IsIconOutOfBounds(rect))
                 {
-                    requiresWarning = true;
-                    continue;
+                    break;
                 }
 
-                if (!CanShow(component, settings))
-                {
-                    continue;
-                }
+                ComponentItem component = items[i];
 
                 // Feature - Stack Scripts: Only draw once
 
                 if (stackScripts)
                 {
                     Texture texture = component.Content.image;
-                    if (!stackTextures.TryGetValue(texture, out GUIContent content))
+                    if (!stackTextures.TryGetValue(texture, out _))
                     {
-                        content = new GUIContent(string.Empty, texture, component.DisplayName);
+                        GUIContent content = new GUIContent(string.Empty, texture, component.DisplayName);
                         stackTextures.Add(texture, content);
                     }
                     else
@@ -73,8 +96,9 @@ namespace HierarchyDecorator
                 else // Draw
                 {
                     DrawComponentIcon(rect, component);
-                    iconCount++;
                 }
+
+                rect.x -= INDENT_SIZE;
             }
 
             if (stackScripts)
@@ -82,24 +106,12 @@ namespace HierarchyDecorator
                 foreach (GUIContent content in stackTextures.Values)
                 {
                     DrawIcon(GetIconPosition(rect), content);
-                    iconCount++;
                 }
             }
 
-            if (requiresWarning)
+            if (requireWarning)
             {
                 DrawMissingComponent(rect);
-            }
-        }
-
-        protected override void OnDrawInit(HierarchyItem instance, Settings settings)
-        {
-            iconCount = 1;
-
-            if (stackTextures.Count > 0)
-            {
-                stackTextures.Clear();
-                stackItems.Clear();
             }
         }
 
@@ -107,8 +119,6 @@ namespace HierarchyDecorator
 
         private void DrawComponentIcon(Rect rect, ComponentItem item)
         {
-            rect = GetIconPosition(rect);
-
             if (item.CanToggle)
             {
                 DrawComponentToggle(rect, item);
@@ -155,11 +165,6 @@ namespace HierarchyDecorator
 
         private void DrawIcon(Rect rect, GUIContent content)
         {
-            if (IsIconOutOfBounds(rect))
-            {
-                return;
-            }
-
             GUI.Label(rect, content, Style.ComponentIconStyle);
         }
 
@@ -184,16 +189,11 @@ namespace HierarchyDecorator
 
         private Rect GetIconPosition(Rect rect)
         {
-            // Move to left-most side possible, then move along rows
-
-            rect.x += rect.width;
-            rect.x -= INDENT_SIZE * CalculateGridCount();
-
-            rect.width = rect.height = INDENT_SIZE;
-
+            rect.x += rect.width - INDENT_SIZE;
+            rect.width = INDENT_SIZE;
             return rect;
         }
-  
+
         private bool IsIconOutOfBounds(Rect rect)
         {
             return rect.x < (LabelRect.x + LabelRect.width);
