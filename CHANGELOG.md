@@ -28,6 +28,7 @@ The hierarchy iteration has been overhauled replacing the gameobject references 
 ### Bug Fixes
  - With the new API changes, errors with missing instances have been resolved. 
  - Breadcrumbs now correctly align with siblings, parents and children.
+ - Breadcrumbs no longer overlap toggles when using search filter.
 
 ## v0.9.1 | Hotfix - Duplicate component types
 
