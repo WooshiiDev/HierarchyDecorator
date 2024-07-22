@@ -11,6 +11,8 @@ namespace HierarchyDecorator
 
         const float HORIZONTAL_WIDTH = 6f;
 
+        const float MIN_RECT_X = 60f;
+
         private static readonly HideFlags IgnoreFoldoutFlags = HideFlags.HideInHierarchy | HideFlags.HideInInspector;
 
         private static HierarchyItem Item => HierarchyManager.Current;
@@ -19,9 +21,14 @@ namespace HierarchyDecorator
         {
             return settings.globalData.showBreadcrumbs;
         }
-        
+
         protected override void DrawInternal(Rect rect, HierarchyItem item, Settings _settings)
         {
+            if (rect.x < MIN_RECT_X)
+            {
+                return;
+            }
+
             HierarchyItem current = HierarchyManager.Current;
 
             if (_settings.styleData.TryGetStyleFromPrefix(item.DisplayName, out HierarchyStyle prefix))
