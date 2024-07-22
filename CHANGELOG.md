@@ -11,17 +11,23 @@
  - Warning icon is now always shown at the end of the icon list.
  - "Stack MonoBehaviours" setting has now been renamed to "Stack Duplicate Icons".
  - Stacked icon tooltips now display all components it represents.
+ - Tags & Layers now hide when the hierarchy width is too small.
 
 ### API Changes
 
+**General**
 The hierarchy iteration has been overhauled replacing the gameobject references with data containers. This has brought large performance gains, especially with component icons.
  - `HierarchyItem` is a container for GameObjects, to easily cache components and data.
  - `ComponentItem` contains data for each component on a Game Object.
  - `Components` is a collection wrapper, containing the components on a `HierarchyItem`.
 
+**Hierarchy Info**
+ - Hierarchy Info now provides `ValidateGrid()` to check if the grid size is valid. This can also be used to prepare data that requires rect or grid information before drawing. 
+ - If `ValidateGrid()` returns false, this tells the info element that the info cannot be drawn and will return early.
+
 ### Bug Fixes
  - With the new API changes, errors with missing instances have been resolved. 
- - 
+ - Breadcrumbs now correctly align with siblings, parents and children.
 
 ## v0.9.1 | Hotfix - Duplicate component types
 
