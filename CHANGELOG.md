@@ -25,10 +25,11 @@ The hierarchy iteration has been overhauled replacing the gameobject references 
  - Hierarchy Info now provides `ValidateGrid()` to check if the grid size is valid. This can also be used to prepare data that requires rect or grid information before drawing. 
  - If `ValidateGrid()` returns false, this tells the info element that the info cannot be drawn and will return early.
 
-### Bug Fixes
+### Fixes
  - With the new API changes, errors with missing instances have been resolved. 
  - Breadcrumbs now correctly align with siblings, parents and children.
  - Breadcrumbs no longer overlap toggles when using search filter.
+ - Game objects that only have hidden children will no longer show a foldout.
 
 ## v0.9.1 | Hotfix - Duplicate component types
 
