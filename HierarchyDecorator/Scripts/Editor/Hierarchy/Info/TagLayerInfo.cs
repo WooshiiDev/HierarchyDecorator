@@ -7,6 +7,8 @@ namespace HierarchyDecorator
 {
     public class TagLayerInfo : HierarchyInfo
     {
+        private const int LABEL_GRID_SIZE = 3;
+
         // --- Settings
 
         private bool tagEnabled;
@@ -15,7 +17,7 @@ namespace HierarchyDecorator
         private bool setChildLayers;
 
         private bool isVertical;
-        private bool hasStyle;
+        private bool tagFirst;
 
         private bool bothShown => tagEnabled && layerEnabled;
 
@@ -27,6 +29,7 @@ namespace HierarchyDecorator
 
             TagLayerLayout layout = settings.globalData.tagLayerLayout;
             isVertical = layout == TagLayerLayout.TagAbove || layout == TagLayerLayout.LayerAbove;
+            tagFirst = layout == TagLayerLayout.TagInFront;
         }
 
         protected override bool DrawerIsEnabled(HierarchyItem item, Settings settings)
@@ -34,7 +37,7 @@ namespace HierarchyDecorator
             tagEnabled = settings.globalData.showTags;
             layerEnabled = settings.globalData.showLayers;
 
-            if (hasStyle = settings.styleData.HasStyle(item.DisplayName))
+            if (settings.styleData.HasStyle(item.DisplayName))
             {
                 tagEnabled &= settings.styleData.displayTags;
                 layerEnabled &= settings.styleData.displayLayers;
@@ -56,35 +59,47 @@ namespace HierarchyDecorator
             }
         }
 
-        protected override int GetGridCount()
+        protected override int CalculateGridCount()
         {
-            if (isVertical || tagEnabled != layerEnabled)
+            if (isVertical || !bothShown)
             {
-                return 3;
+                return LABEL_GRID_SIZE;
             }
 
-            return 6;
+            return LABEL_GRID_SIZE * 2;
         }
-        
+
+        protected override bool ValidateGrid()
+        {
+            if (GridCount < LABEL_GRID_SIZE) // Not big enough for either element
+            {
+                return false;
+            }
+
+            if (GridCount < LABEL_GRID_SIZE * 2 && !isVertical && bothShown)
+            {
+                tagEnabled = !tagFirst;
+                layerEnabled = tagFirst;
+            }
+
+            return true;
+        }
+
         // - Drawing elements
 
         private void DrawTag(Rect rect, GameObject instance, TagLayerLayout layout)
         {
-            GenericMenu menu = CreateMenu(InternalEditorUtility.tags, AssignTag);
             rect = GetInfoAreaRect(rect, true, layout);
-
-            DrawInstanceInfo(rect, instance.tag, instance, menu);
+            DrawInstanceInfo(rect, instance.tag, instance, true);
         }
 
         private void DrawLayer(Rect rect, GameObject instance, TagLayerLayout layout)
         {
-            GenericMenu menu = CreateMenu(InternalEditorUtility.layers, AssignLayer);
             rect = GetInfoAreaRect(rect, false, layout);
-
-            DrawInstanceInfo(rect, LayerMask.LayerToName(instance.layer), instance, menu);
+            DrawInstanceInfo(rect, LayerMask.LayerToName(instance.layer), instance, false);
         }
 
-        private void DrawInstanceInfo(Rect rect, string label, GameObject instance, GenericMenu menu)
+        private void DrawInstanceInfo(Rect rect, string label, GameObject instance, bool isTag)
         {
             EditorGUI.LabelField(rect, label, (isVertical && bothShown) ? Style.TinyText : Style.SmallDropdown);
 
@@ -96,11 +111,18 @@ namespace HierarchyDecorator
                 return;
             }
 
+            // Create menu here 
+
+            GenericMenu menu = isTag
+                ? CreateMenu(InternalEditorUtility.tags, AssignTag)
+                : CreateMenu(InternalEditorUtility.layers, AssignLayer);
+
             GameObject[] selection = Selection.gameObjects;
             if (selection.Length < 2)
             {
                 Selection.SetActiveObjectWithContext(instance, null);
             }
+
             menu.ShowAsContext();
             e.Use();
         }
@@ -150,7 +172,7 @@ namespace HierarchyDecorator
 
         // - Helpers
 
-        private GenericMenu CreateMenu(string[] items, Action<string> onSelect)
+        private static GenericMenu CreateMenu(string[] items, Action<string> onSelect)
         {
             GenericMenu menu = new GenericMenu();
             for (int i = 0; i < items.Length; i++)
@@ -176,7 +198,7 @@ namespace HierarchyDecorator
                 // - Front Element
 
                 case TagLayerLayout.TagInFront when isTag:
-                case TagLayerLayout.LayerInfront when !isTag:
+                case TagLayerLayout.LayerInFront when !isTag:
 
                     float halfWidth = rect.width * 0.5f;
                     rect.width = halfWidth;
@@ -186,7 +208,7 @@ namespace HierarchyDecorator
                 // - Back Element
 
                 case TagLayerLayout.TagInFront when !isTag:
-                case TagLayerLayout.LayerInfront when isTag:
+                case TagLayerLayout.LayerInFront when isTag:
 
                     halfWidth = rect.width * 0.5f;
                     rect.width = halfWidth;

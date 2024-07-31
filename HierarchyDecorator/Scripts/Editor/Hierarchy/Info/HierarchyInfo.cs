@@ -19,9 +19,9 @@ namespace HierarchyDecorator
         protected static Rect LabelRect { get; private set; }
 
         /// <summary>
-        /// Has this info drawer initalized for the current instance
+        /// 
         /// </summary>
-        protected static bool HasInitialized { get; private set; }
+        protected int GridCount { get; private set; }
 
         /// <summary>
         /// Apply the drawer GUI to the instance given
@@ -32,25 +32,31 @@ namespace HierarchyDecorator
         protected override void DrawInternal(Rect rect, HierarchyItem item, Settings settings)
         {
             // Full rect calculation 
+
             FullRect = GetFullRect (rect);
             LabelRect = GetLabelRect(rect, item.DisplayName, settings);
 
             // Setup any data before drawing
-            HasInitialized = false;
+
             OnDrawInit (item, settings);
 
             // Calculate initial rect
-            int gridCount = GetGridCount ();
 
-            rect.x += rect.width - GetGridPosition();
-            rect.width = INDENT_SIZE * gridCount;
-            HasInitialized = true;
+            GridCount = CalculateGridCount ();
+            Rect drawRect = CalculateInfoRect(rect);
 
             // Draw Info
-            DrawInfo (rect, item, settings);
+
+            if (!ValidateGrid())
+            {
+                return;
+            }
+
+            DrawInfo (drawRect, item, settings);
 
             // Calculate the next initial index
-            IndentIndex += gridCount;
+
+            IndentIndex += GridCount;
         }
 
         /// <summary>
@@ -72,22 +78,33 @@ namespace HierarchyDecorator
         }
 
         /// <summary>
-        /// Get the number of grid elements this info will use when drawing
+        /// The grid count this info requires when drawing. Use <see cref="GridCount"/> if you need the current value.
         /// </summary>
-        /// <returns>Returns the grid usage count</returns>
-        protected abstract int GetGridCount();
+        /// <returns>Returns the grid usage count.</returns>
+        protected abstract int CalculateGridCount();
+
+        protected virtual bool ValidateGrid() { return GridCount > 0; }
 
         /// <summary>
-        /// Get the initial draw position on the grid
+        /// Get the initial draw position on the grid.
         /// </summary>
-        /// <returns>Returns the position this drawer begins at</returns>
+        /// <returns>Returns the position this drawer begins at.</returns>
         protected int GetGridPosition()
         {
-            return INDENT_SIZE * (IndentIndex + GetGridCount ());
+            return INDENT_SIZE * (IndentIndex + GridCount);
         }
 
         /// <summary>
-        /// Reset the indent
+        /// Calculate the width of the grid.
+        /// </summary>
+        /// <returns></returns>
+        protected int GetGridWidth()
+        {
+            return INDENT_SIZE * GridCount;
+        }
+
+        /// <summary>
+        /// Reset the indent.
         /// </summary>
         public static void ResetIndent()
         {
@@ -164,6 +181,34 @@ namespace HierarchyDecorator
                         break;
                 }
             }
+
+            return rect;
+        }
+        
+        /// <summary>
+        /// Calculate the rect for the info that will be drawn.
+        /// </summary>
+        /// <param name="rect">The rect to be drawn.</param>
+        /// <returns></returns>
+        private Rect CalculateInfoRect(Rect rect)
+        {
+            // Calculate the minimum point and any label overflow
+
+            float xmin = rect.xMax - GetGridPosition();
+            float overflow = LabelRect.xMax - xmin;
+
+            // Handle overflow to avoid overlapping labels
+
+            if (overflow > 0)
+            {
+                GridCount -= Mathf.CeilToInt(overflow / INDENT_SIZE);
+                xmin = rect.xMax - GetGridPosition();
+            }
+
+            // Calculate the final rect
+
+            rect.x = xmin;
+            rect.width = GetGridWidth();
 
             return rect;
         }
