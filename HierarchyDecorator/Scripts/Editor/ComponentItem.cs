@@ -108,9 +108,12 @@ namespace HierarchyDecorator
             {
                 return;
             }
-
-            Active = active;
-            Type.ToggleProperty.SetValue(Component, active);
+            if (Active != active)
+            {
+                Active = active;
+                Type.ToggleProperty.SetValue(Component, active);
+                EditorUtility.SetDirty(Component.gameObject);
+            }
         }
 
         public void UpdateActiveState()
@@ -119,8 +122,7 @@ namespace HierarchyDecorator
             {
                 return;
             }
-
-            EditorUtility.SetDirty(Component.gameObject);
+            
             Active = GetActiveState();
         }
     }
