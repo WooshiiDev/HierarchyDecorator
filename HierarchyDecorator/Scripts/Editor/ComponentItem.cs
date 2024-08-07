@@ -43,6 +43,13 @@ namespace HierarchyDecorator
             }
 
             Type = GetComponentInfo(HierarchyDecorator.Settings);
+
+            if (Type == null)
+            {
+                
+                IsNullComponent = true;
+            }
+            
             Active = GetActiveState();
         }
 
@@ -55,6 +62,9 @@ namespace HierarchyDecorator
 
         private ComponentType GetComponentInfo(Settings settings)
         {
+            if (IsNullComponent)
+                return null;
+            
             var type = Component.GetType();
             if (settings.Components.TryGetComponent(type, out ComponentType c))
             {
@@ -74,7 +84,7 @@ namespace HierarchyDecorator
         {
             // Default as enabled 
 
-            if (!Type.HasToggle)
+            if (IsNullComponent || !Type.HasToggle)
             {
                 return true;
             }
@@ -105,7 +115,7 @@ namespace HierarchyDecorator
 
         public void UpdateActiveState()
         {
-            if (!Type.HasToggle)
+            if (IsNullComponent || !Type.HasToggle)
             {
                 return;
             }
