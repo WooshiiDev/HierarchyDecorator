@@ -173,7 +173,7 @@ namespace HierarchyDecorator
 
         private bool CanShow(ComponentItem item, Settings settings)
         {
-            if (item.Type.Excluded)
+            if (item.IsNullComponent || item.Type.Excluded)
             {
                 return false;
             }
