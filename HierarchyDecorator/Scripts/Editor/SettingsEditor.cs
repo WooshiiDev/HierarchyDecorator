@@ -57,8 +57,6 @@ namespace HierarchyDecorator
                 DrawContent();
                 EditorGUILayout.EndVertical();
             }
-
-
         }
 
         private void DrawContent()

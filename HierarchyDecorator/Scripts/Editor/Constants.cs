@@ -4,21 +4,38 @@ using UnityEngine;
 
 namespace HierarchyDecorator
 {
+
+
     [InitializeOnLoad]
     public static class Constants
     {
-        // ====== Settings Strings ======
+        public static class Paths
+        {
+            /// <summary>
+            /// Pref path used to cache the GUID of the settings asset.
+            /// </summary>
+            public static string PREF_GUID = Application.productName + "_HD_GUID";
 
-        public static string PREF_GUID = Application.productName + "_HD_GUID";
+            /// <summary>
+            /// Path used for showing Hierarchy Decorator settings in Preferences. See <see cref="HierarchyDecoratorProvider"/>.
+            /// </summary>
+            public const string SETTINGS_PATH = "Hierarchy Decorator";
 
-        public const string SETTINGS_PATH = "Hierarchy Decorator";
+            /// <summary>
+            /// Default creation path for the <see cref="Settings"/> asset.
+            /// </summary>
+            public const string DEFAULT_ASSET_PATH = "Assets/HierarchyDecorator/Settings.asset";
 
-        public const string SETTINGS_ASSET_PATH = "Assets/HierarchyDecorator/Settings.asset";
-        public const string SETTINGS_ASSET_FOLDER = "Assets/HierarchyDecorator/";
+            /// <summary>
+            /// The default folder path when creating a <see cref="Settings"/> asset.
+            /// </summary>
+            public const string DEFAULT_ASSET_FOLDER = "Assets/HierarchyDecorator/";
+        }
+       
 
-        // ====== Colours ======
+        // --- Colours
 
-        // ------ Two Tone Colours ------
+        // - Two Tone Colours
 
         public readonly static Color DarkModeEvenColor = new Color (0.25f, 0.25f, 0.25f, 1f);
         public readonly static Color DarkModeOddColor = new Color (0.225f, 0.225f, 0.225f, 1f);
@@ -26,7 +43,7 @@ namespace HierarchyDecorator
         public readonly static Color LightModeEvenColor = new Color (0.8f, 0.8f, 0.8f, 1f);
         public readonly static Color LightModeOddColor = new Color (0.765f, 0.765f, 0.765f, 1f);
 
-        // ------ Standard Colours ------
+        // - Standard Colours
 
         public readonly static Color SelectionColour = new Color (58f / 255f, 178f / 255f, 178f / 255f, 1);
     
@@ -42,12 +59,12 @@ namespace HierarchyDecorator
 
         public static Color DefaultBackgroundColor => EditorGUIUtility.isProSkin ? DarkBackgroundColour : LightBackgroundColour;
 
-        // ====== Instance Data ======
+        // --- Instance Data
 
         public static string[] LayerMasks => UnityEditorInternal.InternalEditorUtility.layers;
         public readonly static LayerMask AllLayers = ~0;
 
-        //====== Editor Settings ======
+        // --- Editor Settings
 
         public readonly static CategoryFilter DefaultFilter = new CategoryFilter("Other", string.Empty, FilterType.NONE);
 
