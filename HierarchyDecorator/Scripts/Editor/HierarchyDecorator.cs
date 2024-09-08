@@ -15,19 +15,19 @@ namespace HierarchyDecorator
         public static bool HasInitialized { get; private set; }
         public static Settings Settings { get; private set; }
 
+        public static bool IsReady => !EditorApplication.isCompiling && HasInitialized;
+
         static HierarchyDecorator()
         {
             HasInitialized = false;
-
-            EditorApplication.delayCall -= ValidateSettings;
-            EditorApplication.delayCall += ValidateSettings;
+            EditorApplication.update += ValidateSettings;
         }
 
         // Setup 
 
         private static void ValidateSettings()
         {
-            if (Settings != null)
+            if (HasInitialized)
             {
                 return;
             }
@@ -44,6 +44,7 @@ namespace HierarchyDecorator
             Settings.Components.UpdateData();
             Settings.Components.UpdateComponents(true);
         }
+
 
         // Factory Methods
 
