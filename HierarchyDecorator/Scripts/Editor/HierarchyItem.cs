@@ -73,7 +73,6 @@ namespace HierarchyDecorator
             Transform = instance.transform;
 
             Components = new ComponentList(instance);
-            PrefabInfo = GetPrefabInfo();
         }
 
         // --- Methods
@@ -95,6 +94,7 @@ namespace HierarchyDecorator
         /// </summary>
         public void OnGUIBegin()
         {
+            PrefabInfo = GetPrefabInfo();
             Components.Validate(GameObject);
         }
 
