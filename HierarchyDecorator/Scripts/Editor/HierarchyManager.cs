@@ -44,11 +44,15 @@ namespace HierarchyDecorator
 
         public static void SetupCallbacks()
         {
+            EditorApplication.hierarchyWindowItemOnGUI -= OnGUI;
             EditorApplication.hierarchyWindowItemOnGUI += OnGUI;
 
+            EditorSceneManager.sceneOpened -= OnSceneOpen;
             EditorSceneManager.sceneOpened += OnSceneOpen;
+            EditorSceneManager.sceneClosed -= OnSceneClose;
             EditorSceneManager.sceneClosed += OnSceneClose;
 
+            EditorApplication.hierarchyChanged -= OnHierarchyChange;
             EditorApplication.hierarchyChanged += OnHierarchyChange;
         }
 
