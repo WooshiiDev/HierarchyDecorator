@@ -43,13 +43,8 @@ namespace HierarchyDecorator
             }
 
             Type = GetComponentInfo(HierarchyDecorator.Settings);
+            IsNullComponent = Type == null;
 
-            if (Type == null)
-            {
-                
-                IsNullComponent = true;
-            }
-            
             Active = GetActiveState();
         }
 
