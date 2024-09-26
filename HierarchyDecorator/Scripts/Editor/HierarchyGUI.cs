@@ -31,7 +31,7 @@ namespace HierarchyDecorator
             bool isPrefab = item.IsPrefab;
             bool isPrefabParent = item.PrefabInfo == PrefabInfo.Root;
 
-            GUIContent content = GetStandardContent (rect, instance, isPrefabParent);
+            GUIContent content = GetStandardContent (instance, isPrefabParent);
 
             // Handle colours
 
@@ -61,7 +61,7 @@ namespace HierarchyDecorator
 
             // Add the small prefab indicator if required
 
-            if (!isPrefab && PrefabUtility.IsAddedGameObjectOverride(instance))
+            if (PrefabUtility.IsAddedGameObjectOverride(instance))
             {
                 EditorGUI.LabelField(rect, EditorGUIUtility.IconContent("PrefabOverlayAdded Icon"));
             }
@@ -94,9 +94,17 @@ namespace HierarchyDecorator
 
         // Content Helpers
 
-        public static GUIContent GetStandardContent(Rect rect, GameObject instance, bool isPrefab)
+        public static GUIContent GetStandardContent(GameObject instance, bool isPrefab)
         {
-            return EditorGUIUtility.IconContent (isPrefab ? "Prefab Icon" : "GameObject Icon");
+            if (isPrefab)
+            {
+                return new GUIContent()
+                {
+                    image = GetPrefabIcon(instance)
+                };
+            }
+            
+            return EditorGUIUtility.IconContent(GetGameObjectIcon(Selection.Contains(instance)));
         }
 
         public static Color GetTwoToneColour(Rect selectionRect)
@@ -122,6 +130,16 @@ namespace HierarchyDecorator
 #else
             GUILayout.Space (width);
 #endif
+        }
+
+        private static string GetGameObjectIcon(bool selected)
+        {
+            return selected ? "GameObject On Icon" : "GameObject Icon"; 
+        }
+
+        private static Texture2D GetPrefabIcon(GameObject instance)
+        {
+            return PrefabUtility.GetIconForGameObject(instance);
         }
     }
 }
