@@ -12,14 +12,11 @@ namespace HierarchyDecorator
 
         private static string s_SettingsPrefGUID = Constants.Paths.PREF_GUID;
 
-        public static bool HasInitialized { get; private set; }
         public static Settings Settings { get; private set; }
-
-        public static bool IsReady => !EditorApplication.isCompiling && HasInitialized;
 
         static HierarchyDecorator()
         {
-            HasInitialized = false;
+            EditorApplication.update -= ValidateSettings;
             EditorApplication.update += ValidateSettings;
         }
 
@@ -27,16 +24,20 @@ namespace HierarchyDecorator
 
         private static void ValidateSettings()
         {
-            if (HasInitialized)
+            if (EditorApplication.isUpdating)
+            {
+                return;
+            }
+
+            if (Settings != null)
             {
                 return;
             }
 
             Settings = GetOrCreateSettings();
             UpdateComponentData();
-            HierarchyManager.SetupCallbacks();
 
-            HasInitialized = true;
+            HierarchyManager.Initialize();
         }
 
         private static void UpdateComponentData()
@@ -44,7 +45,6 @@ namespace HierarchyDecorator
             Settings.Components.UpdateData();
             Settings.Components.UpdateComponents(true);
         }
-
 
         // Factory Methods
 

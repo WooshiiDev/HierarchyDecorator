@@ -15,7 +15,7 @@ namespace HierarchyDecorator
         private static Dictionary<int, HierarchyItem> lookup = new Dictionary<int, HierarchyItem>();
         public static int Count => lookup.Count;
         public static IReadOnlyDictionary<int, HierarchyItem> Items => lookup;
-        private static Settings s_Settings = HierarchyDecorator.Settings;
+        private static Settings s_Settings => HierarchyDecorator.Settings;
 
         public static HierarchyItem Current { get; private set; }
         public static HierarchyItem Previous { get; private set; }
@@ -42,8 +42,10 @@ namespace HierarchyDecorator
 
         // --- Methods
 
-        public static void SetupCallbacks()
+        public static void Initialize()
         {
+            lookup.Clear();
+
             EditorApplication.hierarchyWindowItemOnGUI -= OnGUI;
             EditorApplication.hierarchyWindowItemOnGUI += OnGUI;
 
