@@ -187,12 +187,20 @@ namespace HierarchyDecorator
 
         private void UpdateCache(Component[] components)
         {
+            int length = components.Length;
+            if (length == 0)
+            {
+                items.Clear();
+                return;
+            }
+
             List<ComponentItem> nextItems = new List<ComponentItem>();
 
-            for (int i = 0; i < components.Length; i++)
+            for (int i = 0; i < length; i++)
             {
                 ComponentItem item = Get(components[i]);
-                if (item == null)
+
+                if (item == null || !item.IsValid())
                 {
                     item = new ComponentItem(components[i]);
                 }
