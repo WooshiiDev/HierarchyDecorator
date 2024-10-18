@@ -16,6 +16,7 @@ namespace HierarchyDecorator
         private IList<ComponentItem> items = new List<ComponentItem>();
 
         private bool requireWarning;
+        private int componentCount;
 
 #if UNITY_2019_1_OR_NEWER
         private readonly GUIContent warningGUI = EditorGUIUtility.IconContent("warning");
@@ -25,8 +26,8 @@ namespace HierarchyDecorator
         protected override void OnDrawInit(HierarchyItem item, Settings settings)
         {
             requireWarning = false;
-            items.Clear();
-
+            
+            List<ComponentItem> newComponents = new List<ComponentItem>();
             foreach (ComponentItem component in item.Components.GetItems())
             {
                 if (component.IsNullComponent && settings.Components.ShowMissingScriptWarning)
@@ -40,8 +41,11 @@ namespace HierarchyDecorator
                     continue;
                 }
 
-                items.Add(component);
+                newComponents.Add(component);
             }
+
+            items = newComponents;
+            componentCount = items.Count;
 
             if (stackTextures.Count > 0)
             {
@@ -52,7 +56,7 @@ namespace HierarchyDecorator
 
         protected override int CalculateGridCount()
         {
-            return items.Count;
+            return componentCount;
         }
 
         protected override bool DrawerIsEnabled(HierarchyItem item, Settings settings)
@@ -71,7 +75,7 @@ namespace HierarchyDecorator
 
             rect = GetIconPosition(rect);
 
-            for (int i = 0; i < items.Count; i++)
+            for (int i = 0; i < componentCount; i++)
             {
                 if (IsIconOutOfBounds(rect))
                 {
@@ -85,22 +89,21 @@ namespace HierarchyDecorator
                 if (stackScripts)
                 {
                     Texture texture = component.Content.image;
-                    if (!stackTextures.TryGetValue(texture, out _))
+                    if (!stackTextures.TryGetValue(texture, out GUIContent content))
                     {
-                        GUIContent content = new GUIContent(string.Empty, texture, component.DisplayName);
+                        content = new GUIContent(string.Empty, texture, component.DisplayName);
                         stackTextures.Add(texture, content);
                     }
                     else
                     {
-                        stackTextures[texture].tooltip += "\n" + component.DisplayName;
+                        content.tooltip += "\n" + component.DisplayName;
                     }
                 }
                 else // Draw
                 {
                     DrawComponentIcon(rect, component);
+                    rect.x -= INDENT_SIZE;
                 }
-
-                rect.x -= INDENT_SIZE;
             }
 
             if (stackScripts)
@@ -108,6 +111,7 @@ namespace HierarchyDecorator
                 foreach (GUIContent content in stackTextures.Values)
                 {
                     DrawIcon(GetIconPosition(rect), content);
+                    rect.x -= INDENT_SIZE;
                 }
             }
 
