@@ -100,6 +100,11 @@ namespace HierarchyDecorator
 
         private void DrawElement(Rect rect, int index, bool isActive, bool isFocused)
         {
+            if (index >= serializedStyles.arraySize)
+            {
+                return;
+            }
+
             SerializedProperty styleSettings = serializedStyles.GetArrayElementAtIndex (index);
 
             // Draw header that includes the style
