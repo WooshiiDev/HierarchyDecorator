@@ -183,10 +183,10 @@ namespace HierarchyDecorator
 
                 int id = data.ID;
 
-                //if (Roots.Contains(data.ID))
-                //{
-                //    Roots.Remove(data.ID);
-                //}
+                if (Roots.Contains(data.ID))
+                {
+                    Roots.Remove(data.ID);
+                }
 
                 lookup.Remove(id);
                 return true;
