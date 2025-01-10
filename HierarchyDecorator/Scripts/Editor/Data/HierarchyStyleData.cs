@@ -118,19 +118,11 @@ namespace HierarchyDecorator
                 return false;
             }
 
-            if (prefix.Contains (" "))
-            {
-                prefix = prefix.TrimStart ().Split (' ')[0];
-            }
-
             for (int i = 0; i < styles.Count; i++)
             {
                 style = styles[i];
-
-                if (prefix.Equals (style.prefix))
-                {
+                if (CheckPrefix(prefix, style))
                     return true;
-                }
             }
 
             style = null;
@@ -139,17 +131,10 @@ namespace HierarchyDecorator
 
         public bool HasStyle(string prefix)
         {
-            if (prefix.Contains (" "))
-            {
-                prefix = prefix.TrimStart ().Split (' ')[0];
-            }
-
             for (int i = 0; i < styles.Count; i++)
             {
-                if (styles[i].prefix == prefix)
-                {
+                if (CheckPrefix(prefix, styles[i]))
                     return true;
-                }
             }
 
             return false;
@@ -178,6 +163,20 @@ namespace HierarchyDecorator
 
                 return styles[i];
             }
+        }
+
+        private bool CheckPrefix(string targetPrefix, HierarchyStyle style)
+        {
+            if (targetPrefix.StartsWith (style.prefix))
+            {
+                if (style.noSpaceAfterPrefix)
+                    return true;
+
+                if (targetPrefix[style.prefix.Length] == ' ')
+                    return true;
+            }
+
+            return false;
         }
     }
 }
