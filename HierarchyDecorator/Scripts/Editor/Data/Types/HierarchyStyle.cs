@@ -29,6 +29,7 @@ namespace HierarchyDecorator
     public class HierarchyStyle
     {
         public string prefix = "<PREFIX>";
+        public bool noSpaceAfterPrefix = false;
         public string name = "New Style";
 
         public Font font = null;
