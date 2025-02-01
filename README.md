@@ -253,4 +253,4 @@ HierarchyDecorator will be and always has been developed in my free time, and th
 
 Development will be continued with this and will forever stay public and free.
 
-Copyright (c) 2020-2023 Damian Slocombe
+Copyright (c) 2020-2024 Damian Slocombe
