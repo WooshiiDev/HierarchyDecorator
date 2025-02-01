@@ -1,3 +1,7 @@
+## v0.10.1
+
+ - Removed unnecessary files in the package. 
+
 ## v0.10.0 | Tags, toggle icon components
 
 ### Features
