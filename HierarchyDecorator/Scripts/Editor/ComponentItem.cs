@@ -8,7 +8,7 @@ namespace HierarchyDecorator
         // --- Properties
 
         public Component Component { get; private set; }
-        public ComponentType Type { get; private set; }
+        public ComponentType Type => GetComponentInfo(HierarchyDecorator.Settings);
         public bool IsNullComponent { get; private set; }
 
         public readonly bool IsBehaviour;
@@ -42,9 +42,7 @@ namespace HierarchyDecorator
                 return;
             }
 
-            Type = GetComponentInfo(HierarchyDecorator.Settings);
             IsNullComponent = Type == null;
-
             Active = GetActiveState();
         }
 
