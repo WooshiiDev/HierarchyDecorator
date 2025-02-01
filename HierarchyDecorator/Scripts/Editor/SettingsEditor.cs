@@ -26,6 +26,13 @@ namespace HierarchyDecorator
         {
             hasInitialized = false;
             settings = target as Settings;
+
+            Undo.undoRedoPerformed += Refresh;
+        }
+
+        private void OnDisable()
+        {
+            Undo.undoRedoPerformed -= Refresh;
         }
 
         public override bool UseDefaultMargins()
@@ -61,10 +68,15 @@ namespace HierarchyDecorator
  
             if (selectedTab.IsDirty)
             {
-                serializedObject.Update();
-                EditorApplication.RepaintHierarchyWindow();
-                Repaint();
+                Refresh();
             }
+        }
+
+        private void Refresh()
+        {
+            serializedObject.Update();
+            EditorApplication.RepaintHierarchyWindow();
+            Repaint();
         }
 
         private void DrawTitle()
