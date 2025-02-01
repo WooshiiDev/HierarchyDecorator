@@ -5,26 +5,14 @@
  - Tags can now be displayed in the hierarchy.
  - Options to display tags and layers above each other or horizontally.
  - Disabling/enabling components is now possible by clicking their respective icon.
-
+ - Add feature and toggle for no space after prefix - #103 @sqirradotdev 
+ 
 ### Changes
 
  - Warning icon is now always shown at the end of the icon list.
  - "Stack MonoBehaviours" setting has now been renamed to "Stack Duplicate Icons".
  - Stacked icon tooltips now display all components it represents.
  - Tags & Layers now hide when the hierarchy width is too small.
-
-### API Changes
-
-**General**
-
-The hierarchy iteration has been overhauled replacing the gameobject references with data containers. This has brought large performance gains, especially with component icons.
- - `HierarchyItem` is a container for GameObjects, to easily cache components and data.
- - `ComponentItem` contains data for each component on a Game Object.
- - `Components` is a collection wrapper, containing the components on a `HierarchyItem`.
-
-**Hierarchy Info**
- - Hierarchy Info now provides `ValidateGrid()` to check if the grid size is valid. This can also be used to prepare data that requires rect or grid information before drawing. 
- - If `ValidateGrid()` returns false, this tells the info element that the info cannot be drawn and will return early.
 
 ### Fixes
  - With the new API changes, errors with missing instances have been resolved. 
@@ -35,10 +23,27 @@ The hierarchy iteration has been overhauled replacing the gameobject references 
  - GameObjects now display prefab states correctly when using two-tone background.
  - Hierarchy settings locked on inspectors, will reinitialise correctly after Unity reloads.
  - Settings editor now updates on Undo.
+ - Fix for Scene getting dirtied every frame - #98 @Podden 
+
+### API Changes
+
+**General**
+
+The hierarchy iteration has been overhauled replacing the gameobject references with data containers. This has brought large performance gains, especially with component icons.
+ - `HierarchyItem` is a container for GameObjects, to easily cache components and data.
+ - `ComponentItem` contains data for each component on a Game Object.
+ - `Components` is a collection wrapper, containing the components on a `HierarchyItem`.
+ - `HierarchyManager` is now the container for both drawing features and tracking individual hiearachy instances.
+
+**Hierarchy Info**
+
+ - Hierarchy Info now provides `ValidateGrid()` to check if the grid size is valid. This can also be used to prepare data that requires rect or grid information before drawing. 
+ - If `ValidateGrid()` returns false, this tells the info element that the info cannot be drawn and will return early.
 
 ### Others
  - Removed resources and example scenes due to being unused/useless
-
+ - Fix breadcrumbs last sibling bug when deleting last sibling - #101 @gustaflindqvist (This has been replaced with new cache but thank you for this at the time)
+ 
 Cheers ~ Wooshii
 
 ## v0.9.1 | Hotfix - Duplicate component types
