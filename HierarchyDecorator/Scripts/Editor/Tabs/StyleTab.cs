@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
+using static UnityEngine.GraphicsBuffer;
 
 namespace HierarchyDecorator
 {
@@ -76,10 +77,7 @@ namespace HierarchyDecorator
 
         // Reorderable List GUI
 
-        private void DrawHeader(Rect rect)
-        {
-
-        }
+        private void DrawHeader(Rect rect) { }
 
         private void DrawFooter(Rect rect)
         {
@@ -147,8 +145,6 @@ namespace HierarchyDecorator
                 if (GUI.Button(deletionRect, content, Style.CenteredBoldLabel))
                 {
                     serializedStyles.DeleteArrayElementAtIndex (index);
-                    serializedSettings.ApplyModifiedProperties ();
-                    serializedSettings.Update ();
                     return;
                 }
             }
@@ -157,9 +153,6 @@ namespace HierarchyDecorator
 
             if (EditorGUI.EndChangeCheck ())
             {
-                serializedSettings.ApplyModifiedProperties ();
-                serializedSettings.Update ();
-
                 settings.styleData[index].UpdateStyle (EditorGUIUtility.isProSkin);
             }
         }
@@ -185,10 +178,6 @@ namespace HierarchyDecorator
             style.UpdateStyle(EditorGUIUtility.isProSkin);
 
             settings.styleData.styles.Add(style);
-
-            EditorUtility.SetDirty(settings);
-            serializedSettings.ApplyModifiedProperties();
-            serializedSettings.Update();
         }
 
         // Height Calculation

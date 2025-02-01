@@ -75,6 +75,7 @@ namespace HierarchyDecorator
         private void Refresh()
         {
             serializedObject.Update();
+            serializedObject.ApplyModifiedProperties();
             EditorApplication.RepaintHierarchyWindow();
             Repaint();
         }
