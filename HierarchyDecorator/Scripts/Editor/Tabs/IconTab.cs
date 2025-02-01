@@ -809,7 +809,6 @@ namespace HierarchyDecorator
                             if (component.Type != script.GetClass())
                             {
                                 group.Update(component, script);
-                                EditorApplication.RepaintHierarchyWindow();
                             }
                         }
                         else
