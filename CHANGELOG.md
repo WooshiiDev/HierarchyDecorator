@@ -16,6 +16,7 @@
 ### API Changes
 
 **General**
+
 The hierarchy iteration has been overhauled replacing the gameobject references with data containers. This has brought large performance gains, especially with component icons.
  - `HierarchyItem` is a container for GameObjects, to easily cache components and data.
  - `ComponentItem` contains data for each component on a Game Object.
@@ -30,6 +31,15 @@ The hierarchy iteration has been overhauled replacing the gameobject references 
  - Breadcrumbs now correctly align with siblings, parents and children.
  - Breadcrumbs no longer overlap toggles when using search filter.
  - Game objects that only have hidden children will no longer show a foldout.
+ - Settings no longer attempt to draw deleted styles.
+ - GameObjects now display prefab states correctly when using two-tone background.
+ - Hierarchy settings locked on inspectors, will reinitialise correctly after Unity reloads.
+ - Settings editor now updates on Undo.
+
+### Others
+ - Removed resources and example scenes due to being unused/useless
+
+Cheers ~ Wooshii
 
 ## v0.9.1 | Hotfix - Duplicate component types
 
