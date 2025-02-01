@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -19,12 +20,14 @@ namespace HierarchyDecorator
         // --- Settings
 
         [SerializeField] protected bool shown = false;
+        [SerializeField] protected bool excluded = false;
 
         //  --- Type Data
 
         [SerializeField] private bool isBuiltIn;
         [SerializeField] private MonoScript script;
-        [SerializeField] private int hash = -1;
+
+        [SerializeField] private bool hasToggle;
 
         // Properties
 
@@ -45,9 +48,9 @@ namespace HierarchyDecorator
         }
 
         /// <summary>
-        /// 
+        /// The display name for the component.
         /// </summary>
-        public string DiplayName => displayName;
+        public string DisplayName => displayName;
 
         /// <summary>
         /// The type of component.
@@ -55,58 +58,51 @@ namespace HierarchyDecorator
         public Type Type { get; private set; } = typeof(DefaultAsset);
 
         /// <summary>
-        /// 
+        /// The script that represents this component.
         /// </summary>
         public MonoScript Script
         {
-            get
-            {
-                return script;
-            }
-
-            set
-            {
-                script = value;
-            }
+            get => script;
+            set => script = value;
         }
 
         /// <summary>
-        /// Is the component activated or not
+        /// Is the component activated or not.
         /// </summary>
         public bool Shown
         {
-            get
-            {
-                return shown;
-            }
-
-            set
-            {
-                shown = value;
-            }
+            get => shown;
+            set => shown = value;
         }
 
         /// <summary>
-        /// 
+        /// Is this component completely excluded.
         /// </summary>
-        public bool IsBuiltIn
-        {
-            get
-            {
-                return isBuiltIn;
-            }
+        public bool Excluded 
+        { 
+            get => excluded; 
+            set => excluded = value; 
         }
+
+        /// <summary>
+        /// Represents whether the component is a Unity component or not.
+        /// </summary>
+        public bool IsBuiltIn => isBuiltIn;
 
         /// <summary>
         /// The GUIContent displayed for this component.
         /// </summary>
-        public GUIContent Content
-        {
-            get
-            {
-                return content;
-            }
-        }
+        public GUIContent Content => content;
+
+        /// <summary>
+        /// Can this component be toggled on/off or not.
+        /// </summary>
+        public bool HasToggle => hasToggle;
+
+        /// <summary>
+        /// The reflected toggle property.
+        /// </summary>
+        public PropertyInfo ToggleProperty { get; private set; }
 
         // Constructor 
 
@@ -116,15 +112,16 @@ namespace HierarchyDecorator
         /// <param name="type">The type of component.</param>
         public ComponentType(Type type, bool isBuiltIn)
         {
-            Type = type;
-            name = type.AssemblyQualifiedName;
-            displayName = type.Name;
-
             this.isBuiltIn = isBuiltIn;
+            UpdateType(type, false);
         }
          
         // Methods
 
+        /// <summary>
+        /// Evaluate and check if this is a valid representation of a component.
+        /// </summary>
+        /// <returns>Returns true if valid, otherwise returns false.</returns>
         public bool IsValid()
         {
             // Need to check type and content to validate GUI
@@ -145,7 +142,8 @@ namespace HierarchyDecorator
         /// <summary>
         /// Update the component
         /// </summary>
-        /// <param name="type"></param>
+        /// <param name="type">The type to assign.</param>
+        /// <param name="updateContent">Update the GUI.</param>
         public void UpdateType(Type type, bool updateContent = false)
         {
             if (type == null)
@@ -156,7 +154,7 @@ namespace HierarchyDecorator
                 UpdateContent();
                 return;
             }
-
+            
             if (!isBuiltIn && script == null)
             {
                 return;
@@ -167,12 +165,22 @@ namespace HierarchyDecorator
             name = type.AssemblyQualifiedName;
             displayName = type.Name;
 
+            hasToggle = ReflectionUtility.HasProperty(type, "enabled");
+            if (hasToggle)
+            {
+                ToggleProperty = ReflectionUtility.GetProperty(Type, "enabled");
+            }
+
             if (updateContent)
             {
                 UpdateContent();
             }
         }
-
+        
+        /// <summary>
+         /// Update the component.
+         /// </summary>
+         /// <param name="monoScript">The script to assign.</param>
         public void UpdateType(MonoScript monoScript)
         {
             script = monoScript;
@@ -187,7 +195,7 @@ namespace HierarchyDecorator
         }
 
         /// <summary>
-        /// 
+        /// Update the GUIContent cached.
         /// </summary>
         public void UpdateContent()
         {
@@ -195,9 +203,9 @@ namespace HierarchyDecorator
         }
 
         /// <summary>
-        /// 
+        /// Get the GUIContent icon for for component.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Returns the content object.</returns>
         private GUIContent GetTypeContent()
         {
             if (Type == null)
@@ -225,7 +233,7 @@ namespace HierarchyDecorator
         // --- Overrides
 
         /// <summary>
-        /// Compare this component type to another.
+        /// Compare this component to another.
         /// </summary>
         /// <param name="other">The other component type.</param>
         /// <returns>Returns an integer based on their sort position.</returns>
@@ -239,6 +247,11 @@ namespace HierarchyDecorator
             return name.CompareTo (other.name);
         }
 
+        /// <summary>
+        /// Compare this component to another type.
+        /// </summary>
+        /// <param name="type">The type to compare to.</param>
+        /// <returns>Returns an integer based on their sort position.</returns>
         public int CompareTo(Type type)
         {
             return name.CompareTo(type.AssemblyQualifiedName);

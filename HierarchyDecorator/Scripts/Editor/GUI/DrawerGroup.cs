@@ -147,5 +147,11 @@ namespace HierarchyDecorator
             drawers.Add(new SerializedGroupDrawer(title, props));
             return this;
         }
+
+        public DrawerGroup Space(float height = 9f)
+        {
+            drawers.Add(new SpaceDrawer(height));
+            return this;
+        }
     }
 }

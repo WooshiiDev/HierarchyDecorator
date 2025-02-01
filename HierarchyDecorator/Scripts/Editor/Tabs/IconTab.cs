@@ -175,7 +175,7 @@ namespace HierarchyDecorator
             display.ToggleStyle = Style.ToolbarButtonLeft;
 
             CreateDrawableGroup("Settings")
-                .RegisterSerializedProperty(serializedTab, "enableIcons", "stackMonoBehaviours", "showMissingScriptWarning");
+                .RegisterSerializedProperty(serializedTab, "enableIcons", "stackDuplicateIcons", "showMissingScriptWarning");
         }
 
         // Methods
@@ -233,11 +233,6 @@ namespace HierarchyDecorator
             unityGroups.Add(Labels.ALL_COMPONENTS_LABEL, allIcons.ToArray());
 
             // Excluded group
-
-            SerializedProperty excludedProp = serializedTab.FindPropertyRelative("excludedComponents").FindPropertyRelative("components");
-            IconInfo[] excluded = GetIconsFromGroup(components.ExcludedComponents, excludedProp);
-
-            unityGroups.Add("Excluded", excluded);
 
             // Store group names - Yes this is gross but shh
 
@@ -348,16 +343,18 @@ namespace HierarchyDecorator
 
         private void DrawComponents()
         {
-            string group = "";
+            string group = "All";
             if (categoryIndex != -1)
             {
                 group = groupNames[categoryIndex];
             }
 
-            EditorGUI.BeginDisabledGroup(settings.Components.DisplayAll && group != "Excluded");
+            bool isExcluded = group == "Excluded";
+            EditorGUI.BeginDisabledGroup(settings.Components.DisplayAll && !isExcluded);
             windowRect = EditorGUILayout.BeginVertical();
             {
                 // Filter components from search
+
 
                 if (IsSearching())
                 {
@@ -369,6 +366,11 @@ namespace HierarchyDecorator
                     DrawCustomGroups();
                 }
                 else // Draw the group if selected
+                if (isExcluded)
+                {
+                    DrawComponentsColumns(unityGroups["All"]);
+                }
+                else
                 if (categoryIndex < groupNames.Length)
                 {
                     DrawComponentsColumns(unityGroups[group]);
@@ -388,12 +390,21 @@ namespace HierarchyDecorator
 
             searchText = EditorGUILayout.TextField(searchText, Style.ToolbarTextField);
 
+            bool isExcluded = groupNames[categoryIndex] == "Excluded";
             if (GUILayout.Button(Labels.ENABLE_LABEL, Style.ToolbarButtonResizable))
             {
                 foreach (IconInfo icon in icons)
                 {
-                    SerializedProperty shown = icon.Property.FindPropertyRelative("shown");
-                    shown.boolValue = true;
+                    if (isExcluded)
+                    {
+                        SerializedProperty exclude = icon.Property.FindPropertyRelative("excluded");
+                        exclude.boolValue = true;
+                    }
+                    else
+                    {
+                        SerializedProperty shown = icon.Property.FindPropertyRelative("shown");
+                        shown.boolValue = true;
+                    }
                 }
             }
 
@@ -401,8 +412,16 @@ namespace HierarchyDecorator
             {
                 foreach (IconInfo icon in icons)
                 {
-                    SerializedProperty shown = icon.Property.FindPropertyRelative("shown");
-                    shown.boolValue = false;
+                    if (isExcluded)
+                    {
+                        SerializedProperty exclude = icon.Property.FindPropertyRelative("excluded");
+                        exclude.boolValue = false;
+                    }
+                    else
+                    {
+                        SerializedProperty shown = icon.Property.FindPropertyRelative("shown");
+                        shown.boolValue = false;
+                    }
                 }
             }
 
@@ -477,7 +496,14 @@ namespace HierarchyDecorator
 
                         // Draw component
 
-                        DrawComponent(type);
+                        if (groupNames[categoryIndex] == "Excluded")
+                        {
+                            DrawExcludedComponent(type);
+                        }
+                        else
+                        {
+                            DrawComponent(type);
+                        }
 
                         // Change to second column when first half of the components have been drawn
 
@@ -508,6 +534,12 @@ namespace HierarchyDecorator
             filter = filter.ToLower();
 
             string group = groupNames[categoryIndex];
+            bool isExcluded = group == "Excluded";
+            if (isExcluded)
+            {
+                group = "All";
+            }
+
             IconInfo[] selectedTypes = unityGroups[group];
             List<IconInfo> filteredTypes = new List<IconInfo>();
 
@@ -546,6 +578,39 @@ namespace HierarchyDecorator
                 rect.width = 32f;
 
                 shown.boolValue = EditorGUI.Toggle(rect, shown.boolValue, Style.ToggleMixed);
+
+                HierarchyGUI.Space(16f);
+
+                DrawComponentLabel(icon.Content);
+
+                // Add flexible space to push label to the left
+
+                GUILayout.FlexibleSpace();
+            }
+            EditorGUILayout.EndHorizontal();
+        }
+
+        private void DrawExcludedComponent(IconInfo icon)
+        {
+            if (icon.Property == null)
+            {
+                Debug.Log("IconInfo has null property. Have properties been cached correctly?");
+                return;
+            }
+
+            // Get properties
+
+            SerializedProperty property = icon.Property;
+            SerializedProperty excluded = property.FindPropertyRelative("excluded");
+
+            Rect rect = EditorGUILayout.BeginHorizontal(GUILayout.Width(columnWidth));
+            {
+                // Draw Toggle
+
+                rect.y += 3f;
+                rect.width = 32f;
+
+                excluded.boolValue = EditorGUI.Toggle(rect, excluded.boolValue, Style.ToggleMixed);
 
                 HierarchyGUI.Space(16f);
 

@@ -9,16 +9,16 @@ namespace HierarchyDecorator
         private static readonly Color SelectionColour = new Color(0.214f, 0.42f, 0.76f, 0.2f);
         private static readonly Color HoverColour = new Color(0.3f, 0.3f, 0.3f, 0.2f);
 
-        protected override bool DrawerIsEnabled(Settings _settings, GameObject instance)
+        protected override bool DrawerIsEnabled(HierarchyItem item, Settings settings)
         {
-            return _settings.styleData.Count > 0 || _settings.styleData.twoToneBackground;
+            return settings.styleData.Count > 0 || settings.styleData.twoToneBackground;
         }
 
-        protected override void DrawInternal(Rect rect, GameObject instance, Settings settings)
+        protected override void DrawInternal(Rect rect, HierarchyItem item, Settings settings)
         {
-            if (settings.styleData.twoToneBackground || settings.styleData.HasStyle(instance.name))
+            if (settings.styleData.twoToneBackground || settings.styleData.HasStyle(item.DisplayName))
             {
-                DrawSelection(rect, instance.transform);
+                DrawSelection(rect, item.Transform);
             }
         }
 

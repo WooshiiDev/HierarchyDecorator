@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
+using static UnityEngine.GraphicsBuffer;
 
 namespace HierarchyDecorator
 {
@@ -70,16 +71,13 @@ namespace HierarchyDecorator
                 .RegisterSerializedGroup(lightModeBack, "Light Mode", "colorOne", "colorTwo");
 
             CreateDrawableGroup ("Styles")
-                .RegisterSerializedProperty(serializedTab, "displayLayers", "displayIcons")
+                .RegisterSerializedProperty(serializedTab, "displayTags", "displayLayers", "displayIcons")
                 .RegisterReorderable (styleList);
         }
 
         // Reorderable List GUI
 
-        private void DrawHeader(Rect rect)
-        {
-
-        }
+        private void DrawHeader(Rect rect) { }
 
         private void DrawFooter(Rect rect)
         {
@@ -92,14 +90,17 @@ namespace HierarchyDecorator
             // Draw optionals
             if (GUI.Button (rect, "Add New Style", Style.CenteredBoldLabel))
             {
-                serializedStyles.InsertArrayElementAtIndex (serializedStyles.arraySize);
-                serializedSettings.ApplyModifiedProperties ();
-                serializedSettings.Update ();
+                CreateNewStyle();
             }
         }
 
         private void DrawElement(Rect rect, int index, bool isActive, bool isFocused)
         {
+            if (index >= serializedStyles.arraySize)
+            {
+                return;
+            }
+
             SerializedProperty styleSettings = serializedStyles.GetArrayElementAtIndex (index);
 
             // Draw header that includes the style
@@ -144,8 +145,6 @@ namespace HierarchyDecorator
                 if (GUI.Button(deletionRect, content, Style.CenteredBoldLabel))
                 {
                     serializedStyles.DeleteArrayElementAtIndex (index);
-                    serializedSettings.ApplyModifiedProperties ();
-                    serializedSettings.Update ();
                     return;
                 }
             }
@@ -154,9 +153,7 @@ namespace HierarchyDecorator
 
             if (EditorGUI.EndChangeCheck ())
             {
-                serializedSettings.ApplyModifiedProperties ();
-                serializedSettings.Update ();
-
+                serializedSettings.ApplyModifiedProperties();
                 settings.styleData[index].UpdateStyle (EditorGUIUtility.isProSkin);
             }
         }
@@ -173,6 +170,15 @@ namespace HierarchyDecorator
         private void DrawNoElements(Rect rect)
         {
             EditorGUI.LabelField (rect, "No styles to display.");
+        }
+
+        private void CreateNewStyle()
+        {
+            HierarchyStyle style = new HierarchyStyle();
+            style.name = "New Style";
+            style.UpdateStyle(EditorGUIUtility.isProSkin);
+
+            settings.styleData.styles.Add(style);
         }
 
         // Height Calculation

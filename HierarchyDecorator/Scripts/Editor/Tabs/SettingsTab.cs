@@ -67,7 +67,6 @@ namespace HierarchyDecorator
             if (EditorGUI.EndChangeCheck())
             {
                 IsDirty = true;
-                serializedSettings.ApplyModifiedProperties ();
             }
 
             EditorGUILayout.EndVertical ();

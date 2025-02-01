@@ -12,6 +12,8 @@ namespace HierarchyDecorator
 
     public enum BreadcrumbStyle { Solid = 0, Dash = 1, Dotted = 2 }
 
+    public enum TagLayerLayout { TagInFront = 0, LayerInFront = 1, TagAbove = 2, LayerAbove = 3 }
+
     [System.Serializable]
     public class BreadcrumbSettings
     {
@@ -41,10 +43,11 @@ namespace HierarchyDecorator
         [Tooltip ("The accepted criteria for selecting instances when swiping.")]
         public DepthMode depthMode;
 
-        // Layers
+        // Tags & Layers
 
+        public TagLayerLayout tagLayerLayout;
+        public bool showTags = true;
         public bool showLayers = true;
-        public bool clickToSelectLayer = true;
         public bool applyChildLayers = true;
 
         // Components 

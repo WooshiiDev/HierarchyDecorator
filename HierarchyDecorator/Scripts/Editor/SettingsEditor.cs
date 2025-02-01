@@ -14,29 +14,25 @@ namespace HierarchyDecorator
 
         private Settings settings;
 
-        // Grid selection
-
-        private bool hasInitialized = false;
         private SettingsTab selectedTab;
 
         private List<SettingsTab> tabs = new List<SettingsTab> ();
         private List<GUIContent> tabNames = new List<GUIContent> ();
 
+        private bool hasInitialized;
         private int selectedTabIndex = 0;
 
         private void OnEnable()
         {
-            settings = target as Settings;
             hasInitialized = false;
-            Repaint();
+            settings = target as Settings;
+
+            Undo.undoRedoPerformed += Refresh;
         }
 
-        private void Initialize()
+        private void OnDisable()
         {
-            SetupValues();
-            RegisterTabs();
-
-            hasInitialized = true;
+            Undo.undoRedoPerformed -= Refresh;
         }
 
         public override bool UseDefaultMargins()
@@ -53,18 +49,35 @@ namespace HierarchyDecorator
             }
 
             EditorGUILayout.BeginVertical(Style.InspectorPadding);
-
             DrawTitle();
-            selectedTab?.OnGUI();
+            DrawContent();
+            EditorGUILayout.EndVertical();
+        }
 
+        private void Initialize()
+        {
+            SetupValues();
+            RegisterTabs();
+
+            hasInitialized = true;
+        }
+
+        private void DrawContent()
+        {
+            selectedTab?.OnGUI();
+ 
             if (selectedTab.IsDirty)
             {
-                serializedObject.Update();
-                EditorApplication.RepaintHierarchyWindow();
-                Repaint();
+                Refresh();
             }
+        }
 
-            EditorGUILayout.EndVertical();
+        private void Refresh()
+        {
+            serializedObject.Update();
+            serializedObject.ApplyModifiedProperties();
+            EditorApplication.RepaintHierarchyWindow();
+            Repaint();
         }
 
         private void DrawTitle()

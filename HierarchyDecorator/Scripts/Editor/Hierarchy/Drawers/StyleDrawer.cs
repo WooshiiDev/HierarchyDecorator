@@ -7,7 +7,7 @@ namespace HierarchyDecorator
     {
         private static readonly HideFlags IgnoreFoldoutFlags = HideFlags.HideInHierarchy | HideFlags.HideInInspector;
 
-        protected override void DrawInternal(Rect rect, GameObject instance, Settings settings)
+        protected override void DrawInternal(Rect rect, HierarchyItem item, Settings settings)
         {
             bool hasStyle = settings.styleData.twoToneBackground;
 
@@ -15,27 +15,25 @@ namespace HierarchyDecorator
 
             if (hasStyle)
             {
-                DrawTwoToneContent(rect, instance, settings);
+                DrawTwoToneContent(rect, item.GameObject, settings);
                 hasStyle = true;
             }
 
             // Draw the style if one is to be applied
             // Have to make sure selection colours are drawn on top when required too
 
-            if (settings.styleData.TryGetStyleFromPrefix(instance.name, out HierarchyStyle prefix))
+            string displayName = item.DisplayName;
+            if (settings.styleData.TryGetStyleFromPrefix(displayName, out HierarchyStyle prefix))
             {
-                Rect styleRect = (instance.transform.parent != null)
+                Rect styleRect = (item.HasParent)
                     ? rect
                     : GetActualHierarchyWidth(rect);
 
-                HierarchyGUI.DrawHierarchyStyle(prefix, styleRect, rect, instance.name);
+                HierarchyGUI.DrawHierarchyStyle(prefix, styleRect, rect, displayName);
                 hasStyle = true;
             }
 
-            var target = HierarchyCache.Target;
-            var current = target.Current;
-
-            if (!current.HasChildren || !hasStyle)
+            if (!item.HasChildren || !hasStyle)
             {
                 return;
             }
@@ -43,9 +41,9 @@ namespace HierarchyDecorator
             // - Need to validate children to check if some can be visible
 
             bool canShow = false;
-            for (int i = 0; i < current.Transform.childCount; i++)
+            for (int i = 0; i < item.Transform.childCount; i++)
             {
-                Transform child = current.Transform.GetChild(i);
+                Transform child = item.Transform.GetChild(i);
 
                 if ((child.hideFlags & IgnoreFoldoutFlags) == 0)
                 {
@@ -59,12 +57,12 @@ namespace HierarchyDecorator
                 return;
             }
 
-            DrawFoldout(rect, current.Foldout);
+            DrawFoldout(rect, item.Foldout);
         }
 
-        protected override bool DrawerIsEnabled(Settings _settings, GameObject instance)
+        protected override bool DrawerIsEnabled(HierarchyItem instance, Settings settings)
         {
-            return _settings.styleData.Count > 0 || _settings.styleData.twoToneBackground;
+            return settings.styleData.Count > 0 || settings.styleData.twoToneBackground;
         }
 
         // Standards

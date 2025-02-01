@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,36 +9,59 @@ namespace HierarchyDecorator
 {
     public class ComponentIconInfo : HierarchyInfo
     {
-        private static Dictionary<Type, ComponentType> s_allTypes = new Dictionary<Type, ComponentType>();
+        private static readonly Color s_DisabledColor = new Color(1f, 1f, 1f, 0.4f);
+        private Dictionary<Texture, GUIContent> stackTextures = new Dictionary<Texture, GUIContent>();
 
-        private readonly Type MonoType = typeof(MonoBehaviour);
-        private readonly GUIContent MonoContent = EditorGUIUtility.IconContent("cs Script Icon");
+        private List<ComponentItem> stackItems = new List<ComponentItem>();
+        private IList<ComponentItem> items = new List<ComponentItem>();
 
-        private List<Type> componentTypes = new List<Type> ();
-        private Component[] components = new Component[0];
-        private int validComponentCount;
-
-        private bool hasMonoBehaviour = false;
+        private bool requireWarning;
+        private int componentCount;
 
 #if UNITY_2019_1_OR_NEWER
-        private GUIContent warningGUI = EditorGUIUtility.IconContent ("warning");
+        private readonly GUIContent warningGUI = EditorGUIUtility.IconContent("warning");
 #else
-        private GUIContent warningGUI = EditorGUIUtility.IconContent ("console.warnicon");
+        private readonly GUIContent warningGUI = EditorGUIUtility.IconContent ("console.warnicon");
 #endif
-
-        protected override int GetGridCount()
+        protected override void OnDrawInit(HierarchyItem item, Settings settings)
         {
-            if (!HasInitialized)
+            requireWarning = false;
+            
+            List<ComponentItem> newComponents = new List<ComponentItem>();
+            foreach (ComponentItem component in item.Components.GetItems())
             {
-                return components.Length;
+                if (component.IsNullComponent && settings.Components.ShowMissingScriptWarning)
+                {
+                    requireWarning = true;
+                    continue;
+                }
+
+                if (!CanShow(component, settings))
+                {
+                    continue;
+                }
+
+                newComponents.Add(component);
             }
 
-            return validComponentCount;
+            items = newComponents;
+            componentCount = items.Count;
+
+            if (stackTextures.Count > 0)
+            {
+                stackTextures.Clear();
+                stackItems.Clear();
+            }
         }
 
-        protected override bool DrawerIsEnabled(Settings settings, GameObject instance)
+        protected override int CalculateGridCount()
         {
-            if (settings.styleData.HasStyle (instance.name) && !settings.styleData.displayIcons)
+            return componentCount;
+        }
+
+        protected override bool DrawerIsEnabled(HierarchyItem item, Settings settings)
+        {
+            if (!settings.styleData.displayIcons && settings.styleData.HasStyle(item.DisplayName))
             {
                 return false;
             }
@@ -45,170 +69,139 @@ namespace HierarchyDecorator
             return settings.Components.Enabled;
         }
 
-        protected override void DrawInfo(Rect rect, GameObject instance, Settings settings)
+        protected override void DrawInfo(Rect rect, HierarchyItem item, Settings settings)
         {
             bool stackScripts = settings.Components.StackScripts;
-            string stackOutput = string.Empty;
 
-            for (int i = 0; i < components.Length; i++)
+            rect = GetIconPosition(rect);
+
+            for (int i = 0; i < componentCount; i++)
             {
-                Component component = components[i];
-
-                if (component == null & settings.Components.ShowMissingScriptWarning)
+                if (IsIconOutOfBounds(rect))
                 {
-                    DrawMissingComponent(rect);
-                    return;
+                    break;
                 }
 
-                // Get Type
+                ComponentItem component = items[i];
 
-                Type type = component.GetType();
-                ComponentType componentType;
+                // Feature - Stack Scripts: Only draw once
 
-                if (!s_allTypes.TryGetValue(type, out componentType))
+                if (stackScripts)
                 {
-                    if (GetComponent(type, out componentType) || RegisterComponent(component, out componentType))
+                    Texture texture = component.Content.image;
+                    if (!stackTextures.TryGetValue(texture, out GUIContent content))
                     {
-                        if (componentType.IsBuiltIn)
-                        {
-                            s_allTypes.Add(type, componentType);
-                        }
+                        content = new GUIContent(string.Empty, texture, component.DisplayName);
+                        stackTextures.Add(texture, content);
+                    }
+                    else
+                    {
+                        content.tooltip += "\n" + component.DisplayName;
                     }
                 }
-
-                if (componentType == null)
+                else // Draw
                 {
-                    continue;
-                }
-
-                if (componentType.IsBuiltIn && settings.Components.IsExcluded(type))
-                {
-                    continue;
-                }
-
-                if (componentType.IsBuiltIn)
-                {
-                    DrawComponent(rect, componentType, settings);
-                }
-                else
-                if (!stackScripts)
-                {
-                    DrawMonobehaviour(rect, type, componentType, settings);
-                }
-                else
-                {
-                    stackOutput += componentType.DiplayName + "\n";
+                    DrawComponentIcon(rect, component);
+                    rect.x -= INDENT_SIZE;
                 }
             }
 
-            if (stackScripts && !string.IsNullOrEmpty(stackOutput))
+            if (stackScripts)
             {
-                GUIContent content = new GUIContent(MonoContent)
+                foreach (GUIContent content in stackTextures.Values)
                 {
-                    tooltip = stackOutput.Trim()
-                };
-
-                DrawComponentIcon(rect, content);
-            }
-
-            bool GetComponent(Type type, out ComponentType componentType)
-            {
-                if (settings.Components.TryGetComponent(type, out componentType))
-                {
-                    return true;
+                    DrawIcon(GetIconPosition(rect), content);
+                    rect.x -= INDENT_SIZE;
                 }
-
-                return settings.Components.TryGetCustomComponent(type, out componentType);
             }
 
-            bool RegisterComponent(Component component, out ComponentType componentType)
+            if (requireWarning)
             {
-                if (settings.Components.RegisterCustomComponent(component))
-                {
-                    return GetComponent(component.GetType(), out componentType);
-                }
-
-                componentType = null;
-                return false;
+                DrawMissingComponent(rect);
             }
-        }
-
-        protected override void OnDrawInit(GameObject instance, Settings settings)
-        {
-            validComponentCount = 1;
-
-            components = instance.GetComponents<Component> ();
-            componentTypes.Clear ();
-            hasMonoBehaviour = false;
         }
 
         // GUI
 
-        private void DrawMonobehaviour(Rect rect, Type type, ComponentType componentType, Settings settings)
+        private void DrawComponentIcon(Rect rect, ComponentItem item)
         {
-            if (!settings.Components.DisplayMonoScripts)
+            if (item.CanToggle)
             {
-                if (componentType.Script == null)
-                {
-                    return;
-                }
-
-                if (!componentType.Shown)
-                {
-                    return;
-                }
+                DrawComponentToggle(rect, item);
             }
-
-            componentTypes.Add(type);
-            DrawComponentIcon(rect, componentType.Content);
+            else
+            {
+                DrawIcon(rect, item.Content);
+            }
         }
 
-        private void DrawComponent(Rect rect, ComponentType component, Settings settings)
+        private void DrawComponentToggle(Rect rect, ComponentItem item)
         {
-            if (!settings.Components.DisplayBuiltIn)
+            Event ev = Event.current;
+
+            if (ev.type == EventType.MouseDown && rect.Contains(ev.mousePosition))
             {
-                if (!component.Shown)
+                item.ToggleActive();
+                ev.Use();
+
+                if (Selection.Contains(item.Component.gameObject))
                 {
-                    return;
+                    EditorUtility.SetDirty(item.Component.gameObject);
                 }
             }
 
-            componentTypes.Add(component.Type);
-            DrawComponentIcon(rect, component.Content);
-        }
-
-        private void DrawComponentIcon(Rect rect, GUIContent content)
-        {
-            rect = GetIconPosition (rect);
-
-            if (rect.x < (LabelRect.x + LabelRect.width))
+            bool active = item.Active;
+            if (!active)
             {
-                return;
+                GUI.color = s_DisabledColor;
             }
-
-            GUI.Label (rect, content, Style.ComponentIconStyle);
-            validComponentCount++;
+            DrawIcon(rect, item.Content);
+            if (!active)
+            {
+                GUI.color = Color.white;
+            }
         }
 
         private void DrawMissingComponent(Rect rect)
         {
-            rect = GetIconPosition (rect, true);
-            GUI.Label (rect, warningGUI, Style.ComponentIconStyle);
+            rect = GetIconPosition(rect);
+            DrawIcon(rect, warningGUI);
         }
 
-        // Position Helpers
-
-        private Rect GetIconPosition(Rect rect, bool isInvalid = false)
+        private void DrawIcon(Rect rect, GUIContent content)
         {
-            int gridCount = isInvalid ? GetGridCount () + 1 : GetGridCount ();
+            GUI.Label(rect, content, Style.ComponentIconStyle);
+        }
 
-            // Move to left-most side possible, then move along rows
-            rect.x += rect.width;
-            rect.x -= INDENT_SIZE * gridCount;
+        // Helpers
 
-            rect.width = rect.height = INDENT_SIZE;
+        private bool CanShow(ComponentItem item, Settings settings)
+        {
+            if (item.IsNullComponent || item.Type.Excluded)
+            {
+                return false;
+            }
 
+            bool shown = item.Type.Shown;
+
+            if (item.IsBuiltIn)
+            {
+                return settings.Components.DisplayBuiltIn || shown;
+            }
+
+            return settings.Components.DisplayMonoScripts || shown;
+        }
+
+        private Rect GetIconPosition(Rect rect)
+        {
+            rect.x += rect.width - INDENT_SIZE;
+            rect.width = INDENT_SIZE;
             return rect;
+        }
+
+        private bool IsIconOutOfBounds(Rect rect)
+        {
+            return rect.x < (LabelRect.x + LabelRect.width);
         }
     }
 }

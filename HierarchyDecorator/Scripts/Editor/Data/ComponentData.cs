@@ -64,13 +64,12 @@ namespace HierarchyDecorator
 
         [SerializeField] private bool showMissingScriptWarning = true;
         [SerializeField] private DisplayMode showAll = DisplayMode.Unity | DisplayMode.Custom;
-        [SerializeField] private bool stackMonoBehaviours;
+        [SerializeField] private bool stackDuplicateIcons;
 
         [SerializeField] private ComponentGroup[] unityGroups = new ComponentGroup[0];
 
         [SerializeField] private List<ComponentGroup> customGroups = new List<ComponentGroup>();
         [SerializeField] private ComponentGroup allCustomComponents = new ComponentGroup("All");
-        [SerializeField] private ComponentGroup excludedComponents = new ComponentGroup("Excluded");
 
         // --- Validation
 
@@ -94,7 +93,7 @@ namespace HierarchyDecorator
             }
         }
 
-        public bool StackScripts => stackMonoBehaviours;
+        public bool StackScripts => stackDuplicateIcons;
 
         /// <summary>
         /// Are components enabled?
@@ -143,11 +142,6 @@ namespace HierarchyDecorator
         /// </summary>
         public ComponentGroup AllCustomComponents => allCustomComponents;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public ComponentGroup ExcludedComponents => excludedComponents;
-
         // --- Methods
 
         // --- Initialization
@@ -187,7 +181,6 @@ namespace HierarchyDecorator
             unityCount = allTypes.Length;
             unityVersion = Application.unityVersion;
 
-            excludedComponents.Clear();
             Dictionary<string, ComponentGroup> cachedGroups = new Dictionary<string, ComponentGroup>();
 
             for (int i = 0; i < unityCount; i++)
@@ -213,11 +206,9 @@ namespace HierarchyDecorator
                 // Add the created component
 
                 group.Add(component);
-                excludedComponents.Add(new ComponentType(type, true));
             }
 
             unityGroups = cachedGroups.Values.ToArray();
-            excludedComponents.Sort();
 
             Debug.LogWarning("HierarchyDecorator components updated due to changes detected.");
 
@@ -243,7 +234,6 @@ namespace HierarchyDecorator
 
             // - Complete Groups
 
-            excludedComponents.UpdateCache(updateContent);
             allCustomComponents.UpdateCache(updateContent);
 
             // - Custom Groups
@@ -373,16 +363,6 @@ namespace HierarchyDecorator
         }
 
         // --- Queries
-
-        public bool IsExcluded(Type type)
-        {
-            if (excludedComponents.Count == 0)
-            {
-                return false;
-            }
-
-            return excludedComponents.TryGetComponent(type, out ComponentType component) && component.Shown;
-        }
 
         /// <summary>
         /// Find a component with the given type.
