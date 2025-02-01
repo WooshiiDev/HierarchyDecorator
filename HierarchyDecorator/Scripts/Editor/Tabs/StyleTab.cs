@@ -92,9 +92,7 @@ namespace HierarchyDecorator
             // Draw optionals
             if (GUI.Button (rect, "Add New Style", Style.CenteredBoldLabel))
             {
-                serializedStyles.InsertArrayElementAtIndex (serializedStyles.arraySize);
-                serializedSettings.ApplyModifiedProperties ();
-                serializedSettings.Update ();
+                CreateNewStyle();
             }
         }
 
@@ -178,6 +176,19 @@ namespace HierarchyDecorator
         private void DrawNoElements(Rect rect)
         {
             EditorGUI.LabelField (rect, "No styles to display.");
+        }
+
+        private void CreateNewStyle()
+        {
+            HierarchyStyle style = new HierarchyStyle();
+            style.name = "New Style";
+            style.UpdateStyle(EditorGUIUtility.isProSkin);
+
+            settings.styleData.styles.Add(style);
+
+            EditorUtility.SetDirty(settings);
+            serializedSettings.ApplyModifiedProperties();
+            serializedSettings.Update();
         }
 
         // Height Calculation
