@@ -61,7 +61,6 @@ namespace HierarchyDecorator
         // --- Settings
 
         [SerializeField] private bool enableIcons = true;
-        [SerializeField, Tooltip("Will clicking the icon toggle the component")] private bool togglableIcons = true;
 
         [SerializeField] private bool showMissingScriptWarning = true;
         [SerializeField] private DisplayMode showAll = DisplayMode.Unity | DisplayMode.Custom;
@@ -100,8 +99,6 @@ namespace HierarchyDecorator
         /// Are components enabled?
         /// </summary>
         public bool Enabled => enableIcons;
-        public bool ToggableIcons => togglableIcons;
-
 
         /// <summary>
         /// How scripts are drawn in the hierarchy.

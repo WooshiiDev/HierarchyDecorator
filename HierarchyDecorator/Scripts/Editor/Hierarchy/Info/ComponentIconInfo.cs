@@ -125,7 +125,7 @@ namespace HierarchyDecorator
 
         private void DrawComponentIcon(Rect rect, ComponentItem item)
         {
-            if (item.HasToggle)
+            if (item.CanToggle)
             {
                 DrawComponentToggle(rect, item);
             }

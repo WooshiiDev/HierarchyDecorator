@@ -6,10 +6,9 @@ namespace HierarchyDecorator
     public class ComponentItem
     {
         // --- Properties
-        public Settings HDSettings => HierarchyDecorator.Settings;
 
         public Component Component { get; private set; }
-        public ComponentType Type => GetComponentInfo(HDSettings);
+        public ComponentType Type => GetComponentInfo(HierarchyDecorator.Settings);
         public bool IsNullComponent { get; private set; }
 
         public readonly bool IsBehaviour;
@@ -21,8 +20,7 @@ namespace HierarchyDecorator
 
         public string DisplayName => Type.DisplayName;
         public bool IsBuiltIn => Type.IsBuiltIn;
-        public bool HasToggle => Type.HasToggle;
-        public bool CanToggle => HDSettings.Components.ToggableIcons;
+        public bool CanToggle => Type.HasToggle;
 
         public bool Active { get; private set; }
 
@@ -79,7 +77,7 @@ namespace HierarchyDecorator
         {
             // Default as enabled 
 
-            if (IsNullComponent || !HasToggle)
+            if (IsNullComponent || !Type.HasToggle)
             {
                 return true;
             }
@@ -99,7 +97,7 @@ namespace HierarchyDecorator
 
         public void SetActive(bool active)
         {
-            if (!CanToggle || !CanToggle)
+            if (!CanToggle)
             {
                 return;
             }
