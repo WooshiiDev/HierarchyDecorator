@@ -100,6 +100,10 @@ namespace HierarchyDecorator
         /// Are components enabled?
         /// </summary>
         public bool Enabled => enableIcons;
+
+        /// <summary>
+        /// Are components toggable?
+        /// </summary>
         public bool ToggableIcons => togglableIcons;
 
 
