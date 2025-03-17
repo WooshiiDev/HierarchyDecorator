@@ -13,7 +13,7 @@ namespace HierarchyDecorator
         /// Draw both MonoBehaviours and built in.
         /// </summary>
         Unity = 1,
-        
+
         /// <summary>
         /// Display MonoBehaviours
         /// </summary>
@@ -61,7 +61,7 @@ namespace HierarchyDecorator
         // --- Settings
 
         [SerializeField] private bool enableIcons = true;
-        [SerializeField, Tooltip("Will clicking the icon toggle the component")] private bool togglableIcons = true;
+        [SerializeField, Tooltip("Will clicking the icon toggle the component")] private bool clickToToggleComponent = true;
 
         [SerializeField] private bool showMissingScriptWarning = true;
         [SerializeField] private DisplayMode showAll = DisplayMode.Unity | DisplayMode.Custom;
@@ -102,9 +102,9 @@ namespace HierarchyDecorator
         public bool Enabled => enableIcons;
 
         /// <summary>
-        /// Are components toggable?
+        /// Are components toggable when clicked?
         /// </summary>
-        public bool ToggableIcons => togglableIcons;
+        public bool ClickToToggleComponent => clickToToggleComponent;
 
 
         /// <summary>
@@ -196,7 +196,7 @@ namespace HierarchyDecorator
                 string category = GetTypeCategory(type);
 
                 // If the component does not already exist in a group, create one
-                
+
                 if (!TryGetComponent(type, out ComponentType component))
                 {
                     component = new ComponentType(type, true);
@@ -221,7 +221,7 @@ namespace HierarchyDecorator
 
             bool IsDirty()
             {
-                return 
+                return
                     allTypes.Length != unityCount ||    // Internal types changed
                     unityGroups.Length == 0;            // No initialization so far
             }
@@ -315,7 +315,7 @@ namespace HierarchyDecorator
             {
                 return false;
             }
-            
+
             return RegisterCustomComponent(type);
         }
 
@@ -378,7 +378,7 @@ namespace HierarchyDecorator
         /// <param name="component">The component returned if one is found. Otherwise will be null.</param>
         /// <returns>Returns true if a component was found, otherwise will return false.</returns>
         public bool TryGetComponent(Type type, out ComponentType component)
-        {  
+        {
             // If the given type is null, there is nothing to look for
 
             if (type == null)
@@ -390,7 +390,7 @@ namespace HierarchyDecorator
             for (int i = 0; i < unityGroups.Length; i++)
             {
                 ComponentGroup group = unityGroups[i];
-                
+
                 if (group.TryGetComponent(type, out component))
                 {
                     return true;
@@ -445,7 +445,7 @@ namespace HierarchyDecorator
         private string GetTypeCategory(Type type)
         {
             // Cannot categorize null type.
-            
+
             if (type == null)
             {
                 return null;
@@ -454,7 +454,7 @@ namespace HierarchyDecorator
             foreach (var filter in ComponentFilters)
             {
                 // Return the filter name if the type is valid
-                
+
                 if (filter.IsValidFilter(type))
                 {
                     return filter.Name;
@@ -462,7 +462,7 @@ namespace HierarchyDecorator
             }
 
             // Return the default filter, so the type can still be categorized
-           
+
             return DefaultFilter.Name;
         }
     }

@@ -22,7 +22,7 @@ namespace HierarchyDecorator
         public string DisplayName => Type.DisplayName;
         public bool IsBuiltIn => Type.IsBuiltIn;
         public bool HasToggle => Type.HasToggle;
-        public bool CanToggle => HDSettings.Components.ToggableIcons;
+        public bool ClickToToggleComponent => HDSettings.Components.ClickToToggleComponent;
 
         public bool Active { get; private set; }
 
@@ -59,7 +59,7 @@ namespace HierarchyDecorator
         {
             if (IsNullComponent)
                 return null;
-            
+
             var type = Component.GetType();
             if (settings.Components.TryGetComponent(type, out ComponentType c))
             {
@@ -74,7 +74,7 @@ namespace HierarchyDecorator
 
             return c;
         }
-    
+
         private bool GetActiveState()
         {
             // Default as enabled 
@@ -99,17 +99,12 @@ namespace HierarchyDecorator
 
         public void SetActive(bool active)
         {
-            if (!CanToggle || !CanToggle)
+            if (Active != active)
             {
-                return;
+                Active = active;
+                Type.ToggleProperty.SetValue(Component, active);
+                EditorUtility.SetDirty(Component.gameObject);
             }
-			
-			if (Active != active)
-			{
-				Active = active;
-				Type.ToggleProperty.SetValue(Component, active);
-				EditorUtility.SetDirty(Component.gameObject);
-			}
         }
 
         public void UpdateActiveState()

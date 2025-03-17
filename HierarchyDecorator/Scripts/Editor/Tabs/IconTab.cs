@@ -86,7 +86,7 @@ namespace HierarchyDecorator
 #if UNITY_2019_1_OR_NEWER
             private static readonly GUIContent WarningGUI = new GUIContent(EditorGUIUtility.IconContent("warning"));
 #else
-            private static readonly GUIContent WarningGUI = EditorGUIUtility.IconContent ("console.warnicon");
+            private static readonly GUIContent WarningGUI = EditorGUIUtility.IconContent("console.warnicon");
 #endif
 
             public static readonly GUIContent EmptyComponent = new GUIContent("<No Component>", WarningGUI.image);
@@ -175,7 +175,7 @@ namespace HierarchyDecorator
             display.ToggleStyle = Style.ToolbarButtonLeft;
 
             CreateDrawableGroup("Settings")
-                .RegisterSerializedProperty(serializedTab, "enableIcons", "togglableIcons", "stackDuplicateIcons", "showMissingScriptWarning");
+                .RegisterSerializedProperty(serializedTab, "enableIcons", "clickToToggleComponent", "stackDuplicateIcons", "showMissingScriptWarning");
         }
 
         // Methods
@@ -240,7 +240,7 @@ namespace HierarchyDecorator
             names.Add("");
             groupNames = names.ToArray();
             Array.Sort(groupNames);
-            
+
             // Assign global group to 'All'
 
             groupNames[0] = Labels.EXCLUDED_COMPONENTS_LABEL;
@@ -805,7 +805,7 @@ namespace HierarchyDecorator
                         if (commandName == "ObjectSelectorUpdated")
                         {
                             MonoScript script = EditorGUIUtility.GetObjectPickerObject() as MonoScript;
-                            
+
                             if (component.Type != script.GetClass())
                             {
                                 group.Update(component, script);

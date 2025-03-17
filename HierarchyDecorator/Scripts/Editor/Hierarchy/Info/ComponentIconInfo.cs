@@ -21,12 +21,12 @@ namespace HierarchyDecorator
 #if UNITY_2019_1_OR_NEWER
         private readonly GUIContent warningGUI = EditorGUIUtility.IconContent("warning");
 #else
-        private readonly GUIContent warningGUI = EditorGUIUtility.IconContent ("console.warnicon");
+        private readonly GUIContent warningGUI = EditorGUIUtility.IconContent("console.warnicon");
 #endif
         protected override void OnDrawInit(HierarchyItem item, Settings settings)
         {
             requireWarning = false;
-            
+
             List<ComponentItem> newComponents = new List<ComponentItem>();
             foreach (ComponentItem component in item.Components.GetItems())
             {
@@ -125,7 +125,7 @@ namespace HierarchyDecorator
 
         private void DrawComponentIcon(Rect rect, ComponentItem item)
         {
-            if (item.HasToggle)
+            if (item.HasToggle && item.ClickToToggleComponent)
             {
                 DrawComponentToggle(rect, item);
             }
