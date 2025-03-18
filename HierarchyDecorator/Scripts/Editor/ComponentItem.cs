@@ -22,7 +22,6 @@ namespace HierarchyDecorator
         public string DisplayName => Type.DisplayName;
         public bool IsBuiltIn => Type.IsBuiltIn;
         public bool HasToggle => Type.HasToggle;
-        public bool ClickToToggleComponent => HDSettings.Components.ClickToToggleComponent;
 
         public bool Active { get; private set; }
 

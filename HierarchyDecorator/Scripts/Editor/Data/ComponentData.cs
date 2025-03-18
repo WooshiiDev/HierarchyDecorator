@@ -102,7 +102,7 @@ namespace HierarchyDecorator
         public bool Enabled => enableIcons;
 
         /// <summary>
-        /// Are components toggable when clicked?
+        /// Are components toggleable when clicked?
         /// </summary>
         public bool ClickToToggleComponent => clickToToggleComponent;
 

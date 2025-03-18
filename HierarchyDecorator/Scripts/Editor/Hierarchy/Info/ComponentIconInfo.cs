@@ -101,7 +101,7 @@ namespace HierarchyDecorator
                 }
                 else // Draw
                 {
-                    DrawComponentIcon(rect, component);
+                    DrawComponentIcon(rect, component, settings);
                     rect.x -= INDENT_SIZE;
                 }
             }
@@ -123,9 +123,9 @@ namespace HierarchyDecorator
 
         // GUI
 
-        private void DrawComponentIcon(Rect rect, ComponentItem item)
+        private void DrawComponentIcon(Rect rect, ComponentItem item, Settings settings)
         {
-            if (item.HasToggle && item.ClickToToggleComponent)
+            if (item.HasToggle && settings.Components.ClickToToggleComponent)
             {
                 DrawComponentToggle(rect, item);
             }
