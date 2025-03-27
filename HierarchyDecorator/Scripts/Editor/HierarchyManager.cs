@@ -95,6 +95,7 @@ namespace HierarchyDecorator
 
             if (!TryGetValidInstance(id, out HierarchyItem item))
             {
+				DrawSceneItemHighlight(rect, id);
                 return;
             }
 
@@ -160,7 +161,24 @@ namespace HierarchyDecorator
             return item;
         }
 
-        public static bool IsPreviousParent()
+		private static void DrawSceneItemHighlight(Rect rect, int id)
+		{
+			if (!s_Settings.styleData.sceneItemHighlight)
+				return;
+			for (int i = 0; i < SceneManager.sceneCount; ++i)
+			{
+				var scene = SceneManager.GetSceneAt(i);
+				if (scene.GetHashCode() == id)
+				{
+					rect.x -= 48;
+					rect.width = 17 * 2;
+					EditorGUI.DrawRect(rect, s_Settings.styleData.sceneItemHighlightColor);
+					break;
+				}
+			}
+		}
+
+		public static bool IsPreviousParent()
         {
             if (Previous == null)
             {
