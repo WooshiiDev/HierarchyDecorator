@@ -33,6 +33,8 @@ namespace HierarchyDecorator
 
                 case FilterType.TYPE:
                     Type baseType = Type.GetType (Filter);
+					if (baseType == null)
+						return false;
                     return type.IsAssignableFrom (baseType) || type.IsSubclassOf (baseType);
             }
 
