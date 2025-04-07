@@ -163,7 +163,7 @@ namespace HierarchyDecorator
 
 		private static void DrawSceneItemHighlight(Rect rect, int id)
 		{
-			if (!s_Settings.styleData.sceneItemHighlight)
+			if (!s_Settings.styleData.showSceneItemHighlight)
 				return;
 			for (int i = 0; i < SceneManager.sceneCount; ++i)
 			{
@@ -171,8 +171,9 @@ namespace HierarchyDecorator
 				if (scene.GetHashCode() == id)
 				{
 					rect.x -= 48;
-					rect.width = 17 * 2;
-					EditorGUI.DrawRect(rect, s_Settings.styleData.sceneItemHighlightColor);
+					rect.width = s_Settings.styleData.sceneItemHighlight.lineWidth;
+					rect.height = s_Settings.styleData.sceneItemHighlight.lineThickness;
+					EditorGUI.DrawRect(rect, s_Settings.styleData.sceneItemHighlight.color);
 					break;
 				}
 			}
