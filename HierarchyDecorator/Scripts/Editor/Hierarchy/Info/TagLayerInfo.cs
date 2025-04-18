@@ -188,6 +188,8 @@ namespace HierarchyDecorator
         {
             if (!bothShown)
             {
+				rect.x = rect.xMax - LABEL_GRID_SIZE * INDENT_SIZE;
+				rect.width = LABEL_GRID_SIZE * INDENT_SIZE;
                 return rect;
             }
 
