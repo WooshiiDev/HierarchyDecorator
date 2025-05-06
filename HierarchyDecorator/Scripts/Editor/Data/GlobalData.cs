@@ -30,6 +30,8 @@ namespace HierarchyDecorator
         // Toggles
 
         public bool showActiveToggles = true;
+        public enum ToggleType {Checkbox, Dot}
+        public ToggleType activeToggleType = ToggleType.Checkbox;
 
         [Tooltip("Clicking and dragging over check boxes to toggle them.")]
         public bool activeSwiping = true;

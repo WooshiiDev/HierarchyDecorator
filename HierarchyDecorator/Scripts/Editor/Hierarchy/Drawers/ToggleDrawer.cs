@@ -17,6 +17,10 @@ namespace HierarchyDecorator
         private bool isHoldingMouse = false;
         private bool isPressingShift = false;
 
+        // --- Toggle
+
+        private GUIStyle currentToggleOnStyle, currentToggleOffStyle;
+
         // Target data for settings based off the first instance selected
         
         private GameObject targetInstance = null;
@@ -68,10 +72,10 @@ namespace HierarchyDecorator
 
             // Draw toggles
 
-            DrawToggles (rect, instance, !settings.globalData.activeSwiping);
+            DrawToggles (rect, instance, settings.globalData.activeToggleType, !settings.globalData.activeSwiping);
         }
 
-        private void DrawToggles(Rect rect, GameObject instance, bool canUpdate = true)
+        private void DrawToggles(Rect rect, GameObject instance, GlobalData.ToggleType toggleType, bool canUpdate = true)
         {
             bool isActive = instance.activeSelf;
 
@@ -80,7 +84,28 @@ namespace HierarchyDecorator
             EditorGUI.BeginChangeCheck ();
             {
 #if UNITY_2019_1_OR_NEWER
-                isActive = EditorGUI.Toggle (rect, isActive, isActive ? Style.Toggle : Style.ToggleMixed);
+                switch (toggleType)
+                {
+                    case GlobalData.ToggleType.Checkbox:
+                        _RecreateStyleIfNeeded(Style.Toggle, Style.ToggleMixed);
+                        isActive = EditorGUI.Toggle(rect, isActive, isActive ? currentToggleOnStyle : currentToggleOffStyle);
+                        break;
+                    case GlobalData.ToggleType.Dot:
+                        _RecreateStyleIfNeeded(Style.ToggleDot, Style.ToggleDot);
+                        var color = GUI.color;
+                        if (!isActive)
+                            GUI.color = new Color(GUI.color.r, GUI.color.g, GUI.color.b, 0.15f);
+                        isActive = EditorGUI.Toggle(rect, isActive, isActive ? currentToggleOnStyle : currentToggleOffStyle);
+                        GUI.color = color;
+                        break;
+                }
+                void _RecreateStyleIfNeeded(GUIStyle on, GUIStyle off)
+                {
+                    if (currentToggleOnStyle == null || currentToggleOnStyle.name != on.name)
+                        currentToggleOnStyle = new GUIStyle(on);
+                    if (currentToggleOffStyle == null || currentToggleOffStyle.name != off.name)
+                        currentToggleOffStyle = new GUIStyle(off);
+                }
 #else
                 isActive = EditorGUI.Toggle (rect, isActive);
 #endif

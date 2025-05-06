@@ -35,7 +35,7 @@ namespace HierarchyDecorator
 
         // --- Hierarchy Styles
 
-        public static readonly GUIStyle Toggle;
+        public static readonly GUIStyle Toggle, ToggleDot;
         public static readonly GUIStyle ToggleMixed;
 
         // --- Fields
@@ -196,7 +196,15 @@ namespace HierarchyDecorator
             };
 
             // Hierarchy Styles
-
+            ToggleDot = new GUIStyle(GUI.skin.button)
+            {
+                name = "toggle-dot", // require as unique id for recreate
+                normal =
+                {
+                    textColor = EditorStyles.label.normal.textColor,
+                    background = EditorGUIUtility.Load("DotFill") as Texture2D,
+                },
+            };
             Toggle = new GUIStyle ("OL Toggle")
             {
                 normal =
