@@ -49,6 +49,10 @@ namespace HierarchyDecorator
         public bool showTags = true;
         public bool showLayers = true;
         public bool applyChildLayers = true;
+        public bool coloringTags = true;
+        public bool coloringLayers = true;
+        [Range(0, 1)] public float coloringTagLayerS = 0.6f;
+        [Range(0, 2)] public float coloringTagLayerV = 2f;
 
         // Components 
 
