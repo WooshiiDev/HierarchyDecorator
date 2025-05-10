@@ -68,7 +68,13 @@ namespace HierarchyDecorator
             CreateDrawableGroup("Background")
                 .RegisterSerializedProperty(serializedTab, "twoToneBackground")
                 .RegisterSerializedGroup(darkModeBack, "Dark Mode", "colorOne", "colorTwo")
-                .RegisterSerializedGroup(lightModeBack, "Light Mode", "colorOne", "colorTwo");
+                .RegisterSerializedGroup(lightModeBack, "Light Mode", "colorOne", "colorTwo").Space()
+                .RegisterSerializedProperty(serializedTab, "showSceneItemHighlight")
+                .RegisterSerializedGroup(serializedTab.FindPropertyRelative("sceneItemHighlight"), 
+                    "Highlight Settings",
+                    nameof(SceneItemHighlightSettings.color),
+                    nameof(SceneItemHighlightSettings.lineWidth),
+                    nameof(SceneItemHighlightSettings.lineThickness));
 
             CreateDrawableGroup ("Styles")
                 .RegisterSerializedProperty(serializedTab, "displayTags", "displayLayers", "displayIcons")
