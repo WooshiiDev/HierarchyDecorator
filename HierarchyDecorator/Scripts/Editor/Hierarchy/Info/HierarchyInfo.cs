@@ -132,9 +132,17 @@ namespace HierarchyDecorator
             if (hasStyle)
             {
                 labelStyle = style.style;
-
-                int len = style.prefix.Length;
-                name = style.FormatString(name.Substring (len + 1, name.Length - len - 1));
+                if (style.isRegex)
+                {
+                    if(style.capturedGroups != null && style.capturedGroups.Length > 0){
+                        name = style.FormatString(string.Join("", style.capturedGroups));
+                    }
+                }
+                else
+                {
+                    int len = style.prefix.Length;
+                    name = style.FormatString(name.Substring (len + 1, name.Length - len - 1));
+                }
             }
             else
             {

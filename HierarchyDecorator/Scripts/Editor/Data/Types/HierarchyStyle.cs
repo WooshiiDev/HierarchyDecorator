@@ -30,6 +30,7 @@ namespace HierarchyDecorator
     {
         public string prefix = "<PREFIX>";
         public bool noSpaceAfterPrefix = false;
+        public bool isRegex = false;
         public string name = "New Style";
 
         public Font font = null;
@@ -42,6 +43,7 @@ namespace HierarchyDecorator
         public ModeOptions[] modes;
 
         [HideInInspector] public GUIStyle style = new GUIStyle ();
+        [HideInInspector] public string[] capturedGroups = null;
 
         // Constructor
 
