@@ -45,6 +45,10 @@ namespace HierarchyDecorator
         [HideInInspector] public GUIStyle style = new GUIStyle ();
         [HideInInspector] public string[] capturedGroups = null;
 
+        // Cached regex fields
+        [System.NonSerialized] private System.Text.RegularExpressions.Regex cachedRegex;
+        [System.NonSerialized] private string cachedPrefix;
+
         // Constructor
 
         public HierarchyStyle()
@@ -105,6 +109,21 @@ namespace HierarchyDecorator
         public ModeOptions GetCurrentMode(bool isDarkMode)
         {
             return modes[isDarkMode ? 1 : 0];
+        }
+
+        /// <summary>
+        /// Gets the compiled regex
+        /// </summary>
+        /// <returns>The cached compiled regex, otherwise it compiles and caches a new regex</returns>
+        public System.Text.RegularExpressions.Regex GetRegex()
+        {
+            if (cachedRegex == null || cachedPrefix != prefix)
+            {
+                cachedPrefix = prefix;
+                cachedRegex = new System.Text.RegularExpressions.Regex("^" + prefix);
+            }
+
+            return cachedRegex;
         }
     }
 }

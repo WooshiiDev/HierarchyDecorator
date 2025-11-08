@@ -173,8 +173,8 @@ namespace HierarchyDecorator
             {
                 try
                 {
-                    Match match = Regex.Match(targetPrefix, "^" + style.prefix);
-                    
+                    Match match = style.GetRegex().Match(targetPrefix);
+
                     if (match.Success)
                     {
                         if (match.Groups.Count > 1)
