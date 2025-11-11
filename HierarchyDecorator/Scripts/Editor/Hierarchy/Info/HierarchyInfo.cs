@@ -122,6 +122,15 @@ namespace HierarchyDecorator
             return rect;
         }
 
+        public string SafeSubstring(string text, int start, int length)
+        {
+            if (string.IsNullOrEmpty(text)) return string.Empty;
+            if (start >= text.Length) return string.Empty;
+            if (start + length > text.Length)
+                length = text.Length - start;
+            return text.Substring(start, length);
+        }
+
         private Rect GetLabelRect(Rect rect, string name, Settings settings)
         {
             GUIStyle labelStyle = null;
@@ -134,7 +143,7 @@ namespace HierarchyDecorator
                 labelStyle = style.style;
 
                 int len = style.prefix.Length;
-                name = style.FormatString(name.Substring (len + 1, name.Length - len - 1));
+                name = style.FormatString(SafeSubstring(name, len + 1, name.Length - len - 1));
             }
             else
             {
