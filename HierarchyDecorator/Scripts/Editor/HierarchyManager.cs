@@ -156,7 +156,12 @@ namespace HierarchyDecorator
                 item = new HierarchyItem(id, instance);
                 lookup.Add(id, item);
             }
-
+            else
+            {
+                // Fix broken references caused by attaching uGUI components.
+                if (item.Transform == null)
+                    item.Transform = instance.transform;
+            }
             return item;
         }
 

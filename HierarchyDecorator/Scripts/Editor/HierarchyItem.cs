@@ -21,7 +21,7 @@ namespace HierarchyDecorator
         /// <summary>
         /// The <see cref="GameObject"/> transform for this item. Cached for performance.
         /// </summary>
-        public readonly Transform Transform;
+        public Transform Transform;
 
         // --- Properties
 

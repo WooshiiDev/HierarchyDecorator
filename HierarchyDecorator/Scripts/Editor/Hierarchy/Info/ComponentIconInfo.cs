@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,12 +25,12 @@ namespace HierarchyDecorator
 #if UNITY_2019_1_OR_NEWER
         private readonly GUIContent warningGUI = EditorGUIUtility.IconContent("warning");
 #else
-        private readonly GUIContent warningGUI = EditorGUIUtility.IconContent ("console.warnicon");
+        private readonly GUIContent warningGUI = EditorGUIUtility.IconContent("console.warnicon");
 #endif
         protected override void OnDrawInit(HierarchyItem item, Settings settings)
         {
             requireWarning = false;
-            
+
             List<ComponentItem> newComponents = new List<ComponentItem>();
             foreach (ComponentItem component in item.Components.GetItems())
             {
@@ -104,7 +105,7 @@ namespace HierarchyDecorator
                 }
                 else // Draw
                 {
-                    DrawComponentIcon(rect, component);
+                    DrawComponentIcon(rect, component, settings);
                     rect.x -= INDENT_SIZE;
                 }
             }
@@ -126,11 +127,11 @@ namespace HierarchyDecorator
 
         // GUI
 
-        private void DrawComponentIcon(Rect rect, ComponentItem item)
+        private void DrawComponentIcon(Rect rect, ComponentItem item, Settings settings)
         {
             DrawContextMenu(rect, item);
-
-            if (item.CanToggle)
+            
+            if (item.HasToggle && settings.Components.ClickToToggleComponent)
             {
                 DrawComponentToggle(rect, item);
             }

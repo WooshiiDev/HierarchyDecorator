@@ -6,9 +6,10 @@ namespace HierarchyDecorator
     public class ComponentItem
     {
         // --- Properties
+        public Settings HDSettings => HierarchyDecorator.Settings;
 
         public Component Component { get; private set; }
-        public ComponentType Type { get; private set; }
+        public ComponentType Type => GetComponentInfo(HDSettings);
         public bool IsNullComponent { get; private set; }
 
         public readonly bool IsBehaviour;
@@ -20,7 +21,7 @@ namespace HierarchyDecorator
 
         public string DisplayName => Type.DisplayName;
         public bool IsBuiltIn => Type.IsBuiltIn;
-        public bool CanToggle => Type.HasToggle;
+        public bool HasToggle => Type.HasToggle;
 
         public bool Active { get; private set; }
 
@@ -42,9 +43,7 @@ namespace HierarchyDecorator
                 return;
             }
 
-            Type = GetComponentInfo(HierarchyDecorator.Settings);
             IsNullComponent = Type == null;
-
             Active = GetActiveState();
         }
 
@@ -59,7 +58,7 @@ namespace HierarchyDecorator
         {
             if (IsNullComponent)
                 return null;
-            
+
             var type = Component.GetType();
             if (settings.Components.TryGetComponent(type, out ComponentType c))
             {
@@ -74,12 +73,12 @@ namespace HierarchyDecorator
 
             return c;
         }
-    
+
         private bool GetActiveState()
         {
             // Default as enabled 
 
-            if (IsNullComponent || !Type.HasToggle)
+            if (IsNullComponent || !HasToggle)
             {
                 return true;
             }
@@ -99,17 +98,12 @@ namespace HierarchyDecorator
 
         public void SetActive(bool active)
         {
-            if (!CanToggle)
+            if (Active != active)
             {
-                return;
+                Active = active;
+                Type.ToggleProperty.SetValue(Component, active);
+                EditorUtility.SetDirty(Component.gameObject);
             }
-			
-			if (Active != active)
-			{
-				Active = active;
-				Type.ToggleProperty.SetValue(Component, active);
-				EditorUtility.SetDirty(Component.gameObject);
-			}
         }
 
         public void UpdateActiveState()

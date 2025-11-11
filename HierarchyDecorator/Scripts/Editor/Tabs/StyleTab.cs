@@ -153,7 +153,6 @@ namespace HierarchyDecorator
 
             if (EditorGUI.EndChangeCheck ())
             {
-                serializedSettings.ApplyModifiedProperties();
                 settings.styleData[index].UpdateStyle (EditorGUIUtility.isProSkin);
             }
         }
