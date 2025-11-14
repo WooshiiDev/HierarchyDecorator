@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
-using static UnityEngine.GraphicsBuffer;
 
 namespace HierarchyDecorator
 {
