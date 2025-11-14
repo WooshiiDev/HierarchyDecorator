@@ -144,7 +144,7 @@ namespace HierarchyDecorator
                 
                 if (style.isRegex)
                 {
-                    if(style.capturedGroups != null && style.capturedGroups.Length > 0){
+                    if (style.capturedGroups != null && style.capturedGroups.Length > 0) {
                         name = style.FormatString(string.Join("", style.capturedGroups));
                     }
                 }
