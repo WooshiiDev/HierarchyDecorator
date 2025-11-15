@@ -14,7 +14,16 @@ namespace HierarchyDecorator
         {
             if (removePrefix)
             {
-                label = label.Substring (style.prefix.Length).Trim ();
+                if (style.isRegex)
+                {
+                    if(style.capturedGroups != null && style.capturedGroups.Length > 0){
+                        label = string.Join("", style.capturedGroups);
+                    }
+                }
+                else
+                {
+                    label = label.Substring (style.prefix.Length).Trim ();
+                }
             }
 
             ModeOptions styleSetting = style.GetCurrentMode (EditorGUIUtility.isProSkin);
