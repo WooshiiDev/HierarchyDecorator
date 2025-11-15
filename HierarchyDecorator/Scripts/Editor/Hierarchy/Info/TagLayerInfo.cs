@@ -50,12 +50,12 @@ namespace HierarchyDecorator
         {
             if (tagEnabled)
             {
-                DrawTag(rect, item.GameObject, settings.globalData.tagLayerLayout);
+                DrawTag(rect, item.GameObject, settings);
             }
 
             if (layerEnabled)
             {
-                DrawLayer(rect, item.GameObject, settings.globalData.tagLayerLayout);
+                DrawLayer(rect, item.GameObject, settings);
             }
         }
 
@@ -87,21 +87,54 @@ namespace HierarchyDecorator
 
         // - Drawing elements
 
-        private void DrawTag(Rect rect, GameObject instance, TagLayerLayout layout)
+        private void DrawTag(Rect rect, GameObject instance, Settings settings)
         {
-            rect = GetInfoAreaRect(rect, true, layout);
-            DrawInstanceInfo(rect, instance.tag, instance, true);
+            rect = GetInfoAreaRect(rect, true, settings.globalData.tagLayerLayout);
+            if (settings.globalData.coloringTags)
+            {
+                var color = GUI.contentColor;
+                GUI.contentColor = GetHashColor(instance.tag, settings.globalData.coloringTagLayerS, settings.globalData.coloringTagLayerV);
+                DrawInstanceInfo(rect, instance.tag, instance, true);
+                GUI.contentColor = color;
+            }
+            else
+                DrawInstanceInfo(rect, instance.tag, instance, true);
         }
 
-        private void DrawLayer(Rect rect, GameObject instance, TagLayerLayout layout)
+        private void DrawLayer(Rect rect, GameObject instance, Settings settings)
         {
-            rect = GetInfoAreaRect(rect, false, layout);
-            DrawInstanceInfo(rect, LayerMask.LayerToName(instance.layer), instance, false);
+            rect = GetInfoAreaRect(rect, false, settings.globalData.tagLayerLayout);
+            var label = LayerMask.LayerToName(instance.layer);
+            if (settings.globalData.coloringLayers)
+            {
+                var color = GUI.contentColor;
+                GUI.contentColor = GetHashColor(label, settings.globalData.coloringTagLayerS, settings.globalData.coloringTagLayerV);
+                DrawInstanceInfo(rect, label, instance, false);
+                GUI.contentColor = color;
+            }
+            else
+                DrawInstanceInfo(rect, label, instance, false);
+        }
+
+        private Color GetHashColor(string label, float s, float v)
+        {
+            unchecked
+            {
+                int hash = 23;
+                foreach (char c in label)
+                    hash = hash * 31 + c;
+                uint uhash = (uint)hash;
+                float h = (uhash * 0.61803398875f) % 1.0f;
+                return Color.HSVToRGB(h, s, v);
+            }
         }
 
         private void DrawInstanceInfo(Rect rect, string label, GameObject instance, bool isTag)
         {
-            EditorGUI.LabelField(rect, label, (isVertical && bothShown) ? Style.TinyText : Style.SmallDropdown);
+            if (!isTag || label != "Untagged")
+            {
+                GUI.Label(rect, new GUIContent(label, label), (isVertical && bothShown) ? Style.TinyText : Style.SmallDropdown);
+            }
 
             Event e = Event.current;
             bool hasClicked = rect.Contains(e.mousePosition) && e.type == EventType.MouseDown;
@@ -114,8 +147,8 @@ namespace HierarchyDecorator
             // Create menu here 
 
             GenericMenu menu = isTag
-                ? CreateMenu(InternalEditorUtility.tags, AssignTag)
-                : CreateMenu(InternalEditorUtility.layers, AssignLayer);
+                ? CreateMenu(InternalEditorUtility.tags, label, AssignTag)
+                : CreateMenu(InternalEditorUtility.layers, label, AssignLayer);
 
             GameObject[] selection = Selection.gameObjects;
             if (selection.Length < 2)
@@ -172,13 +205,13 @@ namespace HierarchyDecorator
 
         // - Helpers
 
-        private static GenericMenu CreateMenu(string[] items, Action<string> onSelect)
+        private static GenericMenu CreateMenu(string[] items, string label, Action<string> onSelect)
         {
             GenericMenu menu = new GenericMenu();
             for (int i = 0; i < items.Length; i++)
             {
                 string item = items[i];
-                menu.AddItem(new GUIContent(item), false, () => onSelect.Invoke(item));
+                menu.AddItem(new GUIContent(item), label == item, () => onSelect.Invoke(item));
             }
 
             return menu;
