@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace HierarchyDecorator
@@ -168,7 +169,35 @@ namespace HierarchyDecorator
 
         private bool CheckPrefix(string targetPrefix, HierarchyStyle style)
         {
-            if (targetPrefix.StartsWith (style.prefix))
+            if (style.isRegex)
+            {
+                try
+                {
+                    Match match = style.GetRegex().Match(targetPrefix);
+
+                    if (match.Success && match.Groups.Count > 1)
+                    {
+                        style.capturedGroups = new string[match.Groups.Count - 1];
+                        for (int i = 1; i < match.Groups.Count; i++)
+                        {
+                            style.capturedGroups[i - 1] = match.Groups[i].Value;
+                        }
+                        
+                        return true;
+                    }
+                    else
+                    {
+                        style.capturedGroups = null;
+                        return false;
+                    }
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+            
+            if (targetPrefix.StartsWith(style.prefix))
             {
                 if (style.noSpaceAfterPrefix)
                     return true;

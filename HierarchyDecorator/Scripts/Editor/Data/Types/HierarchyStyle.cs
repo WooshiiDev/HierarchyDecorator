@@ -30,6 +30,7 @@ namespace HierarchyDecorator
     {
         public string prefix = "<PREFIX>";
         public bool noSpaceAfterPrefix = false;
+        public bool isRegex = false;
         public string name = "New Style";
 
         public Font font = null;
@@ -42,6 +43,11 @@ namespace HierarchyDecorator
         public ModeOptions[] modes;
 
         [HideInInspector] public GUIStyle style = new GUIStyle ();
+        [HideInInspector] public string[] capturedGroups = null;
+
+        // Cached regex fields
+        [System.NonSerialized] private System.Text.RegularExpressions.Regex cachedRegex;
+        [System.NonSerialized] private string cachedPrefix;
 
         // Constructor
 
@@ -103,6 +109,21 @@ namespace HierarchyDecorator
         public ModeOptions GetCurrentMode(bool isDarkMode)
         {
             return modes[isDarkMode ? 1 : 0];
+        }
+
+        /// <summary>
+        /// Gets the compiled regex
+        /// </summary>
+        /// <returns>The cached compiled regex, otherwise it compiles and caches a new regex</returns>
+        public System.Text.RegularExpressions.Regex GetRegex()
+        {
+            if (cachedRegex == null || cachedPrefix != prefix)
+            {
+                cachedPrefix = prefix;
+                cachedRegex = new System.Text.RegularExpressions.Regex("^" + prefix);
+            }
+
+            return cachedRegex;
         }
     }
 }
