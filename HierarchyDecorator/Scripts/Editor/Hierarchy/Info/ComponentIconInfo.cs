@@ -1,9 +1,13 @@
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Reflection;
+using Object = UnityEngine.Object;
 using UnityEditor;
 using UnityEngine;
+using System.ComponentModel;
 
 namespace HierarchyDecorator
 {
@@ -125,6 +129,8 @@ namespace HierarchyDecorator
 
         private void DrawComponentIcon(Rect rect, ComponentItem item, Settings settings)
         {
+            DrawContextMenu(rect, item);
+            
             if (item.HasToggle && settings.Components.ClickToToggleComponent)
             {
                 DrawComponentToggle(rect, item);
@@ -139,7 +145,7 @@ namespace HierarchyDecorator
         {
             Event ev = Event.current;
 
-            if (ev.type == EventType.MouseDown && rect.Contains(ev.mousePosition))
+            if (ev.type == EventType.MouseDown && ev.button == 0 && rect.Contains(ev.mousePosition))
             {
                 item.ToggleActive();
                 ev.Use();
@@ -171,6 +177,18 @@ namespace HierarchyDecorator
         private void DrawIcon(Rect rect, GUIContent content)
         {
             GUI.Label(rect, content, Style.ComponentIconStyle);
+        }
+
+        private void DrawContextMenu(Rect rect, ComponentItem item)
+        {
+            Event ev = Event.current;
+
+            if (ev.type == EventType.MouseDown && ev.button == 1 && rect.Contains(ev.mousePosition))
+            {
+                var method = typeof(EditorUtility).GetMethod("DisplayObjectContextMenu", BindingFlags.NonPublic | BindingFlags.Static, null, new Type[] { typeof(Rect), typeof(Object), typeof(int) }, null);
+                method.Invoke(null, new object[] { rect, item.Component, 0 });
+                ev.Use();
+            }
         }
 
         // Helpers
