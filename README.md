@@ -95,21 +95,21 @@ There is a scriptable object that is required for hierarchy decorator to run. If
 
 Setting design may change over time with development to support more features, or keep things looking consistent & clean.
 
-
 ### General
   
 <details>
  <summary><b>Toggles</b></summary>
   
  <p align="center">
-   <img width="915" alt="chrome_aClIcjH3wq" src="https://user-images.githubusercontent.com/31889435/226558578-78287342-711c-4b4b-acf3-18b316f3216b.gif">
-   <img width="915" alt="chrome_aClIcjH3wq" src="https://user-images.githubusercontent.com/31889435/226493660-ba63cb16-a046-48f3-8d1a-c1ea0007de4a.png">
+  <img width="915" alt="chrome_aClIcjH3wq" src="https://user-images.githubusercontent.com/31889435/226558578-78287342-711c-4b4b-acf3-18b316f3216b.gif">
+  <img width="778" height="145" alt="Unity_GYpPOVFRrv" src="https://github.com/user-attachments/assets/fac34b54-684e-4499-b68b-a572d312bbd2" />
  </p>
 
   Toggles will simply display the state of the instance, can be clicked to toggle the instance active state.
 
   ```
   Show Active Toggles     Enable the toggles.
+  Active Toggle Type      Choose between a checkbox or dot for the toggle icon.
   Active Swiping          Click and drag over check boxes to toggle them.
   Swipe Same State        Only toggle the instances with the same state as the first selected.
   Swipe Selection Only    If a selection exists, only toggle the selected instances.
@@ -163,7 +163,7 @@ Setting design may change over time with development to support more features, o
 </p>
 
   The background can be enabled to alternate background colour between each hierarchy row. 
-    
+
   ```
   Alternate Background    Show the breadcrumbs.
   Color One               The first colour for the theme.
@@ -179,7 +179,7 @@ Setting design may change over time with development to support more features, o
   Layers and icons can be specifically disables on styles instances to remove clutter and information that is not required.
 
  <p align="center">
-  <img src="https://i.imgur.com/6zfMz61.png" alt="Style Settings">
+  <img width="510" height="450" alt="image" src="https://github.com/user-attachments/assets/1d727086-ea26-4ea9-ad66-26873b39d6b2" alt="Style Settings"/>
  </p>
 </details>
 
