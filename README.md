@@ -227,14 +227,6 @@ Scripts can also be dragged in from the project view and will be added to the gr
 
 </details>
 
-## Contributing
-When contributing to this repository, please first discuss the change you wish to make via issue or any other method with the owners of this repository before making a change.
-
-### Pull Request Process
-1. Ensure any install or build dependencies are removed before the end of the layer when doing a build.
-2. Update the README.md with details of any new features if required.
-3. Increase the version numbers in any examples files and the README.md to the new version that this Pull Request would represent. The versioning scheme we use is SemVer.
-
 ## Support
 Please submit any queries, bugs or issues, to the [Issues](https://github.com/WooshiiDev/HierarchyDecorator/issues) page on this repository. All feedback is appreciated as it not just helps myself find problems I didn't otherwise see, but also helps improves Hierarchy Decorator as a whole.
 
@@ -253,4 +245,4 @@ HierarchyDecorator will be and always has been developed in my free time, and th
 
 Development will be continued with this and will forever stay public and free.
 
-Copyright (c) 2020-2024 Damian Slocombe
+Copyright (c) 2020-2025 Damian Slocombe
