@@ -60,29 +60,23 @@ You can also install this via git by adding the following to your **manifest.jso
 
 ## Features
 
-Currently, this is what Hierarchy Decorator does have
-|                            | Hierarchy Decorator  | Other Hierachy Extensions |
+### Current
+
+| Feature                    | Hierarchy Decorator  | Other Hierachy Extensions |
 | -------------------------- | :----------------: | :-------------:   |
-| Light/Dark Mode Support    |         ✔️         |        ✔️        |
-| Headers/Seperators         |         ✔️         |        ✔️        |
-| Toggleable Settings        |         ✔️         |        ❌        |
-| Custom Header Styles       |         ✔️         |        ❌        |
-| GameObject Layer Selector  |         ✔️         |        ❌        |
-| Unity Icon Selection       |         ✔️         |        ❌        |
-| Custom Icon Selection      |         ✔️         |        ❌        |
+| Hierarchy Headers/Styles   |         ✔️         |        ✔️        |
+| Tag/Layer Selector         |         ✔️         |        ✔️        |
+| Breadcrumbs                |         ✔️         |        ✔️        |
+| Component Icons            |         ✔️         |        ❌        |
 
-These are currently future additions planned
+### Planned 
 
-|                            | Hierarchy Decorator | Other Hierachy Extensions |
-| -------------------------- | :----------------:  | :-------------:   |
-| Hierarchy Breadcrumbs      |         Planned     |        ✔️        |
-| Hierarchy Folders          |         Planned     |        ✔️        |
-| Custom Instance Icons      |         Planned     |        ✔️        |
-| External Package Support   |         Planned     |        ✔️        |
-| Script Error/Warning Popup |         Planned     |        ❌        |
-| Locked Instances           |         Planned     |        ❌        |
-| Selectable Editor Flags    |         Planned     |        ❌        |
-| Hierarchy Comment Popups   |         Planned     |        ❌        |
+| Feature                    | Hierarchy Decorator  | Other Hierachy Extensions |
+| -------------------------- | :----------------: | :-------------:   |
+| GameObject Icons           |         Planned     |        ✔️        |
+| Folders                    |         Planned     |         ✔️       |
+| Script Error/Warning Popup |         Planned     |        ❌       |
+| Editor Flags Selector      |         Planned     |        ❌       |
 | <a href="https://github.com/WooshiiDev/HierarchyDecorator/issues/25">Team/Individual Settings Mode</a>   |         Planned     |        ❌        |
   
 ## Settings
@@ -222,7 +216,7 @@ Scripts can also be dragged in from the project view and will be added to the gr
 
 <p align="center">
  <img width="40%" alt="Unity_emGzaT8YHM" src="https://user-images.githubusercontent.com/31889435/226555645-85954060-c25e-4ae8-bf5b-c7313d1188ee.gif">
-<img width="40%" alt="Unity_emGzaT8YHM" src="https://user-images.githubusercontent.com/31889435/226556916-73888fe0-b8fa-4365-88ab-18d786aa7c37.gif">
+ <img width="40%" alt="Unity_emGzaT8YHM" src="https://user-images.githubusercontent.com/31889435/226556916-73888fe0-b8fa-4365-88ab-18d786aa7c37.gif">
 </p>
 
 </details>
