@@ -8,6 +8,7 @@ namespace HierarchyDecorator
     {
         private string[] TagFields = new[] { "showTags" };
         private string[] LayerFields = new[] { "showLayers", "applyChildLayers" };
+        private string[] coloringTagLayerFields = new[] { "coloringTags", "coloringLayers", "coloringTagLayerS",  "coloringTagLayerV"};
 
         public GeneralTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, "globalData", "General", "d_CustomTool")
         {
@@ -21,7 +22,8 @@ namespace HierarchyDecorator
             CreateDrawableGroup("Tags & Layers")
                 .RegisterSerializedProperty(serializedTab, TagFields)
                 .RegisterSerializedProperty(serializedTab, LayerFields).Space()
-                .RegisterSerializedProperty(serializedTab, "tagLayerLayout");
+                .RegisterSerializedProperty(serializedTab, "tagLayerLayout")
+                .RegisterSerializedProperty(serializedTab, coloringTagLayerFields);
 
             // --- Breadcrumbs
 
