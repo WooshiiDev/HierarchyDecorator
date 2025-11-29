@@ -115,7 +115,7 @@ namespace HierarchyDecorator
         {
             static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths, bool didDomainReload)
             {
-                for (int i = 0; i < movedAssets.Length; i++)
+                if (importedAssets.Length > 0)
                 {
                     UpdateComponentData();
                 }
