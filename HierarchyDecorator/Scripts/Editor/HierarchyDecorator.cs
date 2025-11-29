@@ -107,5 +107,19 @@ namespace HierarchyDecorator
         {
             return new SerializedObject (GetOrCreateSettings ());
         }
+    
+        /// <summary>
+        /// Handles any import updates required i.e. <see cref="ComponentType"/> cache.
+        /// </summary>
+        public class HierarchyDecoratorProcessor : AssetPostprocessor
+        {
+            static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths, bool didDomainReload)
+            {
+                for (int i = 0; i < movedAssets.Length; i++)
+                {
+                    UpdateComponentData();
+                }
+            }
+        }
     }
 }
