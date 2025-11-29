@@ -18,27 +18,11 @@ namespace HierarchyDecorator
         {
             EditorApplication.update -= ValidateSettings;
             EditorApplication.update += ValidateSettings;
+            EditorApplication.delayCall -= HierarchyManager.Initialize;
+            EditorApplication.delayCall += HierarchyManager.Initialize;
         }
 
         // Setup 
-
-        private static void ValidateSettings()
-        {
-            if (EditorApplication.isUpdating)
-            {
-                return;
-            }
-
-            if (Settings != null)
-            {
-                return;
-            }
-
-            Settings = GetOrCreateSettings();
-            UpdateComponentData();
-
-            HierarchyManager.Initialize();
-        }
 
         private static void UpdateComponentData()
         {
