@@ -21,7 +21,7 @@ namespace HierarchyDecorator
         /// <summary>
         /// The <see cref="GameObject"/> transform for this item. Cached for performance.
         /// </summary>
-        public readonly Transform Transform;
+        public Transform Transform;
 
         // --- Properties
 
@@ -46,6 +46,11 @@ namespace HierarchyDecorator
         public bool HasParent => Transform.parent != null;
 
         /// <summary>
+        /// The type of prefab asset.
+        /// </summary>
+        public PrefabAssetType PrefabTypeInfo { get; private set; }
+
+        /// <summary>
         /// The prefab state.
         /// </summary>
         public PrefabInfo PrefabInfo { get; private set; }
@@ -53,7 +58,7 @@ namespace HierarchyDecorator
         /// <summary>
         /// Is this item part of a prefab?
         /// </summary>
-        public bool IsPrefab => PrefabInfo != PrefabInfo.None;
+        public bool IsPrefab => PrefabInfo != PrefabInfo.None; 
 
         /// <summary>
         /// The display string for the item.
@@ -83,7 +88,7 @@ namespace HierarchyDecorator
             {
                 return PrefabInfo.None;
             }
-
+             
             return PrefabUtility.GetNearestPrefabInstanceRoot(GameObject) == GameObject
                 ? PrefabInfo.Root
                 : PrefabInfo.Part;
@@ -95,6 +100,8 @@ namespace HierarchyDecorator
         public void OnGUIBegin()
         {
             PrefabInfo = GetPrefabInfo();
+            PrefabTypeInfo = PrefabInfo == PrefabInfo.None ?
+                PrefabAssetType.NotAPrefab : PrefabTypeInfo = PrefabUtility.GetPrefabAssetType(GameObject);
             Components.Validate(GameObject);
         }
 

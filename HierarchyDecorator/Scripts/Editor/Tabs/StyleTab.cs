@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
-using static UnityEngine.GraphicsBuffer;
 
 namespace HierarchyDecorator
 {
@@ -28,7 +27,7 @@ namespace HierarchyDecorator
         private readonly Color OUTLINE_COLOR = new Color (0.15f, 0.15f, 0.15f, 1f);
 
         private readonly GUIContent[] Modes = { new GUIContent("Light Mode"), new GUIContent("Dark Mode") };
-        private readonly string[] SettingList = { "prefix", "noSpaceAfterPrefix", "name", "font", "fontSize", "fontStyle", "fontAlignment",  "textFormatting" };
+        private readonly string[] SettingList = { "prefix", "noSpaceAfterPrefix", "isRegex", "name", "font", "fontSize", "fontStyle", "fontAlignment",  "textFormatting" };
 
         public StyleTab(Settings settings, SerializedObject serializedSettings) : base (settings, serializedSettings, "styleData", "Visual", "d_InputField Icon")
         {

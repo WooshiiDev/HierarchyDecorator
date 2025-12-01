@@ -7,38 +7,44 @@ namespace HierarchyDecorator
     [InitializeOnLoad]
     internal static class HierarchyDecorator
     {
+        public static event Action OnSettings;
+
         public const string SETTINGS_TYPE_STRING = "Settings";
         public const string SETTINGS_NAME_STRING = "Settings";
 
         private static string s_SettingsPrefGUID = Constants.Paths.PREF_GUID;
 
-        public static Settings Settings { get; private set; }
+        private static Settings s_Settings;
+        public static Settings Settings
+        {
+            get
+            {
+                if (s_Settings == null)
+                {
+                    s_Settings = GetOrCreateSettings();
+                    OnSettings?.Invoke();
+                }
+
+                return s_Settings;
+            }
+
+            private set
+            {
+                s_Settings = value;
+            }
+        }
+
 
         static HierarchyDecorator()
         {
-            EditorApplication.update -= ValidateSettings;
-            EditorApplication.update += ValidateSettings;
+            OnSettings -= UpdateComponentData;
+            OnSettings += UpdateComponentData;
+
+            EditorApplication.delayCall -= HierarchyManager.Initialize;
+            EditorApplication.delayCall += HierarchyManager.Initialize;
         }
 
         // Setup 
-
-        private static void ValidateSettings()
-        {
-            if (EditorApplication.isUpdating)
-            {
-                return;
-            }
-
-            if (Settings != null)
-            {
-                return;
-            }
-
-            Settings = GetOrCreateSettings();
-            UpdateComponentData();
-
-            HierarchyManager.Initialize();
-        }
 
         private static void UpdateComponentData()
         {
@@ -106,6 +112,20 @@ namespace HierarchyDecorator
         public static SerializedObject GetSerializedSettings()
         {
             return new SerializedObject (GetOrCreateSettings ());
+        }
+    
+        /// <summary>
+        /// Handles any import updates required i.e. <see cref="ComponentType"/> cache.
+        /// </summary>
+        public class HierarchyDecoratorProcessor : AssetPostprocessor
+        {
+            static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths, bool didDomainReload)
+            {
+                if (importedAssets.Length > 0)
+                {
+                    UpdateComponentData();
+                }
+            }
         }
     }
 }

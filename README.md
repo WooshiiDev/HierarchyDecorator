@@ -60,29 +60,23 @@ You can also install this via git by adding the following to your **manifest.jso
 
 ## Features
 
-Currently, this is what Hierarchy Decorator does have
-|                            | Hierarchy Decorator  | Other Hierachy Extensions |
+### Current
+
+| Feature                    | Hierarchy Decorator  | Other Hierachy Extensions |
 | -------------------------- | :----------------: | :-------------:   |
-| Light/Dark Mode Support    |         ✔️         |        ✔️        |
-| Headers/Seperators         |         ✔️         |        ✔️        |
-| Toggleable Settings        |         ✔️         |        ❌        |
-| Custom Header Styles       |         ✔️         |        ❌        |
-| GameObject Layer Selector  |         ✔️         |        ❌        |
-| Unity Icon Selection       |         ✔️         |        ❌        |
-| Custom Icon Selection      |         ✔️         |        ❌        |
+| Hierarchy Headers/Styles   |         ✔️         |        ✔️        |
+| Tag/Layer Selector         |         ✔️         |        ✔️        |
+| Breadcrumbs                |         ✔️         |        ✔️        |
+| Component Icons            |         ✔️         |        ❌        |
 
-These are currently future additions planned
+### Planned 
 
-|                            | Hierarchy Decorator | Other Hierachy Extensions |
-| -------------------------- | :----------------:  | :-------------:   |
-| Hierarchy Breadcrumbs      |         Planned     |        ✔️        |
-| Hierarchy Folders          |         Planned     |        ✔️        |
-| Custom Instance Icons      |         Planned     |        ✔️        |
-| External Package Support   |         Planned     |        ✔️        |
-| Script Error/Warning Popup |         Planned     |        ❌        |
-| Locked Instances           |         Planned     |        ❌        |
-| Selectable Editor Flags    |         Planned     |        ❌        |
-| Hierarchy Comment Popups   |         Planned     |        ❌        |
+| Feature                    | Hierarchy Decorator  | Other Hierachy Extensions |
+| -------------------------- | :----------------: | :-------------:   |
+| GameObject Icons           |         Planned     |        ✔️        |
+| Folders                    |         Planned     |         ✔️       |
+| Script Error/Warning Popup |         Planned     |        ❌       |
+| Editor Flags Selector      |         Planned     |        ❌       |
 | <a href="https://github.com/WooshiiDev/HierarchyDecorator/issues/25">Team/Individual Settings Mode</a>   |         Planned     |        ❌        |
   
 ## Settings
@@ -95,21 +89,21 @@ There is a scriptable object that is required for hierarchy decorator to run. If
 
 Setting design may change over time with development to support more features, or keep things looking consistent & clean.
 
-
 ### General
   
 <details>
  <summary><b>Toggles</b></summary>
   
  <p align="center">
-   <img width="915" alt="chrome_aClIcjH3wq" src="https://user-images.githubusercontent.com/31889435/226558578-78287342-711c-4b4b-acf3-18b316f3216b.gif">
-   <img width="915" alt="chrome_aClIcjH3wq" src="https://user-images.githubusercontent.com/31889435/226493660-ba63cb16-a046-48f3-8d1a-c1ea0007de4a.png">
+  <img width="915" alt="chrome_aClIcjH3wq" src="https://user-images.githubusercontent.com/31889435/226558578-78287342-711c-4b4b-acf3-18b316f3216b.gif">
+  <img width="778" height="145" alt="Unity_GYpPOVFRrv" src="https://github.com/user-attachments/assets/fac34b54-684e-4499-b68b-a572d312bbd2" />
  </p>
 
   Toggles will simply display the state of the instance, can be clicked to toggle the instance active state.
 
   ```
   Show Active Toggles     Enable the toggles.
+  Active Toggle Type      Choose between a checkbox or dot for the toggle icon.
   Active Swiping          Click and drag over check boxes to toggle them.
   Swipe Same State        Only toggle the instances with the same state as the first selected.
   Swipe Selection Only    If a selection exists, only toggle the selected instances.
@@ -163,7 +157,7 @@ Setting design may change over time with development to support more features, o
 </p>
 
   The background can be enabled to alternate background colour between each hierarchy row. 
-    
+
   ```
   Alternate Background    Show the breadcrumbs.
   Color One               The first colour for the theme.
@@ -179,7 +173,7 @@ Setting design may change over time with development to support more features, o
   Layers and icons can be specifically disables on styles instances to remove clutter and information that is not required.
 
  <p align="center">
-  <img src="https://i.imgur.com/6zfMz61.png" alt="Style Settings">
+  <img width="510" height="450" alt="image" src="https://github.com/user-attachments/assets/1d727086-ea26-4ea9-ad66-26873b39d6b2" alt="Style Settings"/>
  </p>
 </details>
 
@@ -222,18 +216,10 @@ Scripts can also be dragged in from the project view and will be added to the gr
 
 <p align="center">
  <img width="40%" alt="Unity_emGzaT8YHM" src="https://user-images.githubusercontent.com/31889435/226555645-85954060-c25e-4ae8-bf5b-c7313d1188ee.gif">
-<img width="40%" alt="Unity_emGzaT8YHM" src="https://user-images.githubusercontent.com/31889435/226556916-73888fe0-b8fa-4365-88ab-18d786aa7c37.gif">
+ <img width="40%" alt="Unity_emGzaT8YHM" src="https://user-images.githubusercontent.com/31889435/226556916-73888fe0-b8fa-4365-88ab-18d786aa7c37.gif">
 </p>
 
 </details>
-
-## Contributing
-When contributing to this repository, please first discuss the change you wish to make via issue or any other method with the owners of this repository before making a change.
-
-### Pull Request Process
-1. Ensure any install or build dependencies are removed before the end of the layer when doing a build.
-2. Update the README.md with details of any new features if required.
-3. Increase the version numbers in any examples files and the README.md to the new version that this Pull Request would represent. The versioning scheme we use is SemVer.
 
 ## Support
 Please submit any queries, bugs or issues, to the [Issues](https://github.com/WooshiiDev/HierarchyDecorator/issues) page on this repository. All feedback is appreciated as it not just helps myself find problems I didn't otherwise see, but also helps improves Hierarchy Decorator as a whole.
@@ -253,4 +239,4 @@ HierarchyDecorator will be and always has been developed in my free time, and th
 
 Development will be continued with this and will forever stay public and free.
 
-Copyright (c) 2020-2024 Damian Slocombe
+Copyright (c) 2020-2025 Damian Slocombe

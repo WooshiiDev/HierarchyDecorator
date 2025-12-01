@@ -8,12 +8,22 @@ namespace HierarchyDecorator
         private static GUIStyle TextStyle = new GUIStyle(EditorStyles.label);
         private static readonly Color DarkModeText = new Color(0.48f, 0.67f, 0.95f, 1f);
         private static readonly Color WhiteModeText = new Color(0.1f, 0.3f, 0.7f, 1f);
+        private static readonly Color MissingPrefabText = new Color(0.95f, 0.55f, 0.55f);
 
         public static void DrawHierarchyStyle(HierarchyStyle style, Rect styleRect, Rect labelRect, string label, bool removePrefix = true)
         {
             if (removePrefix)
             {
-                label = label.Substring (style.prefix.Length).Trim ();
+                if (style.isRegex)
+                {
+                    if(style.capturedGroups != null && style.capturedGroups.Length > 0){
+                        label = string.Join("", style.capturedGroups);
+                    }
+                }
+                else
+                {
+                    label = label.Substring (style.prefix.Length).Trim ();
+                }
             }
 
             ModeOptions styleSetting = style.GetCurrentMode (EditorGUIUtility.isProSkin);
@@ -29,8 +39,9 @@ namespace HierarchyDecorator
             // Get the content needed for the icon
 
             bool isPrefab = item.IsPrefab;
-            bool isPrefabParent = item.PrefabInfo == PrefabInfo.Root;
-
+            bool isPrefabParent = item.PrefabInfo == PrefabInfo.Root; 
+            bool isPrefabMissing = item.PrefabTypeInfo == PrefabAssetType.MissingAsset;
+           
             GUIContent content = GetStandardContent (instance, isPrefabParent);
 
             // Handle colours
@@ -38,10 +49,13 @@ namespace HierarchyDecorator
             Color textColour = EditorStyles.label.normal.textColor;
             if (isPrefab)
             {
-                textColour = (EditorGUIUtility.isProSkin) ? DarkModeText : WhiteModeText;
+                if (isPrefabMissing)
+                    textColour = MissingPrefabText;
+                else
+                    textColour = (EditorGUIUtility.isProSkin) ? DarkModeText : WhiteModeText;
             }
 
-            if (Selection.Contains(instance))
+            if (Selection.Contains(instance) && ! isPrefabMissing)
             {
                 textColour = Color.white;
             }
@@ -103,7 +117,7 @@ namespace HierarchyDecorator
                     image = GetPrefabIcon(instance)
                 };
             }
-            
+
             return EditorGUIUtility.IconContent(GetGameObjectIcon(Selection.Contains(instance)));
         }
 
@@ -138,7 +152,7 @@ namespace HierarchyDecorator
         }
 
         private static Texture2D GetPrefabIcon(GameObject instance)
-        {
+        { 
             return PrefabUtility.GetIconForGameObject(instance);
         }
     }
