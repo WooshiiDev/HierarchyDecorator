@@ -168,11 +168,15 @@ namespace HierarchyDecorator
             for (int i = 0; i < SceneManager.sceneCount; ++i)
             {
                 var scene = SceneManager.GetSceneAt(i);
-                if (scene.GetHashCode() == id)
+                if (scene.handle == id)
                 {
+                    var max_height = rect.height;
+                    var center_y = max_height * 0.5f;
+                    var thickness = s_Settings.styleData.sceneItemHighlight.lineThickness;
                     rect.x -= 48;
-                    rect.width = s_Settings.styleData.sceneItemHighlight.lineWidth;
-                    rect.height = s_Settings.styleData.sceneItemHighlight.lineThickness;
+                    rect.y += center_y - thickness * 0.5f;
+                    rect.width = 34;
+                    rect.height = thickness;
                     EditorGUI.DrawRect(rect, s_Settings.styleData.sceneItemHighlight.color);
                     break;
                 }

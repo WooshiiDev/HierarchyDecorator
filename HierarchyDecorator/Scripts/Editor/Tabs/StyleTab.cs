@@ -73,7 +73,6 @@ namespace HierarchyDecorator
                 .RegisterSerializedGroup(serializedTab.FindPropertyRelative("sceneItemHighlight"), 
                     "Highlight Settings",
                     nameof(SceneItemHighlightSettings.color),
-                    nameof(SceneItemHighlightSettings.lineWidth),
                     nameof(SceneItemHighlightSettings.lineThickness));
 
             CreateDrawableGroup ("Styles")
