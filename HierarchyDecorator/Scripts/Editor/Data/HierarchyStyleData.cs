@@ -31,7 +31,7 @@ namespace HierarchyDecorator
     [System.Serializable]
     public class SceneItemHighlightSettings
     {
-        public Color color = new Color(0.25f, 1.0f, 0.25f, 0.2f);
+        public Color color = new Color32(0x29, 0x29,0x29, 50);
         [Range(1, 16)] public int lineThickness = 16;
     }
 
