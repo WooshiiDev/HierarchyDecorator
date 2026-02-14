@@ -202,6 +202,9 @@ namespace HierarchyDecorator
                 if (style.noSpaceAfterPrefix)
                     return true;
 
+                if (targetPrefix.Length == style.prefix.Length)
+                    return false; // No point in making an empty row
+
                 if (targetPrefix[style.prefix.Length] == ' ')
                     return true;
             }
