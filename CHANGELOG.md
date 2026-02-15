@@ -1,8 +1,13 @@
 ## v0.11.3
 
+### Changes
+
+- Added an optional scene highlight in the hierarchy #116 @emptybraces
+
 ### Fixes
 
 - Removed `Wooshii.HierarchyDecorator` assm to stop `Assembly for Assembly Definition File will not be compiled, because it has no scripts associated with it.` spam. 
+- Fixed incorrect scene ID comparison. Now using handles, which should work for Unity 6. #116 @empybraces
 
 ## v0.11.2
 
