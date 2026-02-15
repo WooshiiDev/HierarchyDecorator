@@ -1,4 +1,4 @@
-## v0.11.3
+## v0.12.0
 
 ### Changes
 
@@ -6,8 +6,8 @@
 
 ### Fixes
 
-- Removed `Wooshii.HierarchyDecorator` assm to stop `Assembly for Assembly Definition File will not be compiled, because it has no scripts associated with it.` spam. 
 - Fixed incorrect scene ID comparison. Now using handles, which should work for Unity 6. #116 @empybraces
+- Removed `Wooshii.HierarchyDecorator` assm to stop `Assembly for Assembly Definition File will not be compiled, because it has no scripts associated with it.` spam. 
 
 ## v0.11.2
 
