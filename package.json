@@ -9,5 +9,11 @@
     "editor"
   ],
   "category": "Editor",
-  "dependencies": {}
+  "dependencies": {},
+
+   "author": {
+    "name": "Wooshii",
+    "email": "wooshiidev@gmail.com",
+    "url": "https://github.com/WooshiiDev/HierarchyDecorator"
+  }
 }
