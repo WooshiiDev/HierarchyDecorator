@@ -51,6 +51,7 @@ namespace HierarchyDecorator
         public bool showTags = true;
         public bool showLayers = true;
         public bool applyChildLayers = true;
+        public bool showTriangleCounts = true;
 
         // Components 
 

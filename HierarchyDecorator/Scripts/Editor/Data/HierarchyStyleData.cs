@@ -42,6 +42,7 @@ namespace HierarchyDecorator
         public bool displayTags = true;
         public bool displayLayers = true;
         public bool displayIcons = true;
+        public bool displayTriangleCounts = true;
 
         public List<HierarchyStyle> styles = new List<HierarchyStyle> ()
         {
