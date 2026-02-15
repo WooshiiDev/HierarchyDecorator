@@ -1,3 +1,9 @@
+## v0.11.3
+
+### Fixes
+
+- Removed `Wooshii.HierarchyDecorator` assm to stop `Assembly for Assembly Definition File will not be compiled, because it has no scripts associated with it.` spam. 
+
 ## v0.11.2
 
 ### Fixes
