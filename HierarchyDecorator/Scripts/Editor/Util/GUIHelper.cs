@@ -6,6 +6,19 @@ namespace HierarchyDecorator
 {
     public static class GUIHelper
     {
+        static readonly GUIContent s_tempGUIContent;
+        static GUIHelper()
+        {
+            s_tempGUIContent = new GUIContent();
+        }
+        public static GUIContent TempContent(string text, string tip = null)
+        {
+            s_tempGUIContent.image = null;
+            s_tempGUIContent.text = text;
+            s_tempGUIContent.tooltip = tip;
+            return s_tempGUIContent;
+        }
+
         #region Style
 
         public static void LineSpacer(float height = 1)
@@ -199,5 +212,52 @@ namespace HierarchyDecorator
         }
 
         #endregion Serialized GUI
+
+        #region Disposable Scope
+
+        public readonly struct GUIColorChangedScope : IDisposable
+        {
+            readonly Color color;
+            public GUIColorChangedScope(Color newColor)
+            {
+                color = GUI.color;
+                GUI.color = newColor;
+            }
+            public void Dispose() => GUI.color = color;
+        }
+
+        // Lightweight alternative to EditorGUI.IndentLevelScope
+        public readonly struct IndentChangedScope : IDisposable
+        {
+            readonly int indent;
+            public IndentChangedScope(int indent)
+            {
+                this.indent = EditorGUI.indentLevel;
+                EditorGUI.indentLevel = indent;
+            }
+            public void Dispose() => EditorGUI.indentLevel = indent;
+        }
+
+        #endregion Scope
+
+        public static Color GetHashColor(string label, float h, float s, float v)
+        {
+            unchecked
+            {
+                // Avoid string.GetHashCode() to keep color generation stable across runtime changes
+                // int hash = label.GetHashCode();
+                // Initialize hash with a small prime number
+                int hash = 23;
+                // Generate a deterministic string hash using a common prime multiplier (31)
+                // 31 is widely used because it provides good distribution properties
+                foreach (char c in label)
+                    hash = hash * 31 + c;
+                uint uhash = (uint)hash;
+                // Golden ratio conjugate (1 / φ)
+                // Helps avoid clustering and creates visually balanced color variation
+                h = (h + uhash * 0.61803398875f) % 1.0f;
+                return Color.HSVToRGB(h, s, v);
+            }
+        }
     }
 }
