@@ -50,12 +50,12 @@ namespace HierarchyDecorator
         {
             if (tagEnabled)
             {
-                DrawTag(rect, item.GameObject, settings.globalData.tagLayerLayout, settings.globalData.tagSettings);
+                DrawTag(rect, item.GameObject, settings);
             }
 
             if (layerEnabled)
             {
-                DrawLayer(rect, item.GameObject, settings.globalData.tagLayerLayout, settings.globalData.layerSettings);
+                DrawLayer(rect, item.GameObject, settings);
             }
         }
 
@@ -86,31 +86,44 @@ namespace HierarchyDecorator
         }
 
         // - Drawing elements
-        private void DrawTag(Rect rect, GameObject instance, TagLayerLayout layout, TagSettings tagSettings)
+        private void DrawTag(Rect rect, GameObject instance, Settings settings)
         {
-            rect = GetInfoAreaRect(rect, true, layout);
-            DrawInstanceInfo(rect, instance.tag, instance, true, tagSettings.hideUntagged, tagSettings.colorSettings);
+            var global_data = settings.globalData;
+            rect = GetInfoAreaRect(rect, true, global_data.tagLayerLayout);
+            DrawInstanceInfo(rect, instance.tag, instance, true, global_data.tagSettings.hideUntagged, global_data.tagSettings.colorSettings, settings.styleData.twoToneBackground);
         }
 
-        private void DrawLayer(Rect rect, GameObject instance, TagLayerLayout layout, LayerSettings layerSettings)
+        private void DrawLayer(Rect rect, GameObject instance, Settings settings)
         {
-            rect = GetInfoAreaRect(rect, false, layout);
-            DrawInstanceInfo(rect, LayerMask.LayerToName(instance.layer), instance, false, false, layerSettings.colorSettings);
+            var global_data = settings.globalData;
+            rect = GetInfoAreaRect(rect, false, global_data.tagLayerLayout);
+            DrawInstanceInfo(rect, LayerMask.LayerToName(instance.layer), instance, false, false, global_data.layerSettings.colorSettings, settings.styleData.twoToneBackground);
         }
 
-        private void DrawInstanceInfo(Rect rect, string label, GameObject instance, bool isTag, bool ignoreTagUntagged, TagLayerColorSettings colorSettings)
+        private void DrawInstanceInfo(Rect rect, string label, GameObject instance, bool isTag, bool ignoreTagUntagged, TagLayerColorSettings colorSettings, bool useToneToneColor)
         {
             var hide_untagged = isTag && ignoreTagUntagged && label == "Untagged";
             if (!hide_untagged)
             {
                 var prev_color = GUI.color;
+                var color = GUI.color;
                 if (colorSettings.useSolidColor)
-                    GUI.color = colorSettings.solidColor;
+                {
+                    color = colorSettings.solidColor;
+                    color.a = instance.activeInHierarchy || useToneToneColor ? 1f : .4f;
+                }
                 else if (colorSettings.useRandomColor && TagLayerColorSettings.s_labelToHashedColorCache != null)
                 {
-                    if (TagLayerColorSettings.s_labelToHashedColorCache.TryGetValue(label, out var color))
-                        GUI.color = color;
+                    if (TagLayerColorSettings.s_labelToHashedColorCache.TryGetValue(label, out color))
+                    {
+                        color.a = instance.activeInHierarchy || useToneToneColor ? 1f : .4f;
+                    }
                 }
+                else
+                {
+                    color.a = instance.activeInHierarchy || useToneToneColor ? 1f : .4f;
+                }
+                GUI.color = color;
                 // Likely since Unity 6, EditorGUI.LabelField no longer triggers tooltips
                 GUI.Label(rect, GUIHelper.TempContent(label, label), (isVertical && bothShown) ? Style.TinyText : Style.SmallDropdown);
                 GUI.color = prev_color;
