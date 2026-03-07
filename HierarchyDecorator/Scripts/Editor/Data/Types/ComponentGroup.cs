@@ -1,7 +1,7 @@
-using UnityEngine;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEngine;
 
 namespace HierarchyDecorator
 {
@@ -10,16 +10,14 @@ namespace HierarchyDecorator
     /// Collection of components for icons
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ComponentGroup : IGroup<ComponentType>
+    public class ComponentGroup : IGroup<string>, IGuid<string>
     {
         // Fields
 
         [SerializeField] protected string name;
-        [SerializeField] protected List<ComponentType> components = new List<ComponentType>();
-       
-        private Dictionary<Type, ComponentType> lookup;
-        private bool hasCached = false;
-
+        [SerializeField] protected string guid;
+        [SerializeField] protected List<string> components = new List<string>();
+        
         // Properties
 
         /// <summary>
@@ -41,31 +39,26 @@ namespace HierarchyDecorator
         /// <summary>
         /// The components stored in this group. 
         /// </summary>
-        public ComponentType[] Components
-        {
-            get
-            {
-                return components.ToArray();
-            }
-        }
+        public string[] Components => components.ToArray();
 
         /// <summary>
         /// The number of components in this group.
         /// </summary>
-        public int Count
-        {
-            get
-            {
-                return components.Count;
-            }
-        }
+        public int Count => components.Count;
+
+        public string GUID => guid;
 
         // Constructor
 
         public ComponentGroup(string name)
         {
+            this.guid = CreateGUID();
             this.name = name;
-            ValidateCache();
+        }
+
+        private string CreateGUID()
+        {
+            return Guid.NewGuid().ToString();
         }
 
         // Methods

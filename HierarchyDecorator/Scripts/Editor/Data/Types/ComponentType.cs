@@ -7,7 +7,7 @@ using UnityEngine;
 namespace HierarchyDecorator
 {
     [Serializable]
-    public class ComponentType : IComparable<ComponentType>
+    public class ComponentType : IComparable<ComponentType>, IGuid<string>
     {
         // Fields
 
@@ -15,6 +15,8 @@ namespace HierarchyDecorator
 
         [SerializeField] protected string displayName;
         [SerializeField] protected string name;
+        [SerializeField] protected string guid;
+
         [SerializeField] protected GUIContent content;
 
         // --- Settings
@@ -30,6 +32,7 @@ namespace HierarchyDecorator
         [SerializeField] private bool hasToggle;
 
         // Properties
+        public string GUID => guid;
 
         /// <summary>
         /// The full name of the component
@@ -112,10 +115,16 @@ namespace HierarchyDecorator
         /// <param name="type">The type of component.</param>
         public ComponentType(Type type, bool isBuiltIn)
         {
+            this.guid = CreateGUID();
             this.isBuiltIn = isBuiltIn;
-            UpdateType(type, false);
+            UpdateType(type, true);
         }
-         
+
+        private string CreateGUID()
+        {
+            return Guid.NewGuid().ToString();
+        }
+
         // Methods
 
         /// <summary>
