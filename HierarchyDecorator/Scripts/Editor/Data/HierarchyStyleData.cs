@@ -30,6 +30,13 @@ namespace HierarchyDecorator
     }
 
     [System.Serializable]
+    public class SceneItemHighlightSettings
+    {
+        public Color color = new Color32(0x29, 0x29,0x29, 50);
+        [Range(1, 16)] public int lineThickness = 16;
+    }
+
+    [System.Serializable]
     public class HierarchyStyleData
     {
         public bool displayTags = true;
@@ -99,6 +106,12 @@ namespace HierarchyDecorator
         public bool twoToneBackground = true;
         public ColorSetting lightMode = new ColorSetting(new Color(0.8f, 0.8f, 0.8f, 1f), new Color(0.765f, 0.765f, 0.765f, 1f));
         public ColorSetting darkMode = new ColorSetting(new Color(0.245f, 0.245f, 0.245f, 1f), new Color(0.225f, 0.225f, 0.225f, 1f));
+
+        // Scene Item Highlight
+        public bool showSceneItemHighlight = true;
+        public SceneItemHighlightSettings sceneItemHighlight = new SceneItemHighlightSettings();
+
+        // Background 
 
         // --- Methods
 
