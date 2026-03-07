@@ -73,14 +73,6 @@ namespace HierarchyDecorator
             }
         }
 
-        private void Refresh()
-        {
-            serializedObject.Update();
-            serializedObject.ApplyModifiedProperties();
-            EditorApplication.RepaintHierarchyWindow();
-            Repaint();
-        }
-
         private void DrawTitle()
         {
             // Draw Header
@@ -121,11 +113,17 @@ namespace HierarchyDecorator
 
             EditorGUILayout.EndVertical ();
         }
+        
+        private void Refresh()
+        {
+            serializedObject.Update();
+            serializedObject.ApplyModifiedProperties();
+            EditorApplication.RepaintHierarchyWindow();
+            Repaint();
+        }
 
         private void RegisterTabs()
         {
-            // Get all types that have the RegisterTab attribute
-
             if (s_TabTypes == null)
             {
                 s_TabTypes = GetTabs();
