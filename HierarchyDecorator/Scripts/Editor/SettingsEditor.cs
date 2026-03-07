@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
@@ -11,13 +12,13 @@ namespace HierarchyDecorator
     internal class SettingsEditor : Editor
     {
         private static Type[] s_TabTypes;
+        private static GUIContent[] s_TabLabels;
 
         private Settings settings;
 
         private SettingsTab selectedTab;
 
         private List<SettingsTab> tabs = new List<SettingsTab> ();
-        private List<GUIContent> tabNames = new List<GUIContent> ();
 
         private bool hasInitialized;
         private int selectedTabIndex = 0;
@@ -110,11 +111,11 @@ namespace HierarchyDecorator
 
             EditorGUI.BeginChangeCheck ();
             {
-                selectedTabIndex = GUILayout.SelectionGrid (selectedTabIndex, tabNames.ToArray (),
-                    Mathf.Min (3, tabs.Count), Style.LargeButtonSmallTextStyle);
+                selectedTabIndex = GUILayout.SelectionGrid (selectedTabIndex, s_TabLabels, Mathf.Min (3, tabs.Count), Style.LargeButtonSmallTextStyle);
             }
             if (EditorGUI.EndChangeCheck ())
             {
+                Refresh();
                 selectedTab = tabs[selectedTabIndex];
             }
 
@@ -128,35 +129,17 @@ namespace HierarchyDecorator
             if (s_TabTypes == null)
             {
                 s_TabTypes = GetTabs();
+                s_TabLabels = new GUIContent[s_TabTypes.Length];
             }
 
-            foreach (Type type in s_TabTypes)
+            for (int i = 0; i < s_TabTypes.Length; i++)
             {
-                // If we find any type that is not a SettingsTab alert the user
+                Type tabType = s_TabTypes[i];
+                SettingsTab tab = Activator.CreateInstance(tabType, settings, serializedObject) as SettingsTab;
 
-                if (!type.IsSubclassOf (typeof (SettingsTab)))
-                {
-                    Debug.LogWarning ($"{type.Name} uses the RegisterTab attribute but does not inherit from SettingsTab.");
-                    continue;
-                }
 
-                // Get the priority from the attribute to know where it should appear
-
-                int priority = type.GetCustomAttribute<RegisterTabAttribute> ().priority;
-                SettingsTab tab = Activator.CreateInstance (type, settings, serializedObject) as SettingsTab;
-
-                // Insert the tab if there is a slot for it, otherwise add it to the end
-
-                if (tabs.Count > priority)
-                {
-                    tabs.Insert (priority, tab);
-                    tabNames.Insert (priority, tab.Content);
-                }
-                else
-                {
-                    tabs.Add (tab);
-                    tabNames.Add (tab.Content);
-                }
+                tabs.Add(tab);
+                s_TabLabels[i] = tab.Content;
             }
 
             selectedTab = tabs[0];
@@ -164,16 +147,31 @@ namespace HierarchyDecorator
 
         private Type[] GetTabs()
         {
-            return ReflectionUtility.GetTypesFromAssemblies (
-                t => t.GetCustomAttribute<RegisterTabAttribute> () != null
-                );
+            SortedList<int, Type> validTabs = new SortedList<int, Type>();
+
+            foreach (Type tabType in ReflectionUtility.GetTypesFromAssemblies(t => t.IsSubclassOf(typeof(SettingsTab))))
+            {
+                if (tabType.IsAbstract)
+                {
+                    continue;
+                }
+
+                RegisterTabAttribute attr = tabType.GetCustomAttribute<RegisterTabAttribute>();
+
+                if (attr == null)
+                {
+                    continue;
+                }
+
+                validTabs.Add(attr.priority, tabType);
+            }
+
+            return validTabs.Values.ToArray();
         }
 
         private void SetupValues()
         {
             tabs.Clear ();
-            tabNames.Clear ();
-
             selectedTabIndex = 0;
         }
     }
