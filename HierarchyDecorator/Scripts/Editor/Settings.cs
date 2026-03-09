@@ -1,11 +1,11 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace HierarchyDecorator
 {
     /// <summary>
     /// ScriptableObject containing all settings and relevant data for the hierarchy
     /// </summary>
-    public class Settings : ScriptableObject, ISerializationCallbackReceiver
+    public class Settings : ScriptableObject
     {
         // Fields
 
@@ -27,11 +27,6 @@ namespace HierarchyDecorator
 
         // Settings Creation
 
-        private void OnEnable()
-        {
-            components.OnInitialize ();
-        }
-
         /// <summary>
         /// Setup defaults for the new settings asset
         /// </summary>
@@ -39,18 +34,6 @@ namespace HierarchyDecorator
         {
             components.UpdateData ();
             styleData.UpdateStyles (isDarkMode);
-        }
-
-        // Serialization
-
-        public void OnBeforeSerialize()
-        {
-            components.UpdateData ();
-        }
-
-        public void OnAfterDeserialize()
-        {
-            components.UpdateData ();
         }
     }
 }
