@@ -7,12 +7,12 @@ namespace HierarchyDecorator
     [InitializeOnLoad]
     internal static class HierarchyDecorator
     {
-        public static event Action OnSettings;
-
         public const string SETTINGS_TYPE_STRING = "Settings";
         public const string SETTINGS_NAME_STRING = "Settings";
 
         private static string s_SettingsPrefGUID = Constants.Paths.PREF_GUID;
+
+        public static event Action OnSettings;
 
         private static Settings s_Settings;
         public static Settings Settings
@@ -26,11 +26,6 @@ namespace HierarchyDecorator
                 }
 
                 return s_Settings;
-            }
-
-            private set
-            {
-                s_Settings = value;
             }
         }
 
@@ -48,8 +43,7 @@ namespace HierarchyDecorator
 
         private static void UpdateComponentData()
         {
-            Settings.Components.UpdateData();
-            Settings.Components.UpdateComponents(true);
+            Settings.Components.UpdateData();   
         }
 
         // Factory Methods
