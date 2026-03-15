@@ -7,11 +7,20 @@ namespace HierarchyDecorator
     /// </summary>
     public abstract class GUIDrawer : IDrawable
     {
+        protected System.Func<bool> optionEnableIf;
+        protected System.Func<bool> optionShowIf;
+        protected System.Action<SerializedProperty> optionOnChanged;
+        public void SetOptionEnableIf(System.Func<bool> condition) => optionEnableIf = condition;
+        public void SetOptionShowIf(System.Func<bool> condition) => optionShowIf = condition;
+        public void SetOptionOnchanged(System.Action<SerializedProperty> callback) => optionOnChanged = callback;
+
         /// <summary>
         /// Draw this element.
         /// </summary>
         public void OnDraw()
         {
+            if (optionShowIf?.Invoke() == false)
+                return;
             EditorGUI.BeginDisabledGroup (!IsEnabled ());
 
             OnGUI ();
@@ -26,7 +35,7 @@ namespace HierarchyDecorator
         /// <returns>Returns a bool stating if this element is enabled or not.</returns>
         public virtual bool IsEnabled()
         {
-            return true;
+            return optionEnableIf?.Invoke() ?? true;
         }
 
         /// <summary>
