@@ -193,16 +193,16 @@ namespace HierarchyDecorator
 
         // Helpers
 
-        private bool CanShow(ComponentItem item, Settings settings)
+        private bool CanShow(ComponentItem component, Settings settings)
         {
-            if (item.IsNullComponent || item.Type.Excluded)
+            if (component.IsNullComponent || component.Type.Excluded)
             {
                 return false;
             }
 
-            bool shown = item.Type.Shown;
+            bool shown = component.Type.Shown;
 
-            if (item.IsBuiltIn)
+            if (component.IsBuiltIn)
             {
                 return settings.Components.DisplayBuiltIn || shown;
             }
