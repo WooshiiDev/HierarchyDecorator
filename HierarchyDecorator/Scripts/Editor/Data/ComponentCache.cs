@@ -173,7 +173,7 @@ namespace HierarchyDecorator
     public static class ComponentContentCache
     {
         private static readonly Dictionary<Type, GUIContent> s_cache = new Dictionary<Type, GUIContent>();
-        private static readonly GUIContent s_none = new GUIContent(GUIContent.none); // Modification safety
+        private static readonly GUIContent s_none = new GUIContent(GUIContent.none); // Mutation safety
 
         public static GUIContent GetIcon(Type type)
         {
