@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -26,8 +27,6 @@ namespace HierarchyDecorator
     [Serializable]
     public class ComponentData
     {
-        // --- Editor Settings
-
         private readonly static CategoryFilter DefaultFilter = new CategoryFilter("General", string.Empty, FilterType.NONE);
 
         public readonly static CategoryFilter[] ComponentFilters =
@@ -58,7 +57,7 @@ namespace HierarchyDecorator
             new CategoryFilter ("UI", "UnityEngine.GUIElement, UnityEngine", FilterType.TYPE)
         };
 
-        // --- Settings
+        // - Settings
 
         [SerializeField] private bool enableIcons = true;
         [SerializeField, Tooltip("Will clicking the icon toggle the component")] private bool clickToToggleComponent = true;
@@ -67,21 +66,19 @@ namespace HierarchyDecorator
         [SerializeField] private DisplayMode showAll = DisplayMode.Unity | DisplayMode.Custom;
         [SerializeField] private bool stackDuplicateIcons;
 
+        // - Components
+
+        [SerializeField] private ComponentCache unityCache;
+        [SerializeField] private ComponentCache customCache;
+
+        // - Groups
+
         [SerializeField] private ComponentGroup[] unityGroups = new ComponentGroup[0];
-
         [SerializeField] private List<ComponentGroup> customGroups = new List<ComponentGroup>();
-        [SerializeField] private ComponentGroup allCustomComponents = new ComponentGroup("All");
-
-        // --- Validation
-
-        [SerializeField] private string unityVersion;
-        [SerializeField] private int unityCount; //  The number of Unity Components that have been found.
-
-        // --- Reflection
 
         private Type[] allTypes = new Type[0];
 
-        // --- Properties
+        // - Properties
 
         /// <summary>
         /// Is the missing script warning on?
@@ -105,7 +102,6 @@ namespace HierarchyDecorator
         /// Are components toggleable when clicked?
         /// </summary>
         public bool ClickToToggleComponent => clickToToggleComponent;
-
 
         /// <summary>
         /// How scripts are drawn in the hierarchy.
@@ -144,145 +140,81 @@ namespace HierarchyDecorator
         /// </summary>
         public ComponentGroup[] CustomGroups => customGroups.ToArray();
 
-        /// <summary>
-        /// A component group containing all custom components.
-        /// </summary>
-        public ComponentGroup AllCustomComponents => allCustomComponents;
-
         // --- Methods
 
         // --- Initialization
 
-        /// <summary>
-        /// Initialize component data.
-        /// </summary>
-        public void OnInitialize()
-        {
-            if (unityVersion != Application.unityVersion)
-            {
-                unityVersion = Application.unityVersion;
-                UpdateData(true);
-            }
-        }
 
         /// <summary>
         /// Update Component Data
         /// </summary>
-        public void UpdateData(bool forceDirty = false)
+        public void UpdateData()
         {
-            if (allTypes.Length == 0)
+            allTypes = TypeCache.GetTypesDerivedFrom(typeof(Component))
+              .Where(t => t.Assembly.GetName().Name.StartsWith("Unity") && !t.IsAbstract)
+              .OrderBy(t => t.Name)
+              .ToArray();
+
+            unityCache.Collect();
+            customCache.Collect();
+
+            // Cache unity types
+
+            Dictionary<string, ComponentGroup> newGroups = new Dictionary<string, ComponentGroup>();
+            foreach (ComponentGroup unityGroup in unityGroups)
             {
-                allTypes = TypeCache.GetTypesDerivedFrom(typeof(Component))
-                    .Where(t => t.Assembly.FullName.StartsWith("Unity") && !t.IsAbstract)
-                    .OrderBy(t => t.Name)
-                    .ToArray();
+                newGroups.Add(unityGroup.Name, unityGroup);
             }
 
-            if (!IsDirty() && !forceDirty)
+            // Cache custom types
+
+            foreach (Type type in allTypes)
             {
-                return;
-            }
-
-            // Update dirty data
-
-            unityCount = allTypes.Length;
-            unityVersion = Application.unityVersion;
-
-            Dictionary<string, ComponentGroup> cachedGroups = new Dictionary<string, ComponentGroup>();
-
-            for (int i = 0; i < unityCount; i++)
-            {
-                Type type = allTypes[i];
                 string category = GetTypeCategory(type);
 
-                // If the component does not already exist in a group, create one
-
-                if (!TryGetComponent(type, out ComponentType component))
-                {
-                    component = new ComponentType(type, true);
-                }
-
-                // Create a category group if one does not exist
-
-                if (!cachedGroups.TryGetValue(category, out ComponentGroup group))
+                if (!newGroups.TryGetValue(category, out ComponentGroup group))
                 {
                     group = new ComponentGroup(category);
-                    cachedGroups.Add(category, group);
+                    newGroups.Add(category, group);
                 }
 
-                // Add the created component
+                if (unityCache.Contains(type))
+                {
+                    continue;
+                }
 
-                group.Add(component);
+                ComponentType component = new ComponentType(type, true);
+
+                if (!component.IsValid())
+                {
+                    continue;
+                }
+
+                unityCache.Register(component);
+                group.Add(component.GUID);
             }
-
-            unityGroups = cachedGroups.Values.ToArray();
-
-            Debug.LogWarning("HierarchyDecorator components updated due to changes detected.");
-
-            bool IsDirty()
-            {
-                return
-                    allTypes.Length != unityCount ||    // Internal types changed
-                    unityGroups.Length == 0;            // No initialization so far
-            }
+            unityGroups = newGroups.Values.ToArray();
         }
 
-        /// <summary>
-        /// Update the components type and content.
-        /// </summary>
-        /// <param name="updateContent">Should the gui content be updated too?</param>
-        public void UpdateComponents(bool updateContent = true)
+        // - Components
+
+        public int IndexOfComponent(string id, bool isCustom)
         {
-
-            for (int i = 0; i < unityGroups.Length; i++)
-            {
-                unityGroups[i].UpdateCache(updateContent);
-            }
-
-            // - Complete Groups
-
-            allCustomComponents.UpdateCache(updateContent);
-
-            // - Custom Groups
-
-            for (int i = 0; i < customGroups.Count; i++)
-            {
-                customGroups[i].UpdateCache(updateContent);
-            }
+            return isCustom
+                ? customCache.IndexOf(id)
+                : unityCache.IndexOf(id);
         }
 
-        // --- Custom Components
-
-        /// <summary>
-        /// Add a custom group.
-        /// </summary>
-        /// <param name="name">The name of the group.</param>
-        public void AddCustomGroup(string name)
+        public bool Remove(ComponentType component)
         {
-            if (string.IsNullOrEmpty(name))
+            // TODO: Error Handling
+
+            if (component == null)
             {
-                Debug.LogError("Attempted to add a custom group with no name.");
-                return;
+                return false;
             }
 
-            customGroups.Add(new ComponentGroup(name));
-        }
-
-        /// <summary>
-        /// Delete a custom group.
-        /// </summary>
-        /// <param name="index">The index of the group.</param>
-        public void DeleteCustomGroup(int index)
-        {
-            // Make sure index is in range before attempting to remove
-
-            if (index < 0 || index >= customGroups.Count)
-            {
-                Debug.LogError($"Index out of range of custom groups.");
-                return;
-            }
-
-            customGroups.RemoveAt(index);
+            return true;
         }
 
         /// <summary>
@@ -325,24 +257,46 @@ namespace HierarchyDecorator
         /// <param name="component">The component to register.</param>
         public bool RegisterCustomComponent(ComponentType component)
         {
-            // Cannot register null components
-
-            if (component == null)
+            if (customCache.Contains(component.Type))
             {
-                Debug.LogError($"Attempted to register null component.");
                 return false;
             }
 
-            // Do not register the component if it already exists
+            customCache.Register(component);
 
-            if (allCustomComponents.Contains(component))
-            {
-                Debug.LogError($"Attempted to register a component that already exists. ({component})");
-                return false;
-            }
-
-            allCustomComponents.Add(component);
             return true;
+        }
+
+        /// <summary>
+        /// Add a custom group.
+        /// </summary>
+        /// <param name="name">The name of the group.</param>
+        public void AddCustomGroup(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                Debug.LogError("Attempted to add a custom group with no name.");
+                return;
+            }
+
+            customGroups.Add(new ComponentGroup(name));
+        }
+
+        /// <summary>
+        /// Delete a custom group.
+        /// </summary>
+        /// <param name="index">The index of the group.</param>
+        public void DeleteCustomGroup(int index)
+        {
+            // Make sure index is in range before attempting to remove
+
+            if (index < 0 || index >= customGroups.Count)
+            {
+                Debug.LogError($"Index out of range of custom groups.");
+                return;
+            }
+
+            customGroups.RemoveAt(index);
         }
 
         public void MoveCustomGroup(int index, int newIndex)
@@ -369,72 +323,26 @@ namespace HierarchyDecorator
             customGroups[index] = previousGroup;
         }
 
-        // --- Queries
+        // - Queries
 
-        /// <summary>
-        /// Find a component with the given type.
-        /// </summary>
-        /// <param name="type">The type to find</param>
-        /// <param name="component">The component returned if one is found. Otherwise will be null.</param>
-        /// <returns>Returns true if a component was found, otherwise will return false.</returns>
-        public bool TryGetComponent(Type type, out ComponentType component)
+        public bool TryGetComponent(string id, out ComponentType component)
         {
-            // If the given type is null, there is nothing to look for
-
-            if (type == null)
-            {
-                component = null;
-                return false;
-            }
-
-            for (int i = 0; i < unityGroups.Length; i++)
-            {
-                ComponentGroup group = unityGroups[i];
-
-                if (group.TryGetComponent(type, out component))
-                {
-                    return true;
-                }
-            }
-
-            // Did not find component type, return false
-
-            component = null;
-            return false;
+            return unityCache.TryGet(id, out component);
         }
 
-        /// <summary>
-        /// Find a custom component with the given type.
-        /// </summary>
-        /// <param name="type">The type to find.</param>
-        /// <param name="component">The component returned if one is found. Otherwise this will be null.</param>
-        /// <returns>Returns true if a component was found, otherwise will return false.</returns>
+        public bool TryGetComponent(Type type, out ComponentType component) 
+        {
+            return unityCache.TryGet(type, out component);
+        }
+
+        public bool TryGetCustomComponent(string id, out ComponentType component)
+        {
+            return customCache.TryGet(id, out component);
+        }
+
         public bool TryGetCustomComponent(Type type, out ComponentType component)
         {
-            // If the given type is null, there is nothing to look for
-
-            if (type == null)
-            {
-                component = null;
-                return false;
-            }
-
-            // Check all components if showAll is on, otherwise check groups
-
-            if (!DisplayMonoScripts)
-            {
-                for (int i = 0; i < customGroups.Count; i++)
-                {
-                    ComponentGroup group = customGroups[i];
-
-                    if (group.TryGetComponent(type, out component))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return allCustomComponents.TryGetComponent(type, out component);
+            return customCache.TryGet(type, out component);
         }
 
         /// <summary>
