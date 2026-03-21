@@ -145,12 +145,12 @@ namespace HierarchyDecorator
         /// </summary>
         /// <param name="type">The type to assign.</param>
         /// <param name="updateContent">Update the GUI.</param>
-        public void UpdateType(bool updateContent = false)
+        public void UpdateType()
         {
             UpdateType(Type.GetType(Name));
         }
 
-        public void UpdateType(Type type)
+        private void UpdateType(Type type)
         {
             if (type == null)
             {

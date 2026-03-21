@@ -140,10 +140,7 @@ namespace HierarchyDecorator
         /// </summary>
         public ComponentGroup[] CustomGroups => customGroups.ToArray();
 
-        // --- Methods
-
-        // --- Initialization
-
+        // - Initialization
 
         /// <summary>
         /// Update Component Data
