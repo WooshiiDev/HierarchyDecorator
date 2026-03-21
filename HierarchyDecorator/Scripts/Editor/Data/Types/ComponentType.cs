@@ -9,20 +9,18 @@ namespace HierarchyDecorator
     [Serializable]
     public class ComponentType : IComparable<ComponentType>, IGuid<string>
     {
-        // Fields
+        // - Component information
 
-        // --- Component information
-
+        [SerializeField] protected string guid;
         [SerializeField] protected string displayName;
         [SerializeField] protected string name;
-        [SerializeField] protected string guid;
 
-        // --- Settings
+        // - Settings
 
         [SerializeField] protected bool shown = false;
         [SerializeField] protected bool excluded = false;
 
-        //  --- Type Data
+        //  - Type Data
 
         [SerializeField] private bool isBuiltIn;
         [SerializeField] private MonoScript script;
@@ -30,12 +28,13 @@ namespace HierarchyDecorator
 
         // Properties
 
-        public GUIContent Content => ComponentContentCache.GetIcon(Type);
-
+        /// <summary>
+        /// The GUID for this component.
+        /// </summary>
         public string GUID => guid;
 
         /// <summary>
-        /// The full name of the component
+        /// The full name of the component.
         /// </summary>
         public string Name
         {
@@ -68,6 +67,11 @@ namespace HierarchyDecorator
             get => script;
             set => script = value;
         }
+
+        /// <summary>
+        /// The GUIContent representing this component.
+        /// </summary>
+        public GUIContent Content => ComponentContentCache.GetIcon(Type);
 
         /// <summary>
         /// Is the component activated or not.
@@ -187,34 +191,6 @@ namespace HierarchyDecorator
             }
 
             UpdateType(monoScript.GetClass());
-        }
-
-        /// <summary>
-        /// Get the GUIContent icon for for component.
-        /// </summary>
-        /// <returns>Returns the content object.</returns>
-        private GUIContent GetTypeContent()
-        {
-            if (Type == null)
-            {
-                return new GUIContent(GUIContent.none);
-            }
-
-            GUIContent content = new GUIContent(displayName, displayName);
-            Texture texture;
-            if (isBuiltIn)
-            {
-                texture = EditorGUIUtility.ObjectContent(null, Type).image;
-            }
-            else
-            {
-                string path = AssetDatabase.GetAssetPath(script);
-                texture = AssetDatabase.GetCachedIcon(path);
-            }
-
-            content.image = texture;
-
-            return content;
         }
 
         // --- Overrides
