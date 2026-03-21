@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace HierarchyDecorator
@@ -160,6 +161,29 @@ namespace HierarchyDecorator
         public bool Contains(Type type)
         {
             return typeLookup.ContainsKey(type);
+        }
+    }
+
+    public static class ComponentContentCache
+    {
+        private static readonly Dictionary<Type, GUIContent> s_cache = new Dictionary<Type, GUIContent>();
+        private static readonly GUIContent s_none = new GUIContent(GUIContent.none); // Instanced in case of modification
+
+        public static GUIContent GetIcon(Type type) 
+        {
+            if (type == null)
+            {
+                return s_none;
+            }
+
+            if (!s_cache.TryGetValue(type, out GUIContent content))
+            {
+                GUIContent objectContent = EditorGUIUtility.ObjectContent(null, type);
+                content = new GUIContent(type.Name, objectContent.image, type.Name);
+                s_cache[type] = content;
+            }
+
+            return content;
         }
     }
 }

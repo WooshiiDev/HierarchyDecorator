@@ -17,8 +17,6 @@ namespace HierarchyDecorator
         [SerializeField] protected string name;
         [SerializeField] protected string guid;
 
-        [SerializeField] protected GUIContent content;
-
         // --- Settings
 
         [SerializeField] protected bool shown = false;
@@ -31,6 +29,9 @@ namespace HierarchyDecorator
         [SerializeField] private bool hasToggle;
 
         // Properties
+
+        public GUIContent Content => ComponentContentCache.GetIcon(Type);
+
         public string GUID => guid;
 
         /// <summary>
@@ -92,11 +93,6 @@ namespace HierarchyDecorator
         public bool IsBuiltIn => isBuiltIn;
 
         /// <summary>
-        /// The GUIContent displayed for this component.
-        /// </summary>
-        public GUIContent Content => content;
-
-        /// <summary>
         /// Can this component be toggled on/off or not.
         /// </summary>
         public bool HasToggle => hasToggle;
@@ -116,7 +112,7 @@ namespace HierarchyDecorator
         {
             this.guid = CreateGUID();
             this.isBuiltIn = isBuiltIn;
-            UpdateType(type, true);
+            UpdateType(type);
         }
 
         private string CreateGUID()
@@ -137,12 +133,7 @@ namespace HierarchyDecorator
                 return false;
             }
 
-            if (content == null)
-            {
-                return false;
-            }
-
-            return Type != null && content.image != null;
+            return Type != null;
         }
 
         /// <summary>
@@ -155,14 +146,12 @@ namespace HierarchyDecorator
             UpdateType(Type.GetType(Name));
         }
 
-        public void UpdateType(Type type, bool updateContent = false)
+        public void UpdateType(Type type)
         {
             if (type == null)
             {
                 Type = null;
                 name = "Undefined";
-
-                UpdateContent();
                 return;
             }
             
@@ -181,36 +170,23 @@ namespace HierarchyDecorator
             {
                 ToggleProperty = ReflectionUtility.GetProperty(Type, "enabled");
             }
-
-            if (updateContent)
-            {
-                UpdateContent();
-            }
         }
         
         /// <summary>
          /// Update the component.
          /// </summary>
          /// <param name="monoScript">The script to assign.</param>
-        public void UpdateType(MonoScript monoScript)
+        public void UpdateScriptType(MonoScript monoScript)
         {
             script = monoScript;
             
             if (monoScript == null)
             {
-                UpdateType(null, true);
+                UpdateType(null);
                 return;
             }
 
-            UpdateType(monoScript.GetClass(), true);
-        }
-
-        /// <summary>
-        /// Update the GUIContent cached.
-        /// </summary>
-        public void UpdateContent()
-        {
-            content = GetTypeContent();
+            UpdateType(monoScript.GetClass());
         }
 
         /// <summary>

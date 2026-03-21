@@ -176,6 +176,11 @@ namespace HierarchyDecorator
 
         private void DrawIcon(Rect rect, GUIContent content)
         {
+            if (content == null)
+            {
+                return;
+            }
+
             GUI.Label(rect, content, Style.ComponentIconStyle);
         }
 

@@ -47,7 +47,6 @@ namespace HierarchyDecorator
             if (!IsNullComponent)
             {
                 Active = GetActiveState();
-                Type.UpdateContent();
             }
         }
 

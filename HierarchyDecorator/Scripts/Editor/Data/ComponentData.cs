@@ -239,7 +239,7 @@ namespace HierarchyDecorator
             }
 
             ComponentType type = new ComponentType(component.GetType(), false);
-            type.UpdateType(script);
+            type.UpdateScriptType(script);
 
             // Invalid type, ignore 
 
