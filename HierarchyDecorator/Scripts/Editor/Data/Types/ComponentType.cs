@@ -28,7 +28,6 @@ namespace HierarchyDecorator
 
         [SerializeField] private bool isBuiltIn;
         [SerializeField] private MonoScript script;
-
         [SerializeField] private bool hasToggle;
 
         // Properties
@@ -133,8 +132,6 @@ namespace HierarchyDecorator
         /// <returns>Returns true if valid, otherwise returns false.</returns>
         public bool IsValid()
         {
-            // Need to check type and content to validate GUI
-
             if (!IsBuiltIn && script == null)
             {
                 return false;
@@ -153,6 +150,11 @@ namespace HierarchyDecorator
         /// </summary>
         /// <param name="type">The type to assign.</param>
         /// <param name="updateContent">Update the GUI.</param>
+        public void UpdateType(bool updateContent = false)
+        {
+            UpdateType(Type.GetType(Name));
+        }
+
         public void UpdateType(Type type, bool updateContent = false)
         {
             if (type == null)
