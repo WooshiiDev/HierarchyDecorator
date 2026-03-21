@@ -5,6 +5,8 @@ using UnityEngine;
 
 namespace HierarchyDecorator
 {
+    // TODO: Documentation
+
     [Serializable]
     public class ComponentCache
     {
@@ -24,42 +26,44 @@ namespace HierarchyDecorator
 
         public void Collect()
         {
-            // Clear just in case this is called multiple times
-
             idLookup.Clear();
             typeLookup.Clear();
 
-            foreach (ComponentType component in components)
+            for (int i = components.Count - 1; i >= 0; i--)
             {
-                UpdateCache(component);
+                if (!UpdateCache(components[i])) // Remove invalid components
+                {
+                    components.RemoveAt(i);
+                }
             }
+
+            ComponentContentCache.PreloadCache(typeLookup.Keys);
         }
 
-        private void UpdateCache(ComponentType component)
+        private bool UpdateCache(ComponentType component)
         {
-            // TODO: Error Handling
-
             if (component == null)
             {
-                return;
+                return false;
             }
 
-            if (Contains(component.GUID))
+            if (idLookup.TryGetValue(component.GUID, out _))
             {
-                return;
+                return false;
             }
 
-            component.UpdateType(true);
+            component.UpdateType();
 
             if (!component.IsValid())
             {
-                return;
+                return false;
             }
 
-            idLookup.Add(component.GUID, component);
-            typeLookup.Add(component.Type, component);
+            idLookup[component.GUID] = component;
+            typeLookup[component.Type] = component;
+            return true;
         }
-      
+
         // - Registry
 
         public void Register(IEnumerable<ComponentType> components)
@@ -86,14 +90,14 @@ namespace HierarchyDecorator
                 return;
             }
 
-            if (Contains(component.GUID))
+            if (idLookup.TryGetValue(component.GUID, out _))
             {
                 return;
             }
 
             components.Add(component);
-            idLookup.Add(component.GUID, component);
-            typeLookup.Add(component.Type, component);
+            idLookup[component.GUID] = component;
+            typeLookup[component.Type] = component;
         }
 
         public void Deregister(IEnumerable<ComponentType> components)
@@ -120,7 +124,7 @@ namespace HierarchyDecorator
                 return;
             }
 
-            if (!Contains(component.GUID))
+            if (!idLookup.TryGetValue(component.GUID, out _))
             {
                 return;
             }
@@ -171,7 +175,7 @@ namespace HierarchyDecorator
         private static readonly Dictionary<Type, GUIContent> s_cache = new Dictionary<Type, GUIContent>();
         private static readonly GUIContent s_none = new GUIContent(GUIContent.none); // Modification safety
 
-        public static GUIContent GetIcon(Type type) 
+        public static GUIContent GetIcon(Type type)
         {
             if (type == null)
             {
@@ -180,12 +184,44 @@ namespace HierarchyDecorator
 
             if (!s_cache.TryGetValue(type, out GUIContent content))
             {
-                GUIContent objectContent = EditorGUIUtility.ObjectContent(null, type);
-                content = new GUIContent(type.Name, objectContent.image, type.Name);
+                content = CreateComponentContent(type);
                 s_cache[type] = content;
             }
 
             return content;
+        }
+
+        public static void PreloadCache(IEnumerable<Type> componentTypes)
+        {
+            if (componentTypes == null)
+            {
+                throw new NullReferenceException("");
+            }
+
+            foreach (Type type in componentTypes)
+            {
+                if (type == null)
+                {
+                    continue;
+                }
+
+                s_cache[type] = CreateComponentContent(type);
+            }
+        }
+
+        private static GUIContent CreateComponentContent(Type type)
+        {
+            if (type == null)
+            {
+                return s_none;
+            }
+
+            return new GUIContent(type.Name, GetBuiltInContent(type).image, type.Name);
+        }
+
+        private static GUIContent GetBuiltInContent(Type type)
+        {
+            return EditorGUIUtility.ObjectContent(null, type);
         }
     }
 }
