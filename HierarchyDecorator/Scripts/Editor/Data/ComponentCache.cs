@@ -20,6 +20,8 @@ namespace HierarchyDecorator
             Register(components);
         }
 
+        // - Cache Updating 
+
         public void Collect()
         {
             // Clear just in case this is called multiple times
@@ -33,7 +35,32 @@ namespace HierarchyDecorator
             }
         }
 
-        // - Add/Remove
+        private void UpdateCache(ComponentType component)
+        {
+            // TODO: Error Handling
+
+            if (component == null)
+            {
+                return;
+            }
+
+            if (Contains(component.GUID))
+            {
+                return;
+            }
+
+            component.UpdateType(true);
+
+            if (!component.IsValid())
+            {
+                return;
+            }
+
+            idLookup.Add(component.GUID, component);
+            typeLookup.Add(component.Type, component);
+        }
+      
+        // - Registry
 
         public void Register(IEnumerable<ComponentType> components)
         {
@@ -103,31 +130,6 @@ namespace HierarchyDecorator
             components.Remove(component);
         }
 
-        private void UpdateCache(ComponentType component)
-        {
-            // TODO: Error Handling
-
-            if (component == null)
-            {
-                return;
-            }
-
-            if (Contains(component.GUID))
-            {
-                return;
-            }
-
-            component.UpdateType(true);
-
-            if (!component.IsValid())
-            {
-                return;
-            }
-
-            idLookup.Add(component.GUID, component);
-            typeLookup.Add(component.Type, component);
-        }
-
         // - Queries
 
         public bool TryGet(string id, out ComponentType component)
@@ -167,7 +169,7 @@ namespace HierarchyDecorator
     public static class ComponentContentCache
     {
         private static readonly Dictionary<Type, GUIContent> s_cache = new Dictionary<Type, GUIContent>();
-        private static readonly GUIContent s_none = new GUIContent(GUIContent.none); // Instanced in case of modification
+        private static readonly GUIContent s_none = new GUIContent(GUIContent.none); // Modification safety
 
         public static GUIContent GetIcon(Type type) 
         {
