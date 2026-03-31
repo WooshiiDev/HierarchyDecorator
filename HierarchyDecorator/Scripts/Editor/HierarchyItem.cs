@@ -11,7 +11,7 @@ namespace HierarchyDecorator
         /// <summary>
         /// The ID for the hierarchy item.
         /// </summary>
-#if UNITY_6000_5_OR_NEWER
+#if UNITY_6000_4_OR_NEWER
         public readonly EntityId ID;
 #else
         public readonly int ID;
@@ -72,13 +72,13 @@ namespace HierarchyDecorator
         /// <summary>
         /// Create a new HierachyItem instance.
         /// </summary>
-#if UNITY_6000_5_OR_NEWER
+#if UNITY_6000_4_OR_NEWER
         /// <param name="id">The entity ID.</param>
 #else
         /// <param name="id">The instance ID.</param>
 #endif
         /// <param name="instance">The gameobject this iunstance represents.</param>
-#if UNITY_6000_5_OR_NEWER
+#if UNITY_6000_4_OR_NEWER
         public HierarchyItem(EntityId id, GameObject instance)
 #else
         public HierarchyItem(int id, GameObject instance)
