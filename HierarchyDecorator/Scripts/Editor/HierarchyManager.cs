@@ -12,9 +12,14 @@ namespace HierarchyDecorator
     {
         // --- Scene Data
 
+#if UNITY_6000_4_OR_NEWER
+        private static Dictionary<EntityId, HierarchyItem> lookup = new Dictionary<EntityId, HierarchyItem>();
+        public static IReadOnlyDictionary<EntityId, HierarchyItem> Items => lookup;
+#else
         private static Dictionary<int, HierarchyItem> lookup = new Dictionary<int, HierarchyItem>();
-        public static int Count => lookup.Count;
         public static IReadOnlyDictionary<int, HierarchyItem> Items => lookup;
+#endif
+        public static int Count => lookup.Count;
         private static Settings s_Settings => HierarchyDecorator.Settings;
 
         public static HierarchyItem Current { get; private set; }
@@ -46,8 +51,13 @@ namespace HierarchyDecorator
         {
             lookup.Clear();
 
+#if UNITY_6000_4_OR_NEWER
+            EditorApplication.hierarchyWindowItemByEntityIdOnGUI -= OnGUI;
+            EditorApplication.hierarchyWindowItemByEntityIdOnGUI += OnGUI;
+#else
             EditorApplication.hierarchyWindowItemOnGUI -= OnGUI;
             EditorApplication.hierarchyWindowItemOnGUI += OnGUI;
+#endif
 
             EditorSceneManager.sceneOpened -= OnSceneOpen;
             EditorSceneManager.sceneOpened += OnSceneOpen;
@@ -86,7 +96,11 @@ namespace HierarchyDecorator
 
         // - GUI
 
+#if UNITY_6000_4_OR_NEWER
+        public static void OnGUI(EntityId id, Rect rect)
+#else
         public static void OnGUI(int id, Rect rect)
+#endif
         {
             if (EditorApplication.isUpdating)
             {
@@ -136,9 +150,17 @@ namespace HierarchyDecorator
             HierarchyInfo.ResetIndent();
         }
 
+#if UNITY_6000_4_OR_NEWER
+        private static bool TryGetValidInstance(EntityId id, out HierarchyItem item)
+#else
         private static bool TryGetValidInstance(int id, out HierarchyItem item)
+#endif
         {
+#if UNITY_6000_4_OR_NEWER
+            GameObject instance = EditorUtility.EntityIdToObject(id) as GameObject;
+#else
             GameObject instance = EditorUtility.InstanceIDToObject(id) as GameObject;
+#endif
 
             if (instance == null)
             {
@@ -150,7 +172,11 @@ namespace HierarchyDecorator
             return true;
         }
 
+#if UNITY_6000_4_OR_NEWER
+        private static HierarchyItem GetNext(EntityId id, GameObject instance)
+#else
         private static HierarchyItem GetNext(int id, GameObject instance)
+#endif
         {
             if (!lookup.TryGetValue(id, out HierarchyItem item))
             {
@@ -166,14 +192,22 @@ namespace HierarchyDecorator
             return item;
         }
 
+#if UNITY_6000_4_OR_NEWER
+        private static void DrawSceneItemHighlight(Rect rect, EntityId id)
+#else
         private static void DrawSceneItemHighlight(Rect rect, int id)
+#endif
         {
             if (!s_Settings.styleData.showSceneItemHighlight)
                 return;
             for (int i = 0; i < SceneManager.sceneCount; ++i)
             {
                 var scene = SceneManager.GetSceneAt(i);
+#if UNITY_6000_4_OR_NEWER
+                if (scene.handle.GetRawData() == EntityId.ToULong(id))
+#else
                 if (scene.handle == id)
+#endif
                 {
                     var max_height = rect.height;
                     var center_y = max_height * 0.5f;

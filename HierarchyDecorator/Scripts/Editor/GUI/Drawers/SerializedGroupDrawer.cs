@@ -6,33 +6,47 @@ namespace HierarchyDecorator
     public class SerializedGroupDrawer : GUIDrawer<SerializedProperty[]>
     {
         private readonly GUIContent title;
+        private readonly int indent;
 
-        public SerializedGroupDrawer(string title, params SerializedProperty[] target) : base(target) 
+        public SerializedGroupDrawer(params SerializedProperty[] target) : this(1, target)
         {
-            this.title = new GUIContent(title);
+        }
+        public SerializedGroupDrawer(string title, params SerializedProperty[] target) : base(target)
+        {
+            if (!string.IsNullOrEmpty(title))
+                this.title = new GUIContent(title);
+            indent = 1;
+        }
+        public SerializedGroupDrawer(int indent, params SerializedProperty[] target) : base(target)
+        {
+            this.indent = indent;
         }
 
         protected override void OnGUI()
         {
-            HierarchyGUI.Space();
+            if (title != null)
+                HierarchyGUI.Space();
             EditorGUILayout.BeginVertical();
             {
-                EditorGUILayout.LabelField(title, EditorStyles.boldLabel);
-                EditorGUI.indentLevel++;
-                for (int i = 0; i < Target.Length; i++)
+                if (title != null)
+                    EditorGUILayout.LabelField(title, EditorStyles.boldLabel);
+                using (new GUIHelper.IndentChangedScope(indent))
                 {
-                    SerializedProperty property = Target[i];
-
-                    EditorGUI.BeginChangeCheck();
-
-                    EditorGUILayout.PropertyField(property);
-
-                    if (EditorGUI.EndChangeCheck())
+                    for (int i = 0; i < Target.Length; i++)
                     {
-                        property.serializedObject.ApplyModifiedProperties();
+                        SerializedProperty property = Target[i];
+
+                        EditorGUI.BeginChangeCheck();
+
+                        EditorGUILayout.PropertyField(property);
+
+                        if (EditorGUI.EndChangeCheck())
+                        {
+                            property.serializedObject.ApplyModifiedProperties();
+                            optionOnChanged?.Invoke(property);
+                        }
                     }
                 }
-                EditorGUI.indentLevel--;
             }
             EditorGUILayout.EndVertical();
         }

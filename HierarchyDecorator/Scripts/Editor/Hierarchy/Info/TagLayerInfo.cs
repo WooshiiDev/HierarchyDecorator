@@ -25,7 +25,7 @@ namespace HierarchyDecorator
 
         protected override void OnDrawInit(HierarchyItem item, Settings settings)
         {
-            setChildLayers = settings.globalData.applyChildLayers;
+            setChildLayers = settings.globalData.layerSettings.applyChildLayers;
 
             TagLayerLayout layout = settings.globalData.tagLayerLayout;
             isVertical = layout == TagLayerLayout.TagAbove || layout == TagLayerLayout.LayerAbove;
@@ -34,8 +34,8 @@ namespace HierarchyDecorator
 
         protected override bool DrawerIsEnabled(HierarchyItem item, Settings settings)
         {
-            tagEnabled = settings.globalData.showTags;
-            layerEnabled = settings.globalData.showLayers;
+            tagEnabled = settings.globalData.tagSettings.show;
+            layerEnabled = settings.globalData.layerSettings.show;
 
             if (settings.styleData.HasStyle(item.DisplayName))
             {
@@ -50,12 +50,12 @@ namespace HierarchyDecorator
         {
             if (tagEnabled)
             {
-                DrawTag(rect, item.GameObject, settings.globalData.tagLayerLayout);
+                DrawTag(rect, item.GameObject, settings);
             }
 
             if (layerEnabled)
             {
-                DrawLayer(rect, item.GameObject, settings.globalData.tagLayerLayout);
+                DrawLayer(rect, item.GameObject, settings);
             }
         }
 
@@ -86,22 +86,48 @@ namespace HierarchyDecorator
         }
 
         // - Drawing elements
-
-        private void DrawTag(Rect rect, GameObject instance, TagLayerLayout layout)
+        private void DrawTag(Rect rect, GameObject instance, Settings settings)
         {
-            rect = GetInfoAreaRect(rect, true, layout);
-            DrawInstanceInfo(rect, instance.tag, instance, true);
+            var global_data = settings.globalData;
+            rect = GetInfoAreaRect(rect, true, global_data.tagLayerLayout);
+            DrawInstanceInfo(rect, instance.tag, instance, true, global_data.tagSettings.hideUntagged, global_data.tagSettings.colorSettings, settings.styleData.twoToneBackground);
         }
 
-        private void DrawLayer(Rect rect, GameObject instance, TagLayerLayout layout)
+        private void DrawLayer(Rect rect, GameObject instance, Settings settings)
         {
-            rect = GetInfoAreaRect(rect, false, layout);
-            DrawInstanceInfo(rect, LayerMask.LayerToName(instance.layer), instance, false);
+            var global_data = settings.globalData;
+            rect = GetInfoAreaRect(rect, false, global_data.tagLayerLayout);
+            DrawInstanceInfo(rect, LayerMask.LayerToName(instance.layer), instance, false, false, global_data.layerSettings.colorSettings, settings.styleData.twoToneBackground);
         }
 
-        private void DrawInstanceInfo(Rect rect, string label, GameObject instance, bool isTag)
+        private void DrawInstanceInfo(Rect rect, string label, GameObject instance, bool isTag, bool ignoreTagUntagged, TagLayerColorSettings colorSettings, bool useToneToneColor)
         {
-            EditorGUI.LabelField(rect, label, (isVertical && bothShown) ? Style.TinyText : Style.SmallDropdown);
+            var hide_untagged = isTag && ignoreTagUntagged && label == "Untagged";
+            if (!hide_untagged)
+            {
+                var prev_color = GUI.color;
+                var color = GUI.color;
+                if (colorSettings.useSolidColor)
+                {
+                    color = colorSettings.solidColor;
+                    color.a = instance.activeInHierarchy || useToneToneColor ? 1f : .4f;
+                }
+                else if (colorSettings.useRandomColor && TagLayerColorSettings.s_labelToHashedColorCache != null)
+                {
+                    if (TagLayerColorSettings.s_labelToHashedColorCache.TryGetValue(label, out color))
+                    {
+                        color.a = instance.activeInHierarchy || useToneToneColor ? 1f : .4f;
+                    }
+                }
+                else
+                {
+                    color.a = instance.activeInHierarchy || useToneToneColor ? 1f : .4f;
+                }
+                GUI.color = color;
+                // Likely since Unity 6, EditorGUI.LabelField no longer triggers tooltips
+                GUI.Label(rect, GUIHelper.TempContent(label, label), (isVertical && bothShown) ? Style.TinyText : Style.SmallDropdown);
+                GUI.color = prev_color;
+            }
 
             Event e = Event.current;
             bool hasClicked = rect.Contains(e.mousePosition) && e.type == EventType.MouseDown;
@@ -114,8 +140,8 @@ namespace HierarchyDecorator
             // Create menu here 
 
             GenericMenu menu = isTag
-                ? CreateMenu(InternalEditorUtility.tags, AssignTag)
-                : CreateMenu(InternalEditorUtility.layers, AssignLayer);
+                ? CreateMenu(InternalEditorUtility.tags, label, AssignTag)
+                : CreateMenu(InternalEditorUtility.layers, label, AssignLayer);
 
             GameObject[] selection = Selection.gameObjects;
             if (selection.Length < 2)
@@ -172,13 +198,13 @@ namespace HierarchyDecorator
 
         // - Helpers
 
-        private static GenericMenu CreateMenu(string[] items, Action<string> onSelect)
+        private static GenericMenu CreateMenu(string[] items, string label, Action<string> onSelect)
         {
             GenericMenu menu = new GenericMenu();
             for (int i = 0; i < items.Length; i++)
             {
                 string item = items[i];
-                menu.AddItem(new GUIContent(item), false, () => onSelect.Invoke(item));
+                menu.AddItem(new GUIContent(item), label == item, () => onSelect.Invoke(item));
             }
 
             return menu;

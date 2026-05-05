@@ -153,5 +153,32 @@ namespace HierarchyDecorator
             drawers.Add(new SpaceDrawer(height));
             return this;
         }
+        
+        public DrawerGroup EnableIf(System.Func<bool> condition)
+        {
+            if (drawers[drawers.Count - 1] is GUIDrawer drawer)
+            {
+                drawer.SetOptionEnableIf(condition);
+            }
+            return this;
+        }
+        
+        public DrawerGroup ShowIf(System.Func<bool> condition)
+        {
+            if (drawers[drawers.Count - 1] is GUIDrawer drawer)
+            {
+                drawer.SetOptionShowIf(condition);
+            }
+            return this;
+        }
+        
+        public DrawerGroup OnChanged(System.Action<SerializedProperty> callback)
+        {
+            if (drawers[drawers.Count - 1] is GUIDrawer drawer)
+            {
+                drawer.SetOptionOnchanged(callback);
+            }
+            return this;
+        }
     }
 }
