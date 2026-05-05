@@ -25,11 +25,13 @@ namespace HierarchyDecorator
         public bool displayHorizontal = true;
     }
 
+    [System.Serializable]
     public abstract class TagLayerSettingsBase
     {
         public bool show = true;
         public TagLayerColorSettings colorSettings;
     }
+
     [System.Serializable]
     public class TagSettings : TagLayerSettingsBase
     {
