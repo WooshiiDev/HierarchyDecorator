@@ -51,7 +51,8 @@ namespace HierarchyDecorator
         {
             lookup.Clear();
 
-#if UNITY_6000_0_OR_NEWER
+
+#if UNITY_6000_4_OR_NEWER || UNITY_6000_5_OR_NEWER
             EditorApplication.hierarchyWindowItemByEntityIdOnGUI -= OnGUI;
             EditorApplication.hierarchyWindowItemByEntityIdOnGUI += OnGUI;
 #else
@@ -96,7 +97,7 @@ namespace HierarchyDecorator
 
         // - GUI
 
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_4_OR_NEWER || UNITY_6000_5_OR_NEWER
         public static void OnGUI(EntityId id, Rect rect)
 #else
         public static void OnGUI(int id, Rect rect)
@@ -203,7 +204,7 @@ namespace HierarchyDecorator
             for (int i = 0; i < SceneManager.sceneCount; ++i)
             {
                 var scene = SceneManager.GetSceneAt(i);
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_4_OR_NEWER || UNITY_6000_5_OR_NEWER
                 if (scene.handle.GetRawData() == EntityId.ToULong(id))
 #else
                 if (scene.handle == id)
