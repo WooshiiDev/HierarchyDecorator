@@ -36,7 +36,8 @@ namespace HierarchyDecorator
         {
             new StateDrawer(),
             new ToggleDrawer(),
-            new BreadcrumbsDrawer()
+            new BreadcrumbsDrawer(),
+            new PrefabOverrideDrawer()
         };
 
         private static HierarchyInfo[] Info = new HierarchyInfo[]
