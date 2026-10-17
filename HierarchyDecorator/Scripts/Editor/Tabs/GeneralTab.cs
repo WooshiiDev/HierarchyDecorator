@@ -87,16 +87,35 @@ namespace HierarchyDecorator
                 OnChangedLayerRandomColor(layerUseRandomColor);
             // --- Breadcrumbs
 
-            SerializedProperty crumbA = serializedTab.FindPropertyRelative("instanceBreadcrumbs");
-            SerializedProperty crumbB = serializedTab.FindPropertyRelative("fullDepthBreadcrumbs");
+            SerializedProperty showBreadcrumbs = serializedTab.FindPropertyRelative(nameof(GlobalData.showBreadcrumbs));
+            SerializedProperty instanceBreadcrumbs = serializedTab.FindPropertyRelative(nameof(GlobalData.instanceBreadcrumbs));
+            SerializedProperty fullDepthBreadcrumbs = serializedTab.FindPropertyRelative(nameof(GlobalData.fullDepthBreadcrumbs));
 
-            SerializedProperty[] instanceCrumbs = SerializedPropertyUtility.GetChildProperties(crumbA, "show", "color", "style", "displayHorizontal");
-            SerializedProperty[] depthCrumbs = SerializedPropertyUtility.GetChildProperties(crumbB, "show", "color", "style", "displayHorizontal");
+            SerializedProperty instanceBreadcrumbsShow = instanceBreadcrumbs.FindPropertyRelative(nameof(BreadcrumbSettings.show));
+            SerializedProperty fullDepthBreadcrumbsShow = fullDepthBreadcrumbs.FindPropertyRelative(nameof(BreadcrumbSettings.show));
 
             CreateDrawableGroup("Breadcrumbs")
-                .RegisterSerializedProperty(serializedTab, "showBreadcrumbs")
-                .RegisterDrawer(new SerializedGroupDrawer("Instance", instanceCrumbs))
-                .RegisterDrawer(new SerializedGroupDrawer("Hierarchy", depthCrumbs));
+                .RegisterSerializedProperty(showBreadcrumbs)
+                .RegisterDrawer(new SerializedGroupDrawer(
+                    "Instance",
+                    instanceBreadcrumbsShow))
+                    .EnableIf(() => showBreadcrumbs.boolValue)
+                .RegisterDrawer(new SerializedGroupDrawer(SerializedPropertyUtility.GetChildProperties(
+                    instanceBreadcrumbs,
+                    nameof(BreadcrumbSettings.color),
+                    nameof(BreadcrumbSettings.style),
+                    nameof(BreadcrumbSettings.displayHorizontal))))
+                    .EnableIf(() => showBreadcrumbs.boolValue && instanceBreadcrumbsShow.boolValue)
+                .RegisterDrawer(new SerializedGroupDrawer(
+                    "Hierarchy",
+                    fullDepthBreadcrumbsShow))
+                    .EnableIf(() => showBreadcrumbs.boolValue)
+                .RegisterDrawer(new SerializedGroupDrawer(SerializedPropertyUtility.GetChildProperties(
+                    fullDepthBreadcrumbs,
+                    nameof(BreadcrumbSettings.color),
+                    nameof(BreadcrumbSettings.style),
+                    nameof(BreadcrumbSettings.displayHorizontal))))
+                    .EnableIf(() => showBreadcrumbs.boolValue && fullDepthBreadcrumbsShow.boolValue);
         }
         
         void OnChangedRandomizeFields(SerializedProperty changedProperty, SerializedProperty h, SerializedProperty s, SerializedProperty v)
