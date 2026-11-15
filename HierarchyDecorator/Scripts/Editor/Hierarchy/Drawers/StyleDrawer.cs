@@ -76,7 +76,7 @@ namespace HierarchyDecorator
 
         private void DrawTwoToneContent(Rect rect, HierarchyItem item, Settings _settings)
         {
-            Rect twoToneRect = GetActualHierarchyWidth (rect, item.IsPrefab);
+            Rect twoToneRect = GetActualHierarchyWidth (rect, HasPrefabModifications(item));
             var color = _settings.styleData.GetColorMode(EditorGUIUtility.isProSkin);
 
             Handles.DrawSolidRectangleWithOutline (twoToneRect, color.GetColor(twoToneRect), Color.clear);
@@ -85,7 +85,7 @@ namespace HierarchyDecorator
 
         // Helpers
 
-        private Rect GetActualHierarchyWidth(Rect rect, bool isPrefab)
+        private Rect GetActualHierarchyWidth(Rect rect, bool isModifiedPrefab)
         {
             rect.width += rect.x;
 
@@ -96,7 +96,7 @@ namespace HierarchyDecorator
             rect.width += 32f;
 #endif
 
-            if (isPrefab)
+            if (isModifiedPrefab)
             {
                 rect.xMin += 2f;
             }
@@ -112,6 +112,21 @@ namespace HierarchyDecorator
             rect.x -= 14f;
 
             return rect;
+        }
+
+        private bool HasPrefabModifications(HierarchyItem item)
+        {
+            if (!item.IsPrefab)
+            {
+                return false;
+            }
+
+            if (PrefabUtility.HasPrefabInstanceAnyOverrides(item.GameObject, false))
+            {
+                return true;
+            }
+
+            return item.PrefabInfo == PrefabInfo.Root && PrefabUtility.GetPrefabInstanceStatus(item.GameObject) == PrefabInstanceStatus.MissingAsset;
         }
     }
 }
