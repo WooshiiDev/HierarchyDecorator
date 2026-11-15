@@ -1,14 +1,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEditor;
 using UnityEngine;
-using static UnityEditor.Progress;
 using Object = UnityEngine.Object;
 
 namespace HierarchyDecorator
