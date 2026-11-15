@@ -90,10 +90,10 @@ namespace HierarchyDecorator
             rect.width += rect.x;
 
 #if UNITY_2019_1_OR_NEWER
-            rect.x = 32f;
+            rect.x = 34f;
 #else
             rect.x = 0;
-            rect.width += 32f;
+            rect.width += 34f;
 #endif
 
             return rect;
