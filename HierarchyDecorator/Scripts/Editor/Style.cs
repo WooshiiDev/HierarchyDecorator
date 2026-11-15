@@ -76,7 +76,11 @@ namespace HierarchyDecorator
                 fixedWidth = 0,
             };
 
+#if UNITY_2019_3_OR_NEWER
             ToolbarButtonLeft = new GUIStyle("ToolbarButtonLeft")
+#else
+            ToolbarButtonLeft = new GUIStyle("ToolbarButton")
+#endif
             {
                 alignment = TextAnchor.MiddleLeft,
             };

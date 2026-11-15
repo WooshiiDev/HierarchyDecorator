@@ -74,14 +74,18 @@ namespace HierarchyDecorator
 
         private static class Icons
         {
+
+#if UNITY_2019_3_OR_NEWER
             public static readonly GUIContent Menu = EditorGUIUtility.IconContent("d__Popup");
-            public static readonly GUIContent Picker = EditorGUIUtility.IconContent("d_Button Icon");
-
-            public static readonly GUIContent AddComponent = EditorGUIUtility.IconContent("d_Toolbar Plus");
-            public static readonly GUIContent DeleteComponent = EditorGUIUtility.IconContent("d_TreeEditor.Trash");
-
             public static readonly GUIContent EnableAll = EditorGUIUtility.IconContent("d_scenevis_visible_hover@2x");
             public static readonly GUIContent DisableAll = EditorGUIUtility.IconContent("d_SceneViewVisibility@2x");
+#else
+            public static readonly GUIContent Menu = EditorGUIUtility.IconContent("Icon Dropdown");
+            public static readonly GUIContent EnableAll = EditorGUIUtility.IconContent("visibilityon.png");
+            public static readonly GUIContent DisableAll = EditorGUIUtility.IconContent("visibilityoff.png");
+#endif
+
+            public static readonly GUIContent AddComponent = EditorGUIUtility.IconContent("d_Toolbar Plus");
 
 #if UNITY_2019_1_OR_NEWER
             private static readonly GUIContent WarningGUI = new GUIContent(EditorGUIUtility.IconContent("warning"));
