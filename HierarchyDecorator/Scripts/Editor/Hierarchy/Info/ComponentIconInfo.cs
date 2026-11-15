@@ -93,11 +93,14 @@ namespace HierarchyDecorator
                     if (!stackedComponents.TryGetValue(texture, out List<ComponentItem> cache))
                     {
                         stackedComponents[texture] = new List<ComponentItem>();
-                        stackedContent[texture] = new GUIContent(string.Empty, component.Content.image);
+                        stackedContent[texture] = new GUIContent(string.Empty, component.Content.image, component.DisplayName);
+                    }
+                    else
+                    {
+                        stackedContent[texture].tooltip += "\n" + component.DisplayName;
                     }
 
                     stackedComponents[texture].Add(component);
-                    stackedContent[texture].tooltip += "\n" + component.DisplayName;
                 }
                 else // Draw
                 {
