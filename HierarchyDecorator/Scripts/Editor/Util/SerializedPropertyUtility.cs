@@ -292,8 +292,10 @@ namespace HierarchyDecorator
                 case SerializedPropertyType.ExposedReference:
                     return property.exposedReferenceValue.ToString ();
 
+#if UNITY_2019_3_OR_NEWER
                 case SerializedPropertyType.ManagedReference:
                     return property.displayName;
+#endif
             }
         }
 
