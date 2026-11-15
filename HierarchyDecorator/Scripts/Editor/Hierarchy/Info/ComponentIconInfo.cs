@@ -1,22 +1,19 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Reflection;
-using Object = UnityEngine.Object;
 using UnityEditor;
 using UnityEngine;
-using System.ComponentModel;
+using Object = UnityEngine.Object;
 
 namespace HierarchyDecorator
 {
     public class ComponentIconInfo : HierarchyInfo
     {
         private static readonly Color s_DisabledColor = new Color(1f, 1f, 1f, 0.4f);
-        private Dictionary<Texture, GUIContent> stackTextures = new Dictionary<Texture, GUIContent>();
 
-        private List<ComponentItem> stackItems = new List<ComponentItem>();
+        private Dictionary<Texture, List<ComponentItem>> stackedComponents = new Dictionary<Texture, List<ComponentItem>>();
+        private Dictionary<Texture, GUIContent> stackedContent = new Dictionary<Texture, GUIContent>();
         private IList<ComponentItem> items = new List<ComponentItem>();
 
         private bool requireWarning;
@@ -51,10 +48,10 @@ namespace HierarchyDecorator
             items = newComponents;
             componentCount = items.Count;
 
-            if (stackTextures.Count > 0)
+            if (stackedComponents.Count > 0)
             {
-                stackTextures.Clear();
-                stackItems.Clear();
+                stackedComponents.Clear();
+                stackedContent.Clear();
             }
         }
 
@@ -93,15 +90,14 @@ namespace HierarchyDecorator
                 if (stackScripts)
                 {
                     Texture texture = component.Content.image;
-                    if (!stackTextures.TryGetValue(texture, out GUIContent content))
+                    if (!stackedComponents.TryGetValue(texture, out List<ComponentItem> cache))
                     {
-                        content = new GUIContent(string.Empty, texture, component.DisplayName);
-                        stackTextures.Add(texture, content);
+                        stackedComponents[texture] = new List<ComponentItem>();
+                        stackedContent[texture] = new GUIContent(string.Empty, component.Content.image);
                     }
-                    else
-                    {
-                        content.tooltip += "\n" + component.DisplayName;
-                    }
+
+                    stackedComponents[texture].Add(component);
+                    stackedContent[texture].tooltip += "\n" + component.DisplayName;
                 }
                 else // Draw
                 {
@@ -112,9 +108,9 @@ namespace HierarchyDecorator
 
             if (stackScripts)
             {
-                foreach (GUIContent content in stackTextures.Values)
+                foreach (var content in stackedContent)
                 {
-                    DrawIcon(GetIconPosition(rect), content);
+                    DrawStackedComponentToggle(rect, content.Value);
                     rect.x -= INDENT_SIZE;
                 }
             }
@@ -141,31 +137,57 @@ namespace HierarchyDecorator
             }
         }
 
-        private void DrawComponentToggle(Rect rect, ComponentItem item)
+        private void DrawStackedComponentToggle(Rect rect, GUIContent content)
         {
             Event ev = Event.current;
+            IList<ComponentItem> items = stackedComponents[content.image];
 
-            if (ev.type == EventType.MouseDown && ev.button == 0 && rect.Contains(ev.mousePosition))
+            bool state = items[0].Active;
+            if (HasToggledComponent(rect, ev))
             {
-                item.ToggleActive();
                 ev.Use();
-
-                if (Selection.Contains(item.Component.gameObject))
+                state = !state;
+                foreach (ComponentItem component in items)
                 {
-                    EditorUtility.SetDirty(item.Component.gameObject);
+                    if (component.Active != state)
+                    {
+                        ToggleComponent(component);
+                    }
                 }
             }
 
-            bool active = item.Active;
+            DrawActiveComponent(rect, content, state);
+        }
+
+        private void DrawComponentToggle(Rect rect, ComponentItem component)
+        {
+            Event ev = Event.current;
+
+            if (HasToggledComponent(rect, ev))
+            {
+                ev.Use();
+                ToggleComponent(component);
+            }
+
+            DrawActiveComponent(rect, component.Content, component.Active);
+        }
+
+        private void DrawActiveComponent(Rect rect, GUIContent content, bool active)
+        {
             if (!active)
             {
                 GUI.color = s_DisabledColor;
             }
-            DrawIcon(rect, item.Content);
+            DrawIcon(rect, content);
             if (!active)
             {
                 GUI.color = Color.white;
             }
+        }
+
+        private bool HasToggledComponent(Rect rect, Event ev)
+        {
+            return ev.type == EventType.MouseDown && ev.button == 0 && rect.Contains(ev.mousePosition);
         }
 
         private void DrawMissingComponent(Rect rect)
@@ -191,7 +213,14 @@ namespace HierarchyDecorator
             }
         }
 
-        // Helpers
+        private void ToggleComponent(ComponentItem component)
+        {
+            component.ToggleActive();
+            if (Selection.Contains(component.Component.gameObject))
+            {
+                EditorUtility.SetDirty(component.Component.gameObject);
+            }
+        }
 
         private bool CanShow(ComponentItem item, Settings settings)
         {
