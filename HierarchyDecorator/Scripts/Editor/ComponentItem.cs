@@ -98,6 +98,11 @@ namespace HierarchyDecorator
 
         public void SetActive(bool active)
         {
+            if (!HasToggle)
+            {
+                return;
+            }
+
             if (Active != active)
             {
                 Active = active;
