@@ -72,13 +72,6 @@ namespace HierarchyDecorator
             // Draw label
 
             DrawStandardLabel (rect, content, instance.name, TextStyle);
-
-            // Add the small prefab indicator if required
-
-            if (PrefabUtility.IsAddedGameObjectOverride(instance))
-            {
-                EditorGUI.LabelField(rect, EditorGUIUtility.IconContent("PrefabOverlayAdded Icon"));
-            }
         }
 
         private static void DrawStandardLabel(Rect rect, GUIContent icon, string label, GUIStyle style)

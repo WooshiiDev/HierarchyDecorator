@@ -15,7 +15,7 @@ namespace HierarchyDecorator
 
             if (hasStyle)
             {
-                DrawTwoToneContent(rect, item.GameObject, settings);
+                DrawTwoToneContent(rect, item, settings);
                 hasStyle = true;
             }
 
@@ -27,7 +27,7 @@ namespace HierarchyDecorator
             {
                 Rect styleRect = (item.HasParent)
                     ? rect
-                    : GetActualHierarchyWidth(rect);
+                    : GetActualHierarchyWidth(rect, item.IsPrefab);
 
                 HierarchyGUI.DrawHierarchyStyle(prefix, styleRect, rect, displayName);
                 hasStyle = true;
@@ -74,27 +74,32 @@ namespace HierarchyDecorator
 
         // Rect GUI
 
-        private void DrawTwoToneContent(Rect rect, GameObject instance, Settings _settings)
+        private void DrawTwoToneContent(Rect rect, HierarchyItem item, Settings _settings)
         {
-            Rect twoToneRect = GetActualHierarchyWidth (rect);
+            Rect twoToneRect = GetActualHierarchyWidth (rect, item.IsPrefab);
             var color = _settings.styleData.GetColorMode(EditorGUIUtility.isProSkin);
 
             Handles.DrawSolidRectangleWithOutline (twoToneRect, color.GetColor(twoToneRect), Color.clear);
-            HierarchyGUI.DrawStandardContent (rect, instance);
+            HierarchyGUI.DrawStandardContent (rect, item.GameObject);
         }
 
         // Helpers
 
-        private Rect GetActualHierarchyWidth(Rect rect)
+        private Rect GetActualHierarchyWidth(Rect rect, bool isPrefab)
         {
             rect.width += rect.x;
 
 #if UNITY_2019_1_OR_NEWER
-            rect.x = 34f;
+            rect.x = 32f;
 #else
             rect.x = 0;
-            rect.width += 34f;
+            rect.width += 32f;
 #endif
+
+            if (isPrefab)
+            {
+                rect.xMin += 2f;
+            }
 
             return rect;
         }
