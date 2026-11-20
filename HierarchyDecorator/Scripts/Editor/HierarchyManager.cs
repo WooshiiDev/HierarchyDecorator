@@ -12,7 +12,7 @@ namespace HierarchyDecorator
     {
         // --- Scene Data
 
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_4_OR_NEWER || UNITY_6000_5_OR_NEWER
         private static Dictionary<EntityId, HierarchyItem> lookup = new Dictionary<EntityId, HierarchyItem>();
         public static IReadOnlyDictionary<EntityId, HierarchyItem> Items => lookup;
 #else
@@ -151,13 +151,13 @@ namespace HierarchyDecorator
             HierarchyInfo.ResetIndent();
         }
 
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_4_OR_NEWER || UNITY_6000_5_OR_NEWER
         private static bool TryGetValidInstance(EntityId id, out HierarchyItem item)
 #else
         private static bool TryGetValidInstance(int id, out HierarchyItem item)
 #endif
         {
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_4_OR_NEWER || UNITY_6000_5_OR_NEWER
             GameObject instance = EditorUtility.EntityIdToObject(id) as GameObject;
 #else
             GameObject instance = EditorUtility.InstanceIDToObject(id) as GameObject;
@@ -173,7 +173,7 @@ namespace HierarchyDecorator
             return true;
         }
 
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_4_OR_NEWER || UNITY_6000_5_OR_NEWER
         private static HierarchyItem GetNext(EntityId id, GameObject instance)
 #else
         private static HierarchyItem GetNext(int id, GameObject instance)
@@ -193,7 +193,7 @@ namespace HierarchyDecorator
             return item;
         }
 
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_4_OR_NEWER || UNITY_6000_5_OR_NEWER
         private static void DrawSceneItemHighlight(Rect rect, EntityId id)
 #else
         private static void DrawSceneItemHighlight(Rect rect, int id)
