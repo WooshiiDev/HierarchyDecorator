@@ -34,6 +34,7 @@ namespace HierarchyDecorator
 
         private static HierarchyDrawer[] OverlayDrawers = new HierarchyDrawer[]
         {
+            new IndentColorDrawer(),
             new StateDrawer(),
             new ToggleDrawer(),
             new BreadcrumbsDrawer()
