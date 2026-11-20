@@ -97,6 +97,27 @@ namespace HierarchyDecorator
                 .RegisterSerializedProperty(serializedTab, "showBreadcrumbs")
                 .RegisterDrawer(new SerializedGroupDrawer("Instance", instanceCrumbs))
                 .RegisterDrawer(new SerializedGroupDrawer("Hierarchy", depthCrumbs));
+
+            // --- Indentation Colors
+
+            SerializedProperty indentColors = serializedTab.FindPropertyRelative(nameof(GlobalData.indentColors));
+            SerializedProperty indentShow = indentColors.FindPropertyRelative(nameof(IndentColorSettings.showIndentationColors));
+            SerializedProperty indentMode = indentColors.FindPropertyRelative(nameof(IndentColorSettings.mode));
+
+            CreateDrawableGroup("Indentation Colors")
+                .RegisterSerializedProperty(indentShow)
+                .RegisterSerializedProperty(indentMode)
+                .RegisterDrawer(new SerializedGroupDrawer("Color", SerializedPropertyUtility.GetChildProperties(
+                    indentColors,
+                    nameof(IndentColorSettings.hueStart),
+                    nameof(IndentColorSettings.hueStep),
+                    nameof(IndentColorSettings.saturation),
+                    nameof(IndentColorSettings.value),
+                    nameof(IndentColorSettings.alpha))))
+                .RegisterDrawer(new SerializedGroupDrawer("Depth", SerializedPropertyUtility.GetChildProperties(
+                    indentColors,
+                    nameof(IndentColorSettings.cycleLength),
+                    nameof(IndentColorSettings.maxDepth))));
         }
         
         void OnChangedRandomizeFields(SerializedProperty changedProperty, SerializedProperty h, SerializedProperty s, SerializedProperty v)

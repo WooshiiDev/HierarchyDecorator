@@ -15,6 +15,8 @@ namespace HierarchyDecorator
 
     public enum TagLayerLayout { TagInFront = 0, LayerInFront = 1, TagAbove = 2, LayerAbove = 3 }
 
+    public enum IndentColorMode { Fill = 0, Underline = 1, LeftBar = 2 }
+
     [System.Serializable]
     public class BreadcrumbSettings
     {
@@ -23,6 +25,29 @@ namespace HierarchyDecorator
         public BreadcrumbStyle style = BreadcrumbStyle.Solid;
 
         public bool displayHorizontal = true;
+    }
+
+    [System.Serializable]
+    public class IndentColorSettings
+    {
+        public bool showIndentationColors = false;
+        public IndentColorMode mode = IndentColorMode.Fill;
+
+        [Tooltip ("The hue used for depth 0.")]
+        [Range (0f, 1f)] public float hueStart = 0.58f;
+
+        [Tooltip ("The amount of hue added per depth level.")]
+        [Range (0f, 1f)] public float hueStep = 0.11f;
+
+        [Range (0f, 1f)] public float saturation = 0.65f;
+        [Range (0f, 1f)] public float value = 1f;
+        [Range (0f, 1f)] public float alpha = 0.18f;
+
+        [Tooltip ("Wrap the hue after this many depth levels. 0 applies the hue step without wrapping.")]
+        [Min (0)] public int cycleLength = 0;
+
+        [Tooltip ("Depths higher than this use the color of the maximum depth. Also limits the hierarchy walk performed per row.")]
+        [Min (1)] public int maxDepth = 16;
     }
 
     [System.Serializable]
@@ -103,6 +128,10 @@ namespace HierarchyDecorator
             style = BreadcrumbStyle.Dash,
             displayHorizontal = false,
         };
+
+        // Indentation Colors
+
+        public IndentColorSettings indentColors = new IndentColorSettings ();
 
     }
 }
