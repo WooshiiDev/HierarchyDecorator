@@ -87,12 +87,16 @@ namespace HierarchyDecorator
         {
             rect = GetReorderableFooterRect (rect);
 
+            GUIStyle style = EditorStyles.miniButton;
+#if UNITY_2019_3_OR_NEWER
             Handles.BeginGUI ();
             Handles.DrawSolidRectangleWithOutline (rect, Color.clear, OUTLINE_COLOR);
             Handles.EndGUI ();
 
-            // Draw optionals
-            if (GUI.Button (rect, "Add New Style", Style.CenteredBoldLabel))
+            style =  Style.CenteredBoldLabel;
+#endif
+
+            if (GUI.Button (rect, "Add New Style", style))
             {
                 CreateNewStyle();
             }
