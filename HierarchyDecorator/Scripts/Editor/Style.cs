@@ -88,7 +88,9 @@ namespace HierarchyDecorator
             ToolbarButtonResizable = new GUIStyle(ToolbarButtonLeft)
             {
                 fixedWidth = 0,
+#if UNITY_2019_3_OR_NEWER
                 fixedHeight = 0,
+#endif
                 alignment = TextAnchor.MiddleCenter
             };
 
