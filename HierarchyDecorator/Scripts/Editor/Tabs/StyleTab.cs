@@ -167,11 +167,16 @@ namespace HierarchyDecorator
 
         private void DrawElementBackground(Rect rect, int index, bool isActive, bool isFocused)
         {
+            Rect side = GetElementRightSpacerRect(rect);
             rect = GetElementSpacerRect (rect);
-            GUIHelper.LineSpacer (rect, OUTLINE_COLOR);
 
+            GUIHelper.LineSpacer (rect, OUTLINE_COLOR);
             rect.y += rect.height;
             GUIHelper.LineSpacer (rect, OUTLINE_COLOR);
+
+            GUIHelper.LineSpacer(side, OUTLINE_COLOR, side.height);
+            side.x = rect.xMax;
+            GUIHelper.LineSpacer(side, OUTLINE_COLOR, side.height);
         }
 
         private void DrawNoElements(Rect rect)
@@ -393,6 +398,14 @@ namespace HierarchyDecorator
             rect.x -= 4f;
             rect.width += 8f;
 
+            return rect;
+        }
+
+        private Rect GetElementRightSpacerRect(Rect rect)
+        {
+            rect = GetElementSpacerRect(rect);
+            rect.width = 1;
+            rect.height += 1;
             return rect;
         }
 
