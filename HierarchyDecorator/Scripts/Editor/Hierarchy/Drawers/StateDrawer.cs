@@ -51,15 +51,16 @@ namespace HierarchyDecorator
 
         private Rect GetActualHierarchyWidth(Rect rect)
         {
+#if UNITY_2019_3_OR_NEWER
             rect.width += rect.x;
-
-#if UNITY_2019_1_OR_NEWER
             rect.x = 32f;
+#elif UNITY_2019_1_OR_NEWER
+            rect.x = 16f;
+            rect.width += 48f;
 #else
-            rect.x = 0;
+            rect.x = 32f;
             rect.width += 32f;
 #endif
-
             return rect;
         }
     }

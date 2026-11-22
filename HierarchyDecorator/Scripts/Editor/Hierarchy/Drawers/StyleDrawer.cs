@@ -87,20 +87,21 @@ namespace HierarchyDecorator
 
         private Rect GetActualHierarchyWidth(Rect rect, bool isModifiedPrefab)
         {
+#if UNITY_2019_3_OR_NEWER
             rect.width += rect.x;
-
-#if UNITY_2019_1_OR_NEWER
             rect.x = 32f;
-#else
-            rect.x = 0;
-            rect.width += 32f;
-#endif
 
             if (isModifiedPrefab)
             {
                 rect.xMin += 2f;
             }
-
+#elif UNITY_2019_1_OR_NEWER
+            rect.x = 16f;
+            rect.width += 48f;
+#else
+            rect.x = 32f;
+            rect.width += 32f;
+#endif
             return rect;
         }
 
@@ -116,6 +117,10 @@ namespace HierarchyDecorator
 
         private bool HasPrefabModifications(HierarchyItem item)
         {
+#if !UNITY_2019_3_OR_NEWER
+            return false;
+#endif
+
             if (!item.IsPrefab)
             {
                 return false;
