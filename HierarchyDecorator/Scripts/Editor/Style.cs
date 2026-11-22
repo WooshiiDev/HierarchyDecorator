@@ -96,6 +96,9 @@ namespace HierarchyDecorator
             {
 #if UNITY_2019_1_OR_NEWER
                 stretchHeight = true,
+                padding = new RectOffset(0, 0, 0, 0)
+#else
+                padding = new RectOffset(0, 0, 1, 2),
 #endif
                 stretchWidth = true,
 
@@ -109,8 +112,7 @@ namespace HierarchyDecorator
                     textColor = EditorStyles.label.normal.textColor,
                 },
 
-                margin = new RectOffset(0,0,0,0),
-                padding = new RectOffset(0,0,0,0)
+                margin = new RectOffset(0, 0, 0, 0),
             };
 
             TabBackground = new GUIStyle (EditorStyles.helpBox)
@@ -193,7 +195,11 @@ namespace HierarchyDecorator
                 margin = new RectOffset(1, 1, 1, 1)
             };
 
-            LargeButtonSmallTextStyle = new GUIStyle (EditorStyles.miniButton)
+#if UNITY_2019_3_OR_NEWER
+            LargeButtonSmallTextStyle = new GUIStyle (EditorStyles.helpBox)
+#else
+            LargeButtonSmallTextStyle = new GUIStyle(EditorStyles.miniButton)
+#endif
             {
                 fixedHeight = 32f,
                 fontSize = 12,
