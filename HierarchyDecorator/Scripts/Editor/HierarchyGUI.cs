@@ -132,7 +132,7 @@ namespace HierarchyDecorator
 
         public static void Space(float width = 9f)
         {
-#if UNITY_2019_1_OR_NEWER
+#if UNITY_2019_3_OR_NEWER
             EditorGUILayout.Space (width);
 #else
             GUILayout.Space (width);
@@ -141,7 +141,11 @@ namespace HierarchyDecorator
 
         private static string GetGameObjectIcon(bool selected)
         {
-            return selected ? "GameObject On Icon" : "GameObject Icon"; 
+#if UNITY_2019_3_OR_NEWER
+            return selected ? "GameObject On Icon" : "GameObject Icon";
+#else
+            return "d_GameObject Icon";
+#endif
         }
 
         private static Texture2D GetPrefabIcon(GameObject instance)
