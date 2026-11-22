@@ -94,9 +94,9 @@ namespace HierarchyDecorator
 
             BoxHeader = new GUIStyle(GUI.skin.box)
             {
-#if UNITY_2019_1_OR_NEWER
+#if UNITY_2019_3_OR_NEWER
                 stretchHeight = true,
-                padding = new RectOffset(0, 0, 0, 0)
+                padding = new RectOffset(0, 0, 0, 0),
 #else
                 padding = new RectOffset(0, 0, 1, 2),
 #endif
