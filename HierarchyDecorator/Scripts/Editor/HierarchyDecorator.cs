@@ -42,6 +42,10 @@ namespace HierarchyDecorator
 
             EditorApplication.delayCall -= HierarchyManager.Initialize;
             EditorApplication.delayCall += HierarchyManager.Initialize;
+
+#if !UNITY_2019_4_OR_NEWER
+            AssetDatabase.Refresh();
+#endif
         }
 
         // Setup 
