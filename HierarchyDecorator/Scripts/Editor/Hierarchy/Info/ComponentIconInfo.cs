@@ -19,7 +19,7 @@ namespace HierarchyDecorator
         private bool requireWarning;
         private int componentCount;
 
-#if UNITY_2019_1_OR_NEWER
+#if UNITY_2019_3_OR_NEWER
         private readonly GUIContent warningGUI = EditorGUIUtility.IconContent("warning");
 #else
         private readonly GUIContent warningGUI = EditorGUIUtility.IconContent("console.warnicon");
