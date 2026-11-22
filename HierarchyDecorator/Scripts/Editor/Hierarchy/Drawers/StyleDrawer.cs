@@ -121,7 +121,12 @@ namespace HierarchyDecorator
                 return false;
             }
 
-            return PrefabUtility.HasPrefabInstanceAnyOverrides(item.GameObject, false);
+            if (PrefabUtility.HasPrefabInstanceAnyOverrides(item.GameObject, false))
+            {
+                return true;
+            }
+
+            return item.PrefabInfo == PrefabInfo.Root && PrefabUtility.GetPrefabInstanceStatus(item.GameObject) == PrefabInstanceStatus.MissingAsset;
         }
     }
 }
