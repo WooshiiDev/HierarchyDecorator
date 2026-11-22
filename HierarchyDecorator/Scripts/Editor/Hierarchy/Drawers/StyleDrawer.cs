@@ -119,7 +119,7 @@ namespace HierarchyDecorator
         {
 #if !UNITY_2019_3_OR_NEWER
             return false;
-#endif
+#else
 
             if (!item.IsPrefab)
             {
@@ -132,6 +132,7 @@ namespace HierarchyDecorator
             }
 
             return item.PrefabInfo == PrefabInfo.Root && PrefabUtility.GetPrefabInstanceStatus(item.GameObject) == PrefabInstanceStatus.MissingAsset;
+#endif
         }
     }
 }
