@@ -134,7 +134,7 @@ namespace HierarchyDecorator
                 {
                     // Draw the background
 
-                    GUI.Box (settingsRect, "");
+                    GUI.Box (settingsRect, string.Empty);
 
                     // Add some padding to the rect to fit it into the box
 
@@ -150,7 +150,7 @@ namespace HierarchyDecorator
                 Rect deletionRect = GetElementDeleteRect (rect);
              
                 GUIContent content = new GUIContent ("X");
-                if (GUI.Button(deletionRect, content, Style.CenteredBoldLabel))
+                if (GUI.Button(deletionRect, content, Style.ToolbarButtonResizable))
                 {
                     serializedStyles.DeleteArrayElementAtIndex (index);
                     return;
@@ -323,7 +323,7 @@ namespace HierarchyDecorator
             rect = GetElementBaseRect (rect);
 
             rect.y += EditorGUIUtility.singleLineHeight;
-            rect.height -= EditorGUIUtility.singleLineHeight - 2f;
+            rect.height -= EditorGUIUtility.singleLineHeight - 1f;
 
             return rect;
         }
@@ -413,10 +413,8 @@ namespace HierarchyDecorator
         {
             rect = GetElementStyleRect (rect);
         
-            float newWidth = rect.x;
-
             rect.x += rect.width;
-            rect.width = newWidth;
+            rect.width = 32f;
 
             return rect;
         }
